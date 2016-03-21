@@ -129,3 +129,44 @@ def username(request):
         return post(request)
     else:
         return HttpResponseForbidden
+
+
+def password(request):
+    @web_service(method='GET')
+    def get(request):
+        """
+        用户是否已设置密码
+
+        :return:
+            has_password - true | false
+        """
+        has_password = True if request.user.password else False
+        return JsonResponse({'has_password': has_password})
+
+    @web_service()
+    def post(request, data):
+        """
+        设置/修改密码
+
+        :param data:
+            password - 密码，长度不小于6位
+            old_password - 旧密码，修改密码时
+        :return: 200 | 400 | 403
+        """
+        if len(data['password']) < 6:
+            return HttpResponseBadRequest()
+
+        if not request.user.password or request.user.check_password(
+                data['old_password']):
+            request.user.set_password(data['password'])
+            request.user.save()
+            return HttpResponse()
+        else:
+            return HttpResponseForbidden()
+
+    if request.method == 'GET':
+        return get(request)
+    elif request.method == 'POST':
+        return post(request)
+    else:
+        return HttpResponseForbidden

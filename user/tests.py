@@ -20,6 +20,7 @@ def create_user(phone_number, imei):
 
 class UserTestCase(TestCase):
     def test_token(self):
+        client = Client()
         user = create_user('11111111111', '101010101010101')
         user.username = 'test'
         user.set_password('test')
@@ -28,7 +29,6 @@ class UserTestCase(TestCase):
         # get by phone info
         phone_info = encrypt_phone_info('11111111111', '101010101010101')
         data = json.dumps({'method': 0, 'phone_info': phone_info})
-        client = Client()
         response = client.post(reverse('user:token'), {'data': data})
         status_code = response.status_code
         self.assertEqual(status_code, 200)
@@ -38,7 +38,6 @@ class UserTestCase(TestCase):
         self.assertEqual(content['token'], token)
 
         # get by phone number
-        client = Client()
         data = json.dumps(
             {'method': 1, 'phone_number': '11111111111', 'password': 'test'})
         response = client.post(reverse('user:token'), {'data': data})
@@ -50,7 +49,6 @@ class UserTestCase(TestCase):
         self.assertEqual(content['token'], token)
 
         # get by username
-        client = Client()
         data = json.dumps({'method': 2, 'username': 'test', 'password': 'test'})
         response = client.post(reverse('user:token'), {'data': data})
         status_code = response.status_code
@@ -61,7 +59,6 @@ class UserTestCase(TestCase):
         self.assertEqual(content['token'], token)
 
         # get by phone info / auto register
-        client = Client()
         phone_info = encrypt_phone_info('22222222222', '000000000000000')
         data = json.dumps({'method': 0, 'phone_info': phone_info})
         response = client.post(reverse('user:token'), {'data': data})
@@ -73,7 +70,6 @@ class UserTestCase(TestCase):
         self.assertEqual(content['token'], token)
 
         # get by phone info / invalid
-        client = Client()
         phone_info = encrypt_phone_info('22222222222', '000000010000000')
         data = json.dumps({'method': 0, 'phone_info': phone_info})
         response = client.post(reverse('user:token'), {'data': data})
@@ -81,7 +77,6 @@ class UserTestCase(TestCase):
         self.assertEqual(status_code, 403)
 
         # get by phone number / invalid
-        client = Client()
         data = json.dumps(
             {'method': 1, 'phone_number': '22222222222', 'password': 'none'})
         response = client.post(reverse('user:token'), {'data': data})
@@ -89,7 +84,6 @@ class UserTestCase(TestCase):
         self.assertEqual(status_code, 403)
 
         # get by username / invalid
-        client = Client()
         data = json.dumps(
             {'method': 2, 'username': 'none', 'password': 'none'})
         response = client.post(reverse('user:token'), {'data': data})
@@ -97,18 +91,17 @@ class UserTestCase(TestCase):
         self.assertEqual(status_code, 403)
 
     def test_username(self):
+        client = Client()
         user = create_user('1', '1')
         token = user.token_info.token
 
         # set username with invalid character
-        client = Client()
         data = json.dumps({'username': '中文username'})
         response = client.post(reverse('user:username'),
                                {'data': data, 'token': token})
         self.assertEqual(response.status_code, 400)
 
         # set username unmet length requirement
-        client = Client()
         data = json.dumps({'username': '中文username'})
         response = client.post(reverse('user:username'),
                                {'data': data, 'token': token})
@@ -119,20 +112,17 @@ class UserTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         # set username
-        client = Client()
         data = json.dumps({'username': 'username'})
         response = client.post(reverse('user:username'),
                                {'data': data, 'token': token})
         self.assertEqual(response.status_code, 200)
 
         # get username
-        client = Client()
         response = client.get(reverse('user:username'), {'token': token})
         result = json.loads(response.content.decode('utf8'))['username']
         self.assertEqual(result, 'username')
 
         # set username again
-        client = Client()
         data = json.dumps({'username': 'nameuser'})
         response = client.post(reverse('user:username'),
                                {'data': data, 'token': token})
@@ -145,4 +135,45 @@ class UserTestCase(TestCase):
         data = json.dumps({'username': 'username'})
         response = client.post(reverse('user:username'),
                                {'data': data, 'token': token})
+        self.assertEqual(response.status_code, 400)
+
+    def test_password(self):
+        client = Client()
+        user = create_user('1', '1')
+        token = user.token_info.token
+
+        # before
+        response = client.get(reverse('user:password'), {'token': token})
+        has_password = json.loads(
+            response.content.decode('utf8'))['has_password']
+        self.assertEqual(has_password, False)
+
+        # set password
+        data = json.dumps({'password': 'testPass'})
+        response = client.post(reverse('user:password'),
+                               {'token': token, 'data': data})
+        self.assertEqual(response.status_code, 200)
+
+        # after
+        response = client.get(reverse('user:password'), {'token': token})
+        has_password = json.loads(
+            response.content.decode('utf8'))['has_password']
+        self.assertEqual(has_password, True)
+
+        # change password
+        data = json.dumps({'password': 'testPass!', 'old_password': 'testPass'})
+        response = client.post(reverse('user:password'),
+                               {'token': token, 'data': data})
+        self.assertEqual(response.status_code, 200)
+
+        # change password / invalid old_password
+        data = json.dumps({'password': 'changePass!', 'old_password': ''})
+        response = client.post(reverse('user:password'),
+                               {'token': token, 'data': data})
+        self.assertEqual(response.status_code, 403)
+
+        # change password / invalid password
+        data = json.dumps({'password': 'short', 'old_password': 'testPass!'})
+        response = client.post(reverse('user:password'),
+                               {'token': token, 'data': data})
         self.assertEqual(response.status_code, 400)
