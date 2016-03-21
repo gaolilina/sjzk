@@ -95,3 +95,54 @@ class UserTestCase(TestCase):
         response = client.post(reverse('user:token'), {'data': data})
         status_code = response.status_code
         self.assertEqual(status_code, 403)
+
+    def test_username(self):
+        user = create_user('1', '1')
+        token = user.token_info.token
+
+        # set username with invalid character
+        client = Client()
+        data = json.dumps({'username': '中文username'})
+        response = client.post(reverse('user:username'),
+                               {'data': data, 'token': token})
+        self.assertEqual(response.status_code, 400)
+
+        # set username unmet length requirement
+        client = Client()
+        data = json.dumps({'username': '中文username'})
+        response = client.post(reverse('user:username'),
+                               {'data': data, 'token': token})
+        self.assertEqual(response.status_code, 400)
+        data = json.dumps({'username': 'loooooooooooooooooooong_username'})
+        response = client.post(reverse('user:username'),
+                               {'data': data, 'token': token})
+        self.assertEqual(response.status_code, 400)
+
+        # set username
+        client = Client()
+        data = json.dumps({'username': 'username'})
+        response = client.post(reverse('user:username'),
+                               {'data': data, 'token': token})
+        self.assertEqual(response.status_code, 200)
+
+        # get username
+        client = Client()
+        response = client.get(reverse('user:username'), {'token': token})
+        result = json.loads(response.content.decode('utf8'))['username']
+        self.assertEqual(result, 'username')
+
+        # set username again
+        client = Client()
+        data = json.dumps({'username': 'nameuser'})
+        response = client.post(reverse('user:username'),
+                               {'data': data, 'token': token})
+        self.assertEqual(response.status_code, 403)
+
+        # set existed username
+        user = create_user('2', '2')
+        token = user.token_info.token
+        client = Client()
+        data = json.dumps({'username': 'username'})
+        response = client.post(reverse('user:username'),
+                               {'data': data, 'token': token})
+        self.assertEqual(response.status_code, 400)

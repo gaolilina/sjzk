@@ -1,5 +1,8 @@
+import re
+
 from django.db import IntegrityError, transaction
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import \
+    JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 
 from user import decrypt_phone_info
 from user.models import User, UserToken
@@ -85,3 +88,44 @@ def token(request, data):
         return get_by_username(data['username'], data['password'])
     else:
         raise Exception('invalid method code %s' % data['method'])
+
+
+def username(request):
+    @web_service(method='GET')
+    def get(request):
+        """
+        获取当前用户的用户名
+
+        :return:
+            username - 用户名 | null
+        """
+        username = request.user.username if request.user.username else None
+        return JsonResponse({'username': username})
+
+    @web_service()
+    def post(request, data):
+        """
+        设置当前用户的用户名
+
+        :param data:
+            username - 匹配 [a-zA-Z0-9_]{4,20} 的字符串
+        :return: 200 | 400 | 403
+        """
+        if request.user.username:  # 用户名只能设置一次
+            return HttpResponseForbidden()
+        elif not re.fullmatch(r'[a-zA-Z0-9_]{4,20}', data['username']):
+            return HttpResponseBadRequest()
+        else:
+            try:
+                request.user.username = data['username']
+                request.user.save()
+                return HttpResponse()
+            except IntegrityError:
+                return HttpResponseBadRequest()
+
+    if request.method == 'GET':
+        return get(request)
+    elif request.method == 'POST':
+        return post(request)
+    else:
+        return HttpResponseForbidden
