@@ -1,8 +1,10 @@
+import datetime
 import json
 
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.test import TestCase, Client
+from django.utils import timezone
 
 from user import encrypt_phone_info
 from user.models import User, UserToken
@@ -19,7 +21,40 @@ def create_user(phone_number, imei):
 
 
 class UserTestCase(TestCase):
-    def test_token(self):
+    def test_get_user_list(self):
+        client = Client()
+        users = []
+        time = timezone.now()
+        for i in range(32):
+            user = create_user(str(i+1), str(i+1))
+            user.name = 'User %s' % str(i+1)
+            user.create_time = time
+            user.save()
+            time = time + datetime.timedelta(seconds=10)
+            users.append(user)
+        token = users[0].token_info.token
+
+        # get total
+        response = client.get(reverse('user:total'), {'token': token})
+        total = json.loads(response.content.decode('utf8'))['total']
+        self.assertEqual(total, 32)
+
+        # get 15-20 by 'create_time'
+        data = json.dumps({'offset': 14, 'limit': 6, 'order': 1})
+        response = client.get(reverse('user:root'),
+                              {'token': token, 'data': data})
+        result = json.loads(response.content.decode('utf8'))
+        self.assertEqual(result[0]['name'], 'User 15')
+        self.assertEqual(result[5]['name'], 'User 20')
+
+        # get 32 by '-name'
+        data = json.dumps({'offset': 31, 'limit': 1, 'order': 3})
+        response = client.get(reverse('user:root'),
+                              {'token': token, 'data': data})
+        result = json.loads(response.content.decode('utf8'))
+        self.assertEqual(result[0]['name'], 'User 1')
+
+    def test_get_token(self):
         client = Client()
         user = create_user('11111111111', '101010101010101')
         user.username = 'test'
@@ -90,7 +125,7 @@ class UserTestCase(TestCase):
         status_code = response.status_code
         self.assertEqual(status_code, 403)
 
-    def test_username(self):
+    def test_check_and_set_username(self):
         client = Client()
         user = create_user('1', '1')
         token = user.token_info.token
@@ -137,7 +172,7 @@ class UserTestCase(TestCase):
                                {'data': data, 'token': token})
         self.assertEqual(response.status_code, 400)
 
-    def test_password(self):
+    def test_set_and_change_password(self):
         client = Client()
         user = create_user('1', '1')
         token = user.token_info.token

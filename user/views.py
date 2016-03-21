@@ -9,8 +9,64 @@ from user.models import User, UserToken
 from web_service.decorators import web_service
 
 
+@web_service(method='GET')
+def user_root(request, data):
+    """
+    获取用户列表
+
+    :param data:
+        limit - 数量上限（默认值：10）
+        offset - 偏移量（默认值：0）
+        order - 排序方式
+            0 - 注册时间降序（默认值）
+            1 - 注册时间升序
+            2 - 昵称升序
+            3 - 昵称降序
+    :return: JSON数组，每个元素包含以下属性
+        id - 用户ID
+        name - 用户昵称
+        create_time - 注册时间
+    """
+    i = 0 if 'offset' not in data else data['offset']
+    j = (i + 10) if 'limit' not in data else (i + data['limit'])
+
+    available_orders = [
+        '-create_time',
+        'create_time',
+        'name',
+        '-name',
+    ]
+    try:
+        order = available_orders[data['order']]
+    except (KeyError, IndexError):
+        order = '-create_time'
+
+    result = []
+    users = User.objects.order_by(order)[i:j]
+    for user in users:
+        result.append({
+            'id': user.id,
+            'name': user.name,
+            'create_time': user.create_time.timestamp(),
+        })
+
+    return JsonResponse(result, safe=False)
+
+
+@web_service(method='GET')
+def user_total(request):
+    """
+    获取用户总数
+
+    :return:
+        total - 用户总数
+    """
+    total = User.objects.all().count()
+    return JsonResponse({'total': total})
+
+
 @web_service(require_token=False)
-def token(request, data):
+def user_token(request, data):
     """
     通过不同方式获取用户token
 
@@ -90,7 +146,7 @@ def token(request, data):
         raise Exception('invalid method code %s' % data['method'])
 
 
-def username(request):
+def user_username(request):
     @web_service(method='GET')
     def get(request):
         """
@@ -131,7 +187,7 @@ def username(request):
         return HttpResponseForbidden
 
 
-def password(request):
+def user_password(request):
     @web_service(method='GET')
     def get(request):
         """
