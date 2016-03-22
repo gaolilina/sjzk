@@ -6,6 +6,18 @@ from django.contrib.auth.hashers import PBKDF2PasswordHasher as Hasher
 from django.utils import timezone
 
 
+class EnabledUserManager(models.Manager):
+    def get_queryset(self):
+        return super(EnabledUserManager, self).get_queryset() \
+            .filter(is_enabled=True)
+
+
+class DisabledUserManager(models.Manager):
+    def get_queryset(self):
+        return super(DisabledUserManager, self).get_queryset() \
+            .filter(is_enabled=False)
+
+
 class User(models.Model):
     """
     APP用户基本信息
@@ -30,6 +42,10 @@ class User(models.Model):
     create_time = models.DateTimeField('注册时间', default=timezone.now)
     last_active_time = models.DateTimeField(
         '最后一次活动时间', default=None, blank=True, null=True)
+
+    objects = models.Manager()
+    enabled = EnabledUserManager()
+    disabled = DisabledUserManager()
 
     class Meta:
         db_table = 'user'

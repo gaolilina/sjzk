@@ -54,6 +54,13 @@ class UserTestCase(TestCase):
         result = json.loads(response.content.decode('utf8'))
         self.assertEqual(result[0]['name'], 'User 1')
 
+        # disable users[10] then get total
+        users[10].is_enabled = False
+        users[10].save()
+        response = client.get(reverse('user:total'), {'token': token})
+        total = json.loads(response.content.decode('utf8'))['total']
+        self.assertEqual(total, 31)
+
     def test_get_token(self):
         client = Client()
         user = create_user('11111111111', '101010101010101')

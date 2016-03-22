@@ -42,7 +42,7 @@ def user_root(request, data):
         order = '-create_time'
 
     result = []
-    users = User.objects.order_by(order)[i:j]
+    users = User.enabled.order_by(order)[i:j]
     for user in users:
         result.append({
             'id': user.id,
@@ -61,7 +61,7 @@ def user_total(request):
     :return:
         total - 用户总数
     """
-    total = User.objects.all().count()
+    total = User.enabled.count()
     return JsonResponse({'total': total})
 
 
