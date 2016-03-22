@@ -83,13 +83,13 @@ def user_token(request, data):
         token: 用户token
     """
 
+    @transaction.atomic
     def auto_register(phone_number, imei):
-        with transaction.atomic():
-            name = '新用户%s' % phone_number[-4:]
-            user = User(phone_number=phone_number, imei=imei, name=name)
-            user.save()
-            token_info = UserToken(user=user)
-            token_info.update()
+        name = '新用户%s' % phone_number[-4:]
+        user = User(phone_number=phone_number, imei=imei, name=name)
+        user.save()
+        token_info = UserToken(user=user)
+        token_info.update()
         return user
 
     def get_by_phone_info(phone_info):
@@ -144,18 +144,6 @@ def user_token(request, data):
         return get_by_username(data['username'], data['password'])
     else:
         raise Exception('invalid method code %s' % data['method'])
-
-
-@web_service(method='GET')
-def user_id(request):
-    """
-    获取当前用户的ID
-
-    :return:
-        id - 当前用户的ID
-    """
-    _id = request.user.id
-    return JsonResponse({'id': _id})
 
 
 def user_username(request):

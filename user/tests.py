@@ -132,16 +132,6 @@ class UserTestCase(TestCase):
         status_code = response.status_code
         self.assertEqual(status_code, 403)
 
-    def test_get_id(self):
-        user = create_user('1', '1')
-        token = user.token_info.token
-        _id = user.id
-
-        client = Client()
-        response = client.get(reverse('user:id'), {'token': token})
-        result = json.loads(response.content.decode('utf8'))
-        self.assertEqual(result['id'], _id)
-
     def test_check_and_set_username(self):
         client = Client()
         user = create_user('1', '1')

@@ -8,5 +8,4 @@ urlpatterns = [
     url(r'^token/$', views.user_token, name='token'),
     url(r'^username/$', views.user_username, name='username'),
     url(r'^password/$', views.user_password, name='password'),
-    url(r'^id/$', views.user_id, name='id'),
 ]
