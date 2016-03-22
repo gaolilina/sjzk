@@ -106,7 +106,7 @@ class UserTestCase(TestCase):
         response = client.post(reverse('user:token'), {'data': data})
         status_code = response.status_code
         self.assertEqual(status_code, 200)
-        user = User.objects.get(phone_number='22222222222')
+        user = User.enabled.get(phone_number='22222222222')
         token = user.token_info.token
         content = json.loads(response.content.decode('utf8'))
         self.assertEqual(content['token'], token)

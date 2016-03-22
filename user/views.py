@@ -114,7 +114,7 @@ def user_token(request, data):
 
     def get_by_phone_number(phone_number, password):
         try:
-            user = User.objects.get(phone_number=phone_number)
+            user = User.enabled.get(phone_number=phone_number)
             if user.check_password(password):
                 user.token_info.update()
                 return JsonResponse({'token': user.token_info.token})
@@ -127,7 +127,7 @@ def user_token(request, data):
         try:
             if not username:  # 用户可能设置了密码但没有设置用户名
                 return HttpResponseForbidden()
-            user = User.objects.get(username=username)
+            user = User.enabled.get(username=username)
             if user.check_password(password):
                 user.token_info.update()
                 return JsonResponse({'token': user.token_info.token})

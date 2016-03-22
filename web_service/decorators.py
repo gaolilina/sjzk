@@ -1,8 +1,7 @@
 import json
 
 from ChuangYi import settings
-from django.http import \
-    HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from django.utils import timezone
 
 from user.models import User
@@ -19,6 +18,7 @@ def web_service(require_token=True, method='POST'):
     :param method: 限定的HTTP请求方式，'POST' 或 'GET'
 
     """
+
     def decorator(view_function):
         def wrapped_view(request, *args, **kwargs):
             # 检查请求方式
@@ -37,8 +37,7 @@ def web_service(require_token=True, method='POST'):
 
                 try:
                     now = timezone.now()
-                    user = User.objects.get(
-                        is_enabled=True,
+                    user = User.enabled.get(
                         token_info__token=token,
                         token_info__expire_time__gte=now,
                     )
