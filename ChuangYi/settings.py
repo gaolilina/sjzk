@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'message.apps.MessageConfig',
     'need.apps.NeedConfig',
     # 'notification.apps.NotificationConfig',
-    'profiles.apps.ProfileConfig',
+    'profiles.apps.ProfilesConfig',
     'tag.apps.TagConfig',
     'task.apps.TaskConfig',
 
