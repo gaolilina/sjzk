@@ -146,6 +146,18 @@ def user_token(request, data):
         raise Exception('invalid method code %s' % data['method'])
 
 
+@web_service(method='GET')
+def user_id(request):
+    """
+    获取当前用户的ID
+
+    :return:
+        id - 当前用户的ID
+    """
+    _id = request.user.id
+    return JsonResponse({'id': _id})
+
+
 def user_username(request):
     @web_service(method='GET')
     def get(request):

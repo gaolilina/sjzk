@@ -26,8 +26,8 @@ class UserTestCase(TestCase):
         users = []
         time = timezone.now()
         for i in range(32):
-            user = create_user(str(i+1), str(i+1))
-            user.name = 'User %s' % str(i+1)
+            user = create_user(str(i + 1), str(i + 1))
+            user.name = 'User %s' % str(i + 1)
             user.create_time = time
             user.save()
             time = time + datetime.timedelta(seconds=10)
@@ -131,6 +131,16 @@ class UserTestCase(TestCase):
         response = client.post(reverse('user:token'), {'data': data})
         status_code = response.status_code
         self.assertEqual(status_code, 403)
+
+    def test_get_id(self):
+        user = create_user('1', '1')
+        token = user.token_info.token
+        _id = user.id
+
+        client = Client()
+        response = client.get(reverse('user:id'), {'token': token})
+        result = json.loads(response.content.decode('utf8'))
+        self.assertEqual(result['id'], _id)
 
     def test_check_and_set_username(self):
         client = Client()
