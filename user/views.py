@@ -4,7 +4,7 @@ from django.db import IntegrityError, transaction
 from django.http import \
     JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 
-from user import decrypt_phone_info
+from user.tools import decrypt_phone_info
 from user.models import User, UserToken
 from web_service.decorators import web_service
 

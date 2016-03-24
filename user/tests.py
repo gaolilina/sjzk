@@ -6,7 +6,7 @@ from django.db import transaction
 from django.test import TestCase, Client
 from django.utils import timezone
 
-from user import encrypt_phone_info
+from user.tools import encrypt_phone_info
 from user.models import User, UserToken
 
 
