@@ -1,4 +1,6 @@
-from django.http import HttpResponse, HttpRequest
+import json
+
+from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.test import TestCase
 
 from user.models import User, UserToken
@@ -7,10 +9,7 @@ from web_service.decorators import web_service
 
 @web_service(require_token=False)
 def dummy_view(request, data):
-    content = ''
-    for k, v in data.items():
-        content += '%s %s\n' % (k, v)
-    return HttpResponse(content)
+    return JsonResponse(data)
 
 
 @web_service(method='GET')
@@ -23,10 +22,11 @@ class WebServiceTestCase(TestCase):
     def test_dummy_view(self):
         request = HttpRequest()
         request.method = 'POST'
-        request.POST['data'] = '{"a": "A", "b": "B"}'
+        data = {"a": "A", "b": "B"}
+        request.POST['data'] = json.dumps(data)
         response = dummy_view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'a A\nb B\n')
+        self.assertEqual(json.loads(response.content.decode('utf8')), data)
 
     def test_dummy_view_require_token(self):
         u = User(name='test', phone_number='test', imei='test')
