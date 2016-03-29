@@ -3,6 +3,7 @@
 
 from django.conf.urls import url, include
 
+import profiles.views
 import user.views
 
 user_urls = [
@@ -11,6 +12,9 @@ user_urls = [
     url(r'^token/$', user.views.user_token, name='token'),
     url(r'^username/$', user.views.user_username, name='username'),
     url(r'^password/$', user.views.user_password, name='password'),
+    url(r'^profile/$', profiles.views.user_profile, name='profile'),
+    url(r'^profile/(?P<user_id>[0-9]+)/$', profiles.views.user_profile,
+        name='profile_'),
 ]
 
 urlpatterns = [
