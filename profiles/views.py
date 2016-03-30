@@ -18,15 +18,14 @@ def user_profile(request, user_id=None):
         获取用户个人资料
 
         :return:
-            name - 昵称
-            description - 个人描述
-            email - 邮箱地址
-            gender - 性别（0-保密，1-男，2-女）
-            birthday - 生日（格式：YYYY-MM-DD）
-            location - 位置信息（列表类型，格式：[x, y]，x：省索引，y：市索引）
-
-            tags - 标签列表
-            create_time - 注册时间
+            name: 昵称
+            description: 个人描述
+            email: 邮箱地址
+            gender: 性别（0-保密，1-男，2-女）
+            birthday: 生日（格式：YYYY-MM-DD）
+            location: 位置信息（列表类型，格式：[x, y]，x：省索引，y：市索引）
+            tags: 标签列表
+            create_time: 注册时间
         """
         if not user_id:
             user = request.user
@@ -68,15 +67,16 @@ def user_profile(request, user_id=None):
         修改用户个人资料
 
         :param data: 接受以下数据项
-            name - 昵称
-            description - 个人描述
-            email - 邮箱地址
-            gender - 性别（0-保密，1-男，2-女）
-            birthday - 生日（格式：YYYY-MM-DD）
-            location - 位置信息（列表类型）
+            name: 昵称
+            description: 个人描述
+            email: 邮箱地址
+            gender: 性别（0-保密，1-男，2-女）
+            birthday: 生日（格式：YYYY-MM-DD）
+            location: 位置信息（列表类型）
                 [x, y] | [x, None] | [None, None]
-            tags - 标签列表
+            tags: 标签列表
         :return: 200 | 400
+
         """
         user = request.user
 

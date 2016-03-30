@@ -10,22 +10,22 @@ from web_service.decorators import web_service
 
 
 @web_service(method='GET')
-def user_root(request, data):
+def user(request, data):
     """
     获取用户列表
 
     :param data:
-        limit - 数量上限（默认值：10）
-        offset - 偏移量（默认值：0）
-        order - 排序方式
-            0 - 注册时间降序（默认值）
-            1 - 注册时间升序
-            2 - 昵称升序
-            3 - 昵称降序
-    :return: JSON数组，每个元素包含以下属性
-        id - 用户ID
-        name - 用户昵称
-        create_time - 注册时间
+        offset: 偏移量（默认值：0）
+        limit: 数量上限（默认值：10）
+        order: 排序方式
+            0: 注册时间降序（默认值）
+            1: 注册时间升序
+            2: 昵称升序
+            3: 昵称降序
+    :return: JSON Array
+        id: 用户ID
+        name: 用户昵称
+        create_time: 注册时间
     """
     i = 0 if 'offset' not in data else data['offset']
     j = (i + 10) if 'limit' not in data else (i + data['limit'])
@@ -59,7 +59,7 @@ def user_total(request):
     获取用户总数
 
     :return:
-        total - 用户总数
+        total: 用户总数
     """
     total = User.enabled.count()
     return JsonResponse({'total': total})
@@ -72,9 +72,9 @@ def user_token(request, data):
 
     :param data:
         method: 0 | 1 | 2
-            0 - 通过手机号与IMEI信息获取token，需要参数 phone_info
-            1 - 通过手机号与密码获取token，需要参数 phone_number / password
-            2 - 通过用户名与密码获取token，需要参数 username / password
+            0: 通过手机号与IMEI信息获取token，需要参数 phone_info
+            1: 通过手机号与密码获取token，需要参数 phone_number / password
+            2: 通过用户名与密码获取token，需要参数 username / password
         phone_info: '加密' 后的手机号与IMEI信息，选填
         phone_number: 手机号，选填
         username: 用户名，选填
@@ -153,7 +153,7 @@ def user_username(request):
         获取当前用户的用户名
 
         :return:
-            username - 用户名 | null
+            username: 用户名 | null
         """
         username = request.user.username if request.user.username else None
         return JsonResponse({'username': username})
@@ -164,7 +164,7 @@ def user_username(request):
         设置当前用户的用户名
 
         :param data:
-            username - 匹配 [a-zA-Z0-9_]{4,20} 的字符串
+            username: 匹配 [a-zA-Z0-9_]{4,20} 的字符串
         :return: 200 | 400 | 403
         """
         if request.user.username:  # 用户名只能设置一次
@@ -194,7 +194,7 @@ def user_password(request):
         用户是否已设置密码
 
         :return:
-            has_password - true | false
+            has_password: true | false
         """
         has_password = True if request.user.password else False
         return JsonResponse({'has_password': has_password})
@@ -205,8 +205,8 @@ def user_password(request):
         设置/修改密码
 
         :param data:
-            password - 密码，长度不小于6位
-            old_password - 旧密码，修改密码时
+            password: 密码，长度不小于6位
+            old_password: 旧密码，修改密码时
         :return: 200 | 400 | 403
         """
         if len(data['password']) < 6:
