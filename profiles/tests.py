@@ -30,12 +30,12 @@ class UserProfileTestCase(TestCase):
         client = Client()
 
         # set profile
-        response = client.post(reverse('user:profile'),
+        response = client.post(reverse('user:profile:root'),
                                {'token': token, 'data': data})
         self.assertEqual(response.status_code, 200)
 
         # get profile
-        response = client.get(reverse('user:profile'), {'token': token})
+        response = client.get(reverse('user:profile:root'), {'token': token})
         self.assertEqual(response.status_code, 200)
         r = json.loads(response.content.decode('utf8'))
         self.assertEqual(r['name'], '龙裔')
@@ -51,14 +51,14 @@ class UserProfileTestCase(TestCase):
         user = create_user('21111111111', '211111111111111')
         token = user.token_info.token
         response = client.get(
-            reverse('user:profile_', kwargs={'user_id': user_id}),
+            reverse('user:profile:id', kwargs={'user_id': user_id}),
             {'token': token},
         )
         self.assertEqual(response.status_code, 200)
 
         data = json.dumps({'name': '抓根宝'})
         response = client.post(
-            reverse('user:profile_', kwargs={'user_id': user_id}),
+            reverse('user:profile:id', kwargs={'user_id': user_id}),
             {'token': token, 'data': data},
         )
         self.assertEqual(response.status_code, 403)
@@ -70,25 +70,25 @@ class UserProfileTestCase(TestCase):
 
         client = Client()
         # get tag for first time
-        response = client.get(reverse('user:profile'), {'token': token})
+        response = client.get(reverse('user:profile:root'), {'token': token})
         tags = json.loads(response.content.decode('utf8'))['tags']
         self.assertEqual(tags, [])
 
         # set 5 tags
         data = json.dumps({'tags': ['t1', 't2', 't3', 't4', 't5']})
-        client.post(reverse('user:profile'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
 
         # then set 2 tags
         data = json.dumps({'tags': ['t6', 't3']})
-        client.post(reverse('user:profile'), {'token': token, 'data': data})
-        response = client.get(reverse('user:profile'), {'token': token})
+        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        response = client.get(reverse('user:profile:root'), {'token': token})
         tags = json.loads(response.content.decode('utf8'))['tags']
         self.assertEqual(tags, ['t6', 't3'])
 
         # then clear all tags
         data = json.dumps({'tags': []})
-        client.post(reverse('user:profile'), {'token': token, 'data': data})
-        response = client.get(reverse('user:profile'), {'token': token})
+        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        response = client.get(reverse('user:profile:root'), {'token': token})
         tags = json.loads(response.content.decode('utf8'))['tags']
         self.assertEqual(tags, [])
 
@@ -104,30 +104,30 @@ class UserProfileTestCase(TestCase):
 
         # set province and city
         data = json.dumps({'location': [p1.id, c1.id]})
-        client.post(reverse('user:profile'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
 
         # clear city
         data = json.dumps({'location': [p1.id, None]})
-        client.post(reverse('user:profile'), {'token': token, 'data': data})
-        response = client.get(reverse('user:profile'), {'token': token})
+        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        response = client.get(reverse('user:profile:root'), {'token': token})
         data = json.loads(response.content.decode('utf8'))
         self.assertEqual(data['location'], [p1.id, None])
 
         # clear all
         data = json.dumps({'location': [None, None]})
-        client.post(reverse('user:profile'), {'token': token, 'data': data})
-        response = client.get(reverse('user:profile'), {'token': token})
+        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        response = client.get(reverse('user:profile:root'), {'token': token})
         data = json.loads(response.content.decode('utf8'))
         self.assertEqual(data['location'], [None, None])
 
         # reset
         data = json.dumps({'location': [p1.id, c1.id]})
-        client.post(reverse('user:profile'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
 
         # clear all
         data = json.dumps({'location': [None, None]})
-        client.post(reverse('user:profile'), {'token': token, 'data': data})
-        response = client.get(reverse('user:profile'), {'token': token})
+        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        response = client.get(reverse('user:profile:root'), {'token': token})
         data = json.loads(response.content.decode('utf8'))
         self.assertEqual(data['location'], [None, None])
 
