@@ -4,11 +4,12 @@ from django.db import transaction
 from django.http import \
     JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 
-from web_service.decorators import web_service
-from user.models import User
-from profiles.models import UserProfile
 from location.tools import set_location, get_location
+from profiles.models import UserProfile
 from tag.tools import get_tags, set_tags
+from user.models import User
+from visit.tools import update_visitor
+from web_service.decorators import web_service
 
 
 def user_profile(request, user_id=None):
@@ -35,6 +36,9 @@ def user_profile(request, user_id=None):
                 user = User.enabled.get(id=user_id)
             except (User.DoesNotExist, KeyError):
                 return HttpResponseBadRequest()
+
+        if user is not request.user:
+            update_visitor(user, request.user)
 
         r = {  # from User
             'name': user.name,
