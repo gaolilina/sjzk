@@ -12,6 +12,9 @@ user_urlpatterns = [  # namespace: user:profile
         name='identification_verification'),
     url(r'^student_identification/$', views.user_profile_student_identification,
         name='student_identification'),
+    url(r'^student_identification/(?P<user_id>[0-9]+)/$',
+        views.user_profile_student_identification,
+        name='student_identification_id'),
 ]
 
 user_urls = [url(r'^profile/', include(user_urlpatterns, namespace='profile'))]

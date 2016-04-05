@@ -199,20 +199,29 @@ def user_profile_identification_verification(request):
         return JsonResponse({'is_verified': False})
 
 
-def user_profile_student_identification(request):
+def user_profile_student_identification(request, user_id=None):
     @web_service(method='GET')
-    def get(request):
+    def get(request, user_id):
         """
-        获取当前用户的学生信息
+        获取用户的学生信息
 
         :return:
             school: 学校名称
             number: 学生证号
         """
+        if not user_id:
+            user = request.user
+        else:
+            try:
+                user_id = int(user_id)
+                user = User.enabled.get(id=user_id)
+            except (User.DoesNotExist, KeyError):
+                return HttpResponseBadRequest()
+
         try:
             r = {
-                'school': request.user.student_identification.school,
-                'number': request.user.student_identification.number,
+                'school': user.student_identification.school,
+                'number': user.student_identification.number,
             }
         except UserStudentIdentification.DoesNotExist:
             r = {'school': '', 'number': ''}
@@ -244,8 +253,8 @@ def user_profile_student_identification(request):
         return HttpResponse()
 
     if request.method == 'GET':
-        return get(request)
-    elif request.method == 'POST':
+        return get(request, user_id)
+    elif request.method == 'POST' and not user_id:
         return post(request)
     else:
         return HttpResponseForbidden()

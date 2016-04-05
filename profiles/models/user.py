@@ -72,7 +72,7 @@ class UserEducationExperience(models.Model):
 
     """
     user = models.ForeignKey(
-        User, models.CASCADE, 'education_experiences', 'education_experiences')
+        User, models.CASCADE, 'education_experiences', 'education_experience')
 
     school = models.CharField('学校', max_length=20, default='')
     degree = models.CharField('学历', max_length=2, default='')
@@ -99,7 +99,7 @@ class UserFieldworkExperience(models.Model):
 
     """
     user = models.ForeignKey(
-        User, models.CASCADE, 'fieldwork_experiences', 'fieldwork_experiences')
+        User, models.CASCADE, 'fieldwork_experiences', 'fieldwork_experience')
 
     company = models.CharField('公司', max_length=20, default='')
     position = models.CharField('职位', max_length=20, default='')
@@ -116,4 +116,30 @@ class UserFieldworkExperience(models.Model):
 
     def __repr__(self):
         return '<User Fieldwork Experience %s - %s>' % (
+            self.order, self.user.name)
+
+
+class UserWorkExperience(models.Model):
+    """
+    APP用户工作经历
+
+    """
+    user = models.ForeignKey(
+        User, models.CASCADE, 'work_experiences', 'work_experience')
+
+    company = models.CharField('公司', max_length=20, default='')
+    position = models.CharField('职位', max_length=20, default='')
+    begin_time = models.DateField(
+        '入职时间', default=None, blank=True, null=True)
+    end_time = models.DateField(
+        '离职时间', default=None, blank=True, null=True)
+
+    order = models.IntegerField('序号')
+
+    class Meta:
+        db_table = 'user_work_experience'
+        ordering = ['order']
+
+    def __repr__(self):
+        return '<User Work Experience %s - %s>' % (
             self.order, self.user.name)
