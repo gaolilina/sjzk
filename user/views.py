@@ -143,7 +143,7 @@ def user_token(request, data):
     elif data['method'] == 2 and 'username' in data and 'password' in data:
         return get_by_username(data['username'], data['password'])
     else:
-        raise Exception('invalid method code %s' % data['method'])
+        return HttpResponseBadRequest()
 
 
 def user_username(request):

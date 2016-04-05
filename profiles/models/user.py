@@ -32,6 +32,7 @@ class UserIdentification(models.Model):
     """
     user = models.OneToOneField(
         User, models.CASCADE, related_name='identification')
+
     is_verified = models.BooleanField(
         '是否已通过实名认证', default=False, db_index=True)
     name = models.CharField(
@@ -54,6 +55,7 @@ class UserStudentIdentification(models.Model):
     user = models.OneToOneField(
         User, models.CASCADE, related_name='student_identification')
 
+    school = models.CharField('学校名称', max_length=20, default='')
     number = models.CharField('学生证号', max_length=20, default='')
     photo = models.ImageField('学生证照片')
 

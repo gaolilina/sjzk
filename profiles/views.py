@@ -5,7 +5,8 @@ from django.http import \
     JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 
 from location.tools import set_location, get_location
-from profiles.models import UserProfile
+from profiles.models import \
+    UserProfile, UserIdentification, UserStudentIdentification
 from tag.tools import get_tags, set_tags
 from user.models import User
 from visit.tools import update_visitor
@@ -37,7 +38,7 @@ def user_profile(request, user_id=None):
             except (User.DoesNotExist, KeyError):
                 return HttpResponseBadRequest()
 
-        if user is not request.user:
+        if user is not request.user:  # 更新来访信息
             update_visitor(user, request.user)
 
         r = {  # from User
@@ -48,13 +49,14 @@ def user_profile(request, user_id=None):
 
         try:  # from UserProfile
             profile = user.profile
+            r['description'] = profile.description
+            r['gender'] = profile.gender
+            r['birthday'] = profile.birthday.strftime('%Y-%m-%d') \
+                if profile.birthday else None
         except UserProfile.DoesNotExist:
-            profile = UserProfile(user=user)
-            profile.save()
-        r['description'] = profile.description
-        r['gender'] = profile.gender
-        r['birthday'] = profile.birthday.strftime('%Y-%m-%d') \
-            if profile.birthday else None
+            r['description'] = ''
+            r['gender'] = 0
+            r['birthday'] = None
 
         # from UserLocation
         r['location'] = get_location(user)
@@ -99,12 +101,12 @@ def user_profile(request, user_id=None):
             profile.description = data['description']
         if 'gender' in data:
             if data['gender'] not in [0, 1, 2]:
-                raise ValueError('invalid gender value %s' % data['gender'])
+                return HttpResponseBadRequest()
             profile.gender = data['gender']
         if 'birthday' in data:
             profile.birthday = \
                 datetime.strptime(data['birthday'], '%Y-%m-%d').date() \
-                if data['birthday'] else None
+                    if data['birthday'] else None
         profile.save()
 
         # to UserLocation
@@ -120,6 +122,130 @@ def user_profile(request, user_id=None):
     if request.method == 'GET':
         return get(request, user_id)
     elif request.method == 'POST' and not user_id:
+        return post(request)
+    else:
+        return HttpResponseForbidden()
+
+
+def user_profile_identification(request):
+    @web_service(method='GET')
+    def get(request):
+        """
+        获取当前用户的身份信息
+
+        :return:
+            name: 真实姓名
+            number: 身份证号
+            is_verified: 是否通过验证
+        """
+        try:
+            r = {
+                'name': request.user.identification.name,
+                'number': request.user.identification.number,
+                'is_verified': request.user.identification.is_verified,
+            }
+        except UserIdentification.DoesNotExist:
+            r = {'name': '', 'number': '', 'is_verified': False}
+
+        return JsonResponse(r)
+
+    @web_service()
+    def post(request, data):
+        """
+        修改当前用户的身份信息，若已通过身份认证则无法修改
+
+        :param data:
+            name: 真实姓名
+            number: 身份证号
+        :return: 200 | 400 | 403
+        """
+        identification, is_created = UserIdentification.objects.get_or_create(
+            user=request.user)
+
+        if not is_created and identification.is_verified:
+            return HttpResponseForbidden()
+
+        if 'name' in data:
+            identification.name = data['name']
+        if 'number' in data:
+            if data['number'].isdigit() and len(data['number']) == 18:
+                identification.number = data['number']
+            else:
+                return HttpResponseBadRequest()
+        identification.save()
+
+        return HttpResponse()
+
+    if request.method == 'GET':
+        return get(request)
+    elif request.method == 'POST':
+        return post(request)
+    else:
+        return HttpResponseForbidden()
+
+
+@web_service(method='GET')
+def user_profile_identification_verification(request):
+    """
+    检查用户是否已经通过实名认证
+
+    :return:
+        is_verified: true | false
+    """
+    try:
+        return JsonResponse(
+            {'is_verified': request.user.identification.is_verified})
+    except UserIdentification.DoesNotExist:
+        return JsonResponse({'is_verified': False})
+
+
+def user_profile_student_identification(request):
+    @web_service(method='GET')
+    def get(request):
+        """
+        获取当前用户的学生信息
+
+        :return:
+            school: 学校名称
+            number: 学生证号
+        """
+        try:
+            r = {
+                'school': request.user.student_identification.school,
+                'number': request.user.student_identification.number,
+            }
+        except UserStudentIdentification.DoesNotExist:
+            r = {'school': '', 'number': ''}
+
+        return JsonResponse(r)
+
+    @web_service()
+    def post(request, data):
+        """
+        设置当前用户的学生信息
+
+        :param data:
+            school: 学校名称
+            number: 学生证号
+        :return: 200 | 400
+        """
+        student_identification, is_created = \
+            UserStudentIdentification.objects.get_or_create(user=request.user)
+
+        if 'school' in data:
+            student_identification.school = data['school']
+        if 'number' in data:
+            if data['number'].isdigit():
+                student_identification.number = data['number']
+            else:
+                return HttpResponseBadRequest()
+        student_identification.save()
+
+        return HttpResponse()
+
+    if request.method == 'GET':
+        return get(request)
+    elif request.method == 'POST':
         return post(request)
     else:
         return HttpResponseForbidden()

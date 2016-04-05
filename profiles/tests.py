@@ -76,18 +76,21 @@ class UserProfileTestCase(TestCase):
 
         # set 5 tags
         data = json.dumps({'tags': ['t1', 't2', 't3', 't4', 't5']})
-        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'),
+                    {'token': token, 'data': data})
 
         # then set 2 tags
         data = json.dumps({'tags': ['t6', 't3']})
-        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'),
+                    {'token': token, 'data': data})
         response = client.get(reverse('user:profile:root'), {'token': token})
         tags = json.loads(response.content.decode('utf8'))['tags']
         self.assertEqual(tags, ['t6', 't3'])
 
         # then clear all tags
         data = json.dumps({'tags': []})
-        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'),
+                    {'token': token, 'data': data})
         response = client.get(reverse('user:profile:root'), {'token': token})
         tags = json.loads(response.content.decode('utf8'))['tags']
         self.assertEqual(tags, [])
@@ -104,30 +107,91 @@ class UserProfileTestCase(TestCase):
 
         # set province and city
         data = json.dumps({'location': [p1.id, c1.id]})
-        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'),
+                    {'token': token, 'data': data})
 
         # clear city
         data = json.dumps({'location': [p1.id, None]})
-        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'),
+                    {'token': token, 'data': data})
         response = client.get(reverse('user:profile:root'), {'token': token})
         data = json.loads(response.content.decode('utf8'))
         self.assertEqual(data['location'], [p1.id, None])
 
         # clear all
         data = json.dumps({'location': [None, None]})
-        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'),
+                    {'token': token, 'data': data})
         response = client.get(reverse('user:profile:root'), {'token': token})
         data = json.loads(response.content.decode('utf8'))
         self.assertEqual(data['location'], [None, None])
 
         # reset
         data = json.dumps({'location': [p1.id, c1.id]})
-        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'),
+                    {'token': token, 'data': data})
 
         # clear all
         data = json.dumps({'location': [None, None]})
-        client.post(reverse('user:profile:root'), {'token': token, 'data': data})
+        client.post(reverse('user:profile:root'),
+                    {'token': token, 'data': data})
         response = client.get(reverse('user:profile:root'), {'token': token})
         data = json.loads(response.content.decode('utf8'))
         self.assertEqual(data['location'], [None, None])
 
+    def test_identification(self):
+        # prepare data
+        client = Client()
+        user = create_user('1', '1')
+        token = user.token_info.token
+
+        # should not be verified
+        r = client.get(reverse('user:profile:identification_verification'),
+                       {'token': token})
+        r = json.loads(r.content.decode('utf8'))['is_verified']
+        self.assertEqual(r, False)
+
+        # update identification
+        d = {'name': '某人', 'number': '111111111111111111'}
+        r = client.post(reverse('user:profile:identification'),
+                        {'token': token, 'data': json.dumps(d)})
+        self.assertEqual(r.status_code, 200)
+
+        # get identification
+        r = client.get(reverse('user:profile:identification'), {'token': token})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['name'], '某人')
+        self.assertEqual(r['number'], '111111111111111111')
+
+        # should be verified
+        user.identification.is_verified = True
+        user.identification.save()
+        r = client.get(reverse('user:profile:identification_verification'),
+                       {'token': token})
+        r = json.loads(r.content.decode('utf8'))['is_verified']
+        self.assertEqual(r, True)
+
+        # cannot update identification
+        d = {'name': '某人', 'number': '111111111111111111'}
+        r = client.post(reverse('user:profile:identification'),
+                        {'token': token, 'data': json.dumps(d)})
+        self.assertEqual(r.status_code, 403)
+
+    def test_student_identification(self):
+        # prepare data
+        client = Client()
+        user = create_user('1', '1')
+        token = user.token_info.token
+
+        # update identification
+        d = {'school': '某校', 'number': '1234'}
+        r = client.post(reverse('user:profile:student_identification'),
+                        {'token': token, 'data': json.dumps(d)})
+        self.assertEqual(r.status_code, 200)
+
+        # get identification
+        r = client.get(reverse('user:profile:student_identification'),
+                       {'token': token})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['school'], '某校')
+        self.assertEqual(r['number'], '1234')
