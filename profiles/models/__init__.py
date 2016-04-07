@@ -4,4 +4,3 @@ from .user import (
 )
 
 from .team import TeamProfile
-from .project import ProjectProfile

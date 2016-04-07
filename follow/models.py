@@ -2,7 +2,6 @@ from django.db import models
 
 from user.models import User
 from team.models import Team
-from project.models import Project
 
 
 class FollowerInfo(models.Model):
@@ -48,22 +47,4 @@ class TeamFollower(FollowerInfo):
 
     def __repr__(self):
         return '<Team Follower - %s / %s>' % (
-            self.followed.name, self.follower.name)
-
-
-class ProjectFollower(FollowerInfo):
-    """
-    项目关注者记录
-
-    """
-    followed = models.ForeignKey(
-        Project, models.CASCADE, related_name='follower_info')
-    follower = models.ForeignKey(
-        User, models.CASCADE, related_name='followed_project_info')
-
-    class Meta:
-        db_table = 'project_follower'
-
-    def __repr__(self):
-        return '<Project Follower - %s / %s>' % (
             self.followed.name, self.follower.name)

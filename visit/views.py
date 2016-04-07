@@ -1,6 +1,5 @@
 from django.http import JsonResponse
 
-from project.models import Project
 from team.models import Team
 from user.models import User
 from visit.tools import get_visitor_info, get_visitor_total
@@ -38,8 +37,6 @@ def visitor(request, obj_type, obj_id=None, only_today=False, data=None):
         return JsonResponse(r, safe=False)
     elif obj_type == Team:
         pass
-    elif obj_type == Project:
-        pass
 
 
 @web_service(method='GET')
@@ -57,6 +54,4 @@ def visitor_total(request, obj_type, obj_id=None, only_today=False):
         d = {'total': get_visitor_total(request.user, only_today)}
         return JsonResponse(d)
     elif obj_type == Team:
-        pass
-    elif obj_type == Project:
         pass

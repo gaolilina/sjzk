@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 
-from project.models import Project
 from team.models import Team
 from user.models import User
 
@@ -23,10 +22,6 @@ class Message(models.Model):
         Team, models.CASCADE, default=None, blank=True, null=True,
         verbose_name='发送方团队',
         related_name='messages_send', related_query_name='message_send')
-    project = models.ForeignKey(
-        Project, models.CASCADE, default=None, blank=True, null=True,
-        verbose_name='发送方项目',
-        related_name='messages_send', related_query_name='message_send')
     content = models.TextField('内容', max_length=100, db_index=True)
     create_time = models.DateTimeField(
         '创建时间', default=timezone.now, db_index=True)
@@ -42,10 +37,7 @@ class Message(models.Model):
         ordering = ['-create_time']
 
     def __repr__(self):
-        if self.project is not None:
-            return '<Project Message - from: %s, to: %s>' % (
-                self.project.name, self.receiver.name)
-        elif self.team is not None:
+        if self.team is not None:
             return '<Team Message - from: %s, to: %s>' % (
                 self.team.name, self.receiver.name)
         else:

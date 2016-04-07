@@ -1,7 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 
-from location.models import \
-    Province, City, UserLocation, TeamLocation, ProjectLocation
+from location.models import Province, City, UserLocation, TeamLocation
 
 
 def get_location(obj):
@@ -41,8 +40,6 @@ def set_location(obj, location: list):
             model = UserLocation
         elif class_name == 'Team':
             model = TeamLocation
-        elif class_name == 'Project':
-            model = ProjectLocation
         else:
             raise TypeError('invalid object type')
 

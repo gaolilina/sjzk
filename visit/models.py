@@ -1,6 +1,5 @@
 from django.db import models
 
-from project.models import Project
 from team.models import Team
 from user.models import User
 
@@ -41,16 +40,3 @@ class TeamVisitor(VisitorInfo):
 
     class Meta:
         db_table = 'team_visitor'
-
-
-class ProjectVisitor(VisitorInfo):
-    """
-    项目来访者记录
-
-    """
-    project = models.ForeignKey(
-        Project, models.CASCADE, 'visitor_info', verbose_name='团队')
-    visitor = models.ForeignKey(User, models.CASCADE, 'visited_project_info')
-
-    class Meta:
-        db_table = 'project_visitor'

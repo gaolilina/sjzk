@@ -4,7 +4,6 @@ from django.contrib.postgres.fields import ArrayField
 
 from user.models import User
 from team.models import Team
-from project.models import Project
 
 
 class Activity(models.Model):
@@ -18,9 +17,6 @@ class Activity(models.Model):
     team = models.ForeignKey(
         Team, models.CASCADE, 'activities', 'activity',
         verbose_name='所属团队', blank=True, default=None)
-    project = models.ForeignKey(
-        Project, models.CASCADE, 'activities', 'activity',
-        verbose_name='所属项目', blank=True, default=None)
     content = models.TextField('内容', max_length=200, db_index=True)
     create_time = models.DateTimeField(
         '发布时间', default=timezone.now, db_index=True)
@@ -33,9 +29,7 @@ class Activity(models.Model):
         ordering = ['-create_time']
 
     def __repr__(self):
-        if self.project is not None:
-            return '<Project Activity - %s (%s)>' % (self.project.name, self.id)
-        elif self.team is not None:
+        if self.team is not None:
             return '<Team Activity - %s (%s)>' % (self.team.name, self.id)
         else:
             return '<User Activity - %s (%s)>' % (self.author.name, self.id)

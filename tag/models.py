@@ -1,9 +1,8 @@
 from django.db import models
 
-from project.models import Project
+from activity.models import Activity
 from team.models import Team
 from user.models import User
-from activity.models import Activity
 
 
 class Tag(models.Model):
@@ -14,7 +13,6 @@ class Tag(models.Model):
     name = models.CharField('名称', max_length=10, unique=True, db_index=True)
     users = models.ManyToManyField(User, '+', through='UserTag')
     teams = models.ManyToManyField(Team, '+', through='TeamTag')
-    projects = models.ManyToManyField(Project, '+', through='ProjectTag')
     activities = models.ManyToManyField(Activity, '+', through='ActivityTag')
 
     class Meta:
@@ -56,18 +54,6 @@ class TeamTag(TagInfo):
 
     class Meta:
         db_table = 'team_tag'
-
-
-class ProjectTag(TagInfo):
-    """
-    项目标签
-
-    """
-    project = models.ForeignKey(
-        Project, models.CASCADE, 'tag_info', verbose_name='项目')
-
-    class Meta:
-        db_table = 'project_tag'
 
 
 class ActivityTag(TagInfo):

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from project.models import Project
+from team.models import Team
 from user.models import User
 
 
@@ -10,7 +10,7 @@ class Task(models.Model):
     任务信息
 
     """
-    project = models.ForeignKey(Project, models.CASCADE, 'tasks', 'task')
+    team = models.ForeignKey(Team, models.CASCADE, 'tasks', 'task')
     name = models.CharField('任务名称', max_length=20, db_index=True)
     description = models.TextField('任务描述', max_length=100, db_index=True)
     status = models.IntegerField(

@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 
 from activity.models import Activity
-from project.models import Project
 from team.models import Team
 from user.models import User
 
@@ -63,26 +62,6 @@ class TeamComment(Comment):
         return '<Team Comment - %s / %s>' % (self.team.name, self.author.name)
 
 
-class ProjectComment(Comment):
-    """
-    对项目的评论
-
-    """
-    project = models.ForeignKey(
-        Project, models.CASCADE, 'comments', 'comment',
-        verbose_name='被评论项目')
-    author = models.ForeignKey(
-        User, models.CASCADE, 'comments_about_project', 'comment_about_project',
-        verbose_name='评论者')
-
-    class Meta:
-        db_table = 'project_comment'
-
-    def __repr__(self):
-        return '<Project Comment - %s / %s>' % (
-            self.project.name, self.author.name)
-
-
 class ActivityComment(Comment):
     """
     对动态的评论
@@ -132,21 +111,6 @@ class TeamCommentOption(CommentOption):
 
     def __repr__(self):
         return '<Team Comment Option - %s>' % self.team.name
-
-
-class ProjectCommentOption(CommentOption):
-    """
-    项目评论选项
-
-    """
-    project = models.OneToOneField(
-        Project, models.CASCADE, related_name='comment_option')
-
-    class Meta:
-        db_table = 'project_comment_option'
-
-    def __repr__(self):
-        return '<Project Comment Option - %s>' % self.project.name
 
 
 class ActivityCommentOption(CommentOption):

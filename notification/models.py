@@ -10,8 +10,7 @@ class Notification(models.Model):
 
     """
 
-    # TODO 使用管理员用户外键作为发送方标识
-    sender = models.CharField('发送方', max_length=20, db_index=True)
+    sender = models.CharField('发送方名称', max_length=20, db_index=True)
     receivers = models.ManyToManyField(
         User, verbose_name='接收方', through='NotificationReceiver',
         related_name='+',

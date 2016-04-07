@@ -31,7 +31,6 @@ INSTALLED_APPS = [
     # 'admin.apps.AdminConfig',
     'user.apps.UserConfig',
     'team.apps.TeamConfig',
-    'project.apps.ProjectConfig',
     'activity.apps.ActivityConfig',
 
     'comment.apps.CommentConfig',
