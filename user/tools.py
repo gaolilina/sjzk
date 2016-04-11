@@ -1,55 +1,58 @@
 import random
+from datetime import datetime
 
-from ChuangYi import settings
 
-
-def encrypt_phone_info(phone_number, imei):
+def encrypt_phone_info(n):
     """
-    '加密' 手机号与IMEI信息
+    '加密' 手机号信息
 
-    生成随机两位数XX（不小于10）、随机一位数Y（非零）与两者的模Z，
-    生成以下格式字符串：
-        'XX[11位手机号]Y[15位IMEI]Z'
+    生成随机三位数XXX（不小于100）、随机三位数YY（不小于100）
+    其中XXX与手机号后四位进行拼接，假设手机号后四位为WWWW，拼接方式为：WXWXWXW
+    拼接后得到的数字WXWXWXW模YYY得到ZZZ（位数不够则补零）
+    使用以上数字生成字符串：'XXX[手机号前3位]YYY[手机号后8位]ZZZ'
     之后与密钥做异或运算，返回 '加密' 后的数据
 
-    :param phone_number: 11位手机号字符串
-    :param imei: 15位IMEI字符串
-    :return: '加密' 后的30位字符串
+    :param n: 11位手机号字符串
+    :return: '加密' 后的20位字符串
 
     """
-    x = random.randrange(10, 100)
-    y = random.randrange(1, 10)
-    z = x % y
+    x = str(random.randrange(100, 1000))
+    y = str(random.randrange(100, 1000))
+    m = n[-4] + x[-3] + n[-3] + x[-2] + n[-2] + x[-1] + n[-1]
+    z = str(int(m) % int(y))
+    while len(z) < 3:
+        z = '0' + z
+    raw_str = x + n[:3] + y + n[-8:] + z
 
-    # 使用SECRET_KEY转成数字后的前30位作为密钥
-    secret_key = ''
-    for i in settings.SECRET_KEY:
-        secret_key += str(ord(i))
-    secret_key = int(secret_key[:30])
-    phone_info = int(str(x) + phone_number + str(y) + imei + str(z))
+    # 密钥为 <2048-10-24 5:12:00> 时间戳及其除以二得到的数字拼接得到的字符串
+    d1 = int(datetime(2048, 10, 24, 5, 12).timestamp())
+    d2 = int(d1 / 2)
+    key = str(d1) + str(d2)
 
-    return str(phone_info ^ secret_key)
+    return str(int(raw_str) ^ int(key))
 
 
-def decrypt_phone_info(phone_info):
+def decrypt_phone_info(info):
     """
-    '解密' 手机号与IMEI信息
+    '解密' 手机号信息
 
-    :param phone_info: '加密' 后的30位字符串
-    :return: None | phone_number, imei
+    :param info: '加密' 后的20位字符串
+    :return: 手机号
 
     """
-    secret_key = ''
-    for i in settings.SECRET_KEY:
-        secret_key += str(ord(i))
-    secret_key = secret_key[:30]
-    phone_info = str(int(phone_info) ^ int(secret_key))
+    d1 = int(datetime(2048, 10, 24, 5, 12).timestamp())
+    d2 = int(d1 / 2)
+    key = str(d1) + str(d2)
 
-    x = phone_info[:2]
-    y = phone_info[13]
-    z = phone_info[-1]
+    raw_str = str(int(info) ^ int(key))
 
-    if int(x) % int(y) != int(z):
+    x = raw_str[:3]
+    y = raw_str[6:9]
+    z = raw_str[-3:]
+    n = raw_str[3:6] + raw_str[9:17]
+    m = n[-4] + x[-3] + n[-3] + x[-2] + n[-2] + x[-1] + n[-1]
+
+    if int(m) % int(y) != int(z):
         raise ValueError('invalid phone information')
 
-    return phone_info[2:13], phone_info[14:29]
+    return n

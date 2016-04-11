@@ -4,53 +4,89 @@ from django.db import IntegrityError, transaction
 from django.http import \
     JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 
-from user.tools import decrypt_phone_info
 from user.models import User, UserToken
+from user.tools import decrypt_phone_info
 from web_service.decorators import web_service
 
 
-@web_service(method='GET')
-def user(request, data):
-    """
-    获取用户列表
+def user(request):
+    @web_service(method='GET')
+    def get(request, data):
+        """
+        获取用户列表
 
-    :param data:
-        offset: 偏移量（默认值：0）
-        limit: 数量上限（默认值：10）
-        order: 排序方式
-            0: 注册时间降序（默认值）
-            1: 注册时间升序
-            2: 昵称升序
-            3: 昵称降序
-    :return: JSON Array
-        id: 用户ID
-        name: 用户昵称
-        create_time: 注册时间
-    """
-    i = 0 if 'offset' not in data else data['offset']
-    j = (i + 10) if 'limit' not in data else (i + data['limit'])
+        :param data:
+            offset: 偏移量（默认值：0）
+            limit: 数量上限（默认值：10）
+            order: 排序方式
+                0: 注册时间降序（默认值）
+                1: 注册时间升序
+                2: 昵称升序
+                3: 昵称降序
+        :return: JSON Array
+            id: 用户ID
+            name: 用户昵称
+            create_time: 注册时间
+        """
+        i = 0 if 'offset' not in data else data['offset']
+        j = (i + 10) if 'limit' not in data else (i + data['limit'])
 
-    available_orders = [
-        '-create_time',
-        'create_time',
-        'name',
-        '-name',
-    ]
-    try:
-        order = available_orders[data['order']]
-    except (KeyError, IndexError):
-        order = '-create_time'
+        available_orders = [
+            '-create_time',
+            'create_time',
+            'name',
+            '-name',
+        ]
+        try:
+            order = available_orders[data['order']]
+        except (KeyError, IndexError):
+            order = '-create_time'
 
-    result = []
-    users = User.enabled.order_by(order)[i:j]
-    for user in users:
-        result.append({
-            'id': user.id,
-            'name': user.name,
-            'create_time': user.create_time.timestamp(),
-        })
+        result = []
+        users = User.enabled.order_by(order)[i:j]
+        for user in users:
+            result.append({
+                'id': user.id,
+                'name': user.name,
+                'create_time': user.create_time.timestamp(),
+            })
 
-    return JsonResponse(result, safe=False)
+        return JsonResponse(result, safe=False)
+
+    @web_service(require_token=False)
+    def post(request, data):
+        """
+        注册新用户
+
+        :param data:
+            phone_info: 手机号信息
+            password: 密码
+        :return: 200 | 400
+            token: 用户token
+        """
+        if len(data['password']) < 6:
+            return HttpResponseBadRequest()
+
+        try:
+            phone_number = decrypt_phone_info(data['phone_info'])
+            with transaction.atomic():
+                user = User(phone_number=phone_number)
+                user.set_password(data['password'])
+                user.save()
+                user.name = '创易用户 %s' % user.id
+                user.save()
+                token_info = UserToken(user=user)
+                token_info.update()
+            return JsonResponse({'token': token_info.token})
+        except (ValueError, IntegrityError):
+            return HttpResponseBadRequest()
+
+    if request.method == 'GET':
+        return get(request)
+    elif request.method == 'POST':
+        return post(request)
+    else:
+        return HttpResponseForbidden()
 
 
 @web_service(method='GET')
@@ -68,89 +104,34 @@ def user_total(request):
 @web_service(require_token=False)
 def user_token(request, data):
     """
-    通过不同方式获取用户token
+    获取用户token
 
     :param data:
-        method: 0 | 1 | 2
-            0: 通过手机号与IMEI信息获取token，需要参数 phone_info
-            1: 通过手机号与密码获取token，需要参数 phone_number / password
-            2: 通过用户名与密码获取token，需要参数 username / password
-        phone_info: '加密' 后的手机号与IMEI信息，选填
-        phone_number: 手机号，选填
-        username: 用户名，选填
-        password: 密码，选填
-    :return:
+        username: 用户名或手机号
+        password: 密码
+    :return: 200 | 400 | 403
         token: 用户token
     """
-
-    @transaction.atomic
-    def auto_register(phone_number, imei):
-        name = '新用户%s' % phone_number[-4:]
-        user = User(phone_number=phone_number, imei=imei, name=name)
-        user.save()
-        token_info = UserToken(user=user)
-        token_info.update()
-        return user
-
-    def get_by_phone_info(phone_info):
-        try:  # '解密'
-            phone_number, imei = decrypt_phone_info(phone_info)
-        except ValueError:
-            return HttpResponseForbidden()
-
-        try:  # 检查数据库中是否存在相应的用户
-            user = User.objects.get(phone_number=phone_number, imei=imei)
-            if user.is_enabled:
-                user.token_info.update()
-                return JsonResponse({'token': user.token_info.token})
-            else:
-                return HttpResponseForbidden()
-        except User.DoesNotExist:  # 若用户不存在则尝试注册一个新用户
-            try:
-                user = auto_register(phone_number, imei)
-                return JsonResponse({'token': user.token_info.token})
-            except IntegrityError:
-                return HttpResponseForbidden()
-
-    def get_by_phone_number(phone_number, password):
+    try:
+        user = User.objects.get(phone_number=data['username'])
+    except User.DoesNotExist:
         try:
-            user = User.enabled.get(phone_number=phone_number)
-            if user.check_password(password):
-                user.token_info.update()
-                return JsonResponse({'token': user.token_info.token})
-            else:
-                return HttpResponseForbidden()
+            user = User.objects.get(username=data['username'])
         except User.DoesNotExist:
-            return HttpResponseForbidden()
+            return HttpResponseBadRequest()
 
-    def get_by_username(username, password):
-        try:
-            if not username:  # 用户可能设置了密码但没有设置用户名
-                return HttpResponseForbidden()
-            user = User.enabled.get(username=username)
-            if user.check_password(password):
-                user.token_info.update()
-                return JsonResponse({'token': user.token_info.token})
-            else:
-                return HttpResponseForbidden()
-        except User.DoesNotExist:
-            return HttpResponseForbidden()
-
-    if data['method'] == 0:
-        return get_by_phone_info(data['phone_info'])
-    elif data['method'] == 1 and 'phone_number' in data and 'password' in data:
-        return get_by_phone_number(data['phone_number'], data['password'])
-    elif data['method'] == 2 and 'username' in data and 'password' in data:
-        return get_by_username(data['username'], data['password'])
+    if user.is_enabled and user.check_password(data['password']):
+        user.token_info.update()
+        return JsonResponse({'token': user.token_info.token})
     else:
-        return HttpResponseBadRequest()
+        return HttpResponseForbidden()
 
 
 def user_username(request):
     @web_service(method='GET')
     def get(request):
         """
-        获取当前用户的用户名
+        获取当前用户的用户名（检查用户是否已设置用户名）
 
         :return:
             username: 用户名 | null
@@ -164,12 +145,13 @@ def user_username(request):
         设置当前用户的用户名
 
         :param data:
-            username: 匹配 [a-zA-Z0-9_]{4,20} 的字符串
+            username: 匹配 [a-zA-Z0-9_]{4,20} 的字符串，且非纯数字
         :return: 200 | 400 | 403
         """
         if request.user.username:  # 用户名只能设置一次
             return HttpResponseForbidden()
-        elif not re.fullmatch(r'[a-zA-Z0-9_]{4,20}', data['username']):
+        elif not re.fullmatch(r'[a-zA-Z0-9_]{4,20}', data['username']) \
+                or data['username'].isdigit():
             return HttpResponseBadRequest()
         else:
             try:
@@ -184,45 +166,25 @@ def user_username(request):
     elif request.method == 'POST':
         return post(request)
     else:
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
 
 
-def user_password(request):
-    @web_service(method='GET')
-    def get(request):
-        """
-        用户是否已设置密码
+@web_service()
+def user_password(request, data):
+    """
+    修改密码
 
-        :return:
-            has_password: true | false
-        """
-        has_password = True if request.user.password else False
-        return JsonResponse({'has_password': has_password})
+    :param data:
+        password: 密码，长度不小于6位
+        old_password: 旧密码
+    :return: 200 | 400 | 403
+    """
+    if len(data['password']) < 6:
+        return HttpResponseBadRequest()
 
-    @web_service()
-    def post(request, data):
-        """
-        设置/修改密码
-
-        :param data:
-            password: 密码，长度不小于6位
-            old_password: 旧密码，修改密码时
-        :return: 200 | 400 | 403
-        """
-        if len(data['password']) < 6:
-            return HttpResponseBadRequest()
-
-        if not request.user.password or request.user.check_password(
-                data['old_password']):
-            request.user.set_password(data['password'])
-            request.user.save()
-            return HttpResponse()
-        else:
-            return HttpResponseForbidden()
-
-    if request.method == 'GET':
-        return get(request)
-    elif request.method == 'POST':
-        return post(request)
+    if request.user.check_password(data['old_password']):
+        request.user.set_password(data['password'])
+        request.user.save()
+        return HttpResponse()
     else:
-        return HttpResponseForbidden
+        return HttpResponseForbidden()

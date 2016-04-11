@@ -30,25 +30,25 @@ INSTALLED_APPS = [
 
     # 'admin.apps.AdminConfig',
     'user.apps.UserConfig',
-    'team.apps.TeamConfig',
-    'activity.apps.ActivityConfig',
+    # 'team.apps.TeamConfig',
+    # 'activity.apps.ActivityConfig',
 
-    'comment.apps.CommentConfig',
+    # 'comment.apps.CommentConfig',
     # 'event.apps.EventConfig',
-    'invitation.apps.InvitationConfig',
-    'location.apps.LocationConfig',
-    'message.apps.MessageConfig',
-    'need.apps.NeedConfig',
+    # 'invitation.apps.InvitationConfig',
+    # 'location.apps.LocationConfig',
+    # 'message.apps.MessageConfig',
+    # 'need.apps.NeedConfig',
     # 'notification.apps.NotificationConfig',
-    'profiles.apps.ProfilesConfig',
-    'tag.apps.TagConfig',
-    'task.apps.TaskConfig',
+    # 'profiles.apps.ProfilesConfig',
+    # 'tag.apps.TagConfig',
+    # 'task.apps.TaskConfig',
 
-    'bookmark.apps.BookmarkConfig',
-    'follow.apps.FollowConfig',
-    'friend.apps.FriendConfig',
-    'like.apps.LikeConfig',
-    'visit.apps.VisitConfig'
+    # 'bookmark.apps.BookmarkConfig',
+    # 'follow.apps.FollowConfig',
+    # 'friend.apps.FriendConfig',
+    # 'like.apps.LikeConfig',
+    # 'visit.apps.VisitConfig'
 ]
 
 MIDDLEWARE_CLASSES = [

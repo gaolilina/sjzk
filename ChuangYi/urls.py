@@ -4,10 +4,8 @@
 from django.conf.urls import url, include
 
 import user.urls
-import profiles.urls
-import visit.urls
 
-user_urls = user.urls.urls + profiles.urls.user_urls + visit.urls.user_urls
+user_urls = user.urls.urls
 
 urlpatterns = [
     url(r'^user/', include(user_urls, namespace='user')),

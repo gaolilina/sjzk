@@ -1,21 +1,21 @@
 import datetime
 import hashlib
 
-from django.db import models
 from django.contrib.auth.hashers import PBKDF2PasswordHasher as Hasher
+from django.db import models
 from django.utils import timezone
 
 
 class EnabledUserManager(models.Manager):
     def get_queryset(self):
-        return super(EnabledUserManager, self).get_queryset() \
-            .filter(is_enabled=True)
+        return super(EnabledUserManager, self).get_queryset().filter(
+            is_enabled=True)
 
 
 class DisabledUserManager(models.Manager):
     def get_queryset(self):
-        return super(DisabledUserManager, self).get_queryset() \
-            .filter(is_enabled=False)
+        return super(DisabledUserManager, self).get_queryset().filter(
+            is_enabled=False)
 
 
 class User(models.Model):
@@ -26,11 +26,9 @@ class User(models.Model):
 
     """
     phone_number = models.CharField('手机号', max_length=11, unique=True)
-    imei = models.CharField('国际移动设备识别码', max_length=15, unique=True)
-
     username = models.CharField(
-        '用户名', max_length=20, default=None,
-        blank=True, null=True, unique=True)
+        '用户名', max_length=20,
+        default=None, blank=True, null=True, unique=True)
     password = models.CharField('密码', max_length=128, db_index=True)
 
     name = models.CharField('昵称', max_length=20, db_index=True)
@@ -72,11 +70,8 @@ class User(models.Model):
         :return: True | False
 
         """
-        if not self.password:
-            return False
-        else:
-            hasher = Hasher()
-            return hasher.verify(password, self.password)
+        hasher = Hasher()
+        return hasher.verify(password, self.password)
 
 
 class UserToken(models.Model):
