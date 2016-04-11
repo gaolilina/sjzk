@@ -1,7 +1,7 @@
 from django.db import models
 
-from team.models import Team
 from user.models import User
+# from team.models import Team
 
 
 class VisitorInfo(models.Model):
@@ -28,15 +28,15 @@ class UserVisitor(VisitorInfo):
         db_table = 'user_visitor'
 
 
-class TeamVisitor(VisitorInfo):
-    """
-    团队来访者记录
-
-    """
-    team = models.ForeignKey(
-        Team, models.CASCADE, 'visitor_info', verbose_name='团队')
-    visitor = models.ForeignKey(
-        User, models.CASCADE, 'visited_team_info')
-
-    class Meta:
-        db_table = 'team_visitor'
+# class TeamVisitor(VisitorInfo):
+#     """
+#     团队来访者记录
+#
+#     """
+#     team = models.ForeignKey(
+#         Team, models.CASCADE, 'visitor_info', verbose_name='团队')
+#     visitor = models.ForeignKey(
+#         User, models.CASCADE, 'visited_team_info')
+#
+#     class Meta:
+#         db_table = 'team_visitor'

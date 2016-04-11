@@ -1,7 +1,7 @@
 from django.db import models
 
-from team.models import Team
 from user.models import User
+# from team.models import Team
 
 
 class Province(models.Model):
@@ -11,7 +11,7 @@ class Province(models.Model):
     """
     name = models.CharField(max_length=10)
     users = models.ManyToManyField(User, '+', through='UserLocation')
-    teams = models.ManyToManyField(Team, '+', through='TeamLocation')
+    # teams = models.ManyToManyField(Team, '+', through='TeamLocation')
 
     class Meta:
         db_table = 'location_province'
@@ -56,12 +56,12 @@ class UserLocation(LocationInfo):
         db_table = 'user_location'
 
 
-class TeamLocation(LocationInfo):
-    """
-    团队位置
-
-    """
-    team = models.OneToOneField(Team, models.CASCADE, related_name='location')
-
-    class Meta:
-        db_table = 'team_location'
+# class TeamLocation(LocationInfo):
+#     """
+#     团队位置
+#
+#     """
+#     team = models.OneToOneField(Team, models.CASCADE, related_name='location')
+#
+#     class Meta:
+#         db_table = 'team_location'

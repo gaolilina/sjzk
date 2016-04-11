@@ -29,7 +29,7 @@ class WebServiceTestCase(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf8')), data)
 
     def test_dummy_view_require_token(self):
-        u = User(name='test', phone_number='test', imei='test')
+        u = User(name='test', phone_number='test')
         u.save()
         ut = UserToken(user=u)
         ut.update()

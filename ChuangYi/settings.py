@@ -36,19 +36,19 @@ INSTALLED_APPS = [
     # 'comment.apps.CommentConfig',
     # 'event.apps.EventConfig',
     # 'invitation.apps.InvitationConfig',
-    # 'location.apps.LocationConfig',
+    'location.apps.LocationConfig',
     # 'message.apps.MessageConfig',
     # 'need.apps.NeedConfig',
     # 'notification.apps.NotificationConfig',
     # 'profiles.apps.ProfilesConfig',
-    # 'tag.apps.TagConfig',
+    'tag.apps.TagConfig',
     # 'task.apps.TaskConfig',
 
     # 'bookmark.apps.BookmarkConfig',
     # 'follow.apps.FollowConfig',
     # 'friend.apps.FriendConfig',
     # 'like.apps.LikeConfig',
-    # 'visit.apps.VisitConfig'
+    'visit.apps.VisitConfig'
 ]
 
 MIDDLEWARE_CLASSES = [
