@@ -27,34 +27,13 @@ INSTALLED_APPS = [
     # 'django.contrib.sessions',
     # 'django.contrib.messages',
     # 'django.contrib.staticfiles',
-
-    # 'admin.apps.AdminConfig',
-    'user.apps.UserConfig',
-    # 'team.apps.TeamConfig',
-    # 'activity.apps.ActivityConfig',
-
-    # 'comment.apps.CommentConfig',
-    # 'event.apps.EventConfig',
-    # 'invitation.apps.InvitationConfig',
-    'location.apps.LocationConfig',
-    # 'message.apps.MessageConfig',
-    # 'need.apps.NeedConfig',
-    # 'notification.apps.NotificationConfig',
-    # 'profiles.apps.ProfilesConfig',
-    'tag.apps.TagConfig',
-    # 'task.apps.TaskConfig',
-
-    # 'bookmark.apps.BookmarkConfig',
-    # 'follow.apps.FollowConfig',
-    # 'friend.apps.FriendConfig',
-    # 'like.apps.LikeConfig',
-    'visit.apps.VisitConfig'
+    'main.apps.ChuangYi',
 ]
 
 MIDDLEWARE_CLASSES = [
     # 'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    # 'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.commons.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
@@ -62,7 +41,7 @@ MIDDLEWARE_CLASSES = [
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ChuangYi.urls'
+ROOT_URLCONF = 'main.urls'
 
 TEMPLATES = [
     {

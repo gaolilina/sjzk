@@ -1,4 +1,3 @@
 .idea/
-__pycache__/
-migrations/
+*/migrations/
 *.py[cod]
