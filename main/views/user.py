@@ -5,7 +5,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 from main.decorators import require_token, validate_input, \
-    require_token_and_validate_input, require_token_and_validate_json_input
+    require_token_and_validate_input, require_token_and_validate_json_input, \
+    check_user_id
 from main.models.location import get_location, set_location
 from main.models.tag import get_tags, set_tags
 from main.models.user import User, decrypt_phone_number, create_user
@@ -184,7 +185,8 @@ class Password(View):
 
 class Profile(View):
     @method_decorator(require_token)
-    def get(self, request, user_id=None):
+    @method_decorator(check_user_id())
+    def get(self, request, user):
         """
         获取用户资料，标注 * 的键值仅在获取自己的资料时返回
 
@@ -202,14 +204,6 @@ class Profile(View):
             location: 所在地区，格式：[province_id, city_id]
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
-        if not user_id or user_id == request.user.id:
-            user = request.user
-        else:
-            try:
-                user = User.enabled.get(id=int(user_id))
-            except User.DoesNotExist:
-                return Http404('user not exists')
-
         # 更新访客记录
         if user != request.user:
             update_visitor(request.user, user)
@@ -243,7 +237,8 @@ class Profile(View):
     }
 
     @method_decorator(require_token_and_validate_json_input(post_dict))
-    def post(self, request, data, user_id=None):
+    @method_decorator(check_user_id(True))
+    def post(self, request, data):
         """
         修改用户资料
 
@@ -259,10 +254,7 @@ class Profile(View):
             tags: 标签，格式：['tag1', 'tag2', ...]
 
         """
-        if not user_id or int(user_id) == request.user.id:
-            profile = request.user.profile
-        else:
-            return Http403('cannot edit other\'s item')
+        profile = request.user.profile
 
         normal_keys = ['name', 'description', 'email', 'gender', 'birthday']
         for k in normal_keys:
@@ -307,7 +299,8 @@ class Profile(View):
 
 class EducationExperience(View):
     @method_decorator(require_token)
-    def get(self, request, user_id=None, sn=None):
+    @method_decorator(check_user_id())
+    def get(self, request, user, sn=None):
         """
         获取用户的某个或所有教育经历
 
@@ -322,14 +315,6 @@ class EducationExperience(View):
                 begin_time: 入学时间
                 end_time: 毕业时间
         """
-        if not user_id:
-            user = request.user
-        else:
-            try:
-                user = User.enabled.get(id=int(user_id))
-            except User.DoesNotExist:
-                return Http404('user not exists')
-
         if not sn:
             exps = user.education_experiences.all()
         else:
@@ -357,7 +342,8 @@ class EducationExperience(View):
     }
 
     @method_decorator(require_token_and_validate_json_input(post_dict))
-    def post(self, request, data, user_id=None, sn=None):
+    @method_decorator(check_user_id(True))
+    def post(self, request, data, sn=None):
         """
         增加或修改教育经历
 
@@ -370,10 +356,7 @@ class EducationExperience(View):
             begin_time: 入学时间（必填）
             end_time: 毕业时间（必填）
         """
-        if not user_id or int(user_id) == request.user.id:
-            exps = request.user.education_experiences
-        else:
-            return Http403('cannot edit other\'s item')
+        exps = request.user.education_experiences
 
         if not sn:
             e = exps.model(user=request.user)
@@ -393,15 +376,13 @@ class EducationExperience(View):
         return Http200()
 
     @method_decorator(require_token)
-    def delete(self, request, user_id=None, sn=None):
+    @method_decorator(check_user_id(True))
+    def delete(self, request, sn=None):
         """
         删除用户的某个或所有教育经历
 
         """
-        if not user_id or int(user_id) == request.user.id:
-            exps = request.user.education_experiences
-        else:
-            return Http403('cannot delete other\'s item')
+        exps = request.user.education_experiences
 
         if not sn:
             exps.all().delete()
@@ -418,7 +399,8 @@ class EducationExperience(View):
 
 class WorkExperience(View):
     @method_decorator(require_token)
-    def get(self, request, user_id=None, sn=None, is_fieldwork=False):
+    @method_decorator(check_user_id())
+    def get(self, request, user, sn=None, is_fieldwork=False):
         """
         获取用户的某个或所有实习/工作经历
 
@@ -431,21 +413,14 @@ class WorkExperience(View):
                 begin_time: 入职时间
                 end_time: 离职时间
         """
-        if not user_id:
-            user = request.user
-        else:
-            try:
-                user = User.enabled.get(id=int(user_id))
-            except User.DoesNotExist:
-                return Http404('user not exists')
-
         if not sn:
             exps = user.fieldwork_experiences.all() \
                 if is_fieldwork else user.work_experiences.all()
         else:
             try:
                 exps = [user.fieldwork_experiences.all()[int(sn)]] \
-                    if is_fieldwork else [user.work_experiences.all()[int(sn)]]
+                    if is_fieldwork \
+                    else [user.work_experiences.all()[int(sn)]]
             except IndexError:
                 return Http404('experience not exists')
 
@@ -470,7 +445,8 @@ class WorkExperience(View):
     }
 
     @method_decorator(require_token_and_validate_json_input(post_dict))
-    def post(self, request, data, user_id=None, sn=None, is_fieldwork=False):
+    @method_decorator(check_user_id(True))
+    def post(self, request, data, sn=None, is_fieldwork=False):
         """
         增加或修改实习/工作经历
 
@@ -481,11 +457,8 @@ class WorkExperience(View):
             begin_time: 入职时间（必填）
             end_time: 离职时间（用 None 表示在职）
         """
-        if not user_id or int(user_id) == request.user.id:
-            exps = request.user.fieldwork_experiences \
-                if is_fieldwork else request.user.work_experiences
-        else:
-            return Http403('cannot edit other\'s item')
+        exps = request.user.fieldwork_experiences \
+            if is_fieldwork else request.user.work_experiences
 
         if not sn:
             e = exps.model(user=request.user)
@@ -506,16 +479,14 @@ class WorkExperience(View):
         return Http200()
 
     @method_decorator(require_token)
-    def delete(self, request, user_id=None, sn=None, is_fieldwork=False):
+    @method_decorator(check_user_id(True))
+    def delete(self, request, sn=None, is_fieldwork=False):
         """
         删除用户的某个或所有工作/实习经历
 
         """
-        if not user_id or int(user_id) == request.user.id:
-            exps = request.user.fieldwork_experiences \
-                if is_fieldwork else request.user.work_experiences
-        else:
-            return Http403('cannot delete other\'s item')
+        exps = request.user.fieldwork_experiences \
+            if is_fieldwork else request.user.work_experiences
 
         if not sn:
             exps.all().delete()

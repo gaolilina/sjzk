@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.http import QueryDict
 
 from main.models.user import User
-from main.responses import Http400, Http401, Http403
+from main.responses import *
 
 
 def require_token(function):
@@ -131,3 +131,33 @@ def require_token_and_validate_json_input(d):
 
     """
     return [require_token, validate_json_input(d)]
+
+
+def check_user_id(only_self=False):
+    """
+    该装饰器首先应被 require_token 装饰
+    对被装饰的view函数，将参数user_id转换为用户模型参数user
+
+    :param only_self: 是否仅检查user_id是否为当前用户的id（不传入参数user）
+    :return: 403 | 404
+
+    """
+    def decorator(function):
+        def inner(request, *args, **kwargs):
+            user_id = kwargs.get('user_id')
+            if not user_id or int(user_id) == request.user.id:
+                user = request.user
+            else:
+                if only_self:
+                    return Http403('cannot edit other user')
+                try:
+                    user = User.enabled.get(id=int(kwargs['user_id']))
+                except User.DoesNotExist:
+                    return Http404('user not exists')
+            if user_id:
+                del kwargs['user_id']
+            if not only_self:
+                kwargs['user'] = user
+            return function(request, *args, **kwargs)
+        return inner
+    return decorator

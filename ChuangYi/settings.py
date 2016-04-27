@@ -67,10 +67,10 @@ WSGI_APPLICATION = 'ChuangYi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ChuangYi',
+        'NAME': 'cy',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': '192.168.189.128',
+        'HOST': '192.168.100.128',
         'PORT': '5432',
     },
 }
