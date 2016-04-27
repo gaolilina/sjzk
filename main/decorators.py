@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import QueryDict
 
 from main.models.user import User
@@ -133,31 +133,26 @@ def require_token_and_validate_json_input(d):
     return [require_token, validate_json_input(d)]
 
 
-def check_user_id(only_self=False):
+def check_object_id(query_set, input_name, output_name):
     """
-    该装饰器首先应被 require_token 装饰
-    对被装饰的view函数，将参数user_id转换为用户模型参数user
+    检查某个ID对应的模型是否存在（若输入参数不存在则不处理）
+    若不存在返回404 Not Found
+    若存在则将输入参数中的ID转换成对应的模型实体传入view函数中
 
-    :param only_self: 是否仅检查user_id是否为当前用户的id（不传入参数user）
-    :return: 403 | 404
+    :param query_set: 模型所在的QuerySet
+    :param input_name: 保存ID的参数名称
+    :param output_name: 保存实体的参数名称
 
     """
     def decorator(function):
         def inner(request, *args, **kwargs):
-            user_id = kwargs.get('user_id')
-            if not user_id or int(user_id) == request.user.id:
-                user = request.user
-            else:
-                if only_self:
-                    return Http403('cannot edit other user')
+            if input_name in kwargs:
+                _id = int(kwargs.pop(input_name))
                 try:
-                    user = User.enabled.get(id=int(kwargs['user_id']))
-                except User.DoesNotExist:
-                    return Http404('user not exists')
-            if user_id:
-                del kwargs['user_id']
-            if not only_self:
-                kwargs['user'] = user
+                    _model = query_set.get(id=_id)
+                except ObjectDoesNotExist:
+                    return Http404('object not exists')
+                kwargs[output_name] = _model
             return function(request, *args, **kwargs)
         return inner
     return decorator

@@ -212,7 +212,7 @@ class UserProfileTestCase(TestCase):
             'tags': ['Test'],
         }
 
-    def test_own_profile(self):
+    def test_get_profile(self):
         d = json.dumps(self.profile)
         r = self.c.post(reverse('self:profile'), {'token': self.t0, 'data': d})
         self.assertEqual(r.status_code, 200)
@@ -225,12 +225,6 @@ class UserProfileTestCase(TestCase):
         p['create_time'] = self.u0.create_time.strftime('%Y-%m-%d')
         p['tags'] = ['test']
         self.assertEqual(r, p)
-
-    def test_other_profile(self):
-        d = json.dumps(self.profile)
-        r = self.c.post(reverse('user:profile', kwargs={'user_id': self.u0.id}),
-                        {'token': self.t0, 'data': d})
-        self.assertEqual(r.status_code, 200)
 
         r = self.c.get(reverse('user:profile', kwargs={'user_id': self.u0.id}),
                        {'token': self.t1})
@@ -301,16 +295,16 @@ class UserExperienceTestCase(TestCase):
         self.u = create_user('010')
         self.t = self.u.token.value
 
-        self.u.education_experiences.create(
+        self.ee = self.u.education_experiences.create(
             school='s1', degree=1, major='m1',
             begin_time=date(2000, 9, 1), end_time=date(2003, 6, 1)
         )
-        self.u.fieldwork_experiences.create(
+        self.fe = self.u.fieldwork_experiences.create(
             company='c1', position='p1',
             description='d1',
             begin_time=date(2003, 3, 1), end_time=date(2003, 9, 1)
         )
-        self.u.work_experiences.create(
+        self.we = self.u.work_experiences.create(
             company='c1', position='p1',
             description='d1',
             begin_time=date(2003, 9, 1),
@@ -344,64 +338,13 @@ class UserExperienceTestCase(TestCase):
         self.assertEqual(r, s)
         self.assertEqual(r['list'][0]['begin_time'], '2003-09-01')
 
-    def test_add_and_get_single(self):
-        d = json.dumps({'school': 's2', 'degree': 2, 'major': 'm2',
-                        'begin_time': '2000-09-01',
-                        'end_time': '2003-06-01'})
-        self.c.post(reverse('self:education_experiences'),
-                    {'token': self.t, 'data': d})
-        r = self.c.get(reverse('self:education_experience', kwargs={'sn': '0'}),
-                       {'token': self.t})
-        r = json.loads(r.content.decode('utf8'))
-        s = self.c.get(reverse('user:education_experience',
-                               kwargs={'user_id': str(self.u.id), 'sn': '0'}),
-                       {'token': self.t})
-        s = json.loads(s.content.decode('utf8'))
-        self.assertEqual(r, s)
-        self.assertEqual(r['list'][0]['school'], 's1')
-
-        d = json.dumps({'company': 'c2',
-                        'position': 'p2',
-                        'description': 'd2',
-                        'begin_time': '2000-09-01',
-                        'end_time': None})
-        self.c.post(reverse('self:fieldwork_experiences'),
-                    {'token': self.t, 'data': d})
-        self.assertEqual(self.u.fieldwork_experiences.count(), 2)
-        r = self.c.get(reverse('self:fieldwork_experience', kwargs={'sn': '0'}),
-                       {'token': self.t})
-        r = json.loads(r.content.decode('utf8'))
-        s = self.c.get(reverse('user:fieldwork_experience',
-                               kwargs={'user_id': str(self.u.id), 'sn': '0'}),
-                       {'token': self.t})
-        s = json.loads(s.content.decode('utf8'))
-        self.assertEqual(r, s)
-        self.assertEqual(r['list'][0]['description'], 'd1')
-
-        d = json.dumps({'company': 'c2',
-                        'position': 'p2',
-                        'description': 'd2',
-                        'begin_time': '2000-09-01',
-                        'end_time': '2004-10-01'})
-        self.c.post(reverse('self:work_experiences'),
-                    {'token': self.t, 'data': d})
-        self.assertEqual(self.u.work_experiences.count(), 2)
-        r = self.c.get(reverse('self:work_experience', kwargs={'sn': '0'}),
-                       {'token': self.t})
-        r = json.loads(r.content.decode('utf8'))
-        s = self.c.get(reverse('user:work_experience',
-                               kwargs={'user_id': str(self.u.id), 'sn': '0'}),
-                       {'token': self.t})
-        s = json.loads(s.content.decode('utf8'))
-        self.assertEqual(r, s)
-        self.assertEqual(r['list'][0]['end_time'], None)
-
     def test_edit(self):
         d = json.dumps({'school': 's0', 'degree': 0, 'major': 'm0',
                         'begin_time': '2000-09-01',
                         'end_time': '2003-06-01'})
         self.c.post(
-            reverse('self:education_experience', kwargs={'sn': '0'}),
+            reverse('self:education_experience',
+                    kwargs={'exp_id': str(self.ee.id)}),
             {'token': self.t, 'data': d})
         self.assertEqual(self.u.education_experiences.all()[0].school, 's0')
 
@@ -411,7 +354,8 @@ class UserExperienceTestCase(TestCase):
                         'begin_time': '2000-09-01',
                         'end_time': None})
         self.c.post(
-            reverse('self:fieldwork_experience', kwargs={'sn': '0'}),
+            reverse('self:fieldwork_experience',
+                    kwargs={'exp_id': str(self.fe.id)}),
             {'token': self.t, 'data': d})
         self.assertEqual(
             self.u.fieldwork_experiences.all()[0].company, 'c0')
@@ -422,7 +366,7 @@ class UserExperienceTestCase(TestCase):
                         'begin_time': '2000-09-01',
                         'end_time': None})
         self.c.post(
-            reverse('self:work_experience', kwargs={'sn': '0'}),
+            reverse('self:work_experience', kwargs={'exp_id': str(self.we.id)}),
             {'token': self.t, 'data': d})
         self.assertEqual(
             self.u.work_experiences.all()[0].company, 'c0')
@@ -456,7 +400,8 @@ class UserExperienceTestCase(TestCase):
             school='s2', degree=2, major='m2',
             begin_time=date(2001, 9, 1), end_time=date(2004, 6, 1)
         )
-        self.c.delete(reverse('self:education_experience', kwargs={'sn': '0'}),
+        self.c.delete(reverse('self:education_experience',
+                              kwargs={'exp_id': str(self.ee.id)}),
                       'token=' + self.t)
         self.assertEqual(self.u.education_experiences.count(), 1)
         self.assertEqual(self.u.education_experiences.all()[0].school, 's2')
@@ -466,7 +411,8 @@ class UserExperienceTestCase(TestCase):
             description='d3',
             begin_time=date(2004, 3, 1),
         )
-        self.c.delete(reverse('self:fieldwork_experience', kwargs={'sn': '0'}),
+        self.c.delete(reverse('self:fieldwork_experience',
+                              kwargs={'exp_id': str(self.fe.id)}),
                       'token=' + self.t)
         self.assertEqual(self.u.fieldwork_experiences.count(), 1)
         self.assertEqual(self.u.fieldwork_experiences.all()[0].company, 'c3')
@@ -476,7 +422,8 @@ class UserExperienceTestCase(TestCase):
             description='d4',
             begin_time=date(2004, 9, 1),
         )
-        self.c.delete(reverse('self:work_experience', kwargs={'sn': '0'}),
-                      'token=' + self.t)
+        self.c.delete(
+            reverse('self:work_experience', kwargs={'exp_id': str(self.we.id)}),
+            'token=' + self.t)
         self.assertEqual(self.u.work_experiences.count(), 1)
         self.assertEqual(self.u.work_experiences.all()[0].company, 'c4')

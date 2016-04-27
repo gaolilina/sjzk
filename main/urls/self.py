@@ -1,24 +1,24 @@
 from django.conf.urls import url
 
-from main.views.user import Username, Password, Profile, EducationExperience, \
-    WorkExperience
+from main.views.experiences import EducationExperiences, \
+    EducationExperiencesWriteOnly, WorkExperiences, WorkExperiencesWriteOnly, \
+    FieldworkExperiences, FieldworkExperiencesWriteOnly
+from main.views.user import Username, Password, Profile
 
 urls = [
     url(r'^username/$', Username.as_view(), name='username'),
     url(r'^password/$', Password.as_view(), name='password'),
     url(r'^profile/$', Profile.as_view(), name='profile'),
     url(r'^experiences/education/$',
-        EducationExperience.as_view(), name='education_experiences'),
-    url(r'^experiences/education/(?P<sn>[0-9]+)/$',
-        EducationExperience.as_view(), name='education_experience'),
+        EducationExperiences.as_view(), name='education_experiences'),
+    url(r'^experiences/education/(?P<exp_id>[0-9]+)/$',
+        EducationExperiencesWriteOnly.as_view(), name='education_experience'),
     url(r'^experiences/work/$',
-        WorkExperience.as_view(), name='work_experiences'),
-    url(r'^experiences/work/(?P<sn>[0-9]+)/$',
-        WorkExperience.as_view(), name='work_experience'),
+        WorkExperiences.as_view(), name='work_experiences'),
+    url(r'^experiences/work/(?P<exp_id>[0-9]+)/$',
+        WorkExperiencesWriteOnly.as_view(), name='work_experience'),
     url(r'^experiences/fieldwork/$',
-        WorkExperience.as_view(), kwargs={'is_fieldwork': True},
-        name='fieldwork_experiences'),
-    url(r'^experiences/fieldwork/(?P<sn>[0-9]+)/$',
-        WorkExperience.as_view(), kwargs={'is_fieldwork': True},
-        name='fieldwork_experience'),
+        FieldworkExperiences.as_view(), name='fieldwork_experiences'),
+    url(r'^experiences/fieldwork/(?P<exp_id>[0-9]+)/$',
+        FieldworkExperiencesWriteOnly.as_view(), name='fieldwork_experience'),
 ]

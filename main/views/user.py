@@ -6,7 +6,7 @@ from django.views.generic import View
 
 from main.decorators import require_token, validate_input, \
     require_token_and_validate_input, require_token_and_validate_json_input, \
-    check_user_id
+    check_object_id
 from main.models.location import get_location, set_location
 from main.models.tag import get_tags, set_tags
 from main.models.user import User, decrypt_phone_number, create_user
@@ -183,10 +183,10 @@ class Password(View):
             return Http403('failed when validating old password')
 
 
-class Profile(View):
+class ProfileReadOnly(View):
+    @method_decorator(check_object_id(User.enabled, 'user_id', 'user'))
     @method_decorator(require_token)
-    @method_decorator(check_user_id())
-    def get(self, request, user):
+    def get(self, request, user=None):
         """
         获取用户资料，标注 * 的键值仅在获取自己的资料时返回
 
@@ -204,6 +204,9 @@ class Profile(View):
             location: 所在地区，格式：[province_id, city_id]
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
+        if not user:
+            user = request.user
+
         # 更新访客记录
         if user != request.user:
             update_visitor(request.user, user)
@@ -226,6 +229,8 @@ class Profile(View):
 
         return JsonResponse(r)
 
+
+class Profile(ProfileReadOnly):
     post_dict = {
         'name': forms.CharField(required=False, min_length=1, max_length=15),
         'description': forms.CharField(required=False, max_length=100),
@@ -237,7 +242,6 @@ class Profile(View):
     }
 
     @method_decorator(require_token_and_validate_json_input(post_dict))
-    @method_decorator(check_user_id(True))
     def post(self, request, data):
         """
         修改用户资料
@@ -295,207 +299,3 @@ class Profile(View):
             return Http400(error)
         else:
             return Http200()
-
-
-class EducationExperience(View):
-    @method_decorator(require_token)
-    @method_decorator(check_user_id())
-    def get(self, request, user, sn=None):
-        """
-        获取用户的某个或所有教育经历
-
-        :return:
-            count: 经历总数
-            list: 经历列表
-                school: 学校
-                degree: 学历
-                    0: 其他 1: 初中 2: 高中 3: 大专
-                    4: 本科 5: 硕士 6: 博士
-                major: 专业
-                begin_time: 入学时间
-                end_time: 毕业时间
-        """
-        if not sn:
-            exps = user.education_experiences.all()
-        else:
-            try:
-                exps = [user.education_experiences.all()[int(sn)]]
-            except IndexError:
-                return Http404('experience not exists')
-
-        c = user.education_experiences.count()
-        l = [{
-                 'school': e.school,
-                 'degree': e.degree,
-                 'major': e.major,
-                 'begin_time': e.begin_time.strftime('%Y-%m-%d'),
-                 'end_time': e.end_time.strftime('%Y-%m-%d'),
-             } for e in exps]
-        return JsonResponse({'count': c, 'list': l})
-
-    post_dict = {
-        'school': forms.CharField(max_length=20),
-        'degree': forms.IntegerField(min_value=0, max_value=6),
-        'major': forms.CharField(required=False, max_length=20),
-        'begin_time': forms.DateField(),
-        'end_time': forms.DateField(),
-    }
-
-    @method_decorator(require_token_and_validate_json_input(post_dict))
-    @method_decorator(check_user_id(True))
-    def post(self, request, data, sn=None):
-        """
-        增加或修改教育经历
-
-        :param data:
-            school: 学校（必填）
-            degree: 学位（必填）
-                0: 其他 1: 初中 2: 高中 3: 大专
-                4: 本科 5: 硕士 6: 博士
-            major: 专业
-            begin_time: 入学时间（必填）
-            end_time: 毕业时间（必填）
-        """
-        exps = request.user.education_experiences
-
-        if not sn:
-            e = exps.model(user=request.user)
-        else:
-            try:
-                e = exps.all()[int(sn)]
-            except IndexError:
-                return Http404('experience not exists')
-
-        if data['begin_time'] > data['end_time']:
-            return Http400('invalid time data')
-
-        for k in data:
-            setattr(e, k, data[k])
-        e.save()
-
-        return Http200()
-
-    @method_decorator(require_token)
-    @method_decorator(check_user_id(True))
-    def delete(self, request, sn=None):
-        """
-        删除用户的某个或所有教育经历
-
-        """
-        exps = request.user.education_experiences
-
-        if not sn:
-            exps.all().delete()
-        else:
-            try:
-                e = exps.all()[int(sn)]
-            except IndexError:
-                return Http404('experience not exists')
-            else:
-                e.delete()
-
-        return Http200()
-
-
-class WorkExperience(View):
-    @method_decorator(require_token)
-    @method_decorator(check_user_id())
-    def get(self, request, user, sn=None, is_fieldwork=False):
-        """
-        获取用户的某个或所有实习/工作经历
-
-        :return:
-            count: 经历总数
-            list: 经历列表
-                company: 公司
-                position: 职位
-                description: 工作内容描述
-                begin_time: 入职时间
-                end_time: 离职时间
-        """
-        if not sn:
-            exps = user.fieldwork_experiences.all() \
-                if is_fieldwork else user.work_experiences.all()
-        else:
-            try:
-                exps = [user.fieldwork_experiences.all()[int(sn)]] \
-                    if is_fieldwork \
-                    else [user.work_experiences.all()[int(sn)]]
-            except IndexError:
-                return Http404('experience not exists')
-
-        c = user.fieldwork_experiences.count() \
-            if is_fieldwork else user.work_experiences.count()
-        l = [{
-                 'company': e.company,
-                 'position': e.position,
-                 'description': e.description,
-                 'begin_time': e.begin_time.strftime('%Y-%m-%d'),
-                 'end_time': e.end_time.strftime(
-                     '%Y-%m-%d') if e.end_time else None,
-             } for e in exps]
-        return JsonResponse({'count': c, 'list': l})
-
-    post_dict = {
-        'company': forms.CharField(max_length=20),
-        'position': forms.CharField(max_length=20),
-        'description': forms.CharField(required=False, max_length=100),
-        'begin_time': forms.DateField(),
-        'end_time': forms.DateField(required=False),
-    }
-
-    @method_decorator(require_token_and_validate_json_input(post_dict))
-    @method_decorator(check_user_id(True))
-    def post(self, request, data, sn=None, is_fieldwork=False):
-        """
-        增加或修改实习/工作经历
-
-        :param data:
-            company: 公司（必填）
-            position: 职位（必填）
-            description: 工作内容描述
-            begin_time: 入职时间（必填）
-            end_time: 离职时间（用 None 表示在职）
-        """
-        exps = request.user.fieldwork_experiences \
-            if is_fieldwork else request.user.work_experiences
-
-        if not sn:
-            e = exps.model(user=request.user)
-        else:
-            try:
-                e = exps.all()[int(sn)]
-            except IndexError:
-                return Http404('experience not exists')
-
-        if 'end_time' in data and data['end_time'] \
-                and data['begin_time'] > data['end_time']:
-            return Http400('invalid time data')
-
-        for k in data:
-            setattr(e, k, data[k])
-        e.save()
-
-        return Http200()
-
-    @method_decorator(require_token)
-    @method_decorator(check_user_id(True))
-    def delete(self, request, sn=None, is_fieldwork=False):
-        """
-        删除用户的某个或所有工作/实习经历
-
-        """
-        exps = request.user.fieldwork_experiences \
-            if is_fieldwork else request.user.work_experiences
-
-        if not sn:
-            exps.all().delete()
-        else:
-            try:
-                e = exps.all()[int(sn)]
-            except IndexError:
-                return Http404('experience not exists')
-            else:
-                e.delete()
-
-        return Http200()
