@@ -9,7 +9,6 @@ from main.models.tag import get_tags
 from main.models.user import User, decrypt_phone_number, create_user
 from main.models.visitor import update_visitor
 from main.responses import *
-from main.views import TokenRequiredView
 
 
 class Users(View):
@@ -117,7 +116,8 @@ class Token(View):
         return JsonResponse({'token': user.token.value})
 
 
-class Profile(TokenRequiredView):
+class Profile(View):
+    @require_token
     @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
         """
@@ -163,7 +163,8 @@ class Profile(TokenRequiredView):
         return JsonResponse(r)
 
 
-class EducationExperiences(TokenRequiredView):
+class EducationExperiences(View):
+    @require_token
     @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
         """
@@ -197,9 +198,10 @@ class EducationExperiences(TokenRequiredView):
         return JsonResponse({'count': c, 'list': l})
 
 
-class WorkExperiences(TokenRequiredView):
+class WorkExperiences(View):
     attr = 'work_experiences'
 
+    @require_token
     @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
         """
