@@ -117,8 +117,8 @@ class Token(View):
 
 
 class Profile(View):
-    @require_token
     @check_object_id(User.enabled, 'user')
+    @require_token
     def get(self, request, user=None):
         """
         获取用户资料，标注 * 的键值仅在获取自己的资料时返回
@@ -164,8 +164,8 @@ class Profile(View):
 
 
 class EducationExperiences(View):
-    @require_token
     @check_object_id(User.enabled, 'user')
+    @require_token
     def get(self, request, user=None):
         """
         获取用户的教育经历
@@ -201,8 +201,8 @@ class EducationExperiences(View):
 class WorkExperiences(View):
     attr = 'work_experiences'
 
-    @require_token
     @check_object_id(User.enabled, 'user')
+    @require_token
     def get(self, request, user=None):
         """
         获取用户的工作经历
