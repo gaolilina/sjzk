@@ -1,16 +1,15 @@
 from django import forms
 from django.db import IntegrityError
 from django.http import JsonResponse
-from django.utils.decorators import method_decorator
 from django.views.generic import View
 
-from main.decorators import require_token, validate_input, \
-    require_token_and_validate_input, check_object_id
+from main.decorators import require_token, validate_input, check_object_id
 from main.models.location import get_location
 from main.models.tag import get_tags
 from main.models.user import User, decrypt_phone_number, create_user
 from main.models.visitor import update_visitor
 from main.responses import *
+from main.views import TokenRequiredView
 
 
 class Users(View):
@@ -19,13 +18,13 @@ class Users(View):
         'size': forms.IntegerField(required=False, min_value=10),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     }
-
     available_order = [
         'create_time', '-create_time',
         'profile__name', '-profile__name',
     ]
 
-    @method_decorator(require_token_and_validate_input(get_dict))
+    @require_token
+    @validate_input(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """
         获取用户列表
@@ -61,7 +60,7 @@ class Users(View):
         'password': forms.CharField(min_length=6, max_length=20, strip=False),
     }
 
-    @method_decorator(validate_input(post_dict))
+    @validate_input(post_dict)
     def post(self, request, phone_number, password):
         """
         注册新用户
@@ -87,7 +86,7 @@ class Token(View):
         'password': forms.CharField(min_length=6, max_length=20, strip=False),
     }
 
-    @method_decorator(validate_input(post_dict))
+    @validate_input(post_dict)
     def post(self, request, username, password):
         """
         更新并获取用户令牌，纯数字“用户名”视为手机号
@@ -118,9 +117,8 @@ class Token(View):
         return JsonResponse({'token': user.token.value})
 
 
-class Profile(View):
-    @method_decorator(check_object_id(User.enabled, 'user_id', 'user'))
-    @method_decorator(require_token)
+class Profile(TokenRequiredView):
+    @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
         """
         获取用户资料，标注 * 的键值仅在获取自己的资料时返回
@@ -165,9 +163,8 @@ class Profile(View):
         return JsonResponse(r)
 
 
-class EducationExperiences(View):
-    @method_decorator(require_token)
-    @method_decorator(check_object_id(User.enabled, 'user_id', 'user'))
+class EducationExperiences(TokenRequiredView):
+    @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
         """
         获取用户的教育经历
@@ -200,11 +197,10 @@ class EducationExperiences(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-class WorkExperiences(View):
+class WorkExperiences(TokenRequiredView):
     attr = 'work_experiences'
 
-    @method_decorator(require_token)
-    @method_decorator(check_object_id(User.enabled, 'user_id', 'user'))
+    @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
         """
         获取用户的工作经历

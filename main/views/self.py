@@ -2,19 +2,15 @@ from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction, IntegrityError
 from django.http import JsonResponse
-from django.utils.decorators import method_decorator
-from django.views.generic import View
 
-from main.decorators import require_token, require_token_and_validate_input, \
-    require_token_and_validate_json_input
+from main.decorators import validate_input, validate_json_input
 from main.models.location import set_location
 from main.models.tag import set_tags
 from main.responses import *
-from . import user
+from main.views import TokenRequiredView, user
 
 
-class Username(View):
-    @method_decorator(require_token)
+class Username(TokenRequiredView):
     def get(self, request):
         """
         获取当前用户的用户名（检查用户是否已设置用户名）
@@ -29,7 +25,7 @@ class Username(View):
         'username': forms.RegexField(r'^[a-zA-Z0-9_]{4,15}$', strip=True),
     }
 
-    @method_decorator(require_token_and_validate_input(post_dict))
+    @validate_input(post_dict)
     def post(self, request, username):
         """
         设置当前用户的用户名，存储时字母转换成小写
@@ -52,7 +48,7 @@ class Username(View):
             return Http403('username is already used by others')
 
 
-class Password(View):
+class Password(TokenRequiredView):
     post_dict = {
         'new_password': forms.CharField(
             min_length=6, max_length=20, strip=False),
@@ -60,7 +56,7 @@ class Password(View):
             min_length=6, max_length=20, strip=False),
     }
 
-    @method_decorator(require_token_and_validate_input(post_dict))
+    @validate_input(post_dict)
     def post(self, request, old_password, new_password):
         """
         修改密码
@@ -88,7 +84,7 @@ class Profile(user.Profile):
         'id_number': forms.RegexField(r'^\d{18}$', required=False, strip=True),
     }
 
-    @method_decorator(require_token_and_validate_json_input(post_dict))
+    @validate_json_input(post_dict)
     def post(self, request, data):
         """
         修改用户资料
@@ -148,7 +144,7 @@ class Profile(user.Profile):
             return Http200()
 
 
-class EducationExperiencesWriteOnly(View):
+class EducationExperiencesWriteOnly(TokenRequiredView):
     post_dict = {
         'school': forms.CharField(max_length=20),
         'degree': forms.IntegerField(min_value=0, max_value=6),
@@ -157,7 +153,7 @@ class EducationExperiencesWriteOnly(View):
         'end_time': forms.DateField(),
     }
 
-    @method_decorator(require_token_and_validate_json_input(post_dict))
+    @validate_json_input(post_dict)
     def post(self, request, data, exp_id=None):
         """
         增加或修改当前用户的教育经历
@@ -189,7 +185,6 @@ class EducationExperiencesWriteOnly(View):
         e.save()
         return Http200()
 
-    @method_decorator(require_token)
     def delete(self, request, exp_id=None):
         """
         删除当前用户的某个或所有教育经历
@@ -215,7 +210,7 @@ class EducationExperiences(user.EducationExperiences,
     pass
 
 
-class WorkExperiencesWriteOnly(View):
+class WorkExperiencesWriteOnly(TokenRequiredView):
     attr = 'work_experiences'
     post_dict = {
         'company': forms.CharField(max_length=20),
@@ -225,7 +220,7 @@ class WorkExperiencesWriteOnly(View):
         'end_time': forms.DateField(required=False),
     }
 
-    @method_decorator(require_token_and_validate_json_input(post_dict))
+    @validate_json_input(post_dict)
     def post(self, request, data, exp_id=None):
         """
         增加或修改实习/工作经历
@@ -256,7 +251,6 @@ class WorkExperiencesWriteOnly(View):
         e.save()
         return Http200()
 
-    @method_decorator(require_token)
     def delete(self, request, exp_id=None):
         """
         删除用户的某个或所有工作/实习经历
