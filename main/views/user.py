@@ -31,8 +31,8 @@ class Users(View):
         :param offset: 偏移量
         :param limit: 数量上限
         :param order: 排序方式
-            0: 注册时间降序（默认值）
-            1: 注册时间升序
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
             2: 昵称升序
             3: 昵称降序
         :return:
