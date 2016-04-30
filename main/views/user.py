@@ -13,11 +13,11 @@ from main.responses import *
 
 class Users(View):
     get_dict = {
-        'page': forms.IntegerField(required=False, min_value=0),
-        'size': forms.IntegerField(required=False, min_value=10),
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     }
-    available_order = [
+    available_orders = [
         'create_time', '-create_time',
         'profile__name', '-profile__name',
     ]
@@ -43,7 +43,7 @@ class Users(View):
                 name: 用户昵称
                 create_time: 注册时间
         """
-        i, j, k = offset, offset + limit, self.available_order[order]
+        i, j, k = offset, offset + limit, self.available_orders[order]
         c = User.enabled.count()
         users = User.enabled.order_by(k)[i:j]
         l = [{
