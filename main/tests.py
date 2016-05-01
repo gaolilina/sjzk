@@ -13,23 +13,23 @@ class UserListTestCase(TestCase):
         self.c = Client()
 
         time = datetime.now()
-        user = create_user('0', username='user0', create_time=time)
+        user = create_user('0', name='user0', create_time=time)
         self.t = user.token.value
         for i in range(1, 20):
             time += timedelta(seconds=1)
-            create_user(str(i), username='user' + str(i), create_time=time)
+            create_user(str(i), name='user' + str(i), create_time=time)
 
     def test_get_list_by_create_time_asc(self):
         r = self.c.get(reverse('user:root'),
                        {'token': self.t, 'limit': '20', 'order': '0'})
         r = json.loads(r.content.decode('utf8'))
-        self.assertEqual(r['list'][0]['username'], 'user0')
+        self.assertEqual(r['list'][0]['name'], 'user0')
 
     def test_get_list_by_create_time_desc(self):
         r = self.c.get(reverse('user:root'), {'token': self.t})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 20)
-        self.assertEqual(r['list'][0]['username'], 'user19')
+        self.assertEqual(r['list'][0]['name'], 'user19')
 
     def test_get_list_by_name_asc(self):
         r = self.c.get(reverse('user:root'),
@@ -191,7 +191,7 @@ class UserProfileTestCase(TestCase):
         self.c = Client()
 
         self.u0 = create_user('0')
-        self.u1 = create_user('1', is_verified=True)
+        self.u1 = create_user('1')
         self.t0 = self.u0.token.value
         self.t1 = self.u1.token.value
 
@@ -206,8 +206,6 @@ class UserProfileTestCase(TestCase):
             'email': 'user0@example.com',
             'gender': 1,
             'birthday': '2000-10-24',
-            'real_name': '测试',
-            'id_number': '000000000000000000',
             'location': [self.p1.id, self.c1.id],
             'tags': ['Test'],
         }
@@ -220,8 +218,8 @@ class UserProfileTestCase(TestCase):
         r = self.c.get(reverse('self:profile'), {'token': self.t0})
         r = json.loads(r.content.decode('utf8'))
         p = self.profile.copy()
-        p['phone_number'] = '0'
         p['username'] = None
+        p['icon'] = None
         p['create_time'] = self.u0.create_time.strftime('%Y-%m-%d')
         p['tags'] = ['test']
         self.assertEqual(r, p)
@@ -231,15 +229,10 @@ class UserProfileTestCase(TestCase):
         r = json.loads(r.content.decode('utf8'))
         p = self.profile.copy()
         p['username'] = None
+        p['icon'] = None
         p['create_time'] = self.u0.create_time.strftime('%Y-%m-%d')
         p['tags'] = ['test']
-        del p['id_number']
         self.assertEqual(r, p)
-
-    def test_identification_related(self):
-        d = json.dumps({'real_name': '403'})
-        r = self.c.post(reverse('self:profile'), {'token': self.t1, 'data': d})
-        self.assertEqual(r.status_code, 403)
 
     def test_tag_related(self):
         # with valid tag list
@@ -288,6 +281,43 @@ class UserProfileTestCase(TestCase):
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['location'], [self.p2.id, None])
 
+
+class UserIdentificationTestCase(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.u0 = create_user('0')
+        self.t0 = self.u0.token.value
+        self.u1 = create_user('1')
+        self.t1 = self.u1.token.value
+
+    def test_post_and_get(self):
+        d = json.dumps({'name': '测试',
+                        'school': '蓝翔',
+                        'id_number': '111111111111111111',
+                        'student_id': '1234'})
+        r = self.c.post(reverse('self:identification'),
+                        {'token': self.t0, 'data': d})
+        self.assertEqual(r.status_code, 200)
+
+        r = self.c.get(  # get own identification
+            reverse('user:identification', kwargs={'user_id': self.u0.id}),
+            {'token': self.t0})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['name'], '测试')
+
+        r = self.c.get(  # get other's identification
+            reverse('user:identification', kwargs={'user_id': self.u0.id}),
+            {'token': self.t1})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertNotIn('id_number', r)
+
+    def test_edit_verified_identification(self):
+        self.u0.identification.is_verified = True
+        self.u0.identification.save()
+        d = json.dumps({'id_number': '222222222222222222'})
+        r = self.c.post(reverse('self:identification'),
+                        {'token': self.t0, 'data': d})
+        self.assertEqual(r.status_code, 403)
 
 class UserExperienceTestCase(TestCase):
     def setUp(self):

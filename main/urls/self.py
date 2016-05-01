@@ -1,13 +1,15 @@
 from django.conf.urls import url
 
-from main.views.self import Username, Password, Profile, EducationExperiences, \
-    EducationExperiencesWriteOnly, WorkExperiences, WorkExperiencesWriteOnly, \
+from main.views.self import Username, Password, Profile, Identification, \
+    EducationExperiences, EducationExperiencesWriteOnly, \
+    WorkExperiences, WorkExperiencesWriteOnly, \
     FieldworkExperiences, FieldworkExperiencesWriteOnly
 
 urls = [
     url(r'^username/$', Username.as_view(), name='username'),
     url(r'^password/$', Password.as_view(), name='password'),
     url(r'^profile/$', Profile.as_view(), name='profile'),
+    url(r'^identification/$', Identification.as_view(), name='identification'),
     url(r'^experiences/education/$',
         EducationExperiences.as_view(), name='education_experiences'),
     url(r'^experiences/education/(?P<exp_id>[0-9]+)/$',

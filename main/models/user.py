@@ -18,10 +18,15 @@ def create_user(phone_number, password=None, **kwargs):
         if password:
             user.set_password(password)
         user.save()
+        if 'name' not in kwargs:
+            user.name = '创易用户 %s' % user.id
+            user.save(update_fields=['name'])
         token = UserToken(user=user)
         token.update()
-        profile = UserProfile(user=user, name='创易用户 %s' % user.id)
+        profile = UserProfile(user=user)
         profile.save()
+        identification = UserIdentification(user=user)
+        identification.save()
     return user
 
 
@@ -104,10 +109,12 @@ class User(models.Model):
         '用户名', max_length=15, default=None, null=True, unique=True)
     password = models.CharField(
         '密码', max_length=128, db_index=True)
+    name = models.CharField(
+        '昵称', max_length=15, db_index=True)
+    icon = models.ImageField(
+        '用户头像', db_index=True)
     is_enabled = models.BooleanField(
         '是否有效', default=True)
-    is_verified = models.BooleanField(
-        '是否通过实名验证', default=False)
     create_time = models.DateTimeField(
         '注册时间', default=datetime.now, db_index=True)
     update_time = models.DateTimeField(
@@ -119,9 +126,6 @@ class User(models.Model):
 
     class Meta:
         db_table = 'user'
-
-    def __repr__(self):
-        return '<User - %s (%s)>' % (self.name, self.phone_number)
 
     def set_password(self, password):
         """
@@ -159,10 +163,6 @@ class UserToken(models.Model):
     class Meta:
         db_table = 'user_token'
 
-    def __repr__(self):
-        return '<User Token - %s (%s)>' % (
-            self.user.name, self.user.phone_number)
-
     def update(self, available_days=7):
         """
         利用用户手机号与当前时间计算并更新APP密钥
@@ -185,29 +185,45 @@ class UserProfile(models.Model):
     """
     user = models.OneToOneField(User, models.CASCADE, related_name='profile')
 
-    name = models.CharField(
-        '昵称', max_length=15, db_index=True)
     description = models.TextField(
         '个人简介', max_length=100, default='', db_index=True)
-    icon = models.ImageField(
-        '用户头像', db_index=True)
     email = models.EmailField(
         '电子邮箱', default='', db_index=True)
     gender = models.IntegerField(
         '性别', default=0, choices=(('保密', 0), ('男', 1), ('女', 1)))
     birthday = models.DateField(
         '出生日期', default=None, null=True, db_index=True)
-    real_name = models.CharField(
-        '真实姓名', max_length=15, default='', db_index=True)
-    id_number = models.CharField(
-        '身份证号', max_length=18, default='', db_index=True)
-    id_photo = models.ImageField(
-        '身份证照片', db_index=True)
     update_time = models.DateTimeField(
         '更新时间', auto_now=True, db_index=True)
 
     class Meta:
         db_table = 'user_profile'
 
-    def __repr__(self):
-        return '<User Profile - %s>' % self.user.name
+
+class UserIdentification(models.Model):
+    """
+    用户身份信息
+
+    """
+    user = models.OneToOneField(
+        User, models.CASCADE, related_name='identification')
+
+    is_verified = models.BooleanField(
+        '是否通过实名验证', default=False)
+    name = models.CharField(
+        '真实姓名', max_length=15, default='', db_index=True)
+    id_number = models.CharField(
+        '身份证号', max_length=18, default='', db_index=True)
+    id_card_photo = models.ImageField(
+        '身份证照片', db_index=True)
+    school = models.CharField(
+        '所在学校', max_length=20, default='', db_index=True)
+    student_number = models.CharField(
+        '学生证号', max_length=15, default='', db_index=True)
+    student_card_photo = models.ImageField(
+        '学生证照片', db_index=True)
+    update_time = models.DateTimeField(
+        '更新时间', auto_now=True, db_index=True)
+
+    class Meta:
+        db_table = 'user_identification'

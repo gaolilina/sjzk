@@ -37,9 +37,6 @@ class UserWorkExperience(WorkExperience):
         db_table = 'user_work_experience'
         ordering = ['id']
 
-    def __repr__(self):
-        return '<User Work Experience - %s>' % self.user.profile.name
-
 
 class UserFieldworkExperience(WorkExperience):
     """
@@ -52,9 +49,6 @@ class UserFieldworkExperience(WorkExperience):
     class Meta:
         db_table = 'user_fieldwork_experience'
         ordering = ['id']
-
-    def __repr__(self):
-        return '<User Fieldwork Experience - %s>' % self.user.profile.name
 
 
 class UserEducationExperience(models.Model):
@@ -83,6 +77,3 @@ class UserEducationExperience(models.Model):
     class Meta:
         db_table = 'user_education_experience'
         ordering = ['id']
-
-    def __repr__(self):
-        return '<User Education Experience - %s>' % self.user.profile.name

@@ -84,8 +84,6 @@ class Profile(user.Profile):
         'email': forms.EmailField(required=False),
         'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
         'birthday': forms.DateField(required=False),
-        'real_name': forms.CharField(required=False, max_length=15),
-        'id_number': forms.RegexField(r'^\d{18}$', required=False, strip=True),
     }
 
     @require_token
@@ -100,26 +98,15 @@ class Profile(user.Profile):
             email: 电子邮箱
             gender: 性别（0-保密，1-男，2-女）
             birthday: 生日
-            real_name: 真实姓名
-            id_number: 身份证号
             location: 所在地区，格式：[province_id, city_id]
             tags: 标签，格式：['tag1', 'tag2', ...]
 
         """
+        name = data.pop('name') if 'name' in data else None
+
         profile = request.user.profile
-
-        normal_keys = ['name', 'description', 'email', 'gender', 'birthday']
-        for k in normal_keys:
-            if k in data:
-                setattr(profile, k, data[k])
-
-        identification_keys = ['real_name', 'id_number']
-        for k in identification_keys:
-            if k in data:
-                if request.user.is_verified:
-                    return Http403('user has been verified')
-                else:
-                    setattr(profile, k, data[k])
+        for k, v in data.items():
+            setattr(profile, k, v)
 
         error = ''
         try:
@@ -142,11 +129,46 @@ class Profile(user.Profile):
                     except ValueError as e:
                         error = str(e)
                         raise IntegrityError
+                if name:
+                    request.user.name = name
+                    request.user.save()
                 profile.save()
         except IntegrityError:
             return Http400(error)
         else:
             return Http200()
+
+
+class Identification(user.Identification):
+    post_dict = {
+        'name': forms.CharField(required=False, min_length=1, max_length=15),
+        'id_number': forms.RegexField(
+            r'^[0-9xX]{18}$', required=False, strip=True),
+        'school': forms.CharField(required=False, max_length=20),
+        'student_number': forms.RegexField(
+            r'^[0-9]{,15}$', required=False, strip=True),
+    }
+
+    @require_token
+    @validate_json_input(post_dict)
+    def post(self, request, data):
+        """
+        修改用户身份信息，已通过实名认证后禁止修改身份证号与姓名
+
+        :param data:
+            name: 真实姓名
+            id_number: 身份证号
+            school: 所在学校
+            student_number: 学生证号
+        """
+        identification = request.user.identification
+        if identification.is_verified and ('name' in data or 'id_number' in data):
+            return Http403('user has been verified')
+
+        for k, v in data.items():
+            setattr(identification, k, v)
+        identification.save()
+        return Http200()
 
 
 class EducationExperiencesWriteOnly(View):

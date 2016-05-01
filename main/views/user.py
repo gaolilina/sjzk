@@ -19,7 +19,7 @@ class Users(View):
     }
     available_orders = [
         'create_time', '-create_time',
-        'profile__name', '-profile__name',
+        'name', '-name',
     ]
 
     @require_token
@@ -41,17 +41,17 @@ class Users(View):
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
+                icon_url: 用户头像URL
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
         c = User.enabled.count()
         users = User.enabled.order_by(k)[i:j]
-        l = [{
-                 'id': u.id,
-                 'username': u.username,
-                 'name': u.profile.name,
-                 'create_time': u.create_time,
-             } for u in users]
+        l = [{'id': u.id,
+              'username': u.username,
+              'name': u.name,
+              'icon_url': u.icon.url if u.icon else None,
+              'create_time': u.create_time} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
     post_dict = {
@@ -121,19 +121,17 @@ class Profile(View):
     @require_token
     def get(self, request, user=None):
         """
-        获取用户资料，标注 * 的键值仅在获取自己的资料时返回
+        获取用户的基本资料
 
         :return:
-            phone_number: 手机号*
             username: 用户名
-            create_time: 注册时间
             name: 昵称
+            icon_url: 用户头像URL
+            create_time: 注册时间
             description: 个人简介
             email: 电子邮箱
             gender: 性别（0-保密，1-男，2-女）
             birthday: 生日
-            real_name: 真实姓名
-            id_number: 身份证号*
             location: 所在地区，格式：[province_id, city_id]
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
@@ -145,22 +143,46 @@ class Profile(View):
             update_visitor(request.user, user)
 
         r = dict()
-        if user == request.user:
-            r['phone_number'] = user.phone_number
-            r['id_number'] = user.profile.id_number
         r['username'] = user.username
+        r['name'] = user.name
+        r['icon'] = user.icon.url if user.icon else None
         r['create_time'] = user.create_time.strftime('%Y-%m-%d')
-        r['name'] = user.profile.name
         r['description'] = user.profile.description
         r['email'] = user.profile.email
         r['gender'] = user.profile.gender
         r['birthday'] = user.profile.birthday.strftime('%Y-%m-%d') \
             if user.profile.birthday else None
-        r['real_name'] = user.profile.real_name
         r['location'] = get_location(user)
         r['tags'] = get_tags(user)
 
         return JsonResponse(r)
+
+
+class Identification(View):
+    @check_object_id(User.enabled, 'user')
+    @require_token
+    def get(self, request, user=None):
+        """
+        获取用户的身份信息，身份证号仅对本人可见
+
+        :return:
+            is_verified: 是否通过实名认证
+            name: 真实姓名
+            id_number: 身份证号
+            school: 所在学校
+            student_number: 学生证号
+        """
+        if not user:
+            user = request.user
+
+        i = user.identification
+        l = {'is_verified': i.is_verified,
+             'name': i.name,
+             'school': i.school,
+             'student_number': i.student_number}
+        if user == request.user:
+            l['id_number'] = i.id_number
+        return JsonResponse(l)
 
 
 class EducationExperiences(View):
