@@ -319,6 +319,7 @@ class UserIdentificationTestCase(TestCase):
                         {'token': self.t0, 'data': d})
         self.assertEqual(r.status_code, 403)
 
+
 class UserExperienceTestCase(TestCase):
     def setUp(self):
         self.c = Client()

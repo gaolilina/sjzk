@@ -1,8 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
-from main.models.user import User
-
 
 def get_location(obj):
     """
@@ -36,7 +34,8 @@ def set_location(obj, location_list):
     if city and city.province != province:
         raise ValueError('invalid location')
 
-    if type(obj) == User:
+    model_name = type(obj).__name__
+    if model_name == 'User':
         location, created = UserLocation.objects.get_or_create(
             user=obj, defaults={'province': province, 'city': city})
     else:
@@ -83,9 +82,9 @@ class Location(models.Model):
 
     """
     province = models.ForeignKey(
-        Province, models.SET_NULL, '+', default=None, null=True)
+        Province, models.SET_NULL, default=None, null=True)
     city = models.ForeignKey(
-        City, models.SET_NULL, '+', default=None, null=True)
+        City, models.SET_NULL, default=None, null=True)
 
     class Meta:
         abstract = True
@@ -96,7 +95,7 @@ class UserLocation(Location):
     用户所在地区
 
     """
-    user = models.OneToOneField(User, models.CASCADE, related_name='location')
+    user = models.OneToOneField('User', models.CASCADE, related_name='location')
 
     class Meta:
         db_table = 'user_location'

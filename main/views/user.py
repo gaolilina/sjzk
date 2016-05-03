@@ -4,9 +4,10 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import require_token, validate_input, check_object_id
+from main.models import User
 from main.models.location import get_location
 from main.models.tag import get_tags
-from main.models.user import User, decrypt_phone_number, create_user
+from main.models.user import create_user, decrypt_phone_number
 from main.models.visitor import update_visitor
 from main.responses import *
 

@@ -2,8 +2,6 @@ from datetime import datetime
 
 from django.db import models
 
-from main.models.user import User
-
 
 def update_visitor(visited, visitor):
     """
@@ -44,9 +42,9 @@ class UserVisitor(Visitor):
 
     """
     visited = models.ForeignKey(
-        User, models.CASCADE, 'visitors', 'visitor')
+        'User', models.CASCADE, 'visitors', 'visitor')
     visitor = models.ForeignKey(
-        User, models.CASCADE, 'visited_users', 'visited_user')
+        'User', models.CASCADE, 'visited_users', 'visited_user')
 
     class Meta:
         db_table = 'user_visitor'

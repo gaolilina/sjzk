@@ -1,7 +1,5 @@
 from django.db import models
 
-from main.models.user import User
-
 
 class WorkExperience(models.Model):
     """
@@ -31,11 +29,10 @@ class UserWorkExperience(WorkExperience):
 
     """
     user = models.ForeignKey(
-        User, models.CASCADE, 'work_experiences', 'work_experience')
+        'User', models.CASCADE, 'work_experiences', 'work_experience')
 
     class Meta:
         db_table = 'user_work_experience'
-        ordering = ['id']
 
 
 class UserFieldworkExperience(WorkExperience):
@@ -44,11 +41,10 @@ class UserFieldworkExperience(WorkExperience):
 
     """
     user = models.ForeignKey(
-        User, models.CASCADE, 'fieldwork_experiences', 'fieldwork_experience')
+        'User', models.CASCADE, 'fieldwork_experiences', 'fieldwork_experience')
 
     class Meta:
         db_table = 'user_fieldwork_experience'
-        ordering = ['id']
 
 
 class UserEducationExperience(models.Model):
@@ -57,7 +53,7 @@ class UserEducationExperience(models.Model):
 
     """
     user = models.ForeignKey(
-        User, models.CASCADE, 'education_experiences', 'education_experience')
+        'User', models.CASCADE, 'education_experiences', 'education_experience')
 
     school = models.CharField(
         '学校', max_length=20, default='', db_index=True)
@@ -76,4 +72,3 @@ class UserEducationExperience(models.Model):
 
     class Meta:
         db_table = 'user_education_experience'
-        ordering = ['id']

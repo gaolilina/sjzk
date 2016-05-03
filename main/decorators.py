@@ -106,13 +106,13 @@ def validate_json_input(d):
     return decorator
 
 
-def check_object_id(query_set, object_name):
+def check_object_id(model_manager, object_name):
     """
     检查某个ID对应的模型是否存在（若输入参数不存在则不处理）
     若不存在返回404 Not Found
     若存在则将输入参数中的ID转换成对应的模型实体传入view函数中
 
-    :param query_set: 模型所在的QuerySet
+    :param model_manager: 模型的Manager
     :param object_name: 保存实体的参数名称，默认ID参数名称为 object_name + '_id'
 
     """
@@ -122,7 +122,7 @@ def check_object_id(query_set, object_name):
             if id_name in kwargs:
                 _id = int(kwargs.pop(id_name))
                 try:
-                    _model = query_set.get(id=_id)
+                    _model = model_manager.get(id=_id)
                 except ObjectDoesNotExist:
                     return Http404('object not exists')
                 kwargs[object_name] = _model
