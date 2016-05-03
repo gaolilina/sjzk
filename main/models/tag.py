@@ -1,39 +1,6 @@
 from django.db import models, transaction
 
 
-def get_tags(obj):
-    """
-    获取对象的标签列表
-
-    """
-    return [tag.name for tag in obj.tags.all()]
-
-
-def set_tags(obj, tag_list):
-    """
-    设置对象的标签列表
-
-    :param obj: 带标签属性的对象
-    :param tag_list: 标签名称列表
-
-    """
-    if len(tag_list) > 5:
-        raise ValueError('too many tags')
-    for i, name in enumerate(tag_list):
-        name = name.strip().lower()
-        if not name:
-            raise ValueError('blank tag is not allowed')
-        tag_list[i] = name
-    tags = obj.tags.all()
-    with transaction.atomic():
-        for i, name in enumerate(tag_list):
-            try:
-                tags[i].name = name
-                tags[i].save(update_fields=['tag'])
-            except IndexError:
-                obj.tags.create(order=i, name=name)
-
-
 class Tag(models.Model):
     """
     标签
@@ -46,8 +13,38 @@ class Tag(models.Model):
     class Meta:
         db_table = 'tag'
 
-    def __repr__(self):
-        return '<Tag - %s>' % self.name
+    @staticmethod
+    def get(obj):
+        """
+        获取对象的标签列表
+
+        """
+        return [tag.name for tag in obj.tags.all()]
+
+    @staticmethod
+    def set(obj, tag_name_list):
+        """
+        设置对象的标签列表
+
+        :param obj: 带标签属性的对象
+        :param tag_name_list: 标签名称列表
+
+        """
+        if len(tag_name_list) > 5:
+            raise ValueError('too many tags')
+        for i, name in enumerate(tag_name_list):
+            name = name.strip().lower()
+            if not name:
+                raise ValueError('blank tag is not allowed')
+            tag_name_list[i] = name
+        tags = obj.tags.all()
+        with transaction.atomic():
+            for i, name in enumerate(tag_name_list):
+                try:
+                    tags[i].name = name
+                    tags[i].save(update_fields=['tag'])
+                except IndexError:
+                    obj.tags.create(order=i, name=name)
 
 
 class ObjectTag(models.Model):

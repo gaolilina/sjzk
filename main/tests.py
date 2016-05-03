@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.test import Client, TestCase, TransactionTestCase
 
 from main.models.location import Province, City
-from main.models.user import create_user, encrypt_phone_number, User
+from main.models.user import User
 
 
 class UserListTestCase(TestCase):
@@ -13,11 +13,11 @@ class UserListTestCase(TestCase):
         self.c = Client()
 
         time = datetime.now()
-        user = create_user('0', name='user0', create_time=time)
+        user = User.create('0', name='user0', create_time=time)
         self.t = user.token.value
         for i in range(1, 20):
             time += timedelta(seconds=1)
-            create_user(str(i), name='user' + str(i), create_time=time)
+            User.create(str(i), name='user' + str(i), create_time=time)
 
     def test_get_list_by_create_time_asc(self):
         r = self.c.get(reverse('user:root'),
@@ -47,10 +47,10 @@ class UserListTestCase(TestCase):
 class UserRegisterTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        create_user('15010101010')
+        User.create('15010101010')
 
     def test_register(self):
-        phone_number = encrypt_phone_number('13010101010')
+        phone_number = User.encrypt_phone_number('13010101010')
         r = self.c.post(reverse('user:root'),
                         {'phone_number': phone_number, 'password': 'password'})
         self.assertEqual(r.status_code, 200)
@@ -59,7 +59,7 @@ class UserRegisterTestCase(TestCase):
             phone_number='13010101010').token.value)
 
     def test_register_with_invalid_password(self):
-        phone_number = encrypt_phone_number('14010101010')
+        phone_number = User.encrypt_phone_number('14010101010')
         password = '<6'
         r = self.c.post(reverse('user:root'),
                         {'phone_number': phone_number, 'password': password})
@@ -76,7 +76,7 @@ class UserRegisterTestCase(TestCase):
         self.assertEqual(r.status_code, 400)
 
     def test_register_with_used_phone_number(self):
-        phone_number = encrypt_phone_number('15010101010')
+        phone_number = User.encrypt_phone_number('15010101010')
         r = self.c.post(reverse('user:root'),
                         {'phone_number': phone_number, 'password': 'password'})
         self.assertEqual(r.status_code, 403)
@@ -85,8 +85,8 @@ class UserRegisterTestCase(TestCase):
 class UserTokenTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        create_user('13010101010', 'SAPMan?', username='OhCrap')
-        create_user('14010101010', 'OhNo!!', username='FB403', is_enabled=False)
+        User.create('13010101010', 'SAPMan?', username='ohcrap')
+        User.create('14010101010', 'OhNo!!', username='fb403', is_enabled=False)
 
     def test_get_token_by_phone_number(self):
         r = self.c.post(reverse('user:token'),
@@ -116,8 +116,8 @@ class UserTokenTestCase(TestCase):
 class UserCredentialTestCase(TransactionTestCase):
     def setUp(self):
         self.c = Client()
-        self.t = create_user('13010101010', 'password').token.value
-        create_user('14010101010', username='GodMother')
+        self.t = User.create('13010101010', 'password').token.value
+        User.create('14010101010', username='godmother')
 
     def test_username_related(self):
         # get username when it's null
@@ -190,8 +190,8 @@ class UserProfileTestCase(TestCase):
     def setUp(self):
         self.c = Client()
 
-        self.u0 = create_user('0')
-        self.u1 = create_user('1')
+        self.u0 = User.create('0')
+        self.u1 = User.create('1')
         self.t0 = self.u0.token.value
         self.t1 = self.u1.token.value
 
@@ -285,9 +285,9 @@ class UserProfileTestCase(TestCase):
 class UserIdentificationTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        self.u0 = create_user('0')
+        self.u0 = User.create('0')
         self.t0 = self.u0.token.value
-        self.u1 = create_user('1')
+        self.u1 = User.create('1')
         self.t1 = self.u1.token.value
 
     def test_post_and_get(self):
@@ -323,7 +323,7 @@ class UserIdentificationTestCase(TestCase):
 class UserExperienceTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        self.u = create_user('010')
+        self.u = User.create('010')
         self.t = self.u.token.value
 
         self.ee = self.u.education_experiences.create(

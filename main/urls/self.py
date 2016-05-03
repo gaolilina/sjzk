@@ -1,25 +1,26 @@
 from django.conf.urls import url
 
-from main.views.self import Username, Password, Profile, Identification, \
-    EducationExperiences, EducationExperiencesWriteOnly, \
-    WorkExperiences, WorkExperiencesWriteOnly, \
-    FieldworkExperiences, FieldworkExperiencesWriteOnly
+from main.views.user import Username, Password, ProfileSelf, IdentificationSelf
+from main.views.user.experience import EducationExperiencesSelf, \
+    WorkExperiencesSelf, FieldworkExperiencesSelf, EducationExperience, \
+    WorkExperience, FieldworkExperience
 
 urls = [
     url(r'^username/$', Username.as_view(), name='username'),
     url(r'^password/$', Password.as_view(), name='password'),
-    url(r'^profile/$', Profile.as_view(), name='profile'),
-    url(r'^identification/$', Identification.as_view(), name='identification'),
+    url(r'^profile/$', ProfileSelf.as_view(), name='profile'),
+    url(r'^identification/$',
+        IdentificationSelf.as_view(), name='identification'),
     url(r'^experiences/education/$',
-        EducationExperiences.as_view(), name='education_experiences'),
+        EducationExperiencesSelf.as_view(), name='education_experiences'),
     url(r'^experiences/education/(?P<exp_id>[0-9]+)/$',
-        EducationExperiencesWriteOnly.as_view(), name='education_experience'),
+        EducationExperience.as_view(), name='education_experience'),
     url(r'^experiences/work/$',
-        WorkExperiences.as_view(), name='work_experiences'),
+        WorkExperiencesSelf.as_view(), name='work_experiences'),
     url(r'^experiences/work/(?P<exp_id>[0-9]+)/$',
-        WorkExperiencesWriteOnly.as_view(), name='work_experience'),
+        WorkExperience.as_view(), name='work_experience'),
     url(r'^experiences/fieldwork/$',
-        FieldworkExperiences.as_view(), name='fieldwork_experiences'),
+        FieldworkExperiencesSelf.as_view(), name='fieldwork_experiences'),
     url(r'^experiences/fieldwork/(?P<exp_id>[0-9]+)/$',
-        FieldworkExperiencesWriteOnly.as_view(), name='fieldwork_experience'),
+        FieldworkExperience.as_view(), name='fieldwork_experience'),
 ]

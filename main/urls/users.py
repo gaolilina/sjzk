@@ -1,7 +1,8 @@
 from django.conf.urls import url
 
-from main.views.user import Users, Token, Profile, Identification, \
-    EducationExperiences, WorkExperiences, FieldworkExperiences
+from main.views.user import Users, Token, Profile, Identification
+from main.views.user.experience import EducationExperiences, WorkExperiences, \
+    FieldworkExperiences
 
 urls = [
     url(r'^$', Users.as_view(), name='root'),
