@@ -183,6 +183,34 @@ class Password(View):
             return Http403('failed when validating old password')
 
 
+class Icon(View):
+    @check_object_id(User.enabled, 'user')
+    @require_token
+    def get(self, request, user=None):
+        """
+        获取用户头像URL
+
+        :return:
+            icon_url: url | null
+        """
+        if not user:
+            user = request.user
+
+        url = user.icon.url if user.icon else None
+        return JsonResponse({'icon_url': url})
+
+
+# todo: implement
+class IconSelf(Icon):
+    @require_token
+    def post(self, request):
+        """
+        设置当前用户的头像
+
+        """
+        pass
+
+
 class Profile(View):
     @check_object_id(User.enabled, 'user')
     @require_token
@@ -349,3 +377,29 @@ class IdentificationSelf(Identification):
             setattr(identification, k, v)
         identification.save()
         return Http200()
+
+
+# todo
+class IDCardPhoto(View):
+    @require_token
+    def post(self, request):
+        """
+        设置当前用户的身份证照片
+
+        """
+        if request.user.is_verified:
+            return Http403('user has been verified')
+        else:
+            pass
+
+
+# todo
+class StudentCardPhoto(View):
+    @require_token
+    def post(self, request):
+        """
+        设置当前用户的学生证照片
+
+        """
+        pass
+

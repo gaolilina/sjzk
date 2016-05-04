@@ -458,3 +458,31 @@ class UserExperienceTestCase(TestCase):
             'token=' + self.t)
         self.assertEqual(self.u.work_experiences.count(), 1)
         self.assertEqual(self.u.work_experiences.all()[0].company, 'c4')
+
+
+class UserFriendTestCase(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.u0 = User.create('0')
+        self.u1 = User.create('1')
+        self.u2 = User.create('2')
+        self.u0.friend_relations.create(friend=self.u1)
+        self.u1.friend_relations.create(friend=self.u0)
+
+    def test_disabled_friend(self):
+        # if a user is disabled, he or she should not exist in friend list
+        self.u1.is_enabled = False
+        self.u1.save()
+        r = self.c.get(reverse('self:friends'), {'token': self.u0.token.value})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 0)
+
+    def test_check_friend_relation(self):
+        r = self.c.get(
+            reverse('self:friend', kwargs={'other_user_id': self.u1.id}),
+            {'token': self.u0.token.value})
+        self.assertEqual(r.status_code, 200)
+        r = self.c.get(
+            reverse('self:friend', kwargs={'other_user_id': self.u2.id}),
+            {'token': self.u0.token.value})
+        self.assertEqual(r.status_code, 404)
