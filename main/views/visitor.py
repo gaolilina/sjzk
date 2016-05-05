@@ -4,7 +4,8 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
-from main.decorators import require_token, validate_input
+from main.decorators import require_token, validate_input, check_object_id
+from main.models import User
 
 
 # todo: test
@@ -16,9 +17,9 @@ class Visitors(View):
 
     @require_token
     @validate_input(get_dict)
-    def get(self, request, offset=0, limit=10, days=7):
+    def get(self, request, obj, offset=0, limit=10, days=7):
         """
-        获取一段时间内的访客列表
+        获取对象一段时间内的访客列表
 
         :param offset: 偏移量
         :param limit: 数量上限
@@ -35,7 +36,7 @@ class Visitors(View):
         # 起始时间为days天前0时
         now = datetime.now()
         t = datetime(now.year, now.month, now.day - days)
-        qs = request.user.visitors.filter(update_time__gte=t)
+        qs = obj.visitors.filter(update_time__gte=t)
 
         c = qs.count()
 
@@ -48,3 +49,13 @@ class Visitors(View):
               'update_time': i.update_time} for i in qs]
 
         return JsonResponse({'count': c, 'list': l})
+
+
+# noinspection PyMethodOverriding
+class UserVisitor(Visitors):
+    @check_object_id(User.enabled, 'user')
+    def get(self, request, user=None):
+        if not user:
+            user = request.user
+
+        return super(UserVisitor, self).get(request, user)

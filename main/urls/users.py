@@ -4,6 +4,7 @@ from main.views.user import Users, Token, Icon, Profile, Identification
 from main.views.user.experience import EducationExperiences, WorkExperiences, \
     FieldworkExperiences
 from main.views.user.friend import Friends, Friend, FriendRequests
+from main.views.visitor import Visitors
 
 urls = [
     url(r'^$', Users.as_view(), name='root'),
@@ -26,4 +27,6 @@ urls = [
         Friend.as_view(), name='friend'),
     url(r'^(?P<user_id>[0-9]+)/friends/requests/$',
         FriendRequests.as_view(), name='friend_requests'),
+
+    url(r'^(?P<user_id>[0-9]+)/visitors/$', Visitors.as_view(), name='visitors'),
 ]

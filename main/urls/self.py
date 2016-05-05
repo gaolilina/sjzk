@@ -7,7 +7,7 @@ from main.views.user.experience import EducationExperiencesSelf, \
     WorkExperience, FieldworkExperience
 from main.views.user.friend import Friends, FriendSelf, FriendRequests, \
     FriendRequest
-from main.views.user.visitor import Visitors
+from main.views.visitor import Visitors
 
 urls = [
     url(r'^username/$', Username.as_view(), name='username'),
