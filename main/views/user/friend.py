@@ -52,9 +52,8 @@ class Friends(View):
         qs = user.friend_relations.order_by(k)[i:j]
         l = [{'id': r.friend.id,
               'username': r.friend.username,
-              'name': r.friend.profile.name,
-              'icon_url': r.friend.profile.icon.url
-              if r.friend.profile.icon else None,
+              'name': r.friend.name,
+              'icon_url': r.friend.icon_url,
               'create_time': r.create_time} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -151,9 +150,8 @@ class FriendRequests(View):
             qs.update(is_read=True)
             l = [{'id': r.sender.id,
                   'username': r.sender.username,
-                  'name': r.sender.profile.name,
-                  'icon_url': r.sender.profile.icon.url
-                  if r.sender.profile.icon else None,
+                  'name': r.sender.name,
+                  'icon_url': r.sender.icon_url,
                   'description': r.description,
                   'create_time': r.create_time} for r in qs]
             c = request.user.friend_requests.filter(is_read=False).count()

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.db import models
 
 
@@ -16,7 +14,6 @@ class Visitor(models.Model):
     """
     visited = None
     visitor = None
-    count = models.IntegerField('访问计数', default=0, db_index=True)
     update_time = models.DateTimeField('更新时间', auto_now=True, db_index=True)
 
     enabled = VisitorManager()
@@ -34,13 +31,10 @@ class Visitor(models.Model):
         :param visitor: 来访用户
 
         """
-        now = datetime.now()
-        record, created = visited.visitors.get_or_create(
-            visitor=visitor, defaults={'count': 1})
+        record, created = visited.visitors.get_or_create(visitor=visitor)
 
-        if not created:  # 同日内同一访客多次访问不更新访问计数
-            if now.date() != record.update_time.date():
-                record.count += 1
+        # 更新已有记录的访问时间
+        if not created:
             record.save()
 
 

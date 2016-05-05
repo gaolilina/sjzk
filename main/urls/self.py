@@ -7,6 +7,7 @@ from main.views.user.experience import EducationExperiencesSelf, \
     WorkExperience, FieldworkExperience
 from main.views.user.friend import Friends, FriendSelf, FriendRequests, \
     FriendRequest
+from main.views.user.visitor import Visitors
 
 urls = [
     url(r'^username/$', Username.as_view(), name='username'),
@@ -39,4 +40,6 @@ urls = [
         FriendRequests.as_view(), name='friend_requests'),
     url(r'^friends/requests/(?P<req_id>[0-9]+)/$',
         FriendRequest.as_view(), name='friend_request'),
+
+    url(r'^visitors/$', Visitors.as_view(), name='visitors'),
 ]

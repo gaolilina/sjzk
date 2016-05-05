@@ -47,6 +47,10 @@ class User(models.Model):
     class Meta:
         db_table = 'user'
 
+    @property
+    def icon_url(self):
+        return self.icon.url if self.icon else None
+
     def set_password(self, password):
         """
         利用 Django 的 PBKDF2PasswordHasher 对用户密码进行加密

@@ -51,7 +51,7 @@ class Users(View):
         l = [{'id': u.id,
               'username': u.username,
               'name': u.name,
-              'icon_url': u.icon.url if u.icon else None,
+              'icon_url': u.icon_url,
               'create_time': u.create_time} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
@@ -196,7 +196,7 @@ class Icon(View):
         if not user:
             user = request.user
 
-        url = user.icon.url if user.icon else None
+        url = user.icon_url
         return JsonResponse({'icon_url': url})
 
 
@@ -240,7 +240,7 @@ class Profile(View):
         r = dict()
         r['username'] = user.username
         r['name'] = user.name
-        r['icon'] = user.icon.url if user.icon else None
+        r['icon'] = user.icon_url
         r['create_time'] = user.create_time.strftime('%Y-%m-%d')
         r['description'] = user.profile.description
         r['email'] = user.profile.email
