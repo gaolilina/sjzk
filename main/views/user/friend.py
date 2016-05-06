@@ -8,8 +8,6 @@ from main.decorators import check_object_id, require_token, validate_input
 from main.models import User, UserFriendRelation, UserFriendRequest
 from main.responses import *
 
-
-# todo: test
 class Friends(View):
     get_dict = {
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -18,7 +16,7 @@ class Friends(View):
     }
     available_orders = [
         'create_time', '-create_time',
-        'friend__profile__name', '-friend__profile__name',
+        'friend__name', '-friend__name',
     ]
 
     @check_object_id(User.enabled, 'user')
@@ -58,7 +56,6 @@ class Friends(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-# todo: test
 class Friend(View):
     @check_object_id(User.enabled, 'user')
     @check_object_id(User.enabled, 'other_user')
@@ -77,48 +74,46 @@ class Friend(View):
             else Http404()
 
 
-# todo: test
 class FriendSelf(Friend):
-    @check_object_id(User.enabled, 'user')
+    @check_object_id(User.enabled, 'other_user')
     @require_token
-    def post(self, request, user):
+    def post(self, request, other_user):
         """
         将目标用户添加为自己的好友（对方需发送过好友请求）
 
         """
-        if not UserFriendRequest.exist(user, request.user):
+        if not UserFriendRequest.exist(other_user, request.user):
             return Http403('related friend request not exists')
 
         # 若双方已是好友则不做处理
-        if UserFriendRelation.exist(request.user, user):
+        if UserFriendRelation.exist(request.user, other_user):
             return Http403('already been friends')
 
         # 在事务中建立双向关系，并删除对应的好友请求
         with transaction.atomic():
-            request.user.friend_requests.get(sender=user).delete()
-            request.user.friend_relations.create(friend=user)
-            user.friend_relations.create(friend=request.user)
+            request.user.friend_requests.get(sender=other_user).delete()
+            request.user.friend_relations.create(friend=other_user)
+            other_user.friend_relations.create(friend=request.user)
         return Http200()
 
-    @check_object_id(User.enabled, 'user')
+    @check_object_id(User.enabled, 'other_user')
     @require_token
-    def delete(self, request, user):
+    def delete(self, request, other_user):
         """
         删除好友
 
         """
-        if not UserFriendRelation.exist(request.user, user):
+        if not UserFriendRelation.exist(request.user, other_user):
             return Http404('not user\'s friend')
 
         # 删除双向好友关系
         qs = UserFriendRelation.enabled.filter(
-            Q(user=request.user, friend=user) |
-            Q(user=user, friend=request.user))
+            Q(user=request.user, friend=other_user) |
+            Q(user=other_user, friend=request.user))
         qs.delete()
         return Http200()
 
 
-# todo: test
 class FriendRequests(View):
     get_dict = {'limit': forms.IntegerField(required=False, min_value=10)}
 
@@ -146,14 +141,18 @@ class FriendRequests(View):
         """
         if not user or user.id == request.user.id:
             # 拉取好友请求信息
-            qs = request.user.friend_requests.filter(is_read=False)[:limit]
-            qs.update(is_read=True)
+            qs = request.user.friend_requests.filter(is_read=False)
+            qs = qs[:limit]
+
             l = [{'id': r.sender.id,
                   'username': r.sender.username,
                   'name': r.sender.name,
                   'icon_url': r.sender.icon_url,
                   'description': r.description,
                   'create_time': r.create_time} for r in qs]
+            # 更新拉取的好友请求信息为已读
+            ids = qs.values('id')
+            request.user.friend_requests.filter(id__in=ids).update(is_read=True)
             c = request.user.friend_requests.filter(is_read=False).count()
             return JsonResponse({'count': c, 'list': l})
         else:
@@ -188,7 +187,6 @@ class FriendRequests(View):
         return Http200()
 
 
-# todo: test
 class FriendRequest(View):
     @check_object_id(User.enabled, 'user')
     @require_token
