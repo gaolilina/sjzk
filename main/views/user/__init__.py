@@ -379,7 +379,7 @@ class IdentificationSelf(Identification):
         return Http200()
 
 
-# todo
+# todo: implement
 class IDCardPhoto(View):
     @require_token
     def post(self, request):
@@ -393,7 +393,7 @@ class IDCardPhoto(View):
             pass
 
 
-# todo
+# todo: implement
 class StudentCardPhoto(View):
     @require_token
     def post(self, request):
