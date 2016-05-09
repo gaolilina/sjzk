@@ -70,7 +70,7 @@ DATABASES = {
         'NAME': 'cy',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': '192.168.100.128',
+        'HOST': '123.206.24.226',
         'PORT': '5432',
     },
 }
