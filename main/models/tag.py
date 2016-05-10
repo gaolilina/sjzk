@@ -84,3 +84,14 @@ class UserTag(ObjectTag):
 
     class Meta:
         db_table = 'user_tag'
+
+
+class TeamTag(ObjectTag):
+    """
+    团队标签
+
+    """
+    team = models.ForeignKey('Team', models.CASCADE, 'tags')
+
+    class Meta:
+        db_table = 'team_tag'

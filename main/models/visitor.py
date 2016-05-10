@@ -52,15 +52,15 @@ class UserVisitor(Visitor):
         db_table = 'user_visitor'
 
 
-# class TeamVisitor(Visitor):
-#     """
-#     团队访客记录
-#
-#     """
-#     visited = models.ForeignKey(
-#         'Team', models.CASCADE, 'visitor_records')
-#     visitor = models.ForeignKey(
-#         'User', models.CASCADE, 'visited_team_records')
-#
-#     class Meta:
-#         db_table = 'team_visitor'
+class TeamVisitor(Visitor):
+    """
+    团队访客记录
+
+    """
+    visited = models.ForeignKey(
+        'Team', models.CASCADE, 'visitor_records')
+    visitor = models.ForeignKey(
+        'User', models.CASCADE, 'visited_team_records')
+
+    class Meta:
+        db_table = 'team_visitor'

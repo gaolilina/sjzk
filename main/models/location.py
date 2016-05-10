@@ -95,12 +95,12 @@ class UserLocation(Location):
         db_table = 'user_location'
 
 
-# class TeamLocation(Location):
-#     """
-#     团队所在地区
-#
-#     """
-#     team = models.OneToOneField('Team', models.CASCADE, 'location')
-#
-#     class Meta:
-#         db_table = 'team_location'
+class TeamLocation(Location):
+    """
+    团队所在地区
+
+    """
+    team = models.OneToOneField('Team', models.CASCADE, 'location')
+
+    class Meta:
+        db_table = 'team_location'
