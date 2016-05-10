@@ -5,8 +5,9 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import check_object_id, require_token, validate_input
-from main.models import User, UserFriendRelation, UserFriendRequest
+from main.models import User, UserFriend, UserFriendRequest
 from main.responses import *
+
 
 class Friends(View):
     get_dict = {
@@ -46,8 +47,8 @@ class Friends(View):
             user = request.user
 
         i, j, k = offset, offset + limit, self.available_orders[order]
-        c = user.friend_relations.count()
-        qs = user.friend_relations.order_by(k)[i:j]
+        c = user.friend_records.count()
+        qs = user.friend_records.order_by(k)[i:j]
         l = [{'id': r.friend.id,
               'username': r.friend.username,
               'name': r.friend.name,
@@ -70,7 +71,7 @@ class Friend(View):
         if not user:
             user = request.user
 
-        return Http200() if UserFriendRelation.exist(user, other_user) \
+        return Http200() if UserFriend.exist(user, other_user) \
             else Http404()
 
 
@@ -86,14 +87,14 @@ class FriendSelf(Friend):
             return Http403('related friend request not exists')
 
         # 若双方已是好友则不做处理
-        if UserFriendRelation.exist(request.user, other_user):
+        if UserFriend.exist(request.user, other_user):
             return Http403('already been friends')
 
         # 在事务中建立双向关系，并删除对应的好友请求
         with transaction.atomic():
             request.user.friend_requests.get(sender=other_user).delete()
-            request.user.friend_relations.create(friend=other_user)
-            other_user.friend_relations.create(friend=request.user)
+            request.user.friend_records.create(friend=other_user)
+            other_user.friend_records.create(friend=request.user)
         return Http200()
 
     @check_object_id(User.enabled, 'other_user')
@@ -103,11 +104,11 @@ class FriendSelf(Friend):
         删除好友
 
         """
-        if not UserFriendRelation.exist(request.user, other_user):
+        if not UserFriend.exist(request.user, other_user):
             return Http404('not user\'s friend')
 
         # 删除双向好友关系
-        qs = UserFriendRelation.enabled.filter(
+        qs = UserFriend.enabled.filter(
             Q(user=request.user, friend=other_user) |
             Q(user=other_user, friend=request.user))
         qs.delete()
@@ -175,7 +176,7 @@ class FriendRequests(View):
         if user == request.user:
             return Http400('cannot send friend request to self')
 
-        if UserFriendRelation.exist(request.user, user):
+        if UserFriend.exist(request.user, user):
             return Http403('already been friends')
 
         if UserFriendRequest.exist(request.user, user):

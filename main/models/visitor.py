@@ -31,7 +31,7 @@ class Visitor(models.Model):
         :param visitor: 来访用户
 
         """
-        record, created = visited.visitors.get_or_create(visitor=visitor)
+        record, created = visited.visitor_records.get_or_create(visitor=visitor)
 
         # 更新已有记录的访问时间
         if not created:
@@ -44,9 +44,23 @@ class UserVisitor(Visitor):
 
     """
     visited = models.ForeignKey(
-        'User', models.CASCADE, 'visitors', 'visitor')
+        'User', models.CASCADE, 'visitor_records')
     visitor = models.ForeignKey(
-        'User', models.CASCADE, 'visited_users', 'visited_user')
+        'User', models.CASCADE, 'visited_user_records')
 
     class Meta:
         db_table = 'user_visitor'
+
+
+# class TeamVisitor(Visitor):
+#     """
+#     团队访客记录
+#
+#     """
+#     visited = models.ForeignKey(
+#         'Team', models.CASCADE, 'visitor_records')
+#     visitor = models.ForeignKey(
+#         'User', models.CASCADE, 'visited_team_records')
+#
+#     class Meta:
+#         db_table = 'team_visitor'

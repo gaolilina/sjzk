@@ -200,7 +200,7 @@ class Icon(View):
         return JsonResponse({'icon_url': url})
 
 
-# todo: implement
+# todo: user icon post method
 class IconSelf(Icon):
     @require_token
     def post(self, request):
@@ -379,7 +379,7 @@ class IdentificationSelf(Identification):
         return Http200()
 
 
-# todo: implement
+# todo: id card photo post method
 class IDCardPhoto(View):
     @require_token
     def post(self, request):
@@ -393,7 +393,7 @@ class IDCardPhoto(View):
             pass
 
 
-# todo: implement
+# todo: student card photo post method
 class StudentCardPhoto(View):
     @require_token
     def post(self, request):

@@ -8,7 +8,7 @@ from main.decorators import require_token, validate_input, check_object_id
 from main.models import User
 
 
-# todo: test
+# todo: visitor test cases
 class Visitors(View):
     get_dict = {
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -36,7 +36,7 @@ class Visitors(View):
         # 起始时间为days天前0时
         now = datetime.now()
         t = datetime(now.year, now.month, now.day - days)
-        qs = obj.visitors.filter(update_time__gte=t)
+        qs = obj.visitor_records.filter(update_time__gte=t)
 
         c = qs.count()
 

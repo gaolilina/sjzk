@@ -28,8 +28,7 @@ class UserWorkExperience(WorkExperience):
     用户工作经历
 
     """
-    user = models.ForeignKey(
-        'User', models.CASCADE, 'work_experiences', 'work_experience')
+    user = models.ForeignKey('User', models.CASCADE, 'work_experiences')
 
     class Meta:
         db_table = 'user_work_experience'
@@ -40,8 +39,7 @@ class UserFieldworkExperience(WorkExperience):
     用户实习经历
 
     """
-    user = models.ForeignKey(
-        'User', models.CASCADE, 'fieldwork_experiences', 'fieldwork_experience')
+    user = models.ForeignKey('User', models.CASCADE, 'fieldwork_experiences')
 
     class Meta:
         db_table = 'user_fieldwork_experience'
@@ -52,8 +50,7 @@ class UserEducationExperience(models.Model):
     用户教育经历
 
     """
-    user = models.ForeignKey(
-        'User', models.CASCADE, 'education_experiences', 'education_experience')
+    user = models.ForeignKey('User', models.CASCADE, 'education_experiences')
 
     school = models.CharField(
         '学校', max_length=20, default='', db_index=True)

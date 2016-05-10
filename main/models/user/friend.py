@@ -3,25 +3,23 @@ from datetime import datetime
 from django.db import models
 
 
-class UserFriendRelationManager(models.Manager):
+class UserFriendManager(models.Manager):
     def get_queryset(self):
-        return super(UserFriendRelationManager, self).get_queryset().filter(
+        return super(UserFriendManager, self).get_queryset().filter(
             user__is_enabled=True, friend__is_enabled=True)
 
 
-class UserFriendRelation(models.Model):
+class UserFriend(models.Model):
     """
-    用户好友关系记录
+    用户好友记录
 
     """
-    user = models.ForeignKey(
-        'User', models.CASCADE, 'friend_relations', 'friend_relation')
-    friend = models.ForeignKey(
-        'User', models.CASCADE)
+    user = models.ForeignKey('User', models.CASCADE, 'friend_records')
+    friend = models.ForeignKey('User', models.CASCADE, '+')
     create_time = models.DateTimeField(
         '建立关系时间', default=datetime.now, db_index=True)
 
-    enabled = UserFriendRelationManager()
+    enabled = UserFriendManager()
 
     class Meta:
         db_table = 'user_friend'
@@ -46,11 +44,9 @@ class UserFriendRequest(models.Model):
     用户好友申请记录
 
     """
-    sender = models.ForeignKey(
-        'User', models.CASCADE, verbose_name='发送方')
-    receiver = models.ForeignKey(
-        'User', models.CASCADE,
-        'friend_requests', 'friend_request', verbose_name='接收方')
+    sender = models.ForeignKey('User', models.CASCADE, '+')
+    receiver = models.ForeignKey('User', models.CASCADE, 'friend_requests')
+
     description = models.TextField(
         '附带消息', max_length=100, db_index=True)
     create_time = models.DateTimeField(
@@ -70,5 +66,4 @@ class UserFriendRequest(models.Model):
         检查user是否向other_user发送过好友请求
 
         """
-        return cls.enabled.filter(
-            sender=sender, receiver=receiver).exists()
+        return cls.enabled.filter(sender=sender, receiver=receiver).exists()

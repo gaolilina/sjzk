@@ -464,8 +464,8 @@ class UserFriendTestCase(TestCase):
         self.u0 = User.create('0')
         self.u1 = User.create('1')
         self.u2 = User.create('2')
-        self.u0.friend_relations.create(friend=self.u1)
-        self.u1.friend_relations.create(friend=self.u0)
+        self.u0.friend_records.create(friend=self.u1)
+        self.u1.friend_records.create(friend=self.u0)
 
     def test_disabled_friend(self):
         # if a user is disabled, he or she should not exist in friend list
@@ -486,8 +486,8 @@ class UserFriendTestCase(TestCase):
         self.assertEqual(r.status_code, 404)
 
     def test_get_friend_list(self):
-        self.u0.friend_relations.create(friend=self.u2)
-        self.u2.friend_relations.create(friend=self.u0)
+        self.u0.friend_records.create(friend=self.u2)
+        self.u2.friend_records.create(friend=self.u0)
         r = self.c.get(reverse('self:friends'), {'token': self.u0.token.value})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
@@ -495,8 +495,8 @@ class UserFriendTestCase(TestCase):
                            r['list'][-1]['create_time'])
 
     def test_get_friend_by_time_asc(self):
-        self.u0.friend_relations.create(friend=self.u2)
-        self.u2.friend_relations.create(friend=self.u0)
+        self.u0.friend_records.create(friend=self.u2)
+        self.u2.friend_records.create(friend=self.u0)
         r = self.c.get(reverse('self:friends'),
                        {'token': self.u0.token.value, 'order': 0})
         r = json.loads(r.content.decode('utf8'))
@@ -505,8 +505,8 @@ class UserFriendTestCase(TestCase):
                         r['list'][-1]['create_time'])
 
     def test_get_friend_list_by_name_asc(self):
-        self.u0.friend_relations.create(friend=self.u2)
-        self.u2.friend_relations.create(friend=self.u0)
+        self.u0.friend_records.create(friend=self.u2)
+        self.u2.friend_records.create(friend=self.u0)
         r = self.c.get(reverse('self:friends'),
                        {'token': self.u0.token.value, 'order': 2})
         r = json.loads(r.content.decode('utf8'))
@@ -514,8 +514,8 @@ class UserFriendTestCase(TestCase):
         self.assertLessEqual(r['list'][0]['name'], r['list'][-1]['name'])
 
     def test_get_friend_list_by_name_desc(self):
-        self.u0.friend_relations.create(friend=self.u2)
-        self.u2.friend_relations.create(friend=self.u0)
+        self.u0.friend_records.create(friend=self.u2)
+        self.u2.friend_records.create(friend=self.u0)
         r = self.c.get(reverse('self:friends'),
                        {'token': self.u0.token.value, 'order': 3})
         r = json.loads(r.content.decode('utf8'))

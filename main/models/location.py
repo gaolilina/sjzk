@@ -2,10 +2,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 
-
-
-
-
 class Province(models.Model):
     """
     省级行政区
@@ -16,9 +12,6 @@ class Province(models.Model):
     class Meta:
         db_table = 'location_province'
 
-    def __repr__(self):
-        return '<Province - %s>' % self.name
-
 
 class City(models.Model):
     """
@@ -26,13 +19,10 @@ class City(models.Model):
 
     """
     name = models.CharField(max_length=20)
-    province = models.ForeignKey(Province, models.CASCADE, 'cities', 'city')
+    province = models.ForeignKey(Province, models.CASCADE, 'cities')
 
     class Meta:
         db_table = 'location_city'
-
-    def __repr__(self):
-        return '<City - %s (%s)>' % (self.name, self.province.name)
 
 
 class Location(models.Model):
@@ -103,3 +93,14 @@ class UserLocation(Location):
 
     class Meta:
         db_table = 'user_location'
+
+
+# class TeamLocation(Location):
+#     """
+#     团队所在地区
+#
+#     """
+#     team = models.OneToOneField('Team', models.CASCADE, 'location')
+#
+#     class Meta:
+#         db_table = 'team_location'

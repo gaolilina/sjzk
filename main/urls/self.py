@@ -5,11 +5,14 @@ from main.views.user import Username, Password, IconSelf, ProfileSelf, \
 from main.views.user.experience import EducationExperiencesSelf, \
     WorkExperiencesSelf, FieldworkExperiencesSelf, EducationExperience, \
     WorkExperience, FieldworkExperience
+from main.views.user.follow import Fans, Fan, FollowedUsers, FollowedUserSelf, \
+    FollowedTeams, FollowedTeamSelf
 from main.views.user.friend import Friends, FriendSelf, FriendRequests, \
     FriendRequest
 from main.views.visitor import Visitors
 
 urls = [
+    # 基本信息
     url(r'^username/$', Username.as_view(), name='username'),
     url(r'^password/$', Password.as_view(), name='password'),
     url(r'^icon/$', IconSelf.as_view(), name='icon'),
@@ -19,7 +22,7 @@ urls = [
     url(r'^id_card_photo/$', IDCardPhoto.as_view(), name='id_card_photo'),
     url(r'^student_card_photo/$',
         StudentCardPhoto.as_view(), name='student_card_photo'),
-
+    # 经历
     url(r'^experiences/education/$',
         EducationExperiencesSelf.as_view(), name='education_experiences'),
     url(r'^experiences/education/(?P<exp_id>[0-9]+)/$',
@@ -32,7 +35,17 @@ urls = [
         FieldworkExperiencesSelf.as_view(), name='fieldwork_experiences'),
     url(r'^experiences/fieldwork/(?P<exp_id>[0-9]+)/$',
         FieldworkExperience.as_view(), name='fieldwork_experience'),
-
+    # 关注
+    url(r'^fans/$', Fans.as_view(), name='fans'),
+    url(r'^fans/(?P<other_user_id>[0-9]+)/$', Fan.as_view(), name='fan'),
+    url(r'^followed/users/$', FollowedUsers.as_view(), name='followed_users'),
+    url(r'^followed/users/(?P<other_user_id>[0-9]+)/$',
+        FollowedUserSelf.as_view(), name='followed_user'),
+    url(r'^followed/teams/$',
+        FollowedTeams.as_view(), name='followed_teams'),
+    url(r'^followed/users/(?P<team_id>[0-9]+)/$',
+        FollowedTeamSelf.as_view(), name='followed_team'),
+    # 好友
     url(r'^friends/$', Friends.as_view(), name='friends'),
     url(r'^friends/(?P<other_user_id>[0-9]+)/$',
         FriendSelf.as_view(), name='friend'),
@@ -40,6 +53,6 @@ urls = [
         FriendRequests.as_view(), name='friend_requests'),
     url(r'^friends/requests/(?P<req_id>[0-9]+)/$',
         FriendRequest.as_view(), name='friend_request'),
-
+    # 访客
     url(r'^visitors/$', Visitors.as_view(), name='visitors'),
 ]

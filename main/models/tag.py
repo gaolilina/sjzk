@@ -8,8 +8,6 @@ class Tag(models.Model):
     """
     name = models.CharField('名称', max_length=10, unique=True, db_index=True)
 
-    users = models.ManyToManyField('User', through='UserTag')
-
     class Meta:
         db_table = 'tag'
 
@@ -52,7 +50,7 @@ class ObjectTag(models.Model):
     对象标签基类
 
     """
-    tag = models.ForeignKey(Tag, models.CASCADE)
+    tag = models.ForeignKey(Tag, models.CASCADE, '+')
     order = models.IntegerField('序号')
 
     class Meta:
@@ -82,7 +80,7 @@ class UserTag(ObjectTag):
     用户标签
 
     """
-    user = models.ForeignKey('User', models.CASCADE, 'tags', 'tag')
+    user = models.ForeignKey('User', models.CASCADE, 'tags')
 
     class Meta:
         db_table = 'user_tag'
