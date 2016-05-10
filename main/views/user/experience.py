@@ -103,8 +103,8 @@ class EducationExperiences(View):
                  'school': e.school,
                  'degree': e.degree,
                  'major': e.major,
-                 'begin_time': e.begin_time.strftime('%Y-%m-%d'),
-                 'end_time': e.end_time.strftime('%Y-%m-%d'),
+                 'begin_time': e.begin_time,
+                 'end_time': e.end_time,
              } for e in exps]
         return JsonResponse({'count': c, 'list': l})
 
@@ -138,9 +138,8 @@ class WorkExperiences(View):
                  'company': e.company,
                  'position': e.position,
                  'description': e.description,
-                 'begin_time': e.begin_time.strftime('%Y-%m-%d'),
-                 'end_time': e.end_time.strftime(
-                     '%Y-%m-%d') if e.end_time else None,
+                 'begin_time': e.begin_time,
+                 'end_time': e.end_time if e.end_time else None,
              } for e in exps]
         return JsonResponse({'count': c, 'list': l})
 

@@ -241,12 +241,11 @@ class Profile(View):
         r['username'] = user.username
         r['name'] = user.name
         r['icon'] = user.icon_url
-        r['create_time'] = user.create_time.strftime('%Y-%m-%d')
+        r['create_time'] = user.create_time
         r['description'] = user.profile.description
         r['email'] = user.profile.email
         r['gender'] = user.profile.gender
-        r['birthday'] = user.profile.birthday.strftime('%Y-%m-%d') \
-            if user.profile.birthday else None
+        r['birthday'] = user.profile.birthday if user.profile.birthday else None
         r['location'] = Location.get(user)
         r['tags'] = Tag.get(user)
 

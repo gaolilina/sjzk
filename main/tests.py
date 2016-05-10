@@ -1,7 +1,9 @@
 import json
 from datetime import datetime, date, timedelta
+
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase, TransactionTestCase
+
 from main.models.location import Province, City
 from main.models.user import User
 
@@ -218,7 +220,7 @@ class UserProfileTestCase(TestCase):
         p = self.profile.copy()
         p['username'] = None
         p['icon'] = None
-        p['create_time'] = self.u0.create_time.strftime('%Y-%m-%d')
+        p['create_time'] = self.u0.create_time
         p['tags'] = ['test']
         self.assertEqual(r, p)
 
@@ -228,7 +230,7 @@ class UserProfileTestCase(TestCase):
         p = self.profile.copy()
         p['username'] = None
         p['icon'] = None
-        p['create_time'] = self.u0.create_time.strftime('%Y-%m-%d')
+        p['create_time'] = self.u0.create_time
         p['tags'] = ['test']
         self.assertEqual(r, p)
 
@@ -491,8 +493,8 @@ class UserFriendTestCase(TestCase):
         r = self.c.get(reverse('self:friends'), {'token': self.u0.token.value})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
-        self.assertGreater(r['list'][0]['create_time'],
-                           r['list'][-1]['create_time'])
+        self.assertGreaterEqual(r['list'][0]['create_time'],
+                                r['list'][-1]['create_time'])
 
     def test_get_friend_by_time_asc(self):
         self.u0.friend_records.create(friend=self.u2)
@@ -501,8 +503,9 @@ class UserFriendTestCase(TestCase):
                        {'token': self.u0.token.value, 'order': 0})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
-        self.assertLess(r['list'][0]['create_time'],
-                        r['list'][-1]['create_time'])
+        self.assertLessEqual(r['list'][0]['create_time'],
+                             r['list'][-1]['create_time'])
+        print(r['list'][0]['create_time'])
 
     def test_get_friend_list_by_name_asc(self):
         self.u0.friend_records.create(friend=self.u2)
@@ -527,26 +530,30 @@ class UserFriendTestCase(TestCase):
         r = self.c.post(
             reverse('user:friend_requests', kwargs={'user_id': self.u1.id}),
             {'token': self.u0.token.value})
-        #已经加好友的不能进行请求
+        # 已经加好友的不能进行请求
         self.assertEqual(r.status_code, 403)
-        #判断好友关系
+        # 判断好友关系
 
-        r = self.c.get(reverse('user:friend',kwargs={'user_id':self.u0.id,'other_user_id':self.u1.id}),{'token':self.u0.token.value})
-        self.assertEqual(r.status_code,200)
-        r = self.c.get(reverse('user:friend',kwargs={'user_id':self.u0.id,'other_user_id':self.u2.id}),{'token':self.u0.token.value})
-        self.assertEqual(r.status_code,404)
+        r = self.c.get(reverse('user:friend', kwargs={'user_id': self.u0.id,
+                                                      'other_user_id': self.u1.id}),
+                       {'token': self.u0.token.value})
+        self.assertEqual(r.status_code, 200)
+        r = self.c.get(reverse('user:friend', kwargs={'user_id': self.u0.id,
+                                                      'other_user_id': self.u2.id}),
+                       {'token': self.u0.token.value})
+        self.assertEqual(r.status_code, 404)
 
         r = self.c.post(
             reverse('user:friend_requests', kwargs={'user_id': self.u2.id}),
             {'token': self.u0.token.value})
         self.assertEqual(r.status_code, 200)
 
-        #不能多次发送请求
+        # 不能多次发送请求
         r = self.c.post(
             reverse('user:friend_requests', kwargs={'user_id': self.u2.id}),
             {'token': self.u0.token.value})
         self.assertEqual(r.status_code, 403)
-        #不能向自己发送请求
+        # 不能向自己发送请求
         r = self.c.post(
             reverse('user:friend_requests', kwargs={'user_id': self.u0.id}),
             {'token': self.u0.token.value})
@@ -555,42 +562,28 @@ class UserFriendTestCase(TestCase):
         r = self.c.get(
             reverse('self:friend_requests'),
             {'token': self.u2.token.value})
-        r= json.loads(r.content.decode('utf8'))
+        r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['id'], self.u0.id)
-        self.assertEqual(r['count'],0)
-        #添加到好友
-        r = self.c.post(reverse('self:friend',kwargs={'other_user_id':self.u0.id}),
+        self.assertEqual(r['count'], 0)
+        # 添加到好友
+        r = self.c.post(
+            reverse('self:friend', kwargs={'other_user_id': self.u0.id}),
             {'token': self.u2.token.value})
         self.assertEqual(r.status_code, 200)
-        #已经是好友,添加到好友
-        r = self.c.post(reverse('self:friend',kwargs={'other_user_id':self.u1.id}),
+        # 已经是好友,添加到好友
+        r = self.c.post(
+            reverse('self:friend', kwargs={'other_user_id': self.u1.id}),
             {'token': self.u0.token.value})
         self.assertEqual(r.status_code, 403)
-        #此时应该有两个好友
+        # 此时应该有两个好友
         r = self.c.get(reverse('self:friends'), {'token': self.u0.token.value})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
-        #删除好友
-        r = self.c.delete(reverse('self:friend',kwargs={'other_user_id':self.u1.id}),
+        # 删除好友
+        r = self.c.delete(
+            reverse('self:friend', kwargs={'other_user_id': self.u1.id}),
             'token=' + self.u0.token.value)
         self.assertEqual(r.status_code, 200)
         r = self.c.get(reverse('self:friends'), {'token': self.u0.token.value})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 1)
-
-
-
-    '''
-    def test_get_visitors_list(self):
-        r = self.c.get(reverse('self:visitors'),{'token',self.u0.token.value})
-        self.assertEqual(r.status_code, 200)
-        r = json.load(r.content.decode('utf8'))
-        self.assertEqual(r['count'], 0)
-    '''
-
-
-
-
-
-
-
