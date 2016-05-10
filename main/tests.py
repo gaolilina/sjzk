@@ -220,7 +220,7 @@ class UserProfileTestCase(TestCase):
         p = self.profile.copy()
         p['username'] = None
         p['icon'] = None
-        p['create_time'] = self.u0.create_time
+        p['create_time'] = self.u0.create_time.isoformat()[:-3]
         p['tags'] = ['test']
         self.assertEqual(r, p)
 
@@ -230,7 +230,7 @@ class UserProfileTestCase(TestCase):
         p = self.profile.copy()
         p['username'] = None
         p['icon'] = None
-        p['create_time'] = self.u0.create_time
+        p['create_time'] = self.u0.create_time.isoformat()[:-3]
         p['tags'] = ['test']
         self.assertEqual(r, p)
 
@@ -505,7 +505,6 @@ class UserFriendTestCase(TestCase):
         self.assertEqual(r['count'], 2)
         self.assertLessEqual(r['list'][0]['create_time'],
                              r['list'][-1]['create_time'])
-        print(r['list'][0]['create_time'])
 
     def test_get_friend_list_by_name_asc(self):
         self.u0.friend_records.create(friend=self.u2)
