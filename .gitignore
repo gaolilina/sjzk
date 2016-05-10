@@ -1,4 +1,5 @@
 .idea/
-*/migrations/
+__pycache__/
+migrations/
 upload/
 ChuangYi/settings.py
