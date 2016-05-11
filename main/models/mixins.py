@@ -1,12 +1,9 @@
-from django.db import models
-
-
-class IconMixin(models.Model):
+class IconMixin(object):
     """
     图标/头像 Mixin
 
     """
-    icon = models.ImageField(db_index=True)
+    icon = None
 
     @property
     def icon_url(self):

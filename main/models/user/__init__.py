@@ -20,7 +20,7 @@ class DisabledUserManager(models.Manager):
             is_enabled=False)
 
 
-class User(IconMixin, models.Model):
+class User(models.Model, IconMixin):
     """
     用户账户信息
 
@@ -33,6 +33,8 @@ class User(IconMixin, models.Model):
         '密码', max_length=128, db_index=True)
     name = models.CharField(
         '昵称', max_length=15, db_index=True)
+    icon = models.ImageField(
+        '头像', db_index=True)
     is_enabled = models.BooleanField(
         '是否有效', default=True)
     create_time = models.DateTimeField(
