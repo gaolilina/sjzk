@@ -100,7 +100,7 @@ class TeamLocation(Location):
     团队所在地区
 
     """
-    team = models.OneToOneField('Team', models.CASCADE, 'location')
+    team = models.OneToOneField('Team', models.CASCADE, related_name='location')
 
     class Meta:
         db_table = 'team_location'

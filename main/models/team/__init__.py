@@ -2,6 +2,8 @@ from datetime import datetime
 
 from django.db import models
 
+from main.models.mixins import IconMixin
+
 
 class TeamManager(models.Manager):
     def get_queryset(self):
@@ -9,23 +11,24 @@ class TeamManager(models.Manager):
             is_enabled=True, owner__is_enabled=True)
 
 
-class Team(models.Model):
+class Team(IconMixin, models.Model):
     """
     团队基本信息
 
     """
     name = models.CharField(
         '名称', max_length=20, db_index=True)
+
     owner = models.ForeignKey(
         'User', models.CASCADE, 'owned_teams', verbose_name='创始人')
     members = models.ManyToManyField(
-        'User', 'teams', through='TeamMembership', verbose_name='成员')
-    icon = models.ImageField(
-        '团队图标', db_index=True)
+        'User', 'teams', through='TeamMember', verbose_name='成员')
+
     is_recruiting = models.BooleanField(
         '是否招募新成员', default=True, db_index=True)
     is_enabled = models.BooleanField(
         '是否有效', default=True)
+
     create_time = models.DateTimeField(
         '创建时间', default=datetime.now, db_index=True)
     update_time = models.DateTimeField(
@@ -35,10 +38,6 @@ class Team(models.Model):
 
     class Meta:
         db_table = 'team'
-
-    @property
-    def icon_url(self):
-        return self.icon.url if self.icon else None
 
 
 class TeamMember(models.Model):

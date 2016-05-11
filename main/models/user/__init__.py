@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from django.contrib.auth.hashers import PBKDF2PasswordHasher as Hasher
 from django.db import models, transaction
 
+from main.models.mixins import IconMixin
+
 
 class EnabledUserManager(models.Manager):
     def get_queryset(self):
@@ -18,7 +20,7 @@ class DisabledUserManager(models.Manager):
             is_enabled=False)
 
 
-class User(models.Model):
+class User(IconMixin, models.Model):
     """
     用户账户信息
 
@@ -31,8 +33,6 @@ class User(models.Model):
         '密码', max_length=128, db_index=True)
     name = models.CharField(
         '昵称', max_length=15, db_index=True)
-    icon = models.ImageField(
-        '用户头像', db_index=True)
     is_enabled = models.BooleanField(
         '是否有效', default=True)
     create_time = models.DateTimeField(
@@ -46,10 +46,6 @@ class User(models.Model):
 
     class Meta:
         db_table = 'user'
-
-    @property
-    def icon_url(self):
-        return self.icon.url if self.icon else None
 
     def set_password(self, password):
         """
