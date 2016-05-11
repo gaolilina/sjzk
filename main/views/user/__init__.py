@@ -193,8 +193,7 @@ class Icon(View):
         :return:
             icon_url: url | null
         """
-        if not user:
-            user = request.user
+        user = user or request.user
 
         url = user.icon_url
         return JsonResponse({'icon_url': url})
@@ -202,13 +201,13 @@ class Icon(View):
 
 # todo: user icon post method
 class IconSelf(Icon):
-    @require_token
     def post(self, request):
         """
         设置当前用户的头像
 
         """
-        pass
+        data = request.body
+        return Http200()
 
 
 class Profile(View):
@@ -230,8 +229,7 @@ class Profile(View):
             location: 所在地区，格式：[province_id, city_id]
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
-        if not user:
-            user = request.user
+        user = user or request.user
 
         # 更新访客记录
         if user != request.user:
@@ -332,8 +330,7 @@ class Identification(View):
             school: 所在学校
             student_number: 学生证号
         """
-        if not user:
-            user = request.user
+        user = user or request.user
 
         i = user.identification
         l = {'is_verified': i.is_verified,

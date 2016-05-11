@@ -93,8 +93,7 @@ class EducationExperiences(View):
                 begin_time: 入学时间
                 end_time: 毕业时间
         """
-        if not user:
-            user = request.user
+        user = user or request.user
         exps = user.education_experiences.all()
 
         c = user.education_experiences.count()
@@ -128,8 +127,7 @@ class WorkExperiences(View):
                 begin_time: 入职时间
                 end_time: 离职时间
         """
-        if not user:
-            user = request.user
+        user = user or request.user
 
         exps = getattr(user, self.attr).all()
 
