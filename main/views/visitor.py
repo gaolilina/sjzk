@@ -52,10 +52,10 @@ class Visitors(View):
 
 
 # noinspection PyMethodOverriding
-class UserVisitor(Visitors):
+class UserVisitors(Visitors):
     @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
         if not user:
             user = request.user
 
-        return super(UserVisitor, self).get(request, user)
+        return super(UserVisitors, self).get(request, user)

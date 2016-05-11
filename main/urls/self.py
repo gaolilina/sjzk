@@ -9,7 +9,7 @@ from main.views.user.follow import Fans, Fan, FollowedUsers, FollowedUserSelf, \
     FollowedTeams, FollowedTeamSelf
 from main.views.user.friend import Friends, FriendSelf, FriendRequests, \
     FriendRequest
-from main.views.visitor import Visitors
+from main.views.visitor import UserVisitors
 
 urls = [
     # 基本信息
@@ -54,5 +54,5 @@ urls = [
     url(r'^friends/requests/(?P<req_id>[0-9]+)/$',
         FriendRequest.as_view(), name='friend_request'),
     # 访客
-    url(r'^visitors/$', Visitors.as_view(), name='visitors'),
+    url(r'^visitors/$', UserVisitors.as_view(), name='visitors'),
 ]

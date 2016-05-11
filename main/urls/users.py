@@ -6,7 +6,7 @@ from main.views.user.experience import EducationExperiences, WorkExperiences, \
 from main.views.user.follow import Fans, Fan, FollowedUsers, FollowedUser, \
     FollowedTeams, FollowedTeam
 from main.views.user.friend import Friends, Friend, FriendRequests
-from main.views.visitor import Visitors
+from main.views.visitor import UserVisitors
 
 urls = [
     # 基本信息
@@ -43,5 +43,5 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/friends/requests/$',
         FriendRequests.as_view(), name='friend_requests'),
     # 访客
-    url(r'^(?P<user_id>[0-9]+)/visitors/$', Visitors.as_view(), name='visitors'),
+    url(r'^(?P<user_id>[0-9]+)/visitors/$', UserVisitors.as_view(), name='visitors'),
 ]
