@@ -16,12 +16,7 @@ def require_token(function):
 
     """
     def decorator(self, request, *args, **kwargs):
-        if request.method == 'GET':
-            token = request.GET.get('token')
-        elif request.method == 'POST':
-            token = request.POST.get('token')
-        else:
-            token = QueryDict(request.body).get('token')
+        token = request.META.get('HTTP_USER_TOKEN')
         if not token:
             return Http401('token required')
         try:
