@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import require_token, validate_input, check_object_id
-from main.models import User
+from main.models import User, Team
 
 
 # todo: visitor test cases
@@ -58,3 +58,10 @@ class UserVisitors(Visitors):
         user = user or request.user
 
         return super(UserVisitors, self).get(request, user)
+
+
+# noinspection PyMethodOverriding
+class TeamVisitors(Visitors):
+    @check_object_id(Team.enabled, 'team')
+    def get(self, request, team):
+        return super(TeamVisitors, self).get(request, team)

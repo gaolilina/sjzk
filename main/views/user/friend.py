@@ -64,8 +64,6 @@ class Friend(View):
         """
         检查两个用户是否为好友关系
 
-        :return:  200 | 404
-
         """
         user = user or request.user
 
