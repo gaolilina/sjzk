@@ -1,7 +1,10 @@
+import hashlib
 import json
 from datetime import datetime
 
+from PIL import Image
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import QueryDict
 
 from main.models.user import User
@@ -11,8 +14,6 @@ from main.responses import *
 def require_token(function):
     """
     对被装饰的方法进行用户身份验证
-
-    :return: 401 | 403
 
     """
     def decorator(self, request, *args, **kwargs):
@@ -38,7 +39,6 @@ def validate_input(d):
     验证后的数据分别作为关键字参数传入view函数中
 
     :param d: 值为 django.forms.Field 类型的字典
-    :return: 400
 
     """
     def decorator(function):
@@ -69,7 +69,6 @@ def validate_json_input(d):
     对data进行JSON解析并进行验证，验证后的数据作为关键字参数data传入view函数中
 
     :param d: 值为 django.forms.Field 类型的字典
-    :return: 400
 
     """
     def decorator(function):
@@ -121,6 +120,32 @@ def check_object_id(model_manager, object_name):
                 except ObjectDoesNotExist:
                     return Http404('object not exists')
                 kwargs[object_name] = _model
+            return function(self, request, *args, **kwargs)
+        return inner
+    return decorator
+
+
+def process_uploaded_image(name):
+    """
+    处理上传的图片文件，生成随机文件名，并转以JPEG格式保存（默认质量：75）
+
+    :param name: 图片所在的多段数据中的名称（同时为传递给view函数的参数名）
+
+    """
+    def decorator(function):
+        def inner(self, request, *args, **kwargs):
+            try:
+                file = SimpleUploadedFile('', b'')
+                with Image.open(request.FILES[name]) as image:
+                    image.save(file, 'JPEG')
+            except KeyError:
+                return Http400('require image file %s' % name)
+            except IOError:
+                return Http400('invalid image file')
+            md5 = hashlib.md5()
+            md5.update(datetime.now().isoformat().encode())
+            file.name = md5.hexdigest() + '.jpg'
+            kwargs[name] = file
             return function(self, request, *args, **kwargs)
         return inner
     return decorator

@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import require_token, check_object_id, \
-    validate_input, validate_json_input
+    validate_input, validate_json_input, process_uploaded_image
 from main.models import User
 from main.models.location import Location
 from main.models.tag import Tag
@@ -199,14 +199,18 @@ class Icon(View):
         return JsonResponse({'icon_url': url})
 
 
-# todo: user icon post method
 class IconSelf(Icon):
-    def post(self, request):
+    @require_token
+    @process_uploaded_image('icon')
+    def post(self, request, icon):
         """
         设置当前用户的头像
 
         """
-        data = request.body
+        if request.user.icon:
+            request.user.icon.delete()
+        request.user.icon = icon
+        request.user.save()
         return Http200()
 
 

@@ -1,11 +1,16 @@
 import json
+import os
 from datetime import datetime, date, timedelta
 
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase, TransactionTestCase
 
+from ChuangYi import settings
 from main.models.location import Province, City
 from main.models.user import User
+
+
+TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
 
 
 class UserListTestCase(TestCase):
@@ -179,6 +184,30 @@ class UserCredentialTestCase(TransactionTestCase):
         d = {'new_password': 'wrong!', 'old_password': 'invalid'}
         r = self.c.post(reverse('self:password'), d)
         self.assertEqual(r.status_code, 403)
+
+
+class UserIconTestCase(TestCase):
+    def setUp(self):
+        self.u = User.create('1')
+        self.c = Client(HTTP_USER_TOKEN=self.u.token.value)
+
+    def test(self):
+        # no icon at the moment
+        r = self.c.get(reverse('self:icon'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['icon_url'], None)
+        # upload an icon
+        with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
+            r = self.c.post(reverse('self:icon'), {'icon': f})
+        self.assertEqual(r.status_code, 200)
+        # return an icon url
+        r = self.c.get(reverse('self:icon'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertNotEqual(r['icon_url'], None)
+
+        with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
+            r = self.c.post(reverse('self:icon'), {'icon': f})
+        self.assertEqual(r.status_code, 200)
 
 
 class UserProfileTestCase(TestCase):

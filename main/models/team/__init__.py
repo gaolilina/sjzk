@@ -23,7 +23,7 @@ class Team(models.Model, IconMixin):
     members = models.ManyToManyField(
         'User', 'teams', through='TeamMember', verbose_name='成员')
     icon = models.ImageField(
-        '图标', db_index=True)
+        '图标', db_index=True, upload_to='%Y/%m/%d/')
     is_recruiting = models.BooleanField(
         '是否招募新成员', default=True, db_index=True)
     is_enabled = models.BooleanField(

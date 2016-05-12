@@ -34,7 +34,7 @@ class User(models.Model, IconMixin):
     name = models.CharField(
         '昵称', max_length=15, db_index=True)
     icon = models.ImageField(
-        '头像', db_index=True)
+        '头像', db_index=True, upload_to='%Y/%m/%d/')
     is_enabled = models.BooleanField(
         '是否有效', default=True)
     create_time = models.DateTimeField(
@@ -179,10 +179,10 @@ class UserToken(models.Model):
         :param available_days: 令牌有效天数，默认为7天
 
         """
-        hasher = hashlib.md5()
-        content = self.user.phone_number + str(datetime.now().isoformat())
-        hasher.update(content.encode('ascii'))
-        self.value = hasher.hexdigest()
+        content = self.user.phone_number + datetime.now().isoformat()
+        md5 = hashlib.md5()
+        md5.update(content.encode())
+        self.value = md5.hexdigest()
         self.expire_time = datetime.now() + timedelta(available_days)
         self.save()
 
