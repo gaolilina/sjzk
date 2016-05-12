@@ -59,8 +59,10 @@ class UserRegisterTestCase(TestCase):
                         {'phone_number': phone_number, 'password': 'password'})
         self.assertEqual(r.status_code, 200)
         r = json.loads(r.content.decode('utf8'))['token']
-        self.assertEqual(r, User.objects.get(
-            phone_number='13010101010').token.value)
+        c = Client(HTTP_USER_TOKEN=r)
+        # check if token is usable
+        r = c.get(reverse('self:icon'))
+        self.assertEqual(r.status_code, 200)
 
     def test_register_with_invalid_password(self):
         phone_number = User.encrypt_phone_number('14010101010')
