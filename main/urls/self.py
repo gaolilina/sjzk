@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from main.views.user import Username, Password, IconSelf, ProfileSelf, \
-    IdentificationSelf, IDCardPhoto, StudentCardPhoto
+    IdentificationSelf, IDCard, StudentCard
 from main.views.user.experience import EducationExperiencesSelf, \
     WorkExperiencesSelf, FieldworkExperiencesSelf, EducationExperience, \
     WorkExperience, FieldworkExperience
@@ -19,9 +19,8 @@ urls = [
     url(r'^profile/$', ProfileSelf.as_view(), name='profile'),
     url(r'^identification/$',
         IdentificationSelf.as_view(), name='identification'),
-    url(r'^id_card_photo/$', IDCardPhoto.as_view(), name='id_card_photo'),
-    url(r'^student_card_photo/$',
-        StudentCardPhoto.as_view(), name='student_card_photo'),
+    url(r'^id_card/$', IDCard.as_view(), name='id_card'),
+    url(r'^student_card/$', StudentCard.as_view(), name='student_card'),
     # 经历
     url(r'^experiences/education/$',
         EducationExperiencesSelf.as_view(), name='education_experiences'),

@@ -379,27 +379,57 @@ class IdentificationSelf(Identification):
         return Http200()
 
 
-# todo: id card photo post method
-class IDCardPhoto(View):
+# todo: test id card
+class IDCard(View):
     @require_token
-    def post(self, request):
+    def get(self, request):
+        """
+        判断是否已上传身份证照片
+
+        """
+        return Http200() if request.user.identification.id_card \
+            else Http404()
+
+    @require_token
+    @process_uploaded_image('id_card')
+    def post(self, request, id_card):
         """
         设置当前用户的身份证照片
 
         """
-        if request.user.is_verified:
+        if request.user.identification.is_verified:
             return Http403('user has been verified')
         else:
-            pass
+            if request.user.identification.id_card:
+                request.user.identification.id_card.delete()
+            request.user.identification.id_card = id_card
+            request.user.identification.save()
+            return Http200()
 
 
-# todo: student card photo post method
-class StudentCardPhoto(View):
+# todo: test student card
+class StudentCard(View):
     @require_token
-    def post(self, request):
+    def get(self, request):
+        """
+        判断是否已上传身份证照片
+
+        """
+        return Http200() if request.user.identification.student_card \
+            else Http404()
+
+    @require_token
+    @process_uploaded_image('student_card')
+    def post(self, request, student_card):
         """
         设置当前用户的学生证照片
 
         """
-        pass
-
+        if request.user.identification.is_verified:
+            return Http403('user has been verified')
+        else:
+            if request.user.identification.student_card:
+                request.user.identification.student_card.delete()
+            request.user.identification.student_card = student_card
+            request.user.identification.save()
+            return Http200()
