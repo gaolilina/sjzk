@@ -205,10 +205,6 @@ class UserIconTestCase(TestCase):
         r = json.loads(r.content.decode('utf8'))
         self.assertNotEqual(r['icon_url'], None)
 
-        with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
-            r = self.c.post(reverse('self:icon'), {'icon': f})
-        self.assertEqual(r.status_code, 200)
-
 
 class UserProfileTestCase(TestCase):
     def setUp(self):
