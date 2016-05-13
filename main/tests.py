@@ -576,3 +576,21 @@ class UserFriendTestCase(TestCase):
         r = self.c0.get(reverse('self:friends'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 1)
+
+ #测试访问者
+class UserFriendTestCase(TestCase):
+        def setUp(self):
+            self.c = Client()
+            self.u0 = User.create('0')
+            self.u1 = User.create('1')
+            self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+            self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+
+        def test_visitors_request(self):
+            r = self.c0.get(reverse('user:profile',kwargs={'user_id':self.u1.id}))
+            self.assertEqual(r.status_code, 200)
+
+            r = self.c1.get(reverse('self:visitors'))
+            r = json.loads(r.content.decode('utf8'))
+            self.assertEqual(r['count'], 1)
+
