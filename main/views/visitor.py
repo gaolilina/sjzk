@@ -15,7 +15,6 @@ class Visitors(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     }
 
-    @require_token
     @validate_input(get_dict)
     def get(self, request, obj, offset=0, limit=10, days=7):
         """
@@ -53,6 +52,7 @@ class Visitors(View):
 
 # noinspection PyMethodOverriding
 class UserVisitors(Visitors):
+    @require_token
     @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
         user = user or request.user
@@ -62,6 +62,7 @@ class UserVisitors(Visitors):
 
 # noinspection PyMethodOverriding
 class TeamVisitors(Visitors):
+    @require_token
     @check_object_id(Team.enabled, 'team')
     def get(self, request, team):
         return super(TeamVisitors, self).get(request, team)
