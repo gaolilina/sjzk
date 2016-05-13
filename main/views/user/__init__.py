@@ -237,7 +237,7 @@ class Profile(View):
 
         # 更新访客记录
         if user != request.user:
-            Visitor.update(request.user, user)
+            Visitor.update(user, request.user)
 
         r = dict()
         r['username'] = user.username
