@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from django.contrib.auth.hashers import PBKDF2PasswordHasher as Hasher
 from django.db import models, transaction
 
+from ChuangYi.settings import IMAGE_PATH, PRIVATE_IMAGE_PATH
 from main.models.mixins import IconMixin
 
 
@@ -34,7 +35,7 @@ class User(models.Model, IconMixin):
     name = models.CharField(
         '昵称', max_length=15, db_index=True)
     icon = models.ImageField(
-        '头像', db_index=True, upload_to='%Y/%m/%d/')
+        '头像', db_index=True, upload_to=IMAGE_PATH)
     is_enabled = models.BooleanField(
         '是否有效', default=True)
     create_time = models.DateTimeField(
@@ -224,13 +225,13 @@ class UserIdentification(models.Model):
     id_number = models.CharField(
         '身份证号', max_length=18, default='', db_index=True)
     id_card = models.ImageField(
-        '身份证照片', db_index=True, upload_to='private/%Y/%m/%d/')
+        '身份证照片', db_index=True, upload_to=PRIVATE_IMAGE_PATH)
     school = models.CharField(
         '所在学校', max_length=20, default='', db_index=True)
     student_number = models.CharField(
         '学生证号', max_length=15, default='', db_index=True)
     student_card = models.ImageField(
-        '学生证照片', db_index=True, upload_to='private/%Y/%m/%d/')
+        '学生证照片', db_index=True, upload_to=PRIVATE_IMAGE_PATH)
     update_time = models.DateTimeField(
         '更新时间', auto_now=True, db_index=True)
 
