@@ -59,6 +59,7 @@ class Fans(View):
 class Fan(View):
     @check_object_id(User.enabled, 'user')
     @check_object_id(User.enabled, 'other_user')
+    @require_token
     def get(self, request, other_user, user=None):
         """
         判断other_user是否为user的粉丝
@@ -120,6 +121,7 @@ class FollowedUsers(View):
 class FollowedUser(View):
     @check_object_id(User.enabled, 'user')
     @check_object_id(User.enabled, 'other_user')
+    @require_token
     def get(self, request, other_user, user=None):
         """
         判断user是否关注了other_user
@@ -133,6 +135,7 @@ class FollowedUser(View):
 
 class FollowedUserSelf(FollowedUser):
     @check_object_id(User.enabled, 'other_user')
+    @require_token
     def post(self, request, other_user):
         """
         令当前用户关注other_user
@@ -146,6 +149,7 @@ class FollowedUserSelf(FollowedUser):
         return Http200()
 
     @check_object_id(User.enabled, 'other_user')
+    @require_token
     def delete(self, request, other_user):
         """
         令当前用户取消关注other_user
@@ -207,6 +211,7 @@ class FollowedTeams(View):
 class FollowedTeam(View):
     @check_object_id(User.enabled, 'user')
     @check_object_id(Team.enabled, 'team')
+    @require_token
     def get(self, request, team, user=None):
         """
         判断user是否关注了team
