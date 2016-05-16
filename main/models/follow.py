@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 
 
@@ -14,7 +16,8 @@ class Follower(models.Model):
     """
     followed = None
     follower = None
-    create_time = models.DateTimeField('关注时间', db_index=True)
+    create_time = models.DateTimeField(
+        '关注时间', default=datetime.now, db_index=True)
 
     enabled = FollowerManager()
 
