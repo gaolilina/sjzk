@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db import models
 
+from ChuangYi.settings import IMAGE_PATH
 from main.models.mixins import IconMixin
 
 
@@ -23,7 +24,7 @@ class Team(models.Model, IconMixin):
     members = models.ManyToManyField(
         'User', 'teams', through='TeamMember', verbose_name='成员')
     icon = models.ImageField(
-        '图标', db_index=True, upload_to='%Y/%m/%d/')
+        '图标', db_index=True, upload_to=IMAGE_PATH)
     is_recruiting = models.BooleanField(
         '是否招募新成员', default=True, db_index=True)
     is_enabled = models.BooleanField(
