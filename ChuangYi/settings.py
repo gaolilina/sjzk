@@ -66,13 +66,18 @@ WSGI_APPLICATION = 'ChuangYi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cy',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': '123.206.24.226',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
+
+    #'default': {
+    #    'ENGINE': 'django.db.backends.postgresql',
+    #    'NAME': 'cy',
+    #    'USER': 'postgres',
+    #    'PASSWORD': 'postgres',
+    #    'HOST': '123.206.24.226',
+    #    'PORT': '5432',
+    #},
 }
 
 # Internationalization
