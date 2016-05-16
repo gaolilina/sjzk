@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from django.db import models
+from django.db import models, transaction
 
 from main.models.mixins import IconMixin
+from main.models.user import User,UserToken
 
 
 class TeamManager(models.Manager):
@@ -38,6 +39,27 @@ class Team(models.Model, IconMixin):
     class Meta:
         db_table = 'team'
 
+    @classmethod
+    def create(cls, user, name, **kwargs):
+        """
+        建立团队模型与其他相关模型
+
+        :param name: 团队名
+        :param kwargs: 其他团队模型相关的关键字参数
+
+        """
+        with transaction.atomic():
+            description = ''
+            if 'description' in kwargs:
+                description = kwargs['description']
+                kwargs.pop('description')
+            team = cls(owner=user, name=name, **kwargs)
+            team.save()
+            if description.strip() != '':
+                profile = TeamProfile(team=team)
+                profile.description = description
+                profile.save(update_fields=['description'])
+        return team
 
 class TeamMember(models.Model):
     """

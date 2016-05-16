@@ -6,7 +6,7 @@ from django.test import Client, TestCase, TransactionTestCase
 
 from main.models.location import Province, City
 from main.models.user import User
-
+from main.models.team import Team
 
 class UserListTestCase(TestCase):
     def setUp(self):
@@ -549,3 +549,43 @@ class UserFriendTestCase(TestCase):
         r = self.c0.get(reverse('self:friends'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 1)
+
+
+class TeamListTestCase(TestCase):
+    def setUp(self):
+        time = datetime.now()
+        self.user = User.create('0', name='user0', create_time=time)
+        token = self.user.token.value
+        self.c = Client(HTTP_USER_TOKEN=token)
+        for i in range(1, 21):
+            self.c.post(reverse('team:root'),
+                        {'user_id': self.user.id, 'name': 'team'+ str(i)})
+
+    def test_create(self):
+        r = self.c.post(reverse('team:root'),
+                        {'user_id': self.user.id ,'name': 'team100'})
+        self.assertEqual(r.status_code, 200)
+
+    def test_get_list_by_create_time_asc(self):
+        r = self.c.get(reverse('team:root'),
+                       {'limit': '20', 'order': '0'})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['list'][0]['name'], 'team1')
+
+    def test_get_list_by_create_time_desc(self):
+        r = self.c.get(reverse('team:root'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertEqual(r['list'][0]['name'], 'team20')
+
+    def test_get_list_by_name_asc(self):
+        r = self.c.get(reverse('team:root'),
+                       {'limit': 20, 'order': 2})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertLess(r['list'][0]['name'], r['list'][-1]['name'])
+
+    def test_get_list_by_name_desc(self):
+        r = self.c.get(reverse('team:root'),
+                       {'limit': 20, 'order': 3})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertGreater(r['list'][0]['name'], r['list'][-1]['name'])
