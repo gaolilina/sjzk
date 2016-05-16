@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import require_token, check_object_id, \
-    validate_input, validate_json_input
+    validate_input, validate_json_input, process_uploaded_image
 from main.models import User
 from main.models.location import Location
 from main.models.tag import Tag
@@ -193,22 +193,25 @@ class Icon(View):
         :return:
             icon_url: url | null
         """
-        if not user:
-            user = request.user
+        user = user or request.user
 
         url = user.icon_url
         return JsonResponse({'icon_url': url})
 
 
-# todo: user icon post method
 class IconSelf(Icon):
     @require_token
-    def post(self, request):
+    @process_uploaded_image('icon')
+    def post(self, request, icon):
         """
         设置当前用户的头像
 
         """
-        pass
+        if request.user.icon:
+            request.user.icon.delete()
+        request.user.icon = icon
+        request.user.save()
+        return Http200()
 
 
 class Profile(View):
@@ -230,12 +233,11 @@ class Profile(View):
             location: 所在地区，格式：[province_id, city_id]
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
-        if not user:
-            user = request.user
+        user = user or request.user
 
         # 更新访客记录
         if user != request.user:
-            Visitor.update(request.user, user)
+            Visitor.update(user, request.user)
 
         r = dict()
         r['username'] = user.username
@@ -332,8 +334,7 @@ class Identification(View):
             school: 所在学校
             student_number: 学生证号
         """
-        if not user:
-            user = request.user
+        user = user or request.user
 
         i = user.identification
         l = {'is_verified': i.is_verified,
@@ -378,27 +379,57 @@ class IdentificationSelf(Identification):
         return Http200()
 
 
-# todo: id card photo post method
-class IDCardPhoto(View):
+# todo: test id card
+class IDCard(View):
     @require_token
-    def post(self, request):
+    def get(self, request):
+        """
+        判断是否已上传身份证照片
+
+        """
+        return Http200() if request.user.identification.id_card \
+            else Http404()
+
+    @require_token
+    @process_uploaded_image('id_card')
+    def post(self, request, id_card):
         """
         设置当前用户的身份证照片
 
         """
-        if request.user.is_verified:
+        if request.user.identification.is_verified:
             return Http403('user has been verified')
         else:
-            pass
+            if request.user.identification.id_card:
+                request.user.identification.id_card.delete()
+            request.user.identification.id_card = id_card
+            request.user.identification.save()
+            return Http200()
 
 
-# todo: student card photo post method
-class StudentCardPhoto(View):
+# todo: test student card
+class StudentCard(View):
     @require_token
-    def post(self, request):
+    def get(self, request):
+        """
+        判断是否已上传身份证照片
+
+        """
+        return Http200() if request.user.identification.student_card \
+            else Http404()
+
+    @require_token
+    @process_uploaded_image('student_card')
+    def post(self, request, student_card):
         """
         设置当前用户的学生证照片
 
         """
-        pass
-
+        if request.user.identification.is_verified:
+            return Http403('user has been verified')
+        else:
+            if request.user.identification.student_card:
+                request.user.identification.student_card.delete()
+            request.user.identification.student_card = student_card
+            request.user.identification.save()
+            return Http200()

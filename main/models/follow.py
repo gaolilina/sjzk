@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class FollowerManager(models.Model):
+class FollowerManager(models.Manager):
     def get_queryset(self):
         return super(FollowerManager, self).get_queryset().filter(
             followed__is_enabled=True, follower__is_enabled=True)

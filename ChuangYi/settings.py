@@ -101,3 +101,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/upload/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'upload')
+
+IMAGE_PATH = '%Y/%m/%d/'
+PRIVATE_IMAGE_PATH = 'private/%Y/%m/%d/'

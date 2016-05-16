@@ -1,11 +1,16 @@
 import json
+import os
 from datetime import datetime, date, timedelta
 
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase, TransactionTestCase
 
+from ChuangYi import settings
 from main.models.location import Province, City
 from main.models.user import User
+
+TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
+
 from main.models.team import Team
 
 class UserListTestCase(TestCase):
@@ -54,8 +59,10 @@ class UserRegisterTestCase(TestCase):
                         {'phone_number': phone_number, 'password': 'password'})
         self.assertEqual(r.status_code, 200)
         r = json.loads(r.content.decode('utf8'))['token']
-        self.assertEqual(r, User.objects.get(
-            phone_number='13010101010').token.value)
+        c = Client(HTTP_USER_TOKEN=r)
+        # check if token is usable
+        r = c.get(reverse('self:icon'))
+        self.assertEqual(r.status_code, 200)
 
     def test_register_with_invalid_password(self):
         phone_number = User.encrypt_phone_number('14010101010')
@@ -179,6 +186,26 @@ class UserCredentialTestCase(TransactionTestCase):
         d = {'new_password': 'wrong!', 'old_password': 'invalid'}
         r = self.c.post(reverse('self:password'), d)
         self.assertEqual(r.status_code, 403)
+
+
+class UserIconTestCase(TestCase):
+    def setUp(self):
+        self.u = User.create('1')
+        self.c = Client(HTTP_USER_TOKEN=self.u.token.value)
+
+    def test(self):
+        # no icon at the moment
+        r = self.c.get(reverse('self:icon'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['icon_url'], None)
+        # upload an icon
+        with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
+            r = self.c.post(reverse('self:icon'), {'icon': f})
+        self.assertEqual(r.status_code, 200)
+        # return an icon url
+        r = self.c.get(reverse('self:icon'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertNotEqual(r['icon_url'], None)
 
 
 class UserProfileTestCase(TestCase):
@@ -547,6 +574,23 @@ class UserFriendTestCase(TestCase):
             reverse('self:friend', kwargs={'other_user_id': self.u1.id}))
         self.assertEqual(r.status_code, 200)
         r = self.c0.get(reverse('self:friends'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 1)
+
+
+class UserVisitorTestCase(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.u0 = User.create('0')
+        self.u1 = User.create('1')
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+
+    def test_visitors_request(self):
+        r = self.c0.get(reverse('user:profile', kwargs={'user_id': self.u1.id}))
+        self.assertEqual(r.status_code, 200)
+
+        r = self.c1.get(reverse('self:visitors'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 1)
 

@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import require_token, validate_input, check_object_id
-from main.models import User
+from main.models import User, Team
 
 
 # todo: visitor test cases
@@ -15,7 +15,6 @@ class Visitors(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     }
 
-    @require_token
     @validate_input(get_dict)
     def get(self, request, obj, offset=0, limit=10, days=7):
         """
@@ -53,9 +52,17 @@ class Visitors(View):
 
 # noinspection PyMethodOverriding
 class UserVisitors(Visitors):
+    @require_token
     @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
-        if not user:
-            user = request.user
+        user = user or request.user
 
         return super(UserVisitors, self).get(request, user)
+
+
+# noinspection PyMethodOverriding
+class TeamVisitors(Visitors):
+    @require_token
+    @check_object_id(Team.enabled, 'team')
+    def get(self, request, team):
+        return super(TeamVisitors, self).get(request, team)

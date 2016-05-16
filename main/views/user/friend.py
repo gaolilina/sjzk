@@ -43,8 +43,7 @@ class Friends(View):
                 icon_url: 用户头像URL
                 create_time: 成为好友时间
         """
-        if not user:
-            user = request.user
+        user = user or request.user
 
         i, j, k = offset, offset + limit, self.available_orders[order]
         c = user.friend_records.count()
@@ -65,11 +64,8 @@ class Friend(View):
         """
         检查两个用户是否为好友关系
 
-        :return:  200 | 404
-
         """
-        if not user:
-            user = request.user
+        user = user or request.user
 
         return Http200() if UserFriend.exist(user, other_user) \
             else Http404()
