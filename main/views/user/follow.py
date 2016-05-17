@@ -9,16 +9,17 @@ from main.responses import *
 
 
 # todo: test following-related
+# todo: team fans
 class Fans(View):
     get_dict = {
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     }
-    available_orders = [
+    available_orders = (
         'create_time', '-create_time',
         'follower__name', '-follower__name',
-    ]
+    )
 
     @check_object_id(User.enabled, 'user')
     @require_token

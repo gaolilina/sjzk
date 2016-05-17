@@ -18,10 +18,7 @@ class Users(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     }
-    available_orders = [
-        'create_time', '-create_time',
-        'name', '-name',
-    ]
+    available_orders = ('create_time', '-create_time', 'name', '-name')
 
     @require_token
     @validate_input(get_dict)

@@ -15,10 +15,10 @@ class Friends(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     }
-    available_orders = [
+    available_orders = (
         'create_time', '-create_time',
         'friend__name', '-friend__name',
-    ]
+    )
 
     @check_object_id(User.enabled, 'user')
     @require_token
