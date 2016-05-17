@@ -236,6 +236,7 @@ class UserProfileTestCase(TestCase):
         r = self.c.get(reverse('self:profile'))
         r = json.loads(r.content.decode('utf8'))
         p = self.profile.copy()
+        p['id'] = self.u0.id
         p['username'] = None
         p['icon'] = None
         p['create_time'] = self.u0.create_time.isoformat()[:-3]
@@ -245,6 +246,7 @@ class UserProfileTestCase(TestCase):
         r = self.c.get(reverse('user:profile', kwargs={'user_id': self.u0.id}))
         r = json.loads(r.content.decode('utf8'))
         p = self.profile.copy()
+        p['id'] = self.u0.id
         p['username'] = None
         p['icon'] = None
         p['create_time'] = self.u0.create_time.isoformat()[:-3]

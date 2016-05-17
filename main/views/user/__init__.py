@@ -219,6 +219,7 @@ class Profile(View):
         获取用户的基本资料
 
         :return:
+            id: 用户ID
             username: 用户名
             name: 昵称
             icon_url: 用户头像URL
@@ -237,6 +238,7 @@ class Profile(View):
             Visitor.update(user, request.user)
 
         r = dict()
+        r['id'] = user.id
         r['username'] = user.username
         r['name'] = user.name
         r['icon'] = user.icon_url
