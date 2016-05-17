@@ -8,7 +8,7 @@ from main.models.follow import UserFollower, TeamFollower
 from main.responses import *
 
 
-# todo: test following-related
+# todo: following-related test cases
 # todo: team fans
 class Fans(View):
     get_dict = {
@@ -21,10 +21,8 @@ class Fans(View):
         'follower__name', '-follower__name',
     )
 
-    @check_object_id(User.enabled, 'user')
-    @require_token
     @validate_input(get_dict)
-    def get(self, request, user=None, offset=0, limit=10, order=1):
+    def get(self, request, obj, offset=0, limit=10, order=1):
         """
         获取粉丝列表
 
@@ -44,11 +42,9 @@ class Fans(View):
                 icon_url: 用户头像URL
                 create_time: 关注时间
         """
-        user = user or request.user
-
         i, j, k = offset, offset + limit, self.available_orders[order]
-        c = user.follower_records.count()
-        qs = user.follower_records.order_by(k)[i:j]
+        c = obj.follower_records.count()
+        qs = obj.follower_records.order_by(k)[i:j]
         l = [{'id': r.follower.id,
               'username': r.follower.username,
               'name': r.follower.name,
@@ -57,19 +53,50 @@ class Fans(View):
         return JsonResponse({'count': c, 'list': l})
 
 
+# noinspection PyMethodOverriding
+class UserFans(Fans):
+    @check_object_id(User.enabled, 'user')
+    @require_token
+    def get(self, request, user=None):
+        user = user or request.user
+        return super(UserFans, self).get(request, user)
+
+
+# noinspection PyMethodOverriding
+class TeamFans(Fans):
+    @check_object_id(Team.enabled, 'team')
+    @require_token
+    def get(self, request, team):
+        return super(TeamFans, self).get(request, team)
+
+
 class Fan(View):
+    def get(self, request, obj, other_user):
+        """
+        判断other_user是否为obj的粉丝
+
+        """
+        return Http200() if obj.follower_records.filter(
+            follower=other_user).exists() else Http404()
+
+
+# noinspection PyMethodOverriding
+class UserFan(Fan):
     @check_object_id(User.enabled, 'user')
     @check_object_id(User.enabled, 'other_user')
     @require_token
     def get(self, request, other_user, user=None):
-        """
-        判断other_user是否为user的粉丝
-
-        """
         user = user or request.user
+        return super(UserFan, self).get(request, user, other_user)
 
-        return Http200() if UserFollower.exist(user, other_user) \
-            else Http404()
+
+# noinspection PyMethodOverriding
+class TeamFan(Fan):
+    @check_object_id(Team.enabled, 'team')
+    @check_object_id(User.enabled, 'other_user')
+    @require_token
+    def get(self, request, team, other_user):
+        return super(TeamFan, self).get(request, team, other_user)
 
 
 class FollowedUsers(View):
@@ -158,8 +185,8 @@ class FollowedUserSelf(FollowedUser):
         """
         if not UserFollower.exist(other_user, request.user):
             return Http403('not followed the object')
-        qs = other_user.follower_records.filter(follower=request.user)
-        qs.delete()
+
+        other_user.follower_records.filter(follower=request.user).delete()
         return Http200()
 
 
@@ -248,6 +275,6 @@ class FollowedTeamSelf(FollowedTeam):
         """
         if not TeamFollower.exist(team, request.user):
             return Http403('not followed the object')
-        qs = team.follower_records.filter(follower=request.user)
-        qs.delete()
+
+        team.follower_records.filter(follower=request.user).delete()
         return Http200()
