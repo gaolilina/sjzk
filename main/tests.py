@@ -610,3 +610,69 @@ class UserVisitorTestCase(TestCase):
         r = self.c1.get(reverse('self:visitors'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 1)
+
+class UserVisitorTestCase(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.u0 = User.create('0')
+        self.u1 = User.create('1')
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+
+    def test_visitors_request(self):
+        r = self.c0.get(reverse('user:profile', kwargs={'user_id': self.u1.id}))
+        self.assertEqual(r.status_code, 200)
+
+        r = self.c1.get(reverse('self:visitors'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 1)
+
+
+
+class UserVisitorTestCase(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.u0 = User.create('0')
+        self.u1 = User.create('1')
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+
+    def test_likers_request(self):
+        #获取点赞者列表
+        r = self.c1.get(reverse('self:likers'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 0)
+        #判断是否点赞
+        r = self.c0.get(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
+        self.assertEqual(r.status_code,400)
+        #对用户进行点赞
+        r = self.c0.post(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
+        self.assertEqual(r.status_code,200)
+        #重复点赞
+        r = self.c0.post(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
+        self.assertEqual(r.status_code,403)
+        #判断是否点赞
+        r = self.c0.get(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
+        self.assertEqual(r.status_code,200)
+        #获取点赞者列表
+        r = self.c1.get(reverse('self:likers'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 0)
+        #取消点赞
+        r = self.c0.delete(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
+        self.assertEqual(r.status_code,200)
+        #重复取消点赞
+        r = self.c0.delete(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
+        self.assertEqual(r.status_code,403)
+        #获取点赞者列表
+        r = self.c1.get(reverse('self:likers'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 0)
+        #判断是否点赞
+        r = self.c0.get(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
+        self.assertEqual(r.status_code,400)
+
+
+
+
+
