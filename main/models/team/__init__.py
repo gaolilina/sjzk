@@ -49,21 +49,9 @@ class Team(models.Model, IconMixin):
 
         """
         with transaction.atomic():
-            description = ''
-            if 'description' in kwargs:
-                description = kwargs.pop('description')
-            url = ''
-            if 'url' in kwargs:
-                url = kwargs.pop('url')
             team = cls(owner=user, name=name, **kwargs)
             team.save()
-            profile = TeamProfile(team=team)
-            if description.strip() != '':
-                profile.description = description
-                profile.save()
-            if url.strip() != '':
-                profile.url = url
-                profile.save()
+            TeamProfile.objects.create(team=team)
         return team
 
 

@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import require_token, check_object_id, \
-    validate_input, validate_json_input
+    validate_input, validate_json_input, process_uploaded_image
 from main.models import Team, TeamField, TeamProfile
 from main.models.visitor import Visitor
 from main.models.location import Location
@@ -83,8 +83,9 @@ class Teams(View):
         error = ''
         try:
             with transaction.atomic():
-                team = Team.create(request.user, name, description=description, url=url)
-                profile = team.profile
+                team = Team(owner=request.user,
+                            name=name, description=description, url=url)
+                profile = TeamProfile(team=team)
                 if location:
                     try:
                         Location.set(team, location)
@@ -194,6 +195,7 @@ class Profile(View):
         if request.user != team.owner:
             return Http400('Editing is limited for current user')
 
+        team_name = data.pop('name') if 'name' in data else ''
         location = data.pop('location') if 'location' in data else None
         fields = data.pop('fields') if 'fields' in data else None
         tags = data.pop('tags') if 'tags' in data else None
@@ -227,10 +229,10 @@ class Profile(View):
                     for i, name in enumerate(fields):
                         try:
                             team_fields[i].name = name
-                            print(team_fields[i].name, name)
                             team_fields[i].save()
                         except IndexError:
-                            TeamField(team=team, name=name)
+                            teamfield = TeamField(team=team, name=name)
+                            teamfield.save()
                 if tags:
                     try:
                         Tag.set(team, tags)
@@ -240,6 +242,9 @@ class Profile(View):
                     except ValueError as e:
                         error = str(e)
                         raise IntegrityError
+                if team_name:
+                    team.name = team_name
+                    team.save()
                 profile.save()
                 return Http200()
         except IntegrityError:

@@ -1,14 +1,13 @@
 import json
 import os
-from datetime import datetime, date, timedelta
 
 from django.core.urlresolvers import reverse
-from django.test import Client, TestCase, TransactionTestCase
+from django.test import Client, TestCase
 
 from ChuangYi import settings
 from main.models.location import Province, City
-from main.models.user import User
 from main.models.team import Team
+from main.models.user import User
 
 TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
 
@@ -648,9 +647,10 @@ class TeamListTestCase(TestCase):
 
 class TeamProfileTestCase(TestCase):
     def setUp(self):
-        self.u0 = User.create('0')
-        t0 = self.u0.token.value
-        self.c = Client(HTTP_USER_TOKEN=t0)
+        self.u = User.create('0')
+        self.t = Team.create(self.u, 'test')
+
+        self.c = Client(HTTP_USER_TOKEN=self.u.token.value)
 
         self.p1 = Province.objects.create(name='p1')
         self.p2 = Province.objects.create(name='p2')
@@ -664,68 +664,79 @@ class TeamProfileTestCase(TestCase):
                         'fields': ['field1', 'field2'],
                         'is_recruiting': True,
                         'tags': ['tag1', 'tag2']}
-        d = json.dumps(self.profile)
-        self.c.post(reverse('team:root'), {'data': d})
-
-        self.team = Team.enabled.get(name='team1')
 
     def test_get_profile(self):
+        d = json.dumps(self.profile)
+        self.c.post(reverse('team:profile',
+                            kwargs={'team_id': self.t.id}), {'data': d})
+
         r = self.c.get(reverse('team:profile',
-                               kwargs={'team_id': self.team.id}))
+                               kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         p = self.profile.copy()
 
-        p['owner_id'] = self.u0.id
+        p['owner_id'] = self.u.id
         p['icon'] = None
         p['is_recruiting'] = True
-        p['create_time'] = self.team.create_time.isoformat()[:-3]
+        p['create_time'] = self.t.create_time.isoformat()[:-3]
         self.assertEqual(r, p)
 
     def test_tag_related(self):
         # with valid tag list
         d = json.dumps({'tags': ['T1', 'T2']})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
+        self.assertEquals(r.status_code, 200)
 
         # with blank tag
         d = json.dumps({'tags': ['T1', 'T2', '  ']})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 400)
 
         # too many tags
         d = json.dumps({'tags': ['T1', 'T2', 'T3', 'T4', 'T5', 'T6']})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 400)
 
         # tag list should remain intact
         r = self.c.get(reverse('team:profile',
-                               kwargs={'team_id': self.team.id}))
+                               kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['tags'], ['t1', 't2'])
-'''
+
+        # set tags again
+        d = json.dumps({'tags': ['L1', 'L2']})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.t.id}), {'data': d})
+        self.assertEquals(r.status_code, 200)
+        r = self.c.get(reverse('team:profile',
+                               kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['tags'], ['l1', 'l2'])
+
     def test_fields_related(self):
         # with valid tag list
         d = json.dumps({'fields': ['F1', 'F2']})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
 
         # with blank tag
         d = json.dumps({'fields': ['F1', 'F2', '  ']})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 400)
 
         # too many tags
         d = json.dumps({'fields': ['F1', 'F2', 'F3']})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 400)
 
         # tag list should remain intact
         r = self.c.get(reverse('team:profile',
-                               kwargs={'team_id': self.team.id}))
+                               kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['fields'], ['f1', 'f2'])
 
@@ -733,30 +744,29 @@ class TeamProfileTestCase(TestCase):
         # with both values
         d = json.dumps({'location': [self.p1.id, self.c1.id]})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 200)
 
         # clean location
         d = json.dumps({'location': [None, None]})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 200)
 
         # with province only
         d = json.dumps({'location': [self.p2.id, None]})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 200)
 
         # with invalid value
         d = json.dumps({'location': [self.p2.id, self.c1.id]})
         r = self.c.post(reverse('team:profile',
-                                kwargs={'team_id': self.team.id}), {'data': d})
+                                kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 400)
 
         # get location
         r = self.c.get(reverse('team:profile',
-                               kwargs={'team_id': self.team.id}))
+                               kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['location'], [self.p2.id, None])
-'''
