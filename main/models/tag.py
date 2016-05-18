@@ -17,32 +17,41 @@ class Tag(models.Model):
         获取对象的标签列表
 
         """
-        return [tag.name for tag in obj.tags.all()]
+        return [tag.name for tag in obj.tags.all().filter(is_enabled=True)]
 
     @staticmethod
-    def set(obj, tag_name_list):
+    def set(obj, tag_list):
         """
         设置对象的标签列表
 
         :param obj: 带标签属性的对象
-        :param tag_name_list: 标签名称列表
+        :param tag_list: 标签名称列表
 
         """
-        if len(tag_name_list) > 5:
+        if len(tag_list) > 5:
             raise ValueError('too many tags')
-        for i, name in enumerate(tag_name_list):
+        for i, name in enumerate(tag_list):
             name = name.strip().lower()
             if not name:
                 raise ValueError('blank tag is not allowed')
-            tag_name_list[i] = name
-        tags = obj.tags.all()
+            tag_list[i] = name
+
+        tags = list(obj.tags.all())
         with transaction.atomic():
-            for i, name in enumerate(tag_name_list):
+            # 设置标签
+            for i, name in enumerate(tag_list):
                 try:
                     tags[i].name = name
-                    tags[i].save(update_fields=['tag'])
+                    tags[i].is_enabled = True
+                    tags[i].save(update_fields=['tag', 'is_enabled'])
                 except IndexError:
                     obj.tags.create(order=i, name=name)
+            # 将多余标签标记为无效
+            i, j = len(tags), len(tag_list)
+            if i > j:
+                for t in tags[j:]:
+                    t.is_enabled = False
+                    t.save(update_fields=['is_enabled'])
 
 
 class ObjectTag(models.Model):
@@ -52,6 +61,7 @@ class ObjectTag(models.Model):
     """
     tag = models.ForeignKey(Tag, models.CASCADE, '+')
     order = models.IntegerField('序号')
+    is_enabled = models.BooleanField('是否有效', default=True, db_index=True)
 
     class Meta:
         abstract = True

@@ -8,7 +8,6 @@ from main.decorators import require_token, validate_input, check_object_id
 from main.models import User, Team
 
 
-# todo: visitor test cases
 class Visitors(View):
     get_dict = {
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -56,7 +55,6 @@ class UserVisitors(Visitors):
     @check_object_id(User.enabled, 'user')
     def get(self, request, user=None):
         user = user or request.user
-
         return super(UserVisitors, self).get(request, user)
 
 

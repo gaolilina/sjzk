@@ -18,10 +18,7 @@ class Users(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     }
-    available_orders = [
-        'create_time', '-create_time',
-        'name', '-name',
-    ]
+    available_orders = ('create_time', '-create_time', 'name', '-name')
 
     @require_token
     @validate_input(get_dict)
@@ -222,6 +219,7 @@ class Profile(View):
         获取用户的基本资料
 
         :return:
+            id: 用户ID
             username: 用户名
             name: 昵称
             icon_url: 用户头像URL
@@ -240,6 +238,7 @@ class Profile(View):
             Visitor.update(user, request.user)
 
         r = dict()
+        r['id'] = user.id
         r['username'] = user.username
         r['name'] = user.name
         r['icon'] = user.icon_url
@@ -301,7 +300,7 @@ class ProfileSelf(Profile):
                         raise IntegrityError
                     else:
                         request.user.location.save()
-                if tags:
+                if tags is not None:
                     try:
                         Tag.set(request.user, tags)
                     except TypeError:

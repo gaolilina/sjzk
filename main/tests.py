@@ -236,6 +236,7 @@ class UserProfileTestCase(TestCase):
         r = self.c.get(reverse('self:profile'))
         r = json.loads(r.content.decode('utf8'))
         p = self.profile.copy()
+        p['id'] = self.u0.id
         p['username'] = None
         p['icon'] = None
         p['create_time'] = self.u0.create_time.isoformat()[:-3]
@@ -245,6 +246,7 @@ class UserProfileTestCase(TestCase):
         r = self.c.get(reverse('user:profile', kwargs={'user_id': self.u0.id}))
         r = json.loads(r.content.decode('utf8'))
         p = self.profile.copy()
+        p['id'] = self.u0.id
         p['username'] = None
         p['icon'] = None
         p['create_time'] = self.u0.create_time.isoformat()[:-3]
@@ -253,7 +255,7 @@ class UserProfileTestCase(TestCase):
 
     def test_tag_related(self):
         # with valid tag list
-        d = json.dumps({'tags': ['T1', 'T2']})
+        d = json.dumps({'tags': ['T1', 'T2', 'T3', 'T4']})
         r = self.c.post(reverse('self:profile'), {'data': d})
         self.assertEqual(r.status_code, 200)
 
@@ -270,7 +272,23 @@ class UserProfileTestCase(TestCase):
         # tag list should remain intact
         r = self.c.get(reverse('self:profile'))
         r = json.loads(r.content.decode('utf8'))
-        self.assertEqual(r['tags'], ['t1', 't2'])
+        self.assertEqual(r['tags'], ['t1', 't2', 't3', 't4'])
+
+        # set tags again
+        d = json.dumps({'tags': ['T3', 'T4']})
+        r = self.c.post(reverse('self:profile'), {'data': d})
+        self.assertEqual(r.status_code, 200)
+        r = self.c.get(reverse('self:profile'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['tags'], ['t3', 't4'])
+
+        # clean tags
+        d = json.dumps({'tags': []})
+        r = self.c.post(reverse('self:profile'), {'data': d})
+        self.assertEqual(r.status_code, 200)
+        r = self.c.get(reverse('self:profile'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['tags'], [])
 
     def test_location_related(self):
         # with both values

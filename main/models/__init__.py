@@ -1,4 +1,5 @@
 from .follow import UserFollower
+from .like import UserLiker, TeamLiker
 from .location import Province, City, UserLocation, TeamLocation
 from .tag import Tag, UserTag, TeamTag
 from .team import Team, TeamMember, TeamProfile
