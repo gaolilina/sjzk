@@ -121,9 +121,7 @@ class Teams(View):
                     except ValueError as e:
                         error = str(e)
                         raise IntegrityError
-                print('0000000')
                 profile.save()
-                print('1111111')
                 return JsonResponse({'team_id': team.id})
         except IntegrityError:
             return Http400(error)
