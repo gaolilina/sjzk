@@ -4,7 +4,6 @@ from django.db import models, transaction
 
 from ChuangYi.settings import IMAGE_PATH
 from main.models.mixins import IconMixin
-from main.models.user import User,UserToken
 
 
 class TeamManager(models.Manager):
@@ -52,15 +51,21 @@ class Team(models.Model, IconMixin):
         with transaction.atomic():
             description = ''
             if 'description' in kwargs:
-                description = kwargs['description']
-                kwargs.pop('description')
+                description = kwargs.pop('description')
+            url = ''
+            if 'url' in kwargs:
+                url = kwargs.pop('url')
             team = cls(owner=user, name=name, **kwargs)
             team.save()
+            profile = TeamProfile(team=team)
             if description.strip() != '':
-                profile = TeamProfile(team=team)
                 profile.description = description
-                profile.save(update_fields=['description'])
+                profile.save()
+            if url.strip() != '':
+                profile.url = url
+                profile.save()
         return team
+
 
 class TeamMember(models.Model):
     """
@@ -77,11 +82,20 @@ class TeamMember(models.Model):
 
 
 class TeamProfile(models.Model):
-    team = models.ForeignKey(Team, models.CASCADE, 'profile')
+    team = models.OneToOneField(Team, models.CASCADE, related_name='profile')
 
     description = models.TextField(
         '团队简介', max_length=100, default='', db_index=True)
-    # and other stuffs...
+    url = models.URLField('团队链接', max_length=100, default='')
 
     class Meta:
         db_table = 'team_profile'
+
+
+class TeamField(models.Model):
+    team = models.ForeignKey(Team, models.CASCADE, related_name='fields')
+    name = models.CharField('团队领域', max_length=10, unique=True,
+                             db_index=True, default='')
+
+    class Meta:
+        db_table = 'team_field'

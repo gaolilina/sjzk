@@ -8,11 +8,11 @@ from django.test import Client, TestCase, TransactionTestCase
 from ChuangYi import settings
 from main.models.location import Province, City
 from main.models.user import User
+from main.models.team import Team
 
 TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
 
-from main.models.team import Team
-
+'''
 class UserListTestCase(TestCase):
     def setUp(self):
         time = datetime.now()
@@ -602,12 +602,22 @@ class TeamListTestCase(TestCase):
         token = self.user.token.value
         self.c = Client(HTTP_USER_TOKEN=token)
         for i in range(1, 21):
-            self.c.post(reverse('team:root'),
-                        {'user_id': self.user.id, 'name': 'team'+ str(i)})
+            d = json.dumps({'name': 'team' + str(i)})
+            self.c.post(reverse('team:root'), {'data': d})
 
     def test_create(self):
-        r = self.c.post(reverse('team:root'),
-                        {'user_id': self.user.id ,'name': 'team100'})
+        self.p1 = Province.objects.create(name='p1')
+        self.p2 = Province.objects.create(name='p2')
+        self.c1 = City.objects.create(name='c1', province=self.p1)
+        self.c2 = City.objects.create(name='c2', province=self.p1)
+
+        d = json.dumps({'name': 'team1',
+                        'description': 'Team Test!',
+                        'url': 'http://www.baidu.com',
+                        'location': [self.p1.id, self.c1.id],
+                        'fields': ['field1', 'field2'],
+                        'tags': ['tag1', 'tag2']})
+        r = self.c.post(reverse('team:root'), {'data': d})
         self.assertEqual(r.status_code, 200)
 
     def test_get_list_by_create_time_asc(self):
@@ -633,3 +643,120 @@ class TeamListTestCase(TestCase):
                        {'limit': 20, 'order': 3})
         r = json.loads(r.content.decode('utf8'))
         self.assertGreater(r['list'][0]['name'], r['list'][-1]['name'])
+'''
+
+
+class TeamProfileTestCase(TestCase):
+    def setUp(self):
+        self.u0 = User.create('0')
+        t0 = self.u0.token.value
+        self.c = Client(HTTP_USER_TOKEN=t0)
+
+        self.p1 = Province.objects.create(name='p1')
+        self.p2 = Province.objects.create(name='p2')
+        self.c1 = City.objects.create(name='c1', province=self.p1)
+        self.c2 = City.objects.create(name='c2', province=self.p1)
+
+        self.profile = {'name': 'team1',
+                        'description': 'Team Test!',
+                        'url': 'http://www.baidu.com',
+                        'location': [self.p1.id, self.c1.id],
+                        'fields': ['field1', 'field2'],
+                        'is_recruiting': True,
+                        'tags': ['tag1', 'tag2']}
+        d = json.dumps(self.profile)
+        self.c.post(reverse('team:root'), {'data': d})
+
+        self.team = Team.enabled.get(name='team1')
+
+    def test_get_profile(self):
+        r = self.c.get(reverse('team:profile',
+                               kwargs={'team_id': self.team.id}))
+        r = json.loads(r.content.decode('utf8'))
+        p = self.profile.copy()
+
+        p['owner_id'] = self.u0.id
+        p['icon'] = None
+        p['is_recruiting'] = True
+        p['create_time'] = self.team.create_time.isoformat()[:-3]
+        self.assertEqual(r, p)
+
+    def test_tag_related(self):
+        # with valid tag list
+        d = json.dumps({'tags': ['T1', 'T2']})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+
+        # with blank tag
+        d = json.dumps({'tags': ['T1', 'T2', '  ']})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+        self.assertEqual(r.status_code, 400)
+
+        # too many tags
+        d = json.dumps({'tags': ['T1', 'T2', 'T3', 'T4', 'T5', 'T6']})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+        self.assertEqual(r.status_code, 400)
+
+        # tag list should remain intact
+        r = self.c.get(reverse('team:profile',
+                               kwargs={'team_id': self.team.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['tags'], ['t1', 't2'])
+'''
+    def test_fields_related(self):
+        # with valid tag list
+        d = json.dumps({'fields': ['F1', 'F2']})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+
+        # with blank tag
+        d = json.dumps({'fields': ['F1', 'F2', '  ']})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+        self.assertEqual(r.status_code, 400)
+
+        # too many tags
+        d = json.dumps({'fields': ['F1', 'F2', 'F3']})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+        self.assertEqual(r.status_code, 400)
+
+        # tag list should remain intact
+        r = self.c.get(reverse('team:profile',
+                               kwargs={'team_id': self.team.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['fields'], ['f1', 'f2'])
+
+    def test_location_related(self):
+        # with both values
+        d = json.dumps({'location': [self.p1.id, self.c1.id]})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+        self.assertEqual(r.status_code, 200)
+
+        # clean location
+        d = json.dumps({'location': [None, None]})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+        self.assertEqual(r.status_code, 200)
+
+        # with province only
+        d = json.dumps({'location': [self.p2.id, None]})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+        self.assertEqual(r.status_code, 200)
+
+        # with invalid value
+        d = json.dumps({'location': [self.p2.id, self.c1.id]})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.team.id}), {'data': d})
+        self.assertEqual(r.status_code, 400)
+
+        # get location
+        r = self.c.get(reverse('team:profile',
+                               kwargs={'team_id': self.team.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['location'], [self.p2.id, None])
+'''

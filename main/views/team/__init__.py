@@ -5,8 +5,10 @@ from django.views.generic import View
 
 from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input
-from main.models import Team, User
+from main.models import Team, TeamField, TeamProfile
+from main.models.visitor import Visitor
 from main.models.location import Location
+from main.models.tag import Tag
 from main.responses import *
 
 
@@ -40,7 +42,6 @@ class Teams(View):
                 id: 团队ID
                 name: 团队名
                 icon_url: 团队头像URL
-                is_recruiting: 是否招募新成员
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
@@ -49,42 +50,197 @@ class Teams(View):
         l = [{'id': t.id,
               'name': t.name,
               'icon_url': t.icon_url,
-              'is_recruiting': t.is_recruiting,
               'create_time': t.create_time} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
     post_dict = {
-        'user_id': forms.IntegerField(min_value=0),
         'name': forms.CharField(),
-        'description': forms.CharField(required=False),
     }
 
-    @validate_input(post_dict)
-    def post(self, request, user_id, name, description=''):
+    @require_token
+    @validate_json_input(post_dict)
+    def post(self, request, data):
         """
         新建团队
 
-        :param user_id: 用户id
-        :param name: 团队名称
-        :param description: 团队描述（默认为空）
+        :param data:
+            name: 团队名称
+            description: 团队描述（默认为空）
+            url: 团队链接（默认为空）
+            location: 所在地区（默认为空），格式：[province_id, city_id]
+            fields: 团队领域（默认为空），格式:['field1', 'field2', ...]
+            tags: 标签（默认为空），格式：['tag1', 'tag2', ...]
         :return: 200 | 400 | 403
         """
+        name = data['name']
+        description = data.pop('description') if 'description' in data else ''
+        url = data.pop('url') if 'url' in data else ''
+
+        location = data.pop('location') if 'location' in data else None
+        fields = data.pop('fields') if 'fields' in data else None
+        tags = data.pop('tags') if 'tags' in data else None
+
+        error = ''
         try:
-            user = User.objects.get(id=user_id)
-        except ValueError as e:
-            return Http400(e)
-        try:
-            same_team_num = Team.enabled.filter(name=name).count()
-        except ValueError as e:
-            return Http400(e)
-        if same_team_num > 0:
-            return Http403('team already exists')
-        try:
-            Team.create(user, name, description=description)
-            return Http200()
-        except ValueError as e:
-            return Http400(e)
+            with transaction.atomic():
+                team = Team.create(request.user, name, description=description, url=url)
+                profile = team.profile
+                if location:
+                    try:
+                        Location.set(team, location)
+                    except TypeError:
+                        error = 'invalid location'
+                        raise IntegrityError
+                    except ValueError as e:
+                        error = str(e)
+                        raise IntegrityError
+                    else:
+                        team.location.save()
+                if fields:
+                    if len(fields) > 2:
+                       raise ValueError('too many fields')
+                    for i, name in enumerate(fields):
+                        name = name.strip().lower()
+                        if not name:
+                            raise ValueError('blank tag is not allowed')
+                        fields[i] = name
+                    for field in fields:
+                        team_field = TeamField(team=team, name=field)
+                        team_field.save()
+                if tags:
+                    try:
+                        Tag.set(team, tags)
+                    except TypeError:
+                        error = 'invalid tag list'
+                        raise IntegrityError
+                    except ValueError as e:
+                        error = str(e)
+                        raise IntegrityError
+                profile.save()
+                return Http200()
+        except IntegrityError:
+            return Http400(error)
 
 
 class Profile(View):
-    pass
+    @check_object_id(Team.enabled, 'team')
+    @require_token
+    def get(self, request, team):
+        """
+        获取团队的基本资料
+
+        :param: team_id : 团队id
+        :return:
+            name: 团队名
+            owner_id: 创始人id
+            icon_url: 团队头像URL
+            create_time: 注册时间
+            is_recruiting：是否招募新成员
+            description: 团队简介
+            url: 团队链接
+            location: 所在地区，格式：[province_id, city_id]
+            fields: 所属领域，格式：['field1', 'field2', ...]
+            tags: 标签，格式：['tag1', 'tag2', ...]
+        """
+        owner = team.owner
+
+        # 更新访客记录
+        if owner != request.user:
+            Visitor.update(team, request.user)
+
+        # 读取所属领域
+        fields = []
+        for team_field in team.fields.all():
+            fields.append(team_field.name)
+        r = dict()
+        r['name'] = team.name
+        r['owner_id'] = team.owner.id
+        r['icon'] = team.icon_url
+        r['create_time'] = team.create_time
+        r['is_recruiting'] = team.is_recruiting
+        r['description'] = team.profile.description
+        r['url'] = team.profile.url
+        r['fields'] = fields
+        r['location'] = Location.get(team)
+        r['tags'] = Tag.get(team)
+
+        return JsonResponse(r)
+
+    post_dict = {
+        'name': forms.CharField(required=False, min_length=1, max_length=20),
+        'is_recruiting': forms.BooleanField(required=False),
+        'description': forms.CharField(required=False, max_length=100),
+        'url': forms.CharField(required=False, max_length=100),
+    }
+
+    @check_object_id(Team.enabled, 'team')
+    @require_token
+    @validate_json_input(post_dict)
+    def post(self, request, team, data):
+        """
+        修改团队资料
+
+        :param team_id: 团队id
+        :param data:
+            name: 团队名
+            description: 团队简介
+            is_recruiting：是否招募新成员
+            url: 团队链接
+            location: 所在地区，格式：[province_id, city_id]
+            fields: 所属领域，格式：['field1', 'field2']
+            tags: 标签，格式：['tag1', 'tag2', ...]
+
+        """
+        if request.user != team.owner:
+            return Http400('Editing is limited for current user')
+
+        location = data.pop('location') if 'location' in data else None
+        fields = data.pop('fields') if 'fields' in data else None
+        tags = data.pop('tags') if 'tags' in data else None
+        profile = team.profile
+        for k, v in data.items():
+            setattr(profile, k, v)
+
+        error = ''
+        try:
+            with transaction.atomic():
+                if location:
+                    try:
+                        Location.set(team, location)
+                    except TypeError:
+                        error = 'invalid location'
+                        raise IntegrityError
+                    except ValueError as e:
+                        error = str(e)
+                        raise IntegrityError
+                    else:
+                        team.location.save()
+                if fields:
+                    if len(fields) > 2:
+                       return Http400('too many fields')
+                    for i, name in enumerate(fields):
+                        name = name.strip().lower()
+                        if not name:
+                            return Http400('blank tag is not allowed')
+                        fields[i] = name
+                    team_fields = team.fields.all()
+                    for i, name in enumerate(fields):
+                        try:
+                            team_fields[i].name = name
+                            print(team_fields[i].name, name)
+                            team_fields[i].save()
+                        except IndexError:
+                            TeamField(team=team, name=name)
+                if tags:
+                    try:
+                        Tag.set(team, tags)
+                    except TypeError:
+                        error = 'invalid tag list'
+                        raise IntegrityError
+                    except ValueError as e:
+                        error = str(e)
+                        raise IntegrityError
+                profile.save()
+                return Http200()
+        except IntegrityError:
+            return Http400(error)

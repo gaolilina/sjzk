@@ -75,6 +75,9 @@ class Location(models.Model):
         if model_name == 'User':
             location, created = UserLocation.objects.get_or_create(
                 user=obj, defaults={'province': province, 'city': city})
+        elif model_name == 'Team':
+            location, created = TeamLocation.objects.get_or_create(
+                team=obj, defaults={'province': province, 'city': city})
         else:
             raise TypeError('object does not have location attribute')
 
