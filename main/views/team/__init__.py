@@ -5,7 +5,7 @@ from django.views.generic import View
 
 from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input, process_uploaded_image
-from main.models import Team, TeamField, TeamProfile
+from main.models import Team, TeamProfile
 from main.models.visitor import Visitor
 from main.models.location import Location
 from main.models.tag import Tag
@@ -70,7 +70,7 @@ class Teams(View):
             location: 所在地区（默认为空），格式：[province_id, city_id]
             fields: 团队领域（默认为空），格式:['field1', 'field2', ...]
             tags: 标签（默认为空），格式：['tag1', 'tag2', ...]
-        :return: 200 | 400 | 403
+        :return: team_id: 团队id
         """
         name = data['name']
         description = data.pop('description') if 'description' in data else ''
@@ -105,9 +105,9 @@ class Teams(View):
                         if not name:
                             raise ValueError('blank tag is not allowed')
                         fields[i] = name
-                    for field in fields:
-                        team_field = TeamField(team=team, name=field)
-                        team_field.save()
+                    profile.field1 = fields[0]
+                    if len(fields) > 1:
+                        profile.field2 = fields[1]
                 if tags:
                     try:
                         Tag.set(team, tags)
@@ -150,9 +150,10 @@ class Profile(View):
             Visitor.update(team, request.user)
 
         # 读取所属领域
-        fields = []
-        for team_field in team.fields.all():
-            fields.append(team_field.name)
+        fields = list()
+        fields.append(team.profile.field1)
+        if team.profile.field2:
+            fields.append(team.profile.field2)
         r = dict()
         r['name'] = team.name
         r['owner_id'] = team.owner.id
@@ -225,14 +226,9 @@ class Profile(View):
                         if not name:
                             return Http400('blank tag is not allowed')
                         fields[i] = name
-                    team_fields = team.fields.all()
-                    for i, name in enumerate(fields):
-                        try:
-                            team_fields[i].name = name
-                            team_fields[i].save()
-                        except IndexError:
-                            teamfield = TeamField(team=team, name=name)
-                            teamfield.save()
+                    team.profile.field1 = fields[0]
+                    if len(fields) > 1:
+                        team.profile.field2 = fields[1]
                 if tags:
                     try:
                         Tag.set(team, tags)
