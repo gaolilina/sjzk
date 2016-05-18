@@ -300,7 +300,7 @@ class ProfileSelf(Profile):
                         raise IntegrityError
                     else:
                         request.user.location.save()
-                if tags:
+                if tags is not None:
                     try:
                         Tag.set(request.user, tags)
                     except TypeError:
