@@ -665,7 +665,13 @@ class TeamProfileTestCase(TestCase):
                         'is_recruiting': True,
                         'tags': ['tag1', 'tag2']}
 
-    def test_get_profile(self):
+    def test_create(self):
+        d = json.dumps({'name': 'team100'})
+        r = self.c.post(reverse('team:root'), {'data': d})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['team_id'], 2)
+
+    def test_set_and_get_profile(self):
         d = json.dumps(self.profile)
         self.c.post(reverse('team:profile',
                             kwargs={'team_id': self.t.id}), {'data': d})

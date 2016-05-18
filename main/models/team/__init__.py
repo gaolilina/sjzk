@@ -75,10 +75,10 @@ class TeamProfile(models.Model):
     description = models.TextField(
         '团队简介', max_length=100, default='', db_index=True)
     url = models.URLField('团队链接', max_length=100, default='')
-    field1 = models.CharField('团队领域', max_length=10, unique=True,
-                             db_index=True, default='')
-    field2 = models.CharField('团队领域', max_length=10, unique=True,
-                             db_index=True, default='')
+    field1 = models.CharField('团队领域1', max_length=10,
+                              db_index=True, default='')
+    field2 = models.CharField('团队领域2', max_length=10,
+                              db_index=True, default='')
 
     class Meta:
         db_table = 'team_profile'

@@ -5,7 +5,7 @@ from django.views.generic import View
 
 from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input, process_uploaded_image
-from main.models import Team, TeamProfile
+from main.models.team import Team, TeamProfile
 from main.models.visitor import Visitor
 from main.models.location import Location
 from main.models.tag import Tag
@@ -83,9 +83,24 @@ class Teams(View):
         error = ''
         try:
             with transaction.atomic():
-                team = Team(owner=request.user,
-                            name=name, description=description, url=url)
+                team = Team(owner=request.user, name=name)
+                team.save()
                 profile = TeamProfile(team=team)
+                if description:
+                    profile.description = description
+                if url:
+                    profile.url = url
+                if fields:
+                    if len(fields) > 2:
+                       raise ValueError('too many fields')
+                    for i, name in enumerate(fields):
+                        name = name.strip().lower()
+                        if not name:
+                            raise ValueError('blank tag is not allowed')
+                        fields[i] = name
+                    profile.field1 = fields.pop()
+                    if len(fields) > 1:
+                        profile.field2 = fields.pop()
                 if location:
                     try:
                         Location.set(team, location)
@@ -97,17 +112,6 @@ class Teams(View):
                         raise IntegrityError
                     else:
                         team.location.save()
-                if fields:
-                    if len(fields) > 2:
-                       raise ValueError('too many fields')
-                    for i, name in enumerate(fields):
-                        name = name.strip().lower()
-                        if not name:
-                            raise ValueError('blank tag is not allowed')
-                        fields[i] = name
-                    profile.field1 = fields[0]
-                    if len(fields) > 1:
-                        profile.field2 = fields[1]
                 if tags:
                     try:
                         Tag.set(team, tags)
@@ -117,8 +121,10 @@ class Teams(View):
                     except ValueError as e:
                         error = str(e)
                         raise IntegrityError
+                print('0000000')
                 profile.save()
-                return Http200()
+                print('1111111')
+                return JsonResponse({'team_id': team.id})
         except IntegrityError:
             return Http400(error)
 
@@ -261,18 +267,3 @@ class Icon(View):
         team = Team.enabled.get(id=team_id)
         url = team.icon_url
         return JsonResponse({'icon_url': url})
-
-    '''
-    @require_token
-    @process_uploaded_image('icon')
-    def post(self, request, icon):
-        """
-        设置当前用户的头像
-
-        """
-        if request.user.icon:
-            request.user.icon.delete()
-        request.user.icon = icon
-        request.user.save()
-        return Http200()
-    '''
