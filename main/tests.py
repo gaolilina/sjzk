@@ -629,7 +629,8 @@ class UserVisitorTestCase(TestCase):
 
 
 
-class UserVisitorTestCase(TestCase):
+'''
+class UserLikersTestCase(TestCase):
     def setUp(self):
         self.c = Client()
         self.u0 = User.create('0')
@@ -671,6 +672,46 @@ class UserVisitorTestCase(TestCase):
         #判断是否点赞
         r = self.c0.get(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
         self.assertEqual(r.status_code,400)
+
+'''
+
+class UserFollowersTestCase(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.u0 = User.create('0')
+        self.u1 = User.create('1')
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+
+    def test_followers_request(self):
+        #获取粉丝列表
+        r = self.c1.get(reverse('self:fans'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 0)
+        #获取关注用户列表
+        r = self.c0.get(reverse('self:followed_users'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 0)
+        #判断u0是否为u1的粉丝
+        r = self.c1.get(reverse('self:fan',kwargs={'other_user_id':self.u0.id}))
+        self.assertEqual(r.status_code, 404)
+        #关注某人
+        r = self.c0.post(reverse('self:followed_user',kwargs={'other_user_id':self.u1.id}))
+        self.assertEqual(r.status_code, 200)
+        #重复关注某人
+        r = self.c0.post(reverse('self:followed_user',kwargs={'other_user_id':self.u1.id}))
+        self.assertEqual(r.status_code, 403)
+        #判断u0是否为u1的粉丝
+        r = self.c1.get(reverse('self:fan',kwargs={'other_user_id':self.u0.id}))
+        self.assertEqual(r.status_code, 200)
+        #获取粉丝列表
+        r = self.c1.get(reverse('self:fans'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 1)
+        #获取关注用户列表
+        r = self.c0.get(reverse('self:followed_users'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 1)
 
 
 
