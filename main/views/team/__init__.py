@@ -41,6 +41,7 @@ class Teams(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
+                owner_id: 创建者ID
                 icon_url: 团队头像URL
                 create_time: 注册时间
         """
@@ -50,6 +51,54 @@ class Teams(View):
         l = [{'id': t.id,
               'name': t.name,
               'icon_url': t.icon_url,
+              'owner_id': t.owner.id,
+              'create_time': t.create_time} for t in teams]
+        return JsonResponse({'count': c, 'list': l})
+
+    post_dict = {
+        'name': forms.CharField(),
+    }
+
+
+class TeamsSelf(View):
+    get_dict = {
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    }
+    available_orders = [
+        'create_time', '-create_time',
+        'name', '-name',
+    ]
+
+    @require_token
+    @validate_input(get_dict)
+    def get(self, request, offset=0, limit=10, order=1):
+        """
+        获取自己创建的团队列表
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 团队总数
+            list: 团队列表
+                id: 团队ID
+                name: 团队名
+                owner_id: 创建者ID
+                icon_url: 团队头像URL
+                create_time: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.available_orders[order]
+        c = Team.enabled.filter(owner=request.user).count()
+        teams = Team.enabled.filter(owner=request.user).order_by(k)[i:j]
+        l = [{'id': t.id,
+              'name': t.name,
+              'icon_url': t.icon_url,
+              'owner_id': t.owner.id,
               'create_time': t.create_time} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 

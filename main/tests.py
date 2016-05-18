@@ -1,8 +1,9 @@
 import json
 import os
+from datetime import datetime, date, timedelta
 
 from django.core.urlresolvers import reverse
-from django.test import Client, TestCase
+from django.test import Client, TestCase, TransactionTestCase
 
 from ChuangYi import settings
 from main.models.location import Province, City
@@ -11,7 +12,7 @@ from main.models.user import User
 
 TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
 
-'''
+
 class UserListTestCase(TestCase):
     def setUp(self):
         time = datetime.now()
@@ -619,8 +620,7 @@ class TeamListTestCase(TestCase):
         token = self.user.token.value
         self.c = Client(HTTP_USER_TOKEN=token)
         for i in range(1, 21):
-            d = json.dumps({'name': 'team' + str(i)})
-            self.c.post(reverse('team:root'), {'data': d})
+            Team.create(self.user, 'team' + str(i))
 
     def test_create(self):
         self.p1 = Province.objects.create(name='p1')
@@ -634,8 +634,20 @@ class TeamListTestCase(TestCase):
                         'location': [self.p1.id, self.c1.id],
                         'fields': ['field1', 'field2'],
                         'tags': ['tag1', 'tag2']})
-        r = self.c.post(reverse('team:root'), {'data': d})
+        r = self.c.post(reverse('team:rootSelf'), {'data': d})
         self.assertEqual(r.status_code, 200)
+
+    def test_get_own_list(self):
+        self.user1 = User.create('1', name='user1', create_time=datetime.now())
+        token1 = self.user1.token.value
+        self.c1 = Client(HTTP_USER_TOKEN=token1)
+        for i in range(1, 21):
+            Team.create(self.user1, 'own_team' + str(i))
+
+        r = self.c1.get(reverse('team:rootSelf'),
+                       {'limit': '20', 'order': '0'})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['list'][0]['name'], 'own_team1')
 
     def test_get_list_by_create_time_asc(self):
         r = self.c.get(reverse('team:root'),
@@ -660,7 +672,6 @@ class TeamListTestCase(TestCase):
                        {'limit': 20, 'order': 3})
         r = json.loads(r.content.decode('utf8'))
         self.assertGreater(r['list'][0]['name'], r['list'][-1]['name'])
-'''
 
 
 class TeamProfileTestCase(TestCase):
@@ -685,7 +696,7 @@ class TeamProfileTestCase(TestCase):
 
     def test_create(self):
         d = json.dumps({'name': 'team100'})
-        r = self.c.post(reverse('team:root'), {'data': d})
+        r = self.c.post(reverse('team:rootSelf'), {'data': d})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['team_id'], 2)
 
