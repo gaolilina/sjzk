@@ -249,3 +249,34 @@ class Profile(View):
                 return Http200()
         except IntegrityError:
             return Http400(error)
+
+
+class Icon(View):
+    @check_object_id(Team.enabled, 'team')
+    @require_token
+    def get(self, request, team_id):
+        """
+        获取团队头像URL
+
+        :return:
+            icon_url: url | null
+        """
+
+        team = Team.enabled.get(id=team_id)
+        url = team.icon_url
+        return JsonResponse({'icon_url': url})
+
+    '''
+    @require_token
+    @process_uploaded_image('icon')
+    def post(self, request, icon):
+        """
+        设置当前用户的头像
+
+        """
+        if request.user.icon:
+            request.user.icon.delete()
+        request.user.icon = icon
+        request.user.save()
+        return Http200()
+    '''

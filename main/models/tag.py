@@ -36,6 +36,8 @@ class Tag(models.Model):
                 raise ValueError('blank tag is not allowed')
             tag_name_list[i] = name
         tags = obj.tags.all()
+        for i in tags:
+            print(i.name)
         with transaction.atomic():
             for i, name in enumerate(tag_name_list):
                 try:
