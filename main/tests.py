@@ -805,3 +805,32 @@ class TeamProfileTestCase(TestCase):
                                kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['location'], [self.p2.id, None])
+
+
+class TeamIconTestCase(TestCase):
+    def setUp(self):
+        self.u = User.create('0')
+        self.u1 = User.create('1')
+        self.t = Team.create(self.u, 'test')
+        self.c = Client(HTTP_USER_TOKEN=self.u.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+
+    def test(self):
+        # no icon at the moment
+        r = self.c.get(reverse('team:icon', kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['icon_url'], None)
+        # upload an icon
+        with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
+            r = self.c.post(reverse('team:icon',
+                                    kwargs={'team_id': self.t.id}), {'icon': f})
+        self.assertEqual(r.status_code, 200)
+        # upload limit
+        with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
+            r = self.c1.post(reverse('team:icon',
+                                     kwargs={'team_id': self.t.id}), {'icon': f})
+        self.assertEqual(r.status_code, 400)
+        # return an icon url
+        r = self.c.get(reverse('team:icon', kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertNotEqual(r['icon_url'], None)

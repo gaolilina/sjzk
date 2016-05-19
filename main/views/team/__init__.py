@@ -183,7 +183,7 @@ class Profile(View):
         """
         获取团队的基本资料
 
-        :param: team_id : 团队id
+        :param: team_id : 团队ID
         :return:
             name: 团队名
             owner_id: 创始人id
@@ -235,7 +235,7 @@ class Profile(View):
         """
         修改团队资料
 
-        :param team_id: 团队id
+        :param team_id: 团队ID
         :param data:
             name: 团队名
             description: 团队简介
@@ -303,14 +303,31 @@ class Profile(View):
 class Icon(View):
     @check_object_id(Team.enabled, 'team')
     @require_token
-    def get(self, request, team_id):
+    def get(self, request, team):
         """
         获取团队头像URL
 
+        :param team_id: 团队ID
         :return:
             icon_url: url | null
         """
-
-        team = Team.enabled.get(id=team_id)
         url = team.icon_url
         return JsonResponse({'icon_url': url})
+
+    @check_object_id(Team.enabled, 'team')
+    @require_token
+    @process_uploaded_image('icon')
+    def post(self, request, team, icon):
+        """
+        设置团队的头像
+
+        :param team_id: 团队ID
+
+        """
+        if request.user != team.owner:
+            return Http400('Editing is limited for current user')
+        if team.icon:
+            team.icon.delete()
+        team.icon = icon
+        team.save()
+        return Http200()

@@ -10,5 +10,5 @@ urls = [
     url(r'^(?P<team_id>[0-9]+)/profile/$',
         Profile.as_view(), name='profile'),
     # 获取(get)或者设置团队头像(post)
-    url(r'^(?P<team_id>[0-9]+)/icon/$',Icon.as_view(), name='icon'),
+    url(r'^(?P<team_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
 ]
