@@ -117,7 +117,7 @@ class LikedObject(View):
         if obj.liker_records.filter(liker=request.user).exists():
             return Http403('already liked the object')
 
-        obj.liker_records.create(liker=obj)
+        obj.liker_records.create(liker=request.user)
         return Http200()
 
     @require_token

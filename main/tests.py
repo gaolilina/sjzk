@@ -629,7 +629,7 @@ class UserVisitorTestCase(TestCase):
 
 
 
-'''
+
 class UserLikersTestCase(TestCase):
     def setUp(self):
         self.c = Client()
@@ -658,7 +658,7 @@ class UserLikersTestCase(TestCase):
         #获取点赞者列表
         r = self.c1.get(reverse('self:likers'))
         r = json.loads(r.content.decode('utf8'))
-        self.assertEqual(r['count'], 0)
+        self.assertEqual(r['count'], 1)
         #取消点赞
         r = self.c0.delete(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
         self.assertEqual(r.status_code,200)
@@ -673,7 +673,7 @@ class UserLikersTestCase(TestCase):
         r = self.c0.get(reverse('self:liked_user',kwargs={"user_id":self.u1.id}))
         self.assertEqual(r.status_code,400)
 
-'''
+
 
 class UserFollowersTestCase(TestCase):
     def setUp(self):
