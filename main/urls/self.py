@@ -10,6 +10,7 @@ from main.views.user.follow import UserFans, UserFan, FollowedUsers, \
     FollowedUserSelf, FollowedTeams, FollowedTeamSelf
 from main.views.user.friend import Friends, FriendSelf, FriendRequests, \
     FriendRequest
+from main.views.user.message import Contacts, Messages
 from main.views.visitor import UserVisitors
 
 urls = [
@@ -61,6 +62,9 @@ urls = [
         LikedUser.as_view(), name='liked_user'),
     url(r'liked/teams/(?P<team_id>[0-9]+)/$',
         LikedTeam.as_view(), name='liked_team'),
+    # 消息
+    url(r'messages/', Contacts.as_view(), name='contacts'),
+    url(r'messages/(?P<user_id>[0-9]+)/$', Messages.as_view(), name='messages'),
     # 访客
     url(r'^visitors/$', UserVisitors.as_view(), name='visitors'),
 ]
