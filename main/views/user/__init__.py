@@ -3,6 +3,7 @@ from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
+from main.crypt import decrypt_phone_number
 from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input, process_uploaded_image
 from main.models import User
@@ -68,8 +69,8 @@ class Users(View):
             token: 用户令牌
         """
         try:
-            phone_number = User.decrypt_phone_number(phone_number)
-            user = User.create(phone_number, password)
+            phone_number = decrypt_phone_number(phone_number)
+            user = User.enabled.create_user(phone_number, password)
             return JsonResponse({'token': user.token.value})
         except ValueError as e:
             return Http400(e)
@@ -336,10 +337,7 @@ class Identification(View):
         user = user or request.user
 
         i = user.identification
-        l = {'is_verified': i.is_verified,
-             'name': i.name,
-             'school': i.school,
-             'student_number': i.student_number}
+        l = {'is_verified': i.is_verified, 'name': i.name}
         if user == request.user:
             l['id_number'] = i.id_number
         return JsonResponse(l)
@@ -350,9 +348,6 @@ class IdentificationSelf(Identification):
         'name': forms.CharField(required=False, min_length=1, max_length=15),
         'id_number': forms.RegexField(
             r'^[0-9xX]{18}$', required=False, strip=True),
-        'school': forms.CharField(required=False, max_length=20),
-        'student_number': forms.RegexField(
-            r'^[0-9]{,15}$', required=False, strip=True),
     }
 
     @require_token
@@ -364,12 +359,9 @@ class IdentificationSelf(Identification):
         :param data:
             name: 真实姓名
             id_number: 身份证号
-            school: 所在学校
-            student_number: 学生证号
         """
         identification = request.user.identification
-        if identification.is_verified and (
-                        'name' in data or 'id_number' in data):
+        if identification.is_verified:
             return Http403('user has been verified')
 
         for k, v in data.items():
@@ -378,7 +370,6 @@ class IdentificationSelf(Identification):
         return Http200()
 
 
-# todo: test id card
 class IDCard(View):
     @require_token
     def get(self, request):
@@ -406,20 +397,19 @@ class IDCard(View):
             return Http200()
 
 
-# todo: test student card
-class StudentCard(View):
+class OtherCard(View):
     @require_token
     def get(self, request):
         """
         判断是否已上传身份证照片
 
         """
-        return Http200() if request.user.identification.student_card \
+        return Http200() if request.user.identification.other_card \
             else Http404()
 
     @require_token
-    @process_uploaded_image('student_card')
-    def post(self, request, student_card):
+    @process_uploaded_image('other_card')
+    def post(self, request, other_card):
         """
         设置当前用户的学生证照片
 
@@ -427,8 +417,8 @@ class StudentCard(View):
         if request.user.identification.is_verified:
             return Http403('user has been verified')
         else:
-            if request.user.identification.student_card:
-                request.user.identification.student_card.delete()
-            request.user.identification.student_card = student_card
+            if request.user.identification.other_card:
+                request.user.identification.other_card.delete()
+            request.user.identification.other_card = other_card
             request.user.identification.save()
             return Http200()
