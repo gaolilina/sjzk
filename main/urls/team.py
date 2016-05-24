@@ -17,7 +17,7 @@ urls = [
 
     # 获取团队成员列表(get)
     url(r'^members/(?P<team_id>[0-9]+)/$', Members.as_view(), name='members'),
-    # 检查用户是否为团队成员(get)
+    # 检查当前用户是否为团队成员(get)
     url(r'^member/(?P<team_id>[0-9]+)/$', Member.as_view(), name='member'),
     # 添加用户为团队成员(post)/删除团队成员(delete)
     url(r'^member/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',

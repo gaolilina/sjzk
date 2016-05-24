@@ -932,7 +932,6 @@ class TeamMemberTestCase(TestCase):
         self.c2 = Client(HTTP_USER_TOKEN=self.u2.token.value)
 
         self.t.member_records.create(member=self.u1)
-        # self.t.member_records.create(member=self.u2)
 
     def test_disabled_member(self):
         # if a user is disabled, he or she should not exist in member list
@@ -941,100 +940,101 @@ class TeamMemberTestCase(TestCase):
         r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 0)
-'''
-    def test_check_friend_relation(self):
-        r = self.c0.get(
-            reverse('self:friend', kwargs={'other_user_id': self.u1.id}))
+
+    def test_check_member_relation(self):
+        r = self.c0.get(reverse('team:member', kwargs={'team_id': self.t.id}),
+                        {'user_id': self.u1.id})
         self.assertEqual(r.status_code, 200)
-        r = self.c0.get(
-            reverse('self:friend', kwargs={'other_user_id': self.u2.id}))
+        r = self.c0.get(reverse('team:member', kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 404)
+        r = self.c0.get(reverse('team:member', kwargs={'team_id': self.t.id}),
+                        {'user_id':self.u2.id})
         self.assertEqual(r.status_code, 404)
 
-    def test_get_friend_list(self):
-        self.u0.friend_records.create(friend=self.u2)
-        self.u2.friend_records.create(friend=self.u0)
-        r = self.c0.get(reverse('self:friends'))
+    def test_get_member_list(self):
+        self.t.member_records.create(member=self.u2)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
         self.assertGreaterEqual(r['list'][0]['create_time'],
                                 r['list'][-1]['create_time'])
 
-    def test_get_friend_by_time_asc(self):
-        self.u0.friend_records.create(friend=self.u2)
-        self.u2.friend_records.create(friend=self.u0)
-        r = self.c0.get(reverse('self:friends'), {'order': 0})
+    def test_get_member_by_time_asc(self):
+        self.t.member_records.create(member=self.u2)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}),
+                        {'order': 0})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
         self.assertLessEqual(r['list'][0]['create_time'],
                              r['list'][-1]['create_time'])
 
-    def test_get_friend_list_by_name_asc(self):
-        self.u0.friend_records.create(friend=self.u2)
-        self.u2.friend_records.create(friend=self.u0)
-        r = self.c0.get(reverse('self:friends'), {'order': 2})
+    def test_get_member_list_by_name_asc(self):
+        self.t.member_records.create(member=self.u2)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}),
+                        {'order': 2})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
         self.assertLessEqual(r['list'][0]['name'], r['list'][-1]['name'])
 
-    def test_get_friend_list_by_name_desc(self):
-        self.u0.friend_records.create(friend=self.u2)
-        self.u2.friend_records.create(friend=self.u0)
-        r = self.c0.get(reverse('self:friends'), {'order': 3})
+    def test_get_member_list_by_name_desc(self):
+        self.t.member_records.create(member=self.u2)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}),
+                        {'order': 3})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
         self.assertGreaterEqual(r['list'][0]['name'], r['list'][-1]['name'])
-
-    # 测试发送好友请求
-    def test_send_friend_request(self):
-        # 已经加好友的不能进行请求
+'''
+    # 测试发送加入团队申请
+    def test_send_member_request(self):
+        # 已经是成员的不能进行申请
         r = self.c0.post(
-            reverse('user:friend_requests', kwargs={'user_id': self.u1.id}))
+            reverse('team:member_requests', kwargs={'team_id': self.t.id,
+                                                    'user_id': self.u1.id}))
         self.assertEqual(r.status_code, 403)
 
-        # 判断好友关系
-        r = self.c0.get(reverse('user:friend',
-                                kwargs={'user_id': self.u0.id,
-                                        'other_user_id': self.u1.id}))
+        # 判断成员关系
+        r = self.c0.get(reverse('team:member', kwargs={'user_id': self.u0.id,
+                                                       'team_id': self.t.id}))
         self.assertEqual(r.status_code, 200)
-        r = self.c0.get(reverse('user:friend',
+        r = self.c0.get(reverse('team:member',
                                 kwargs={'user_id': self.u0.id,
                                         'other_user_id': self.u2.id}))
         self.assertEqual(r.status_code, 404)
 
-        r = self.c0.post(reverse('user:friend_requests',
+        r = self.c0.post(reverse('team:member_requests',
                                  kwargs={'user_id': self.u2.id}))
         self.assertEqual(r.status_code, 200)
 
-        # 不能多次发送请求
+        # 不能多次发送申请
         r = self.c0.post(
-            reverse('user:friend_requests', kwargs={'user_id': self.u2.id}))
+            reverse('team:member_requests', kwargs={'user_id': self.u2.id}))
         self.assertEqual(r.status_code, 403)
-        # 不能向自己发送请求
+        # 不能向创始人发送申请
         r = self.c0.post(
-            reverse('user:friend_requests', kwargs={'user_id': self.u0.id}))
+            reverse('team:member_requests', kwargs={'user_id': self.u0.id}))
         self.assertEqual(r.status_code, 400)
 
-        r = self.c2.get(reverse('self:friend_requests'))
+        r = self.c2.get(reverse('team:member_requests'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['id'], self.u0.id)
         self.assertEqual(r['count'], 0)
-        # 添加到好友
+        # 添加成员
         r = self.c2.post(
-            reverse('self:friend', kwargs={'other_user_id': self.u0.id}))
+            reverse('team:member', kwargs={'other_user_id': self.u0.id}))
         self.assertEqual(r.status_code, 200)
-        # 已经是好友,添加到好友
+        # 已经是成员,添加成员
         r = self.c0.post(
-            reverse('self:friend', kwargs={'other_user_id': self.u1.id}))
+            reverse('team:member', kwargs={'other_user_id': self.u1.id}))
         self.assertEqual(r.status_code, 403)
-        # 此时应该有两个好友
-        r = self.c0.get(reverse('self:friends'))
+        # 此时应该有两个成员
+        r = self.c0.get(reverse('team:members'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
-        # 删除好友
+        # 删除成员
         r = self.c0.delete(
-            reverse('self:friend', kwargs={'other_user_id': self.u1.id}))
+            reverse('team:member', kwargs={'other_user_id': self.u1.id}))
         self.assertEqual(r.status_code, 200)
-        r = self.c0.get(reverse('self:friends'))
+        r = self.c0.get(reverse('team:members'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 1)
 '''

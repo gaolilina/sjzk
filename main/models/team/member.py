@@ -2,6 +2,12 @@ from datetime import datetime
 from django.db import models
 
 
+class TeamMemberManager(models.Manager):
+    def get_queryset(self):
+        return super(TeamMemberManager, self).get_queryset().filter(
+            team__is_enabled=True, member__is_enabled=True)
+
+
 class TeamMemberRequestManager(models.Manager):
     def get_queryset(self):
         return super(TeamMemberRequestManager, self).get_queryset().filter(
@@ -20,6 +26,16 @@ class TeamMember(models.Model):
 
     create_time = models.DateTimeField(
         '加入时间', default=datetime.now)
+
+    enabled = TeamMemberManager()
+
+    @classmethod
+    def exist(cls, user, team):
+        """
+        检查user是否为团队成员
+
+        """
+        return cls.enabled.filter(member=user, team=team).exists()
 
 
 class TeamMemberRequest(models.Model):
@@ -46,7 +62,7 @@ class TeamMemberRequest(models.Model):
     @classmethod
     def exist(cls, sender, receiver):
         """
-        检查user是否向other_user发送过好友请求
+        检查user是否向team发送过加入申请
 
         """
         return cls.enabled.filter(sender=sender, receiver=receiver).exists()

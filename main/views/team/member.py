@@ -47,8 +47,8 @@ class Members(View):
         """
 
         i, j, k = offset, offset + limit, self.available_orders[order]
-        c = team.member_records.count()
-        rs = team.member_records.order_by(k)[i:j]
+        c = TeamMember.enabled.filter(team=team).count()
+        rs = TeamMember.enabled.filter(team=team).order_by(k)[i:j]
         l = [{'id': r.member.id,
               'username': r.member.username,
               'name': r.member.name,
@@ -58,19 +58,27 @@ class Members(View):
 
 
 class Member(View):
+    get_dict = {'user_id': forms.IntegerField(required=False)}
+
     @check_object_id(Team.enabled, 'team')
-    @check_object_id(User.enabled, 'user')
+    @validate_input(get_dict)
     @require_token
-    def get(self, request, team, user=None):
+    def get(self, request, team, user_id=None):
         """
         检查用户是否为团队成员
 
         :param team_id 团队ID
         :param user_id 用户ID（默认为当前用户）
         """
-        user = user or request.user
+        if user_id :
+            try:
+                user = User.enabled.get(id=user_id)
+            except ValueError:
+                return Http404('user is not enabled')
+        else:
+            user = request.user
 
-        return Http200() if TeamMember.exist(team, user) else Http404()
+        return Http200() if TeamMember.exist(user, team) else Http404()
 
 
 class MemberSelf(Member):
@@ -85,11 +93,11 @@ class MemberSelf(Member):
         if request.user != team.owner:
             return Http403('recent user has no authority')
 
-        if not TeamMemberRequest.exist(user, request.user):
+        if not TeamMemberRequest.exist(request.user, team):
             return Http403('related member request not exists')
 
         # 若对方已是团队成员则不做处理
-        if TeamMember.exist(team, user):
+        if TeamMember.exist(user, team):
             return Http403('already been member')
 
         # 在事务中建立关系，并删除对应的加团队申请
@@ -110,7 +118,7 @@ class MemberSelf(Member):
         """
         user = user or request.user
 
-        if not TeamMember.exist(team, user):
+        if not TeamMember.exist(user, team):
             return Http404('not team\'s member')
 
         # 删除团队成员关系
@@ -147,7 +155,7 @@ class MemberRequests(View):
         """
         if request.user == team.owner:
             # 拉取团队的加入申请信息
-            qs = team.member_requests.filter(is_read=False)
+            qs = TeamMember.enabled.filter(team=team).filter(is_read=False)
             qs = qs[:limit]
 
             l = [{'id': r.sender.id,
@@ -158,12 +166,14 @@ class MemberRequests(View):
                   'create_time': r.create_time} for r in qs]
             # 更新拉取的加入团队信息为已读
             ids = qs.values('id')
-            team.member_requests.filter(id__in=ids).update(is_read=True)
-            c = team.member_requests.filter(is_read=False).count()
+            TeamMember.enabled.filter(team=team).filter(id__in=ids).\
+                update(is_read=True)
+            c = TeamMember.enabled.filter(team=team).filter(is_read=False).\
+                count()
             return JsonResponse({'count': c, 'list': l})
         else:
             # 判断是否对团队创始人发送过加入团队请求，且暂未被处理
-            return Http200() if TeamMemberRequest.exist(team, request.user) \
+            return Http200() if TeamMemberRequest.exist(request.user, team) \
                 else Http404()
 
     post_dict = {'description': forms.CharField(required=False, max_length=100)}
@@ -182,10 +192,10 @@ class MemberRequests(View):
         if request.user == team.owner:
             return Http400('cannot send member request to self')
 
-        if TeamMember.exist(team, request.user):
+        if TeamMember.exist(request.user, team):
             return Http403('already been member')
 
-        if TeamMemberRequest.exist(team, request.user):
+        if TeamMemberRequest.exist(request.user, team):
             return Http403('already sent a member request')
 
         req = team.member_requests.model(
