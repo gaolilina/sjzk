@@ -2,7 +2,8 @@ from .follow import UserFollower
 from .like import UserLiker, TeamLiker
 from .location import Province, City, UserLocation, TeamLocation
 from .tag import Tag, UserTag, TeamTag
-from .team import Team, TeamMember, TeamProfile
+from .team import Team, TeamProfile
+from .team.member import TeamMember, TeamMemberRequest
 from .team.invitation import TeamInvitation
 from .team.need import TeamNeed
 from .team.task import TeamTask, TeamTaskMarker
