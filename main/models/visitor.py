@@ -6,6 +6,15 @@ class VisitorManager(models.Manager):
         return super(VisitorManager, self).get_queryset().filter(
             visited__is_enabled=True, visitor__is_enabled=True)
 
+    def update_visitor(self, visited, visitor):
+        """
+        更新对象的访客记录
+
+        """
+        r, created = self.get_or_create(visited=visited, visitor=visitor)
+        if not created:
+            r.save()
+
 
 class Visitor(models.Model):
     """
@@ -21,21 +30,6 @@ class Visitor(models.Model):
     class Meta:
         abstract = True
         ordering = ['-update_time']
-
-    @staticmethod
-    def update(visited, visitor):
-        """
-        更新对象的访客记录
-
-        :param visited: 被访问对象
-        :param visitor: 来访用户
-
-        """
-        record, created = visited.visitor_records.get_or_create(visitor=visitor)
-
-        # 更新已有记录的访问时间
-        if not created:
-            record.save()
 
 
 class UserVisitor(Visitor):

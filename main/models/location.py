@@ -25,44 +25,31 @@ class City(models.Model):
         db_table = 'location_city'
 
 
-class Location(models.Model):
-    """
-    地区信息基类
-
-    """
-    province = models.ForeignKey(
-        Province, models.SET_NULL, default=None, null=True)
-    city = models.ForeignKey(
-        City, models.SET_NULL, default=None, null=True)
-
-    class Meta:
-        abstract = True
-
-    @staticmethod
-    def get(obj):
+class LocationManager(models.Manager):
+    def get_location(self, obj):
         """
         获取对象的位置信息
 
         """
         try:
-            pid = obj.location.province.id if obj.location.province else None
-            cid = obj.location.city.id if obj.location.city else None
+            r = self.get(object=obj)
+            pid = r.province.id if r.province else None
+            cid = r.city.id if r.city else None
             return [pid, cid]
         except ObjectDoesNotExist:
             return [None, None]
 
-    @staticmethod
-    def set(obj, location_list):
+    def set_location(self, obj, location):
         """
         设置对象位置信息
 
         :param obj: 带位置属性的对象
-        :param location_list: 位置信息，格式：[province_id, city_id]
+        :param location: 位置信息，格式：[province_id, city_id]
 
         """
         # 检查省、市索引有效性
         try:
-            pid, cid = location_list
+            pid, cid = location
             province = Province.objects.get(id=pid) if pid else None
             city = City.objects.get(id=cid) if cid else None
         except ObjectDoesNotExist:
@@ -71,20 +58,29 @@ class Location(models.Model):
         if city and city.province != province:
             raise ValueError('invalid location')
 
-        model_name = type(obj).__name__
-        if model_name == 'User':
-            location, created = UserLocation.objects.get_or_create(
-                user=obj, defaults={'province': province, 'city': city})
-        elif model_name == 'Team':
-            location, created = TeamLocation.objects.get_or_create(
-                team=obj, defaults={'province': province, 'city': city})
-        else:
-            raise TypeError('object does not have location attribute')
-
+        r, created = self.get_or_create(
+            object=obj, defaults={'province': province, 'city': city})
         if not created:
-            location.province = province
-            location.city = city
-            location.save()
+            r.province = province
+            r.city = city
+            r.save()
+
+
+class Location(models.Model):
+    """
+    地区信息基类
+
+    """
+    object = None
+    province = models.ForeignKey(
+        Province, models.SET_NULL, default=None, null=True)
+    city = models.ForeignKey(
+        City, models.SET_NULL, default=None, null=True)
+
+    objects = LocationManager()
+
+    class Meta:
+        abstract = True
 
 
 class UserLocation(Location):
@@ -92,7 +88,8 @@ class UserLocation(Location):
     用户所在地区
 
     """
-    user = models.OneToOneField('User', models.CASCADE, related_name='location')
+    object = models.OneToOneField(
+        'User', models.CASCADE, related_name='location')
 
     class Meta:
         db_table = 'user_location'
@@ -103,7 +100,8 @@ class TeamLocation(Location):
     团队所在地区
 
     """
-    team = models.OneToOneField('Team', models.CASCADE, related_name='location')
+    object = models.OneToOneField(
+        'Team', models.CASCADE, related_name='location')
 
     class Meta:
         db_table = 'team_location'

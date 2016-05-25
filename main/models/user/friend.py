@@ -14,7 +14,7 @@ class UserFriendManager(models.Manager):
         检查任意两个用户是否为好友关系
 
         """
-        return self.get_queryset().filter(user=user, friend=other_user).exists()
+        return self.filter(user=user, friend=other_user).exists()
 
     def create_relation(self, user, other_user):
         """
@@ -61,8 +61,7 @@ class UserFriendRequestManager(models.Manager):
         检查一个用户是否向另一个用户发送过好友请求
 
         """
-        return self.get_queryset().filter(
-            sender=sender, receiver=receiver).exists()
+        return self.filter(sender=sender, receiver=receiver).exists()
 
 
 class UserFriendRequest(models.Model):

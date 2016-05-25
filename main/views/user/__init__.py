@@ -7,9 +7,9 @@ from main.crypt import decrypt_phone_number
 from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input, process_uploaded_image
 from main.models import User
-from main.models.location import Location
-from main.models.tag import Tag
-from main.models.visitor import Visitor
+from main.models.location import UserLocation
+from main.models.tag import UserTag
+from main.models.visitor import UserVisitor
 from main.responses import *
 
 
@@ -236,7 +236,7 @@ class Profile(View):
 
         # 更新访客记录
         if user != request.user:
-            Visitor.update(user, request.user)
+            UserVisitor.enabled.update_visitor(user, request.user)
 
         r = dict()
         r['id'] = user.id
@@ -248,8 +248,8 @@ class Profile(View):
         r['email'] = user.profile.email
         r['gender'] = user.profile.gender
         r['birthday'] = user.profile.birthday if user.profile.birthday else None
-        r['location'] = Location.get(user)
-        r['tags'] = Tag.get(user)
+        r['location'] = UserLocation.objects.get_location(user)
+        r['tags'] = UserTag.objects.get_tags(user)
 
         return JsonResponse(r)
 
@@ -292,18 +292,17 @@ class ProfileSelf(Profile):
             with transaction.atomic():
                 if location:
                     try:
-                        Location.set(request.user, location)
+                        UserLocation.objects.set_location(
+                            request.user, location)
                     except TypeError:
                         error = 'invalid location'
                         raise IntegrityError
                     except ValueError as e:
                         error = str(e)
                         raise IntegrityError
-                    else:
-                        request.user.location.save()
                 if tags is not None:
                     try:
-                        Tag.set(request.user, tags)
+                        UserTag.objects.set_tags(request.user, tags)
                     except TypeError:
                         error = 'invalid tag list'
                         raise IntegrityError

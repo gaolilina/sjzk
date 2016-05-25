@@ -158,7 +158,7 @@ class UserIdentification(models.Model):
     is_verified = models.BooleanField(
         '是否通过实名验证', default=False)
     role = models.CharField(
-        '认证身份', max_length=10, default='', db_index=True)
+        '认证身份', max_length=15, default='', db_index=True)
     name = models.CharField(
         '真实姓名', max_length=15, default='', db_index=True)
     id_number = models.CharField(
