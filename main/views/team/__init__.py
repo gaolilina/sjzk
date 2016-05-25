@@ -1,5 +1,6 @@
 from django import forms
 from django.db import IntegrityError, transaction
+from django.db.models import QuerySet
 from django.http import JsonResponse
 from django.views.generic import View
 
@@ -8,6 +9,7 @@ from main.decorators import require_token, check_object_id, \
 from main.models.location import TeamLocation
 from main.models.tag import TeamTag
 from main.models.team import Team, TeamProfile
+from main.models.team.member import TeamMember
 from main.models.visitor import TeamVisitor
 from main.responses import *
 
@@ -65,6 +67,7 @@ class TeamsSelf(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'is_owner': forms.BooleanField(required=False),
     }
     available_orders = [
         'create_time', '-create_time',
@@ -73,9 +76,9 @@ class TeamsSelf(View):
 
     @require_token
     @validate_input(get_dict)
-    def get(self, request, offset=0, limit=10, order=1):
+    def get(self, request, offset=0, limit=10, order=1, is_owner=True):
         """
-        获取自己创建的团队列表
+        获取自己创建（或参加）的团队列表
         :param offset: 偏移量
         :param limit: 数量上限
         :param order: 排序方式
@@ -83,6 +86,9 @@ class TeamsSelf(View):
             1: 注册时间降序（默认值）
             2: 昵称升序
             3: 昵称降序
+        :param is_owner: 是否为自己创建(默认为True)
+            True：是
+            False：否
         :return:
             count: 团队总数
             list: 团队列表
@@ -93,8 +99,13 @@ class TeamsSelf(View):
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
-        c = Team.enabled.filter(owner=request.user).count()
-        teams = Team.enabled.filter(owner=request.user).order_by(k)[i:j]
+        if is_owner:
+            c = Team.enabled.filter(owner=request.user).count()
+            teams = Team.enabled.filter(owner=request.user).order_by(k)[i:j]
+        else:
+            c = Team.enabled.filter(member_records__member=request.user).count()
+            teams = Team.enabled.filter(
+                    member_records__member=request.user).order_by(k)[i:j]
         l = [{'id': t.id,
               'name': t.name,
               'icon_url': t.icon_url,

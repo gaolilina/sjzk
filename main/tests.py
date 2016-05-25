@@ -9,6 +9,7 @@ from ChuangYi import settings
 from main.crypt import encrypt_phone_number
 from main.models.location import Province, City
 from main.models.team import Team
+from main.models.team.member import TeamMember
 from main.models.user import User
 
 TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
@@ -719,16 +720,42 @@ class TeamListTestCase(TestCase):
         self.assertEqual(r.status_code, 200)
 
     def test_get_own_list(self):
-        self.user1 = User.enabled.create_user('1', name='user1', create_time=datetime.now())
+        # 测试获取用户创建的团队
+        self.user1 = User.enabled.create_user('1', name='user1',
+                                              create_time=datetime.now())
         token1 = self.user1.token.value
         self.c1 = Client(HTTP_USER_TOKEN=token1)
         for i in range(1, 21):
             Team.create(self.user1, 'own_team' + str(i))
 
         r = self.c1.get(reverse('team:rootSelf'),
-                       {'limit': '20', 'order': '0'})
+                        {'limit': '20', 'order': '0'})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['name'], 'own_team1')
+
+    def test_get_member_list(self):
+        # 测试获取用户参加的团队
+        self.user1 = User.enabled.create_user('1', name='user1',
+                                              create_time=datetime.now())
+        token1 = self.user1.token.value
+        self.c1 = Client(HTTP_USER_TOKEN=token1)
+        for i in range(1, 11):
+            Team.create(self.user1, 'user1_team' + str(i))
+
+        self.user2 = User.enabled.create_user('2', name='user2',
+                                              create_time=datetime.now())
+        token2 = self.user2.token.value
+        self.c2 = Client(HTTP_USER_TOKEN=token2)
+        for i in range(1, 11):
+            team = Team.create(self.user2, 'user2_team' + str(i))
+            team_member = TeamMember(team=team, member=self.user1)
+            team_member.save()
+
+        r = self.c1.get(reverse('team:rootSelf'),
+                        {'limit': '20', 'order': '0', 'is_owner': False})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 10)
+        self.assertEqual(r['list'][0]['name'], 'user2_team1')
 
     def test_get_list_by_create_time_asc(self):
         r = self.c.get(reverse('team:root'),
@@ -919,9 +946,9 @@ class TeamIconTestCase(TestCase):
 
 class TeamMemberTestCase(TestCase):
     def setUp(self):
-        self.u0 = User.create('0')
-        self.u1 = User.create('1')
-        self.u2 = User.create('2')
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
+        self.u2 = User.enabled.create_user('2')
         self.t = Team.create(self.u0, 'test')
 
         self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
