@@ -93,7 +93,7 @@ class MemberSelf(Member):
         if request.user != team.owner:
             return Http403('recent user has no authority')
 
-        if not TeamMemberRequest.exist(request.user, team):
+        if not TeamMemberRequest.exist(user, team):
             return Http403('related member request not exists')
 
         # 若对方已是团队成员则不做处理
@@ -102,7 +102,7 @@ class MemberSelf(Member):
 
         # 在事务中建立关系，并删除对应的加团队申请
         with transaction.atomic():
-            team.member_request.get(sender=user).delete()
+            team.member_requests.get(sender=user).delete()
             team.member_records.create(member=user)
         return Http200()
 
@@ -155,7 +155,7 @@ class MemberRequests(View):
         """
         if request.user == team.owner:
             # 拉取团队的加入申请信息
-            qs = TeamMember.enabled.filter(team=team).filter(is_read=False)
+            qs = TeamMemberRequest.enabled.filter(receiver=team, is_read=False)
             qs = qs[:limit]
 
             l = [{'id': r.sender.id,
@@ -166,9 +166,9 @@ class MemberRequests(View):
                   'create_time': r.create_time} for r in qs]
             # 更新拉取的加入团队信息为已读
             ids = qs.values('id')
-            TeamMember.enabled.filter(team=team).filter(id__in=ids).\
+            TeamMemberRequest.enabled.filter(receiver=team, id__in=ids).\
                 update(is_read=True)
-            c = TeamMember.enabled.filter(team=team).filter(is_read=False).\
+            c = TeamMemberRequest.enabled.filter(receiver=team, is_read=False).\
                 count()
             return JsonResponse({'count': c, 'list': l})
         else:
@@ -218,7 +218,8 @@ class MemberRequest(View):
         if request.user != team.owner:
             return Http403('recent user has no authority')
 
-        if not TeamMemberRequest.exist(team, user):
+        if not TeamMemberRequest.exist(user, team):
             return Http403('related member request not exists')
 
         team.member_requests.get(sender=user).delete()
+        return Http200()

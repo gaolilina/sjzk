@@ -23,9 +23,9 @@ urls = [
     url(r'^member/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',
         MemberSelf.as_view(), name='memberSelf'),
     # 获取团队的加入申请列表(get)/用户向团队发出加入申请(post)
-    url(r'^members/requests/(?P<team_id>[0-9]+)/$',
+    url(r'^member/requests/(?P<team_id>[0-9]+)/$',
         MemberRequests.as_view(), name='member_requests'),
     # 忽略用户的加入团队申请(delete)
-    url(r'^members/request/(?P<team_id>[0-9]+)/(?P<req_id>[0-9]+)/$',
+    url(r'^member/request/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',
         MemberRequest.as_view(), name='member_request'),
 ]
