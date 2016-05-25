@@ -5,10 +5,10 @@ from django.views.generic import View
 
 from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input, process_uploaded_image
+from main.models.location import TeamLocation
+from main.models.tag import TeamTag
 from main.models.team import Team, TeamProfile
-from main.models.visitor import Visitor
-from main.models.location import Location
-from main.models.tag import Tag
+from main.models.visitor import TeamVisitor
 from main.responses import *
 
 
@@ -141,7 +141,7 @@ class TeamsSelf(View):
                     profile.url = url
                 if fields:
                     if len(fields) > 2:
-                       raise ValueError('too many fields')
+                        raise ValueError('too many fields')
                     for i, name in enumerate(fields):
                         name = name.strip().lower()
                         if not name:
@@ -152,18 +152,16 @@ class TeamsSelf(View):
                         profile.field2 = fields.pop()
                 if location:
                     try:
-                        Location.set(team, location)
+                        TeamLocation.objects.set_location(team, location)
                     except TypeError:
                         error = 'invalid location'
                         raise IntegrityError
                     except ValueError as e:
                         error = str(e)
                         raise IntegrityError
-                    else:
-                        team.location.save()
                 if tags:
                     try:
-                        Tag.set(team, tags)
+                        TeamTag.objects.set_tags(team, tags)
                     except TypeError:
                         error = 'invalid tag list'
                         raise IntegrityError
@@ -200,7 +198,7 @@ class Profile(View):
 
         # 更新访客记录
         if owner != request.user:
-            Visitor.update(team, request.user)
+            TeamVisitor.enabled.update_visitor(team, request.user)
 
         # 读取所属领域
         fields = list()
@@ -216,8 +214,8 @@ class Profile(View):
         r['description'] = team.profile.description
         r['url'] = team.profile.url
         r['fields'] = fields
-        r['location'] = Location.get(team)
-        r['tags'] = Tag.get(team)
+        r['location'] = TeamLocation.objects.get_location(team)
+        r['tags'] = TeamTag.objects.get_tags(team)
 
         return JsonResponse(r)
 
@@ -235,7 +233,7 @@ class Profile(View):
         """
         修改团队资料
 
-        :param team_id: 团队ID
+        :param team: 团队ID
         :param data:
             name: 团队名
             description: 团队简介
@@ -262,18 +260,16 @@ class Profile(View):
             with transaction.atomic():
                 if location:
                     try:
-                        Location.set(team, location)
+                        TeamLocation.objects.set_location(team, location)
                     except TypeError:
                         error = 'invalid location'
                         raise IntegrityError
                     except ValueError as e:
                         error = str(e)
                         raise IntegrityError
-                    else:
-                        team.location.save()
                 if fields:
                     if len(fields) > 2:
-                       return Http400('too many fields')
+                        return Http400('too many fields')
                     for i, name in enumerate(fields):
                         name = name.strip().lower()
                         if not name:
@@ -284,7 +280,7 @@ class Profile(View):
                         team.profile.field2 = fields[1]
                 if tags:
                     try:
-                        Tag.set(team, tags)
+                        TeamTag.objects.set_tags(team, tags)
                     except TypeError:
                         error = 'invalid tag list'
                         raise IntegrityError
@@ -307,7 +303,7 @@ class Icon(View):
         """
         获取团队头像URL
 
-        :param team_id: 团队ID
+        :param team: 团队
         :return:
             icon_url: url | null
         """
@@ -321,7 +317,7 @@ class Icon(View):
         """
         设置团队的头像
 
-        :param team_id: 团队ID
+        :param team: 团队
 
         """
         if request.user != team.owner:

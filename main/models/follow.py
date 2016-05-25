@@ -8,6 +8,13 @@ class FollowerManager(models.Manager):
         return super(FollowerManager, self).get_queryset().filter(
             followed__is_enabled=True, follower__is_enabled=True)
 
+    def exist(self, followed, follower):
+        """
+        判断用户之间是否有关注关系
+
+        """
+        return self.filter(followed=followed, follower=follower).exists()
+
 
 class Follower(models.Model):
     """
@@ -24,14 +31,6 @@ class Follower(models.Model):
     class Meta:
         abstract = True
         ordering = ['-create_time']
-
-    @classmethod
-    def exist(cls, followed, follower):
-        """
-        判断followed是否被follower所关注（只能以派生类的身份调用）
-
-        """
-        return cls.enabled.filter(followed=followed, follower=follower).exists()
 
 
 class UserFollower(Follower):

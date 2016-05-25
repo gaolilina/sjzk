@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.test import Client, TestCase, TransactionTestCase
 
 from ChuangYi import settings
+from main.crypt import encrypt_phone_number
 from main.models.location import Province, City
 from main.models.team import Team
 from main.models.user import User
@@ -16,12 +17,12 @@ TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
 class UserListTestCase(TestCase):
     def setUp(self):
         time = datetime.now()
-        user = User.create('0', name='user0', create_time=time)
+        user = User.enabled.create_user('0', name='user0', create_time=time)
         token = user.token.value
         self.c = Client(HTTP_USER_TOKEN=token)
         for i in range(1, 20):
             time += timedelta(seconds=1)
-            User.create(str(i), name='user' + str(i), create_time=time)
+            User.enabled.create_user(str(i), name='user' + str(i), create_time=time)
 
     def test_get_list_by_create_time_asc(self):
         r = self.c.get(reverse('user:root'),
@@ -51,10 +52,10 @@ class UserListTestCase(TestCase):
 class UserRegisterTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        User.create('15010101010')
+        User.enabled.create_user('15010101010')
 
     def test_register(self):
-        phone_number = User.encrypt_phone_number('13010101010')
+        phone_number = encrypt_phone_number('13010101010')
         r = self.c.post(reverse('user:root'),
                         {'phone_number': phone_number, 'password': 'password'})
         self.assertEqual(r.status_code, 200)
@@ -65,7 +66,7 @@ class UserRegisterTestCase(TestCase):
         self.assertEqual(r.status_code, 200)
 
     def test_register_with_invalid_password(self):
-        phone_number = User.encrypt_phone_number('14010101010')
+        phone_number = encrypt_phone_number('14010101010')
         password = '<6'
         r = self.c.post(reverse('user:root'),
                         {'phone_number': phone_number, 'password': password})
@@ -82,7 +83,7 @@ class UserRegisterTestCase(TestCase):
         self.assertEqual(r.status_code, 400)
 
     def test_register_with_used_phone_number(self):
-        phone_number = User.encrypt_phone_number('15010101010')
+        phone_number = encrypt_phone_number('15010101010')
         r = self.c.post(reverse('user:root'),
                         {'phone_number': phone_number, 'password': 'password'})
         self.assertEqual(r.status_code, 403)
@@ -91,8 +92,8 @@ class UserRegisterTestCase(TestCase):
 class UserTokenTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        User.create('13010101010', 'SAPMan?', username='ohcrap')
-        User.create('14010101010', 'OhNo!!', username='fb403', is_enabled=False)
+        User.enabled.create_user('13010101010', 'SAPMan?', username='ohcrap')
+        User.enabled.create_user('14010101010', 'OhNo!!', username='fb403', is_enabled=False)
 
     def test_get_token_by_phone_number(self):
         r = self.c.post(reverse('user:token'),
@@ -121,9 +122,9 @@ class UserTokenTestCase(TestCase):
 
 class UserCredentialTestCase(TransactionTestCase):
     def setUp(self):
-        token = User.create('13010101010', 'password').token.value
+        token = User.enabled.create_user('13010101010', 'password').token.value
         self.c = Client(HTTP_USER_TOKEN=token)
-        User.create('14010101010', username='godmother')
+        User.enabled.create_user('14010101010', username='godmother')
 
     def test_username_related(self):
         # get username when it's null
@@ -190,7 +191,7 @@ class UserCredentialTestCase(TransactionTestCase):
 
 class UserIconTestCase(TestCase):
     def setUp(self):
-        self.u = User.create('1')
+        self.u = User.enabled.create_user('1')
         self.c = Client(HTTP_USER_TOKEN=self.u.token.value)
 
     def test(self):
@@ -210,7 +211,7 @@ class UserIconTestCase(TestCase):
 
 class UserProfileTestCase(TestCase):
     def setUp(self):
-        self.u0 = User.create('0')
+        self.u0 = User.enabled.create_user('0')
         t0 = self.u0.token.value
         self.c = Client(HTTP_USER_TOKEN=t0)
 
@@ -320,16 +321,13 @@ class UserProfileTestCase(TestCase):
 
 class UserIdentificationTestCase(TestCase):
     def setUp(self):
-        self.u0 = User.create('0')
+        self.u0 = User.enabled.create_user('0')
         self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
-        self.u1 = User.create('1')
+        self.u1 = User.enabled.create_user('1')
         self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
 
     def test_post_and_get(self):
-        d = json.dumps({'name': '测试',
-                        'school': '蓝翔',
-                        'id_number': '111111111111111111',
-                        'student_id': '1234'})
+        d = json.dumps({'name': '测试', 'id_number': '111111111111111111'})
         r = self.c0.post(reverse('self:identification'), {'data': d})
         self.assertEqual(r.status_code, 200)
 
@@ -355,7 +353,7 @@ class UserIdentificationTestCase(TestCase):
 
 class UserExperienceTestCase(TestCase):
     def setUp(self):
-        self.u = User.create('010')
+        self.u = User.enabled.create_user('010')
         self.c = Client(HTTP_USER_TOKEN=self.u.token.value)
 
         self.ee = self.u.education_experiences.create(
@@ -483,9 +481,9 @@ class UserExperienceTestCase(TestCase):
 
 class UserFriendTestCase(TestCase):
     def setUp(self):
-        self.u0 = User.create('0')
-        self.u1 = User.create('1')
-        self.u2 = User.create('2')
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
+        self.u2 = User.enabled.create_user('2')
         self.u0.friend_records.create(friend=self.u1)
         self.u1.friend_records.create(friend=self.u0)
         self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
@@ -599,8 +597,8 @@ class UserFriendTestCase(TestCase):
 class UserVisitorTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        self.u0 = User.create('0')
-        self.u1 = User.create('1')
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
         self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
         self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
 
@@ -616,8 +614,8 @@ class UserVisitorTestCase(TestCase):
 class UserLikersTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        self.u0 = User.create('0')
-        self.u1 = User.create('1')
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
         self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
         self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
 
@@ -660,8 +658,8 @@ class UserLikersTestCase(TestCase):
 class UserFollowersTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        self.u0 = User.create('0')
-        self.u1 = User.create('1')
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
         self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
         self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
 
@@ -699,7 +697,7 @@ class UserFollowersTestCase(TestCase):
 class TeamListTestCase(TestCase):
     def setUp(self):
         time = datetime.now()
-        self.user = User.create('0', name='user0', create_time=time)
+        self.user = User.enabled.create_user('0', name='user0', create_time=time)
         token = self.user.token.value
         self.c = Client(HTTP_USER_TOKEN=token)
         for i in range(1, 21):
@@ -721,7 +719,7 @@ class TeamListTestCase(TestCase):
         self.assertEqual(r.status_code, 200)
 
     def test_get_own_list(self):
-        self.user1 = User.create('1', name='user1', create_time=datetime.now())
+        self.user1 = User.enabled.create_user('1', name='user1', create_time=datetime.now())
         token1 = self.user1.token.value
         self.c1 = Client(HTTP_USER_TOKEN=token1)
         for i in range(1, 21):
@@ -759,7 +757,7 @@ class TeamListTestCase(TestCase):
 
 class TeamProfileTestCase(TestCase):
     def setUp(self):
-        self.u = User.create('0')
+        self.u = User.enabled.create_user('0')
         self.t = Team.create(self.u, 'test')
 
         self.c = Client(HTTP_USER_TOKEN=self.u.token.value)
@@ -892,8 +890,8 @@ class TeamProfileTestCase(TestCase):
 
 class TeamIconTestCase(TestCase):
     def setUp(self):
-        self.u = User.create('0')
-        self.u1 = User.create('1')
+        self.u = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
         self.t = Team.create(self.u, 'test')
         self.c = Client(HTTP_USER_TOKEN=self.u.token.value)
         self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)

@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from main.views.like import UserLikers, UserLiker, LikedUser, LikedTeam
 from main.views.user import Username, Password, IconSelf, ProfileSelf, \
-    IdentificationSelf, IDCard, StudentCard
+    IdentificationSelf, IDCard, OtherCard
 from main.views.user.experience import EducationExperiencesSelf, \
     WorkExperiencesSelf, FieldworkExperiencesSelf, EducationExperience, \
     WorkExperience, FieldworkExperience
@@ -10,6 +10,7 @@ from main.views.user.follow import UserFans, UserFan, FollowedUsers, \
     FollowedUserSelf, FollowedTeams, FollowedTeamSelf
 from main.views.user.friend import Friends, FriendSelf, FriendRequests, \
     FriendRequest
+from main.views.user.message import Contacts, Messages
 from main.views.visitor import UserVisitors
 
 urls = [
@@ -20,8 +21,9 @@ urls = [
     url(r'^profile/$', ProfileSelf.as_view(), name='profile'),
     url(r'^identification/$',
         IdentificationSelf.as_view(), name='identification'),
-    url(r'^id_card/$', IDCard.as_view(), name='id_card'),
-    url(r'^student_card/$', StudentCard.as_view(), name='student_card'),
+    url(r'^identification/id_card/$', IDCard.as_view(), name='id_card'),
+    url(r'^identification/other_card/$',
+        OtherCard.as_view(), name='other_card'),
     # 经历
     url(r'^experiences/education/$',
         EducationExperiencesSelf.as_view(), name='education_experiences'),
@@ -61,6 +63,9 @@ urls = [
         LikedUser.as_view(), name='liked_user'),
     url(r'liked/teams/(?P<team_id>[0-9]+)/$',
         LikedTeam.as_view(), name='liked_team'),
+    # 消息
+    url(r'messages/', Contacts.as_view(), name='contacts'),
+    url(r'messages/(?P<user_id>[0-9]+)/$', Messages.as_view(), name='messages'),
     # 访客
     url(r'^visitors/$', UserVisitors.as_view(), name='visitors'),
 ]

@@ -8,8 +8,6 @@ from main.models.follow import UserFollower, TeamFollower
 from main.responses import *
 
 
-# todo: following-related test cases
-# todo: team fans
 class Fans(View):
     get_dict = {
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -157,7 +155,7 @@ class FollowedUser(View):
         """
         user = user or request.user
 
-        return Http200() if UserFollower.exist(other_user, user) \
+        return Http200() if UserFollower.enabled.exist(other_user, user) \
             else Http404()
 
 
@@ -170,7 +168,7 @@ class FollowedUserSelf(FollowedUser):
 
         """
         # 若已关注返回403
-        if UserFollower.exist(other_user, request.user):
+        if UserFollower.enabled.exist(other_user, request.user):
             return Http403('already followed the object')
 
         other_user.follower_records.create(follower=request.user)
@@ -183,7 +181,7 @@ class FollowedUserSelf(FollowedUser):
         令当前用户取消关注other_user
 
         """
-        if not UserFollower.exist(other_user, request.user):
+        if not UserFollower.enabled.exist(other_user, request.user):
             return Http403('not followed the object')
 
         other_user.follower_records.filter(follower=request.user).delete()
@@ -247,7 +245,7 @@ class FollowedTeam(View):
         """
         user = user or request.user
 
-        return Http200() if TeamFollower.exist(team, user) \
+        return Http200() if TeamFollower.enabled.exist(team, user) \
             else Http404()
 
 
@@ -260,7 +258,7 @@ class FollowedTeamSelf(FollowedTeam):
 
         """
         # 若已关注返回403
-        if TeamFollower.exist(team, request.user):
+        if TeamFollower.enabled.exist(team, request.user):
             return Http403('already followed the object')
 
         team.follower_records.create(follower=request.user)
@@ -273,7 +271,7 @@ class FollowedTeamSelf(FollowedTeam):
         令当前用户取消关注team
 
         """
-        if not TeamFollower.exist(team, request.user):
+        if not TeamFollower.enabled.exist(team, request.user):
             return Http403('not followed the object')
 
         team.follower_records.filter(follower=request.user).delete()

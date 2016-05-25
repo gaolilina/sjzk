@@ -1,6 +1,4 @@
 from django import forms
-from django.db import transaction
-from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic import View
 
@@ -67,7 +65,7 @@ class Friend(View):
         """
         user = user or request.user
 
-        return Http200() if UserFriend.exist(user, other_user) \
+        return Http200() if UserFriend.enabled.exist(user, other_user) \
             else Http404()
 
 
@@ -79,18 +77,15 @@ class FriendSelf(Friend):
         将目标用户添加为自己的好友（对方需发送过好友请求）
 
         """
-        if not UserFriendRequest.exist(other_user, request.user):
+        if not UserFriendRequest.enabled.exist(other_user, request.user):
             return Http403('related friend request not exists')
 
         # 若双方已是好友则不做处理
-        if UserFriend.exist(request.user, other_user):
+        if UserFriend.enabled.exist(request.user, other_user):
             return Http403('already been friends')
 
         # 在事务中建立双向关系，并删除对应的好友请求
-        with transaction.atomic():
-            request.user.friend_requests.get(sender=other_user).delete()
-            request.user.friend_records.create(friend=other_user)
-            other_user.friend_records.create(friend=request.user)
+        UserFriend.enabled.create_relation(request.user, other_user)
         return Http200()
 
     @check_object_id(User.enabled, 'other_user')
@@ -100,14 +95,11 @@ class FriendSelf(Friend):
         删除好友
 
         """
-        if not UserFriend.exist(request.user, other_user):
+        if not UserFriend.enabled.exist(request.user, other_user):
             return Http404('not user\'s friend')
 
         # 删除双向好友关系
-        qs = UserFriend.enabled.filter(
-            Q(user=request.user, friend=other_user) |
-            Q(user=other_user, friend=request.user))
-        qs.delete()
+        UserFriend.enabled.remove_relation(request.user, other_user)
         return Http200()
 
 
@@ -154,7 +146,7 @@ class FriendRequests(View):
             return JsonResponse({'count': c, 'list': l})
         else:
             # 判断是否对目标用户发送过好友请求，且暂未被对方处理
-            return Http200() if UserFriendRequest.exist(request.user, user) \
+            return Http200() if UserFriendRequest.enabled.exist(request.user, user) \
                 else Http404()
 
     post_dict = {'description': forms.CharField(required=False, max_length=100)}
@@ -172,10 +164,10 @@ class FriendRequests(View):
         if user == request.user:
             return Http400('cannot send friend request to self')
 
-        if UserFriend.exist(request.user, user):
+        if UserFriend.enabled.exist(request.user, user):
             return Http403('already been friends')
 
-        if UserFriendRequest.exist(request.user, user):
+        if UserFriendRequest.enabled.exist(request.user, user):
             return Http403('already sent a friend request')
 
         req = user.friend_requests.model(
@@ -192,7 +184,7 @@ class FriendRequest(View):
         忽略某条好友请求
 
         """
-        if not UserFriendRequest.exist(user, request.user):
+        if not UserFriendRequest.enabled.exist(user, request.user):
             return Http403('related friend request not exists')
 
         request.user.friend_requests.get(sender=user).delete()
