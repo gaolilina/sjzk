@@ -48,7 +48,7 @@ class ObjectTagManager(models.Manager):
                 except IndexError:
                     self.create(object=obj, order=i, name=name)
             # 将多余标签标记为无效
-            i, j = len(tags), len(tags)
+            i, j = len(old_tags), len(tags)
             if i > j:
                 for t in old_tags[j:]:
                     t.is_enabled = False
