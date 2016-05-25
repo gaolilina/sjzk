@@ -12,7 +12,7 @@ from main.models.user import User
 
 TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
 
-'''
+
 class UserListTestCase(TestCase):
     def setUp(self):
         time = datetime.now()
@@ -917,7 +917,6 @@ class TeamIconTestCase(TestCase):
         r = self.c.get(reverse('team:icon', kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertNotEqual(r['icon_url'], None)
-'''
 
 
 class TeamMemberTestCase(TestCase):
