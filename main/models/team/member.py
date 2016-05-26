@@ -71,7 +71,7 @@ class TeamMemberRequest(models.Model):
 class TeamInvitationManager(models.Manager):
     def get_queryset(self):
         return super(TeamInvitationManager, self).get_queryset().filter(
-            team__is_enabled=True, user__is_enabled=True)
+            sender__is_enabled=True, receiver__is_enabled=True)
 
 
 class TeamInvitation(models.Model):
@@ -99,9 +99,9 @@ class TeamInvitation(models.Model):
         ordering = ['-create_time']
 
     @classmethod
-    def exist(cls, send, receiver):
+    def exist(cls, sender, receiver):
         """
         检查team是否向user发送过加入邀请
 
         """
-        return cls.enabled.filter(send=send, receiver=receiver).exists()
+        return cls.enabled.filter(sender=sender, receiver=receiver).exists()

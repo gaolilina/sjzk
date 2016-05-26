@@ -199,6 +199,9 @@ class MemberRequests(View):
         if TeamMemberRequest.exist(request.user, team):
             return Http403('already sent a member request')
 
+        if TeamInvitation.exist(team, request.user):
+            return Http403('the team has already sent a invitation')
+
         req = team.member_requests.model(
             sender=request.user, receiver=team, description=description)
         req.save()
@@ -229,10 +232,9 @@ class MemberRequest(View):
 class Invitations(View):
     get_dict = {'limit': forms.IntegerField(required=False, min_value=10)}
 
-    @check_object_id(Team.enabled, 'team')
     @require_token
     @validate_input(get_dict)
-    def get(self, request, team, limit=10):
+    def get(self, request, limit=10):
         """
         获取用户的加入团队邀请列表
         * 按邀请时间逆序获取收到的加团队邀请信息，拉取后的邀请 标记为已读
@@ -251,9 +253,9 @@ class Invitations(View):
         qs = TeamInvitation.enabled.filter(receiver=request.user, is_read=False)
         qs = qs[:limit]
 
-        l = [{'id': r.team.id,
-              'name': r.team.name,
-              'icon_url': r.team.icon_url,
+        l = [{'id': r.sender.id,
+              'name': r.sender.name,
+              'icon_url': r.sender.icon_url,
               'description': r.description,
               'create_time': r.create_time} for r in qs]
         # 更新拉取的加入团队邀请信息为已读
@@ -287,14 +289,17 @@ class Invitation(View):
         if user == team.owner:
             return Http400('cannot send invitation to self')
 
-        if TeamMember.exist(request.user, team):
+        if TeamMember.exist(user, team):
             return Http403('already been member')
 
-        if TeamInvitation.exist(team, request.user):
+        if TeamInvitation.exist(team, user):
             return Http403('already sent a invitation')
 
+        if TeamMemberRequest.exist(user, team):
+            return Http403('the user has already sent a member request')
+
         invitation = team.invitations.model(
-                sender=team, receiver=request.user, description=description)
+                sender=team, receiver=user, description=description)
         invitation.save()
         return Http200()
 
