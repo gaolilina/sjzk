@@ -1,11 +1,11 @@
 from django.conf.urls import url
 
+from main.views.follow import UserFans, UserFan, FollowedUsers, \
+    FollowedUser, FollowedTeams, FollowedTeam
 from main.views.like import UserLikers, UserLiker
 from main.views.user import Users, Token, Icon, Profile, Identification
 from main.views.user.experience import EducationExperiences, WorkExperiences, \
     FieldworkExperiences
-from main.views.user.follow import UserFans, UserFan, FollowedUsers, \
-    FollowedUser, FollowedTeams, FollowedTeam
 from main.views.user.friend import Friends, Friend, FriendRequests
 from main.views.visitor import UserVisitors
 
@@ -35,7 +35,7 @@ urls = [
         FollowedUser.as_view(), name='followed_user'),
     url(r'^(?P<user_id>[0-9]+)/followed/teams/$',
         FollowedTeams.as_view(), name='followed_teams'),
-    url(r'^(?P<user_id>[0-9]+)/followed/users/(?P<team_id>[0-9]+)/$',
+    url(r'^(?P<user_id>[0-9]+)/followed/teams/(?P<team_id>[0-9]+)/$',
         FollowedTeam.as_view(), name='followed_team'),
     # 好友
     url(r'^(?P<user_id>[0-9]+)/friends/$', Friends.as_view(), name='friends'),

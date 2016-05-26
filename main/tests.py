@@ -9,6 +9,7 @@ from ChuangYi import settings
 from main.crypt import encrypt_phone_number
 from main.models.location import Province, City
 from main.models.team import Team
+from main.models.team.member import TeamMember
 from main.models.user import User
 
 TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
@@ -715,20 +716,46 @@ class TeamListTestCase(TestCase):
                         'location': [self.p1.id, self.c1.id],
                         'fields': ['field1', 'field2'],
                         'tags': ['tag1', 'tag2']})
-        r = self.c.post(reverse('team:rootSelf'), {'data': d})
+        r = self.c.post(reverse('team:root_self'), {'data': d})
         self.assertEqual(r.status_code, 200)
 
     def test_get_own_list(self):
-        self.user1 = User.enabled.create_user('1', name='user1', create_time=datetime.now())
+        # 测试获取用户创建的团队
+        self.user1 = User.enabled.create_user('1', name='user1',
+                                              create_time=datetime.now())
         token1 = self.user1.token.value
         self.c1 = Client(HTTP_USER_TOKEN=token1)
         for i in range(1, 21):
             Team.create(self.user1, 'own_team' + str(i))
 
-        r = self.c1.get(reverse('team:rootSelf'),
-                       {'limit': '20', 'order': '0'})
+        r = self.c1.get(reverse('team:root_self'),
+                        {'limit': '20', 'order': '0'})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['name'], 'own_team1')
+
+    def test_get_member_list(self):
+        # 测试获取用户参加的团队
+        self.user1 = User.enabled.create_user('1', name='user1',
+                                              create_time=datetime.now())
+        token1 = self.user1.token.value
+        self.c1 = Client(HTTP_USER_TOKEN=token1)
+        for i in range(1, 11):
+            Team.create(self.user1, 'user1_team' + str(i))
+
+        self.user2 = User.enabled.create_user('2', name='user2',
+                                              create_time=datetime.now())
+        token2 = self.user2.token.value
+        self.c2 = Client(HTTP_USER_TOKEN=token2)
+        for i in range(1, 11):
+            team = Team.create(self.user2, 'user2_team' + str(i))
+            team_member = TeamMember(team=team, member=self.user1)
+            team_member.save()
+
+        r = self.c1.get(reverse('team:root_self'),
+                        {'limit': '20', 'order': '0', 'is_owner': False})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 10)
+        self.assertEqual(r['list'][0]['name'], 'user2_team1')
 
     def test_get_list_by_create_time_asc(self):
         r = self.c.get(reverse('team:root'),
@@ -777,7 +804,7 @@ class TeamProfileTestCase(TestCase):
 
     def test_create(self):
         d = json.dumps({'name': 'team100'})
-        r = self.c.post(reverse('team:rootSelf'), {'data': d})
+        r = self.c.post(reverse('team:root_self'), {'data': d})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['team_id'], 2)
 
@@ -915,3 +942,222 @@ class TeamIconTestCase(TestCase):
         r = self.c.get(reverse('team:icon', kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertNotEqual(r['icon_url'], None)
+
+
+class TeamMemberTestCase(TestCase):
+    def setUp(self):
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
+        self.u2 = User.enabled.create_user('2')
+        self.t = Team.create(self.u0, 'test')
+
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+        self.c2 = Client(HTTP_USER_TOKEN=self.u2.token.value)
+
+        self.t.member_records.create(member=self.u1)
+
+    def test_disabled_member(self):
+        # if a user is disabled, he or she should not exist in member list
+        self.u1.is_enabled = False
+        self.u1.save()
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 0)
+
+    def test_check_member_relation(self):
+        r = self.c0.get(reverse('team:member', kwargs={'team_id': self.t.id}),
+                        {'user_id': self.u1.id})
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.get(reverse('team:member', kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 404)
+        r = self.c0.get(reverse('team:member', kwargs={'team_id': self.t.id}),
+                        {'user_id':self.u2.id})
+        self.assertEqual(r.status_code, 404)
+
+    def test_get_member_list(self):
+        self.t.member_records.create(member=self.u2)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 2)
+        self.assertGreaterEqual(r['list'][0]['create_time'],
+                                r['list'][-1]['create_time'])
+
+    def test_get_member_by_time_asc(self):
+        self.t.member_records.create(member=self.u2)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}),
+                        {'order': 0})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 2)
+        self.assertLessEqual(r['list'][0]['create_time'],
+                             r['list'][-1]['create_time'])
+
+    def test_get_member_list_by_name_asc(self):
+        self.t.member_records.create(member=self.u2)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}),
+                        {'order': 2})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 2)
+        self.assertLessEqual(r['list'][0]['name'], r['list'][-1]['name'])
+
+    def test_get_member_list_by_name_desc(self):
+        self.t.member_records.create(member=self.u2)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}),
+                        {'order': 3})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 2)
+        self.assertGreaterEqual(r['list'][0]['name'], r['list'][-1]['name'])
+
+    # 测试发送加入团队申请
+    def test_send_member_request(self):
+        # 已经是成员的不能进行申请
+        r = self.c1.post(reverse('team:member_requests',
+                                 kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 403)
+        # 创始人不能发送申请
+        r = self.c0.post(reverse('team:member_requests',
+                                 kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 400)
+        # 对方已经发送了加入团队邀请
+        r = self.c0.post(reverse('team:invitation',
+                                 kwargs={'team_id': self.t.id,
+                                         'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c2.post(reverse('team:member_requests',
+                                 kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 403)
+        # 发送加入团队请求
+        r = self.c2.delete(reverse('team:invitation_self',
+                                   kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c2.post(reverse('team:member_requests',
+                                 kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 200)
+        # 不能多次发送申请
+        r = self.c2.post(reverse('team:member_requests',
+                                 kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 403)
+
+        # 获取申请列表
+        r = self.c0.get(reverse('team:member_requests',
+                                kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['list'][0]['id'], self.u2.id)
+        self.assertEqual(r['count'], 0)
+        # 成员不能拉取申请列表
+        r = self.c1.get(reverse('team:member_requests',
+                                kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 404)
+        # 添加成员
+        r = self.c0.post(reverse('team:memberSelf', kwargs={
+            'team_id': self.t.id,
+            'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 200)
+        # 已经是成员,不能添加成员
+        r = self.c0.post(reverse('team:memberSelf', kwargs={
+            'team_id': self.t.id,
+            'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 403)
+        # 此时应该有两个成员
+        r = self.c0.get(reverse('team:members',
+                                kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 2)
+        # 删除成员
+        r = self.c0.delete(reverse('team:memberSelf', kwargs={
+            'team_id': self.t.id,
+            'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 1)
+
+        # 忽略加入团队请求
+        r = self.c2.post(reverse('team:member_requests',
+                                 kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.delete(reverse('team:member_request', kwargs={
+            'team_id': self.t.id,
+            'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c2.post(reverse('team:member_requests',
+                                 kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.get(reverse('team:member_requests',
+                                kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['list'][0]['id'], self.u2.id)
+
+    # 测试发送加入团队邀请
+    def test_send_member_invitation(self):
+        # 已经是成员的不能进行邀请
+        r = self.c0.post(reverse('team:invitation',
+                                 kwargs={'team_id': self.t.id,
+                                         'user_id': self.u1.id}))
+        self.assertEqual(r.status_code, 403)
+        # 除团队创始人其他人不能发送邀请
+        r = self.c1.post(reverse('team:invitation',
+                                 kwargs={'team_id': self.t.id,
+                                         'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 403)
+        # 对方已经发送了加入团队申请
+        r = self.c2.post(reverse('team:member_requests',
+                                 kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.post(reverse('team:invitation',
+                                 kwargs={'team_id': self.t.id,
+                                         'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 403)
+        # 发送加入团队邀请
+        r = self.c0.delete(reverse('team:member_request', kwargs={
+            'team_id': self.t.id,
+            'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.post(reverse('team:invitation',
+                                 kwargs={'team_id': self.t.id,
+                                         'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 200)
+        # 不能多次发送邀请
+        r = self.c0.post(reverse('team:invitation',
+                                 kwargs={'team_id': self.t.id,
+                                         'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 403)
+
+        # 获取邀请列表
+        r = self.c2.get(reverse('team:invitations'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['list'][0]['id'], self.t.id)
+        self.assertEqual(r['count'], 0)
+        # 同意邀请
+        r = self.c2.post(reverse('team:invitation_self',
+                                 kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 200)
+        # 此时应该有两个成员
+        r = self.c0.get(reverse('team:members',
+                                kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 2)
+        # 删除成员
+        r = self.c0.delete(reverse('team:memberSelf', kwargs={
+            'team_id': self.t.id,
+            'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.get(reverse('team:members', kwargs={'team_id': self.t.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 1)
+
+        # 忽略加入团队邀请
+        r = self.c0.post(reverse('team:invitation',
+                                 kwargs={'team_id': self.t.id,
+                                         'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c2.delete(reverse('team:invitation_self',
+                                   kwargs={'team_id': self.t.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.post(reverse('team:invitation',
+                                 kwargs={'team_id': self.t.id,
+                                         'user_id': self.u2.id}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c2.get(reverse('team:invitations'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['list'][0]['id'], self.t.id)

@@ -55,20 +55,6 @@ class Team(models.Model, IconMixin):
         return team
 
 
-class TeamMember(models.Model):
-    """
-    团队成员记录
-
-    """
-    team = models.ForeignKey(
-        'Team', models.CASCADE, 'member_records', verbose_name='团队')
-    member = models.ForeignKey(
-        'User', models.CASCADE, '+', verbose_name='成员')
-
-    create_time = models.DateTimeField(
-        '加入时间', default=datetime.now)
-
-
 class TeamProfile(models.Model):
     team = models.OneToOneField(Team, models.CASCADE, related_name='profile')
 
