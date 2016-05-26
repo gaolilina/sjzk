@@ -6,7 +6,8 @@ from django.views.generic import View
 from main.decorators import require_token, check_object_id, validate_input
 from main.models.user import User
 from main.models.team import Team
-from main.models.team.member import TeamMember, TeamMemberRequest
+from main.models.team.member import TeamMember, TeamMemberRequest,\
+    TeamInvitation
 from main.responses import *
 
 
@@ -222,4 +223,113 @@ class MemberRequest(View):
             return Http403('related member request not exists')
 
         team.member_requests.get(sender=user).delete()
+        return Http200()
+
+
+class Invitations(View):
+    get_dict = {'limit': forms.IntegerField(required=False, min_value=10)}
+
+    @check_object_id(Team.enabled, 'team')
+    @require_token
+    @validate_input(get_dict)
+    def get(self, request, team, limit=10):
+        """
+        获取用户的加入团队邀请列表
+        * 按邀请时间逆序获取收到的加团队邀请信息，拉取后的邀请 标记为已读
+
+        :param limit: 拉取的数量上限
+        :return:
+            count: 剩余未拉取（未读）的邀请条数
+            list: 加入团队邀请信息列表
+                id: 团队ID
+                name: 团队名称
+                icon_url: 团队头像URL
+                description: 附带消息
+                create_time: 邀请发出的时间
+        """
+        # 拉取团队的加入申请信息
+        qs = TeamInvitation.enabled.filter(receiver=request.user, is_read=False)
+        qs = qs[:limit]
+
+        l = [{'id': r.team.id,
+              'name': r.team.name,
+              'icon_url': r.team.icon_url,
+              'description': r.description,
+              'create_time': r.create_time} for r in qs]
+        # 更新拉取的加入团队邀请信息为已读
+        ids = qs.values('id')
+        TeamInvitation.enabled.filter(
+                receiver=request.user, id__in=ids).update(is_read=True)
+        c = TeamInvitation.enabled.filter(
+                receiver=request.user, is_read=False).count()
+        return JsonResponse({'count': c, 'list': l})
+
+
+class Invitation(View):
+    post_dict = {'description': forms.CharField(required=False, max_length=100)}
+
+    @check_object_id(Team.enabled, 'team')
+    @check_object_id(User.enabled, 'user')
+    @require_token
+    @validate_input(post_dict)
+    def post(self, request, team, user, description=''):
+        """
+        向用户发出加入团队邀请，若已发出申请且未被处理则返回403，否则返回200
+
+        :param team_id: 团队ID
+        :param user_id: 用户ID
+        :param description: 附带消息
+
+        """
+        if request.user != team.owner:
+            return Http403('recent user has no authority')
+
+        if user == team.owner:
+            return Http400('cannot send invitation to self')
+
+        if TeamMember.exist(request.user, team):
+            return Http403('already been member')
+
+        if TeamInvitation.exist(team, request.user):
+            return Http403('already sent a invitation')
+
+        invitation = team.invitations.model(
+                sender=team, receiver=request.user, description=description)
+        invitation.save()
+        return Http200()
+
+
+class InvitationSelf(View):
+    @check_object_id(Team.enabled, 'team')
+    @require_token
+    def post(self, request, team):
+        """
+        同意团队的加入邀请并成为团队成员（需收到过加入团队邀请）
+
+        """
+        if not TeamInvitation.exist(team, request.user):
+            return Http403('related invitation not exists')
+
+        # 若已是团队成员则不做处理
+        if TeamMember.exist(request.user, team):
+            return Http403('already been member')
+
+        # 在事务中建立关系，并删除对应的加团队邀请
+        with transaction.atomic():
+            team.invitations.get(sender=team).delete()
+            team.member_records.create(member=request.user)
+        return Http200()
+
+    @check_object_id(Team.enabled, 'team')
+    @require_token
+    def delete(self, request, team):
+        """
+        忽略某团队的加团队邀请
+
+        :param team_id: 团队ID
+        """
+        if not TeamInvitation.exist(team, request.user):
+            return Http403('related team invitation not exists')
+
+        request.user.invitations.get(sender=team).delete()
         return Http200()

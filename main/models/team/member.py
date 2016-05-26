@@ -8,12 +8,6 @@ class TeamMemberManager(models.Manager):
             team__is_enabled=True, member__is_enabled=True)
 
 
-class TeamMemberRequestManager(models.Manager):
-    def get_queryset(self):
-        return super(TeamMemberRequestManager, self).get_queryset().filter(
-            sender__is_enabled=True, receiver__is_enabled=True)
-
-
 class TeamMember(models.Model):
     """
     团队成员记录
@@ -36,6 +30,12 @@ class TeamMember(models.Model):
 
         """
         return cls.enabled.filter(member=user, team=team).exists()
+
+
+class TeamMemberRequestManager(models.Manager):
+    def get_queryset(self):
+        return super(TeamMemberRequestManager, self).get_queryset().filter(
+            sender__is_enabled=True, receiver__is_enabled=True)
 
 
 class TeamMemberRequest(models.Model):
@@ -66,3 +66,42 @@ class TeamMemberRequest(models.Model):
 
         """
         return cls.enabled.filter(sender=sender, receiver=receiver).exists()
+
+
+class TeamInvitationManager(models.Manager):
+    def get_queryset(self):
+        return super(TeamInvitationManager, self).get_queryset().filter(
+            team__is_enabled=True, user__is_enabled=True)
+
+
+class TeamInvitation(models.Model):
+    """
+    团队邀请信息
+
+    """
+    sender = models.ForeignKey(
+        'Team', models.CASCADE, 'invitations', verbose_name='邀请方')
+    receiver = models.ForeignKey(
+        'User', models.CASCADE, 'invitations', verbose_name='被邀请用户')
+
+    description = models.TextField(
+        '附带消息', max_length=100, db_index=True)
+    is_read = models.BooleanField(
+        '该邀请是否已读', default=False, db_index=True)
+
+    create_time = models.DateTimeField(
+        '邀请时间', default=datetime.now, db_index=True)
+
+    enabled = TeamInvitationManager()
+
+    class Meta:
+        db_table = 'team_invitation'
+        ordering = ['-create_time']
+
+    @classmethod
+    def exist(cls, send, receiver):
+        """
+        检查team是否向user发送过加入邀请
+
+        """
+        return cls.enabled.filter(send=send, receiver=receiver).exists()

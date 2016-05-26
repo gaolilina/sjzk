@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from main.views.team import Teams, TeamsSelf, Profile, Icon
 from main.views.team.member import Members, Member, MemberSelf, MemberRequest,\
-    MemberRequests
+    MemberRequests, Invitation, InvitationSelf, Invitations
 
 urls = [
     # 获取自己创建(或者参加)的团队列表(get)/创建团队(post)
@@ -28,4 +28,13 @@ urls = [
     # 忽略用户的加入团队申请(delete)
     url(r'^member/request/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',
         MemberRequest.as_view(), name='member_request'),
+    # 获取用户的加入团队邀请列表(get)
+    url(r'^invitations/(?P<team_id>[0-9]+)/$',
+        Invitations.as_view(), name='invitations'),
+    # 同意团队的加入邀请并成为团队成员（post）/忽略团队的加入团队邀请(delete)
+    url(r'^invitation/(?P<team_id>[0-9]+)/$',
+        InvitationSelf.as_view(), name='invitation_self'),
+    # 团队向用户发出加入邀请(post)
+    url(r'^invitation/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',
+        Invitations.as_view(), name='invitation'),
 ]
