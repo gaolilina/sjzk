@@ -3,6 +3,9 @@ from django.conf.urls import url
 from main.views.team import Teams, TeamsSelf, Profile, Icon
 from main.views.team.member import Members, Member, MemberSelf, MemberRequest,\
     MemberRequests, Invitation, InvitationSelf, Invitations
+from main.views.like import TeamLiker, TeamLikers
+from main.views.follow import TeamFan, TeamFans
+from main.views.visitor import TeamVisitors
 
 urls = [
     # 获取自己创建(或者参加)的团队列表(get)/创建团队(post)
@@ -37,4 +40,20 @@ urls = [
     # 团队向用户发出加入邀请(post)
     url(r'^invitation/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',
         Invitation.as_view(), name='invitation'),
+
+    # 获取团队的点赞者信息列表(get)
+    url(r'^(?P<team_id>[0-9]+)/likers/$', TeamLikers.as_view(), name='likers'),
+    # 判断用户是否给团队点过赞(get)
+    url(r'^(?P<team_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
+        TeamLiker.as_view(), name='liker'),
+
+    # 获取团队的粉丝信息列表(get)
+    url(r'^(?P<team_id>[0-9]+)/fans/$', TeamFans.as_view(), name='fans'),
+    # 判断用户是否关注过团队(get)
+    url(r'^(?P<team_id>[0-9]+)/fans/(?P<other_user_id>[0-9]+)/$',
+        TeamFan.as_view(), name='fan'),
+
+    # 获取团队的访客信息(get)
+    url(r'^(?P<team_id>[0-9]+)/visitors/$',
+        TeamVisitors.as_view(), name='visitors'),
 ]
