@@ -38,7 +38,7 @@ class Contacts(View):
         """
         i, j = offset, offset + limit
         c = request.user.contacts.count()
-        qs = request.user.contacts[i:j]
+        qs = request.user.contacts.all()[i:j]
         l = [{'id': r.contact.id,
               'username': r.contact.username,
               'icon_url': r.contact.icon_url,
