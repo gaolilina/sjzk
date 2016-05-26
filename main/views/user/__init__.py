@@ -242,7 +242,7 @@ class Profile(View):
         r['id'] = user.id
         r['username'] = user.username
         r['name'] = user.name
-        r['icon'] = user.icon_url
+        r['icon_url'] = user.icon_url
         r['create_time'] = user.create_time
         r['description'] = user.profile.description
         r['email'] = user.profile.email
