@@ -34,7 +34,7 @@ class MessageManager(models.Manager):
 
 class Message(models.Model):
     """
-    消息收发凭据
+    消息
 
     """
     user = models.ForeignKey('User', models.CASCADE, 'messages')

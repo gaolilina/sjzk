@@ -92,8 +92,7 @@ class Messages(View):
         # 将拉取的消息标记为已读
         ids = qs[i:j].values('id')
         request.user.messages.filter(id__in=ids).update(is_read=True)
-        uc = request.user.messages.filter(
-            other_user=user, is_read=False).count()
+        uc = qs.filter(is_read=False).count()
         return JsonResponse({'count': c, 'unread_count': uc, 'list': l})
 
     post_dict = {'content': forms.CharField(max_length=256)}

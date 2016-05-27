@@ -12,3 +12,4 @@ from .user.experience import UserEducationExperience, UserWorkExperience, \
 from .user.friend import UserFriend, UserFriendRequest
 from .user.message import Contact, Message
 from .visitor import UserVisitor, TeamVisitor
+from .notification import Notification, NotificationReceipt

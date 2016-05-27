@@ -7,7 +7,6 @@ from main.models import User, Team
 from main.responses import *
 
 
-# todo: like-related test cases
 class Likers(View):
     get_dict = {
         'offset': forms.IntegerField(required=False, min_value=0),

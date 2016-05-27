@@ -11,6 +11,7 @@ from main.views.user.experience import EducationExperiencesSelf, \
 from main.views.user.friend import Friends, FriendSelf, FriendRequests, \
     FriendRequest
 from main.views.user.message import Contacts, Messages
+from main.views.user.notification import Notifications, Notification
 from main.views.visitor import UserVisitors
 
 urls = [
@@ -66,6 +67,11 @@ urls = [
     # 消息
     url(r'messages/', Contacts.as_view(), name='contacts'),
     url(r'messages/(?P<user_id>[0-9]+)/$', Messages.as_view(), name='messages'),
+    # 通知
+    url(r'notifications/',
+        Notifications.as_view(), name='notifications'),
+    url(r'notifications/(?<receipt_id>[0-9]+)/$',
+        Notification.as_view(), name='notification'),
     # 访客
     url(r'^visitors/$', UserVisitors.as_view(), name='visitors'),
 ]
