@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.comment import UserComments
 from main.views.follow import UserFans, UserFan, FollowedUsers, \
     FollowedUser, FollowedTeams, FollowedTeam
 from main.views.like import UserLikers, UserLiker
@@ -18,6 +19,9 @@ urls = [
         Profile.as_view(), name='profile'),
     url(r'^(?P<user_id>[0-9]+)/identification/$',
         Identification.as_view(), name='identification'),
+    # 评论
+    url(r'^(?P<user_id>[0-9]+)/comments/$',
+        UserComments.as_view(), name='comments'),
     # 经历
     url(r'^(?P<user_id>[0-9]+)/experiences/education/$',
         EducationExperiences.as_view(), name='education_experiences'),
@@ -48,5 +52,6 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
         UserLiker.as_view(), name='liker'),
     # 访客
-    url(r'^(?P<user_id>[0-9]+)/visitors/$', UserVisitors.as_view(), name='visitors'),
+    url(r'^(?P<user_id>[0-9]+)/visitors/$',
+        UserVisitors.as_view(), name='visitors'),
 ]

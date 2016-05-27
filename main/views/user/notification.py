@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import require_token, validate_input, check_object_id
-from main.models import Notification as NotificationModel
+from main.models import NotificationReceipt
 from main.responses import Http200
 
 
@@ -54,7 +54,7 @@ class Notifications(View):
 
 
 class Notification(View):
-    @check_object_id(NotificationModel.enabled, 'receipt')
+    @check_object_id(NotificationReceipt.enabled, 'receipt')
     @require_token
     def delete(self, request, receipt):
         """
