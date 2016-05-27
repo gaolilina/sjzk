@@ -705,6 +705,7 @@ class TeamListTestCase(TestCase):
             Team.create(self.user, 'team' + str(i))
 
     def test_create(self):
+        # 测试新建团队
         self.p1 = Province.objects.create(name='p1')
         self.p2 = Province.objects.create(name='p2')
         self.c1 = City.objects.create(name='c1', province=self.p1)
@@ -716,7 +717,7 @@ class TeamListTestCase(TestCase):
                         'location': [self.p1.id, self.c1.id],
                         'fields': ['field1', 'field2'],
                         'tags': ['tag1', 'tag2']})
-        r = self.c.post(reverse('team:root_self'), {'data': d})
+        r = self.c.post(reverse('team:team_create'), {'data': d})
         self.assertEqual(r.status_code, 200)
 
     def test_get_own_list(self):
@@ -728,7 +729,7 @@ class TeamListTestCase(TestCase):
         for i in range(1, 21):
             Team.create(self.user1, 'own_team' + str(i))
 
-        r = self.c1.get(reverse('team:root_self'),
+        r = self.c1.get(reverse('team:teams_owned'),
                         {'limit': '20', 'order': '0'})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['name'], 'own_team1')
@@ -751,32 +752,32 @@ class TeamListTestCase(TestCase):
             team_member = TeamMember(team=team, member=self.user1)
             team_member.save()
 
-        r = self.c1.get(reverse('team:root_self'),
+        r = self.c1.get(reverse('team:teams_joined'),
                         {'limit': '20', 'order': '0', 'is_owner': False})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 10)
         self.assertEqual(r['list'][0]['name'], 'user2_team1')
 
     def test_get_list_by_create_time_asc(self):
-        r = self.c.get(reverse('team:root'),
+        r = self.c.get(reverse('team:teams'),
                        {'limit': '20', 'order': '0'})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['name'], 'team1')
 
     def test_get_list_by_create_time_desc(self):
-        r = self.c.get(reverse('team:root'))
+        r = self.c.get(reverse('team:teams'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 20)
         self.assertEqual(r['list'][0]['name'], 'team20')
 
     def test_get_list_by_name_asc(self):
-        r = self.c.get(reverse('team:root'),
+        r = self.c.get(reverse('team:teams'),
                        {'limit': 20, 'order': 2})
         r = json.loads(r.content.decode('utf8'))
         self.assertLess(r['list'][0]['name'], r['list'][-1]['name'])
 
     def test_get_list_by_name_desc(self):
-        r = self.c.get(reverse('team:root'),
+        r = self.c.get(reverse('team:teams'),
                        {'limit': 20, 'order': 3})
         r = json.loads(r.content.decode('utf8'))
         self.assertGreater(r['list'][0]['name'], r['list'][-1]['name'])
@@ -804,7 +805,7 @@ class TeamProfileTestCase(TestCase):
 
     def test_create(self):
         d = json.dumps({'name': 'team100'})
-        r = self.c.post(reverse('team:root_self'), {'data': d})
+        r = self.c.post(reverse('team:team_create'), {'data': d})
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['team_id'], 2)
 
