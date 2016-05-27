@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.comment import UserComments, UserComment
 from main.views.follow import UserFans, UserFan, FollowedUsers, \
     FollowedUserSelf, FollowedTeams, FollowedTeamSelf
 from main.views.like import UserLikers, UserLiker, LikedUser, LikedTeam
@@ -25,6 +26,10 @@ urls = [
     url(r'^identification/id_card/$', IDCard.as_view(), name='id_card'),
     url(r'^identification/other_card/$',
         OtherCard.as_view(), name='other_card'),
+    # 评论
+    url(r'comments/$', UserComments.as_view(), name='comments'),
+    url(r'comments/(?P<comment_id>[0-9]+)/$',
+        UserComment.as_view(), name='comment'),
     # 经历
     url(r'^experiences/education/$',
         EducationExperiencesSelf.as_view(), name='education_experiences'),
@@ -65,12 +70,12 @@ urls = [
     url(r'liked/teams/(?P<team_id>[0-9]+)/$',
         LikedTeam.as_view(), name='liked_team'),
     # 消息
-    url(r'messages/', Contacts.as_view(), name='contacts'),
+    url(r'messages/$', Contacts.as_view(), name='contacts'),
     url(r'messages/(?P<user_id>[0-9]+)/$', Messages.as_view(), name='messages'),
     # 通知
-    url(r'notifications/',
+    url(r'notifications/$',
         Notifications.as_view(), name='notifications'),
-    url(r'notifications/(?<receipt_id>[0-9]+)/$',
+    url(r'notifications/(?P<receipt_id>[0-9]+)/$',
         Notification.as_view(), name='notification'),
     # 访客
     url(r'^visitors/$', UserVisitors.as_view(), name='visitors'),
