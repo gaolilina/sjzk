@@ -241,7 +241,7 @@ class UserProfileTestCase(TestCase):
         p = self.profile.copy()
         p['id'] = self.u0.id
         p['username'] = None
-        p['icon'] = None
+        p['icon_url'] = None
         p['create_time'] = self.u0.create_time.isoformat()[:-3]
         p['tags'] = ['test']
         self.assertEqual(r, p)
@@ -251,7 +251,7 @@ class UserProfileTestCase(TestCase):
         p = self.profile.copy()
         p['id'] = self.u0.id
         p['username'] = None
-        p['icon'] = None
+        p['icon_url'] = None
         p['create_time'] = self.u0.create_time.isoformat()[:-3]
         p['tags'] = ['test']
         self.assertEqual(r, p)
