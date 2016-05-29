@@ -8,10 +8,14 @@ from main.views.follow import TeamFan, TeamFans
 from main.views.visitor import TeamVisitors
 
 urls = [
-    # 获取自己创建(或者参加)的团队列表(get)/创建团队(post)
-    url(r'^$', TeamsSelf.as_view(), name='root_self'),
-    # 获取团队列表(get)
-    url(r'^list$', Teams.as_view(), name='root'),
+    # 获取所有的团队列表(get)
+    url(r'^$', Teams.as_view(), name='teams'),
+    # 创建团队(post)
+    url(r'^create/$', TeamsSelf.as_view(), name='team_create'),
+    # 获取自己创建的团队列表(get)
+    url(r'^owned/$', TeamsSelf.as_view(), name='teams_owned'),
+    # 获取自己参加的团队列表(get)
+    url(r'^joined/$', TeamsSelf.as_view(), name='teams_joined'),
     # 获取团队的基本信息(get)/修改团队的基本信息(post)
     url(r'^(?P<team_id>[0-9]+)/profile/$',
         Profile.as_view(), name='profile'),
