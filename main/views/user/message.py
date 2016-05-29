@@ -168,7 +168,7 @@ class Share(View):
 
 
 # noinspection PyMethodOverriding
-class UserShare(Share):
+class ShareUser(Share):
     @check_object_id(User.enabled, 'user')
     @check_object_id(User.enabled, 'other_user')
     @require_token
@@ -177,11 +177,11 @@ class UserShare(Share):
         向user分享other_user
 
         """
-        return super(UserShare, self).post(request, user, 'user', other_user.id)
+        return super(ShareUser, self).post(request, user, 'user', other_user.id)
 
 
 # noinspection PyMethodOverriding
-class TeamShare(Share):
+class ShareTeam(Share):
     @check_object_id(User.enabled, 'user')
     @check_object_id(Team.enabled, 'team')
     @require_token
@@ -190,4 +190,4 @@ class TeamShare(Share):
         向user分享team
 
         """
-        return super(TeamShare, self).post(request, user, 'team', team.id)
+        return super(ShareTeam, self).post(request, user, 'team', team.id)

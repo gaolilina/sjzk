@@ -4,7 +4,6 @@ from main.views.comment import UserComments, UserComment
 from main.views.follow import UserFans, UserFan, FollowedUsers, \
     FollowedUserSelf, FollowedTeams, FollowedTeamSelf
 from main.views.like import UserLikers, UserLiker, LikedUser, LikedTeam
-from main.views.message import Contacts, Messages, Share
 from main.views.user import Username, Password, IconSelf, ProfileSelf, \
     IdentificationSelf, IDCard, OtherCard
 from main.views.user.experience import EducationExperiencesSelf, \
@@ -12,6 +11,7 @@ from main.views.user.experience import EducationExperiencesSelf, \
     WorkExperience, FieldworkExperience
 from main.views.user.friend import Friends, FriendSelf, FriendRequests, \
     FriendRequest
+from main.views.user.message import Contacts, Messages, ShareUser, ShareTeam
 from main.views.user.notification import Notifications, Notification
 from main.views.visitor import UserVisitors
 
@@ -72,8 +72,10 @@ urls = [
     # 消息
     url(r'messages/$', Contacts.as_view(), name='contacts'),
     url(r'messages/(?P<user_id>[0-9]+)/$', Messages.as_view(), name='messages'),
-    url(r'messages/(?P<user_id>[0-9]+)/share/(?P<other_user_id>[0-9]+)$',
-        Share.as_view(), name='share'),
+    url(r'messages/(?P<user_id>[0-9]+)/share_user/(?P<other_user_id>[0-9]+)$',
+        ShareUser.as_view(), name='share_user'),
+    url(r'messages/(?P<user_id>[0-9]+)/share_team/(?P<team_id>[0-9]+)$',
+        ShareTeam.as_view(), name='share_team'),
     # 通知
     url(r'notifications/$',
         Notifications.as_view(), name='notifications'),
