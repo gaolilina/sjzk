@@ -1,6 +1,9 @@
 from datetime import datetime
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+
+from main.models import User, Team
 
 
 class ContactManager(models.Manager):
@@ -45,7 +48,7 @@ class Message(models.Model):
 
     content = models.TextField(default='', max_length=256, db_index=True)
     is_sharing = models.BooleanField(default=False, db_index=True)
-    sharing_type = models.TextField(default=None, null=True)
+    sharing_object_type = models.TextField(default=None, null=True)
     sharing_object_id = models.IntegerField(default=None, null=True)
 
     enabled = MessageManager()
@@ -53,3 +56,35 @@ class Message(models.Model):
     class Meta:
         db_table = 'message_receipt'
         ordering = ['-create_time']
+
+    @property
+    def sharing_object_name(self):
+        """
+        被分享对象的名称
+
+        """
+        try:
+            if self.sharing_type == 'user':
+                return User.enabled.get(id=self.sharing_object_id).name
+            elif self.sharing_type == 'team':
+                return Team.enabled.get(id=self.sharing_object_name).name
+            else:
+                return None
+        except ObjectDoesNotExist:
+            return None
+
+    @property
+    def sharing_object_icon_url(self):
+        """
+        被分享对象的图标URL
+
+        """
+        try:
+            if self.sharing_type == 'user':
+                return User.enabled.get(id=self.sharing_object_id).icon_url
+            elif self.sharing_type == 'team':
+                return Team.enabled.get(id=self.sharing_object_name).icon_url
+            else:
+                return None
+        except ObjectDoesNotExist:
+            return None

@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import require_token, validate_input, check_object_id
-from main.models import User
+from main.models import User, Team
 from main.responses import Http200
 
 
@@ -78,6 +78,8 @@ class Messages(View):
                 is_sharing: 是否分享消息
                 sharing_type: 分享类型
                 sharing_object_id: 分享对象ID
+                sharing_object_name: 分享对象名称
+                sharing_object_icon_url: 分享对象图标
                 create_time: 消息发送时间
         """
         i, j = offset, offset + limit
@@ -88,6 +90,8 @@ class Messages(View):
               'is_sharing': r.is_sharing,
               'sharing_type': r.sharing_type,
               'sharing_object_id': r.sharing_object_id,
+              'sharing_object_name': r.sharing_object_name,
+              'sharing_object_icon_url': r.sharing_object_icon_url,
               'create_time': r.create_time} for r in qs[i:j]]
         # 将拉取的消息标记为已读
         ids = qs[i:j].values('id')
@@ -99,13 +103,15 @@ class Messages(View):
 
     @check_object_id(User.enabled, 'user')
     @require_token
+    @validate_input(post_dict)
     @transaction.atomic
     def post(self, request, user, content):
         """
         向某用户发送消息
 
         """
-        msg = request.user.messages.create(other_user=request.user, direction=1,
+        # 总共保存两条消息记录，更新或创建两次联系记录
+        msg = request.user.messages.create(other_user=user, direction=1,
                                            content=content, is_sharing=False)
         r, created = request.user.contacts.get_or_create(
             contact=user, defaults={'last_message': msg})
@@ -122,3 +128,66 @@ class Messages(View):
             r.save()
 
         return Http200()
+
+
+class Share(View):
+    post_dict = {'content': forms.CharField(max_length=256, required=False)}
+
+    @validate_input(post_dict)
+    @transaction.atomic
+    def post(self, request, user, obj_type, obj_id, content=''):
+        """
+        向user分享obj
+
+        :param content: 可选的备注信息
+
+        """
+        # 总共保存两条消息记录，更新或创建两次联系记录
+        msg = request.user.messages.create(
+            other_user=user, direction=1, content=content, is_sharing=True,
+            sharing_object_type=obj_type, sharing_object_id=obj_id,
+        )
+        r, created = request.user.contacts.get_or_create(
+            contact=user, defaults={'last_message': msg})
+        if not created:
+            r.last_message = msg
+            r.save()
+
+        msg = user.messages.create(
+            other_user=request.user, direction=0, content=content,
+            is_sharing=False, sharing_object_type=obj_type,
+            sharing_object_id=obj_id,
+        )
+        r, created = user.contacts.get_or_create(
+            contact=request.user, defaults={'last_message': msg})
+        if not created:
+            r.last_message = msg
+            r.save()
+
+        return Http200()
+
+
+# noinspection PyMethodOverriding
+class UserShare(Share):
+    @check_object_id(User.enabled, 'user')
+    @check_object_id(User.enabled, 'other_user')
+    @require_token
+    def post(self, request, user, other_user):
+        """
+        向user分享other_user
+
+        """
+        return super(UserShare, self).post(request, user, 'user', other_user.id)
+
+
+# noinspection PyMethodOverriding
+class TeamShare(Share):
+    @check_object_id(User.enabled, 'user')
+    @check_object_id(Team.enabled, 'team')
+    @require_token
+    def post(self, request, user, team):
+        """
+        向user分享team
+
+        """
+        return super(TeamShare, self).post(request, user, 'team', team.id)
