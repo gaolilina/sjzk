@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.action import UserActions
 from main.views.comment import UserComments, UserComment
 from main.views.follow import UserFans, UserFan, FollowedUsers, \
     FollowedUserSelf, FollowedTeams, FollowedTeamSelf
@@ -26,6 +27,8 @@ urls = [
     url(r'^identification/id_card/$', IDCard.as_view(), name='id_card'),
     url(r'^identification/other_card/$',
         OtherCard.as_view(), name='other_card'),
+    # 动态
+    url(r'actions/$', UserActions.as_view(), name='actions'),
     # 评论
     url(r'comments/$', UserComments.as_view(), name='comments'),
     url(r'comments/(?P<comment_id>[0-9]+)/$',

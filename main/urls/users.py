@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.action import UserActions
 from main.views.comment import UserComments
 from main.views.follow import UserFans, UserFan, FollowedUsers, \
     FollowedUser, FollowedTeams, FollowedTeam
@@ -19,6 +20,9 @@ urls = [
         Profile.as_view(), name='profile'),
     url(r'^(?P<user_id>[0-9]+)/identification/$',
         Identification.as_view(), name='identification'),
+    # 动态
+    url(r'^(?P<user_id>[0-9]+)/actions/$',
+        UserActions.as_view(), name='actions'),
     # 评论
     url(r'^(?P<user_id>[0-9]+)/comments/$',
         UserComments.as_view(), name='comments'),
