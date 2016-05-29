@@ -5,7 +5,7 @@ from django.views.generic import View
 
 from main.decorators import require_token, validate_input, check_object_id
 from main.models import User, Team
-from main.responses import Http200
+from main.responses import *
 
 
 class Contacts(View):
@@ -177,6 +177,8 @@ class ShareUser(Share):
         向user分享other_user
 
         """
+        if other_user == request.user:
+            return Http403('cannot share self')
         return super(ShareUser, self).post(request, user, 'user', other_user.id)
 
 
