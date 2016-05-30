@@ -6,10 +6,7 @@ from django.db import models, transaction
 from main.models import User, Team
 
 
-class ActionManager(models.Manager):
-    def get_queryset(self):
-        return super(ActionManager, self).get_queryset().filter(is_enabled=True)
-
+class ActionManager(object):
     @staticmethod
     def participate_in_activity(obj, activity):
         """
@@ -134,8 +131,6 @@ class Action(models.Model):
     related_object_type = models.CharField(
         default=None, null=True, max_length=10)
     create_time = models.DateTimeField(default=datetime.now, db_index=True)
-
-    enabled = ActionManager()
 
     class Meta:
         abstract = True
