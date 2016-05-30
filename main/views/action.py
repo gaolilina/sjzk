@@ -20,7 +20,7 @@ class ObjectActions(View):
         :param offset: 偏移量
         :param limit: 数量上限
         :return:
-            count: 动态总数
+            count: 动态总数（包括标记为disabled的内容）
             last_create_time: 最近更新时间
             list: 动态列表
                 action: 相关动作
@@ -33,6 +33,7 @@ class ObjectActions(View):
         """
         i, j = offset, offset + limit
         c = obj.actions.count()
+        records = (i for i in obj.actions.all()[i:j] if i.is_enabled)
         l = [{'action': r.action,
               'object_type': r.object_type,
               'object_id': r.object_id,
@@ -40,7 +41,7 @@ class ObjectActions(View):
               'related_object_type': r.related_object_type,
               'related_object_id': r.related_object_id,
               'related_object_name': r.related_object.name,
-              } for r in obj.actions.all()[i:j]]
+              } for r in records]
         return JsonResponse({'count': c, 'list': l})
 
 
