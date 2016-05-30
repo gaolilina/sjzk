@@ -3,6 +3,7 @@ from django.conf.urls import url
 from main.views.team import Teams, TeamsSelf, Profile, Icon
 from main.views.team.member import Members, Member, MemberSelf, MemberRequest,\
     MemberRequests, Invitation, InvitationSelf, Invitations
+from main.views.team.need import Needs, NeedSelf
 from main.views.like import TeamLiker, TeamLikers
 from main.views.follow import TeamFan, TeamFans
 from main.views.visitor import TeamVisitors
@@ -60,4 +61,13 @@ urls = [
     # 获取团队的访客信息(get)
     url(r'^(?P<team_id>[0-9]+)/visitors/$',
         TeamVisitors.as_view(), name='visitors'),
+
+    # 获取所有的需求列表(get)/发布需求(post)
+    url(r'^needs/$', Needs.as_view(), name='needs'),
+    # 获取某一团队发布的需求列表(get)/发布需求(post)
+    url(r'^(?P<team_id>[0-9]+)/needs/$', NeedSelf.as_view(),
+        name='team_needs'),
+    # 删除需求(delete)
+    url(r'^(?P<team_id>[0-9]+)/needs/(?P<need_id>[0-9]+)$', NeedSelf.as_view(),
+        name='need_delete'),
 ]

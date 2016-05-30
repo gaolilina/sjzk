@@ -73,10 +73,6 @@ class Teams(View):
               'create_time': t.create_time} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
-    post_dict = {
-        'name': forms.CharField(),
-    }
-
 
 class TeamsSelf(View):
     get_dict = {

@@ -71,7 +71,7 @@ class Member(View):
         :param team_id 团队ID
         :param user_id 用户ID（默认为当前用户）
         """
-        if user_id :
+        if user_id:
             try:
                 user = User.enabled.get(id=user_id)
             except ValueError:

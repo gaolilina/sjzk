@@ -9,6 +9,7 @@ from ChuangYi import settings
 from main.crypt import encrypt_phone_number
 from main.models.location import Province, City
 from main.models.team import Team
+from main.models.team.need import TeamNeed
 from main.models.team.member import TeamMember
 from main.models.user import User
 
@@ -1162,3 +1163,80 @@ class TeamMemberTestCase(TestCase):
         r = self.c2.get(reverse('team:invitations'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['id'], self.t.id)
+
+
+class TeamNeedTestCase(TestCase):
+    def setUp(self):
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
+        self.t0 = Team.create(self.u0, 'test0')
+        self.t1 = Team.create(self.u1, 'test1')
+
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+
+        for i in range(1, 11):
+            need = TeamNeed(team=self.t0, description='Need' + str(i),
+                            create_time=datetime.now())
+            need.save()
+        for i in range(11, 21):
+            need = TeamNeed(team=self.t1, description='Need' + str(i),
+                            create_time=datetime.now())
+            need.save()
+
+    def test_create(self):
+        # 测试发布需求
+        self.p1 = Province.objects.create(name='p1')
+        self.p2 = Province.objects.create(name='p2')
+        self.c1 = City.objects.create(name='c1', province=self.p1)
+        self.c2 = City.objects.create(name='c2', province=self.p1)
+
+        d = json.dumps({'description': 'Team Need Test!',
+                        'number': 10,
+                        'gender': 0,
+                        'location': [self.p1.id, self.c1.id]})
+        r = self.c0.post(
+                reverse('team:team_needs', kwargs={'team_id': self.t0.id}),
+                {'data': d})
+        self.assertEqual(r.status_code, 200)
+
+    def test_get_one_team_list(self):
+        # 测试获取某一团队的需求
+        r = self.c0.get(
+                reverse('team:team_needs', kwargs={'team_id': self.t0.id}),
+                {'limit': '20', 'order': '0'})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['list'][0]['description'], 'Need1')
+
+    def test_get_list_by_create_time_asc(self):
+        r = self.c0.get(
+                reverse('team:needs'), {'limit': '20', 'order': '0'})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertEqual(r['list'][0]['description'], 'Need1')
+
+    def test_get_list_by_create_time_desc(self):
+        r = self.c0.get(reverse('team:needs'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertEqual(r['list'][0]['description'], 'Need20')
+
+    def test_delete(self):
+        # 只能团队创始人删除
+        r = self.c1.delete(
+                reverse('team:need_delete', kwargs={'team_id': self.t0.id,
+                                                    'need_id': 1}))
+        self.assertEqual(r.status_code, 403)
+        # 需求不属于此团队
+        r = self.c1.delete(
+                reverse('team:need_delete', kwargs={'team_id': self.t1.id,
+                                                    'need_id': 1}))
+        self.assertEqual(r.status_code, 400)
+        # 测试删除需求
+        r = self.c0.delete(
+                reverse('team:need_delete', kwargs={'team_id': self.t0.id,
+                                                    'need_id': 1}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.get(reverse('team:needs'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 19)

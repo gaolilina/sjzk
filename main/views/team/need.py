@@ -66,7 +66,7 @@ class NeedSelf(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     }
-    available_orders = ('create_time', '-create_time', 'name', '-name')
+    available_orders = ('create_time', '-create_time')
 
     @check_object_id(Team.enabled, 'team')
     @require_token
@@ -79,10 +79,9 @@ class NeedSelf(View):
         :param offset: 偏移量
         :param limit: 数量上限
         :param order: 排序方式
-            0: 注册时间升序
-            1: 注册时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
+            0: 发布时间升序
+            1: 发布时间降序（默认值）
+
         :return:
             count: 需求总数
             list: 需求列表
@@ -116,7 +115,7 @@ class NeedSelf(View):
 
     @check_object_id(Team.enabled, 'team')
     @require_token
-    @validate_json_input(get_dict)
+    @validate_json_input(post_dict)
     def post(self, request, team, data):
         """
         发布需求
@@ -138,9 +137,8 @@ class NeedSelf(View):
         error = ''
         try:
             with transaction.atomic():
-                need = TeamNeed.object.create(
-                        team=team, description=description, number=number,
-                        gender=gender)
+                need = TeamNeed(team=team, description=description,
+                                number=number, gender=gender)
                 need.save()
                 if location:
                     try:
@@ -156,8 +154,9 @@ class NeedSelf(View):
             return Http400(error)
 
     @check_object_id(Team.enabled, 'team')
+    @check_object_id(TeamNeed.enabled, 'need')
     @require_token
-    def delete(self, request, team, need_id):
+    def delete(self, request, team, need):
         """
         删除需求
 
@@ -166,8 +165,10 @@ class NeedSelf(View):
         """
         if request.user != team.owner:
             return Http403('recent user has no authority')
+        if need.team != team:
+            return Http400('related team need not exists')
         try:
-            team.needs.get(id=need_id).delete()
+            need.delete()
             return Http200()
         except IntegrityError:
-            return Http400('related team need not exists')
+            return Http400()

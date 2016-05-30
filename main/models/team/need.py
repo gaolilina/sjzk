@@ -3,6 +3,12 @@ from datetime import datetime
 from django.db import models
 
 
+class TeamNeedManager(models.Manager):
+    def get_queryset(self):
+        return super(TeamNeedManager, self).get_queryset().filter(
+            team__is_enabled=True)
+
+
 class TeamNeed(models.Model):
     """
     团队需求信息
@@ -23,6 +29,8 @@ class TeamNeed(models.Model):
             '创建时间', default=datetime.now, db_index=True)
     update_time = models.DateTimeField(
             '更新时间', auto_now=True, db_index=True)
+
+    enabled = TeamNeedManager()
 
     class Meta:
         db_table = 'team_need'
