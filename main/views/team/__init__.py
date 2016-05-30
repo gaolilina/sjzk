@@ -1,6 +1,5 @@
 from django import forms
 from django.db import IntegrityError, transaction
-from django.db.models import QuerySet
 from django.http import JsonResponse
 from django.views.generic import View
 
@@ -9,7 +8,6 @@ from main.decorators import require_token, check_object_id, \
 from main.models.location import TeamLocation
 from main.models.tag import TeamTag
 from main.models.team import Team, TeamProfile
-from main.models.team.member import TeamMember
 from main.models.visitor import TeamVisitor
 from main.responses import *
 

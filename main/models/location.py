@@ -105,3 +105,15 @@ class TeamLocation(Location):
 
     class Meta:
         db_table = 'team_location'
+
+
+class TeamNeedLocation(Location):
+    """
+    需求限定地区
+
+    """
+    object = models.OneToOneField(
+        'TeamNeed', models.CASCADE, related_name='location')
+
+    class Meta:
+        db_table = 'need_location'
