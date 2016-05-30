@@ -1,4 +1,5 @@
 from django import forms
+from datetime import datetime
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.generic import View
@@ -7,6 +8,9 @@ from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input, process_uploaded_image
 from main.models.location import TeamLocation
 from main.models.tag import TeamTag
+from main.models.like import TeamLiker
+from main.models.visitor import TeamVisitor
+from main.models.comment import TeamComment
 from main.models.team import Team, TeamProfile
 from main.models.visitor import TeamVisitor
 from main.responses import *
@@ -43,15 +47,29 @@ class Teams(View):
                 name: 团队名
                 owner_id: 创建者ID
                 icon_url: 团队头像URL
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                comment_count: 评论数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
+        now = datetime.now()
+        time = datetime(now.year, now.month, now.day - 7)
+
         c = Team.enabled.count()
         teams = Team.enabled.order_by(k)[i:j]
         l = [{'id': t.id,
               'name': t.name,
               'icon_url': t.icon_url,
               'owner_id': t.owner.id,
+              'liker_count': TeamLiker.enabled.filter(liked=t).count(),
+              'visitor_count': t.visitor_records.filter(
+                      update_time__gte=time).count(),
+              'comment_count': TeamComment.enabled.filter(object=t).count(),
+              'fields': TeamProfile.get_fields(t),
+              'tags': TeamTag.objects.get_tags(t),
               'create_time': t.create_time} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
@@ -94,9 +112,17 @@ class TeamsSelf(View):
                 name: 团队名
                 owner_id: 创建者ID
                 icon_url: 团队头像URL
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                comment_count: 评论数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
+        now = datetime.now()
+        time = datetime(now.year, now.month, now.day - 7)
+
         if is_owner:
             c = Team.enabled.filter(owner=request.user).count()
             teams = Team.enabled.filter(owner=request.user).order_by(k)[i:j]
@@ -108,6 +134,12 @@ class TeamsSelf(View):
               'name': t.name,
               'icon_url': t.icon_url,
               'owner_id': t.owner.id,
+              'liker_count': TeamLiker.enabled.filter(liked=t).count(),
+              'visitor_count': t.visitor_records.filter(
+                      update_time__gte=time).count(),
+              'comment_count': TeamComment.enabled.filter(object=t).count(),
+              'fields': TeamProfile.get_fields(t),
+              'tags': TeamTag.objects.get_tags(t),
               'create_time': t.create_time} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
@@ -126,7 +158,7 @@ class TeamsSelf(View):
             description: 团队描述（默认为空）
             url: 团队链接（默认为空）
             location: 所在地区（默认为空），格式：[province_id, city_id]
-            fields: 团队领域（默认为空），格式:['field1', 'field2', ...]
+            fields: 团队领域（默认为空,最多2个），格式:['field1', 'field2']
             tags: 标签（默认为空），格式：['tag1', 'tag2', ...]
         :return: team_id: 团队id
         """
@@ -200,7 +232,7 @@ class Profile(View):
             description: 团队简介
             url: 团队链接
             location: 所在地区，格式：[province_id, city_id]
-            fields: 所属领域，格式：['field1', 'field2', ...]
+            fields: 所属领域，格式：['field1', 'field2']
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
         owner = team.owner
@@ -209,20 +241,15 @@ class Profile(View):
         if owner != request.user:
             TeamVisitor.enabled.update_visitor(team, request.user)
 
-        # 读取所属领域
-        fields = list()
-        fields.append(team.profile.field1)
-        if team.profile.field2:
-            fields.append(team.profile.field2)
         r = dict()
         r['name'] = team.name
         r['owner_id'] = team.owner.id
-        r['icon'] = team.icon_url
+        r['icon_url'] = team.icon_url
         r['create_time'] = team.create_time
         r['is_recruiting'] = team.is_recruiting
         r['description'] = team.profile.description
         r['url'] = team.profile.url
-        r['fields'] = fields
+        r['fields'] = TeamProfile.get_fields(team)
         r['location'] = TeamLocation.objects.get_location(team)
         r['tags'] = TeamTag.objects.get_tags(team)
 

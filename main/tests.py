@@ -820,7 +820,7 @@ class TeamProfileTestCase(TestCase):
         p = self.profile.copy()
 
         p['owner_id'] = self.u.id
-        p['icon'] = None
+        p['icon_url'] = None
         p['is_recruiting'] = True
         p['create_time'] = self.t.create_time.isoformat()[:-3]
         self.assertEqual(r, p)
