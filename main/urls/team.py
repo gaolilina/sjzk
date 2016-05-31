@@ -4,6 +4,7 @@ from main.views.team import Teams, TeamsSelf, Profile, Icon
 from main.views.team.member import Members, Member, MemberSelf, MemberRequest,\
     MemberRequests, Invitation, InvitationSelf, Invitations
 from main.views.team.need import Needs, NeedSelf
+from main.views.team.task import Tasks, TaskSelf, TaskMarker, Task
 from main.views.like import TeamLiker, TeamLikers
 from main.views.follow import TeamFan, TeamFans
 from main.views.visitor import TeamVisitors
@@ -68,6 +69,17 @@ urls = [
     url(r'^(?P<team_id>[0-9]+)/needs/$', NeedSelf.as_view(),
         name='team_needs'),
     # 删除需求(delete)
-    url(r'^(?P<team_id>[0-9]+)/needs/(?P<need_id>[0-9]+)$', NeedSelf.as_view(),
+    url(r'^(?P<team_id>[0-9]+)/need/(?P<need_id>[0-9]+)$', NeedSelf.as_view(),
         name='need_delete'),
+
+    # 获取团队发布的所有任务(get)/发布任务(post)
+    url(r'^(?P<team_id>[0-9]+)/tasks/$', Tasks.as_view(), name='tasks'),
+    # 获取用户收到的所有任务(get)
+    url(r'^tasks/$', TaskSelf.as_view(), name='tasks_self'),
+    # 用户标记任务为已完成(post)
+    url(r'^(?P<team_id>[0-9]+)/task/marker/(?P<task_id>[0-9]+)$',
+        TaskMarker.as_view(), name='task_marker'),
+    # 创始人确认用户的标记(post)/取消任务(delete)
+    url(r'^(?P<team_id>[0-9]+)/task/(?P<task_id>[0-9]+)$', Task.as_view(),
+        name='task'),
 ]

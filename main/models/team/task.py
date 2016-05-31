@@ -3,6 +3,12 @@ from datetime import datetime
 from django.db import models
 
 
+class TeamTaskManager(models.Manager):
+    def get_queryset(self):
+        return super(TeamTaskManager, self).get_queryset().filter(
+            team__is_enabled=True, executors__is_enabled=True)
+
+
 class TeamTask(models.Model):
     """
     团队任务
@@ -16,7 +22,8 @@ class TeamTask(models.Model):
         '任务描述', max_length=100, db_index=True)
     status = models.IntegerField(
         '任务状态', default=0, db_index=True,
-        choices=(('未完成', 0), ('已完成', 1), ('已取消', 2)))
+        choices=(('未完成', 0), ('已完成', 1),
+                 ('已取消', 2), ('全部标记完成', 3)))
     expected_time = models.DateTimeField(
         '预期完成时间', default=None, blank=True, null=True, db_index=True)
     finish_time = models.DateTimeField(
@@ -28,9 +35,17 @@ class TeamTask(models.Model):
     create_time = models.DateTimeField(
         '创建时间', default=datetime.now, db_index=True)
 
+    enabled = TeamTaskManager()
+
     class Meta:
         db_table = 'team_task'
         ordering = ['-create_time']
+
+
+class TeamTaskMarkerManager(models.Manager):
+    def get_queryset(self):
+        return super(TeamTaskMarkerManager, self).get_queryset().filter(
+            user__is_enabled=True)
 
 
 class TeamTaskMarker(models.Model):
@@ -50,3 +65,13 @@ class TeamTaskMarker(models.Model):
 
     class Meta:
         db_table = 'team_task_marker'
+
+    enabled = TeamTaskMarkerManager()
+
+    @classmethod
+    def exist(cls, user, task):
+        """
+        检查user是否标记任务为已完成
+
+        """
+        return cls.enabled.filter(task=task, user=user).exists()

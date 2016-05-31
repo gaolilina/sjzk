@@ -17,7 +17,7 @@ class Needs(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     }
-    available_orders = ('create_time', '-create_time', 'name', '-name')
+    available_orders = ('create_time', '-create_time')
 
     @require_token
     @validate_input(get_dict)
@@ -28,10 +28,8 @@ class Needs(View):
         :param offset: 偏移量
         :param limit: 数量上限
         :param order: 排序方式
-            0: 注册时间升序
-            1: 注册时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
+            0: 发布时间升序
+            1: 发布时间降序（默认值）
         :return:
             count: 需求总数
             list: 需求列表
@@ -128,6 +126,9 @@ class NeedSelf(View):
             location: 地区要求(默认为空,不限)，格式：[province_id, city_id]
         :return: need_id: 需求id
         """
+        if request.user != team.owner:
+            return Http403('recent user has no authority')
+
         description = data.pop('description') if 'description' in data else ''
         number = data.pop('number') if 'number' in data else -1
         gender = data.pop('gender') if 'gender' in data else 0

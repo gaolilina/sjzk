@@ -10,6 +10,7 @@ from main.crypt import encrypt_phone_number
 from main.models.location import Province, City
 from main.models.team import Team
 from main.models.team.need import TeamNeed
+from main.models.team.task import TeamTask
 from main.models.team.member import TeamMember
 from main.models.user import User
 
@@ -1240,3 +1241,112 @@ class TeamNeedTestCase(TestCase):
         r = self.c0.get(reverse('team:needs'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 19)
+
+
+class TeamTaskTestCase(TestCase):
+    def setUp(self):
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
+        self.u2 = User.enabled.create_user('2')
+        self.u3 = User.enabled.create_user('3')
+        self.t0 = Team.create(self.u0, 'test0')
+
+        self.t0.member_records.create(member=self.u1)
+        self.t0.member_records.create(member=self.u2)
+
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+        self.c2 = Client(HTTP_USER_TOKEN=self.u2.token.value)
+
+        time = datetime.now()
+        for i in range(1, 21):
+            time += timedelta(seconds=1)
+            task = TeamTask(team=self.t0, name='task' + str(i),
+                            description='Test', create_time=time)
+            task.save()
+            task.executors.add(self.u1)
+            task.save()
+
+    def test_create(self):
+        # 测试发布任务
+        d = json.dumps({'name': 'Task0',
+                        'description': 'Team Task Test!',
+                        'executors_id': [2, 3]})
+        r = self.c0.post(
+                reverse('team:tasks', kwargs={'team_id': self.t0.id}),
+                {'data': d})
+        self.assertEqual(r.status_code, 200)
+        # 只有创始人能发布任务
+        d = json.dumps({'name': 'Task0',
+                        'description': 'Team Task Test!',
+                        'executors_id': [2, 3]})
+        r = self.c1.post(
+                reverse('team:tasks', kwargs={'team_id': self.t0.id}),
+                {'data': d})
+        self.assertEqual(r.status_code, 403)
+        # 只能给团队成员发布任务
+        d = json.dumps({'name': 'Task0',
+                        'description': 'Team Task Test!',
+                        'executors_id': [2, 3, 4]})
+        r = self.c0.post(
+                reverse('team:tasks', kwargs={'team_id': self.t0.id}),
+                {'data': d})
+        self.assertEqual(r.status_code, 403)
+
+    def test_get_own_list(self):
+        # 测试获取用户收到的所有任务
+        r = self.c1.get(
+                reverse('team:tasks_self'), {'limit': '20', 'order': '0'})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertEqual(r['list'][0]['name'], 'task1')
+
+    def test_get_one_team_list(self):
+        # 测试获取某一团队的所有任务
+        r = self.c0.get(
+                reverse('team:tasks', kwargs={'team_id': self.t0.id}),
+                {'limit': '20', 'order': '0'})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertEqual(r['list'][0]['name'], 'task1')
+
+    def test_get_list_by_create_time_asc(self):
+        r = self.c0.get(
+                reverse('team:tasks', kwargs={'team_id': self.t0.id}),
+                {'limit': '20', 'order': '0'})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertEqual(r['list'][0]['name'], 'task1')
+
+    def test_get_list_by_create_time_desc(self):
+        r = self.c0.get(reverse('team:tasks', kwargs={'team_id': self.t0.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertEqual(r['list'][0]['name'], 'task20')
+
+    def test_get_member_list_by_name_asc(self):
+        r = self.c0.get(reverse('team:tasks', kwargs={'team_id': self.t0.id}),
+                        {'order': 2})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertLessEqual(r['list'][0]['name'], r['list'][-1]['name'])
+
+    def test_get_member_list_by_name_desc(self):
+        r = self.c0.get(reverse('team:tasks', kwargs={'team_id': self.t0.id}),
+                        {'order': 3})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertGreaterEqual(r['list'][0]['name'], r['list'][-1]['name'])
+
+    def test_mark_finish(self):
+        # 用户标记为已完成
+        r = self.c1.post(
+                reverse('team:task_marker', kwargs={'team_id': self.t0.id,
+                                                    'task_id': 1}))
+        self.assertEqual(r.status_code, 200)
+        # 创始人确认
+        r = self.c0.post(
+                reverse('team:task', kwargs={'team_id': self.t0.id,
+                                             'task_id': 1}))
+        self.assertEqual(r.status_code, 200)
+
