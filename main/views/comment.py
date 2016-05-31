@@ -25,6 +25,8 @@ class Comments(View):
             list: 评论列表
                 id: 评论ID
                 author_id: 评论者ID
+                author_name: 评论者昵称
+                author_icon_url: 评论者头像URL
                 content: 内容
                 create_time: 发布时间
         """
@@ -33,6 +35,8 @@ class Comments(View):
         c = qs.count()
         l = [{'id': r.id,
               'author_id': r.author.id,
+              'author_name': r.author.name,
+              'author_icon_url': r.author.icon_url,
               'content': r.content,
               'create_time': r.create_time} for r in qs.all()[i:j]]
         return JsonResponse({'count': c, 'list': l})
