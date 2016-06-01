@@ -123,7 +123,7 @@ class NeedSelf(View):
             description: 需求描述
             number: 所需人数(默认为-1,若干)
             gender: 性别要求(默认为0,不限)
-            location: 地区要求(默认为空,不限)，格式：[province_id, city_id]
+            location: 地区要求(默认为空,不限)，格式：[province, city, county]
         :return: need_id: 需求id
         """
         if request.user != team.owner:

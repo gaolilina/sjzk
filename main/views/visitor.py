@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django import forms
 from django.http import JsonResponse
@@ -32,8 +32,7 @@ class Visitors(View):
                 update_time: 来访时间
         """
         # 起始时间为days天前0时
-        now = datetime.now()
-        t = datetime(now.year, now.month, now.day - days)
+        t = datetime.now() - timedelta(days=days)
         qs = obj.visitor_records.filter(update_time__gte=t)
 
         c = qs.count()

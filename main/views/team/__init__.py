@@ -1,5 +1,5 @@
 from django import forms
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.generic import View
@@ -55,8 +55,7 @@ class Teams(View):
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
-        now = datetime.now()
-        time = datetime(now.year, now.month, now.day - 7)
+        time = datetime.now() - timedelta(days=7)
 
         c = Team.enabled.count()
         teams = Team.enabled.order_by(k)[i:j]
@@ -116,8 +115,7 @@ class TeamsSelf(View):
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
-        now = datetime.now()
-        time = datetime(now.year, now.month, now.day - 7)
+        time = datetime.now() - timedelta(days=7)
 
         if is_owner:
             c = Team.enabled.filter(owner=request.user).count()
@@ -153,7 +151,7 @@ class TeamsSelf(View):
             name: 团队名称
             description: 团队描述（默认为空）
             url: 团队链接（默认为空）
-            location: 所在地区（默认为空），格式：[province_id, city_id]
+            location: 所在地区（默认为空），格式：[province, city, county]
             fields: 团队领域（默认为空,最多2个），格式:['field1', 'field2']
             tags: 标签（默认为空），格式：['tag1', 'tag2', ...]
         :return: team_id: 团队id
@@ -227,7 +225,7 @@ class Profile(View):
             is_recruiting：是否招募新成员
             description: 团队简介
             url: 团队链接
-            location: 所在地区，格式：[province_id, city_id]
+            location: 所在地区，格式：[province, city, county]
             fields: 所属领域，格式：['field1', 'field2']
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
@@ -271,7 +269,7 @@ class Profile(View):
             description: 团队简介
             is_recruiting：是否招募新成员
             url: 团队链接
-            location: 所在地区，格式：[province_id, city_id]
+            location: 所在地区，格式：[province, city, county]
             fields: 所属领域，格式：['field1', 'field2']
             tags: 标签，格式：['tag1', 'tag2', ...]
 

@@ -7,7 +7,7 @@ from django.test import Client, TestCase, TransactionTestCase
 
 from ChuangYi import settings
 from main.crypt import encrypt_phone_number
-from main.models.location import Province, City
+from main.models.location import Province, City, County
 from main.models.team import Team
 from main.models.team.need import TeamNeed
 from main.models.team.task import TeamTask
@@ -222,6 +222,8 @@ class UserProfileTestCase(TestCase):
         self.p2 = Province.objects.create(name='p2')
         self.c1 = City.objects.create(name='c1', province=self.p1)
         self.c2 = City.objects.create(name='c2', province=self.p1)
+        self.ct1 = County.objects.create(name='ct1', city=self.c1)
+        self.ct2 = County.objects.create(name='ct2', city=self.c1)
 
         self.profile = {
             'name': 'User 0',
@@ -229,7 +231,7 @@ class UserProfileTestCase(TestCase):
             'email': 'user0@example.com',
             'gender': 1,
             'birthday': '2000-10-24',
-            'location': [self.p1.id, self.c1.id],
+            'location': [self.p1.name, self.c1.name, self.ct1.name],
             'tags': ['Test'],
         }
 
@@ -297,29 +299,31 @@ class UserProfileTestCase(TestCase):
 
     def test_location_related(self):
         # with both values
-        d = json.dumps({'location': [self.p1.id, self.c1.id]})
+        d = json.dumps({'location': [self.p1.name, self.c1.name,
+                                     self.ct1.name]})
         r = self.c.post(reverse('self:profile'), {'data': d})
         self.assertEqual(r.status_code, 200)
 
         # clean location
-        d = json.dumps({'location': [None, None]})
+        d = json.dumps({'location': [None, None, None]})
         r = self.c.post(reverse('self:profile'), {'data': d})
         self.assertEqual(r.status_code, 200)
 
         # with province only
-        d = json.dumps({'location': [self.p2.id, None]})
+        d = json.dumps({'location': [self.p2.name, None, None]})
         r = self.c.post(reverse('self:profile'), {'data': d})
         self.assertEqual(r.status_code, 200)
 
         # with invalid value
-        d = json.dumps({'location': [self.p2.id, self.c1.id]})
+        d = json.dumps({'location': [self.p2.name, self.c1.name,
+                                     self.ct1.name]})
         r = self.c.post(reverse('self:profile'), {'data': d})
         self.assertEqual(r.status_code, 400)
 
         # get location
         r = self.c.get(reverse('self:profile'))
         r = json.loads(r.content.decode('utf8'))
-        self.assertEqual(r['location'], [self.p2.id, None])
+        self.assertEqual(r['location'], [self.p2.name, None, None])
 
 
 class UserIdentificationTestCase(TestCase):
@@ -712,11 +716,13 @@ class TeamListTestCase(TestCase):
         self.p2 = Province.objects.create(name='p2')
         self.c1 = City.objects.create(name='c1', province=self.p1)
         self.c2 = City.objects.create(name='c2', province=self.p1)
+        self.ct1 = County.objects.create(name='ct1', city=self.c1)
+        self.ct2 = County.objects.create(name='ct2', city=self.c1)
 
         d = json.dumps({'name': 'team1',
                         'description': 'Team Test!',
                         'url': 'http://www.baidu.com',
-                        'location': [self.p1.id, self.c1.id],
+                        'location': [self.p1.name, self.c1.name, self.ct1.name],
                         'fields': ['field1', 'field2'],
                         'tags': ['tag1', 'tag2']})
         r = self.c.post(reverse('team:team_create'), {'data': d})
@@ -796,11 +802,13 @@ class TeamProfileTestCase(TestCase):
         self.p2 = Province.objects.create(name='p2')
         self.c1 = City.objects.create(name='c1', province=self.p1)
         self.c2 = City.objects.create(name='c2', province=self.p1)
+        self.ct1 = County.objects.create(name='ct1', city=self.c1)
+        self.ct2 = County.objects.create(name='ct2', city=self.c1)
 
         self.profile = {'name': 'team1',
                         'description': 'Team Test!',
                         'url': 'http://www.baidu.com',
-                        'location': [self.p1.id, self.c1.id],
+                        'location': [self.p1.name, self.c1.name, self.ct1.name],
                         'fields': ['field1', 'field2'],
                         'is_recruiting': True,
                         'tags': ['tag1', 'tag2']}
@@ -888,25 +896,27 @@ class TeamProfileTestCase(TestCase):
 
     def test_location_related(self):
         # with both values
-        d = json.dumps({'location': [self.p1.id, self.c1.id]})
+        d = json.dumps({'location': [self.p1.name, self.c1.name,
+                                     self.ct1.name]})
         r = self.c.post(reverse('team:profile',
                                 kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 200)
 
         # clean location
-        d = json.dumps({'location': [None, None]})
+        d = json.dumps({'location': [None, None, None]})
         r = self.c.post(reverse('team:profile',
                                 kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 200)
 
         # with province only
-        d = json.dumps({'location': [self.p2.id, None]})
+        d = json.dumps({'location': [self.p2.name, None, None]})
         r = self.c.post(reverse('team:profile',
                                 kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 200)
 
         # with invalid value
-        d = json.dumps({'location': [self.p2.id, self.c1.id]})
+        d = json.dumps({'location': [self.p2.name, self.c1.name,
+                                     self.ct1.name]})
         r = self.c.post(reverse('team:profile',
                                 kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 400)
@@ -915,7 +925,7 @@ class TeamProfileTestCase(TestCase):
         r = self.c.get(reverse('team:profile',
                                kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
-        self.assertEqual(r['location'], [self.p2.id, None])
+        self.assertEqual(r['location'], [self.p2.name, None, None])
 
 
 class TeamIconTestCase(TestCase):
@@ -1191,11 +1201,14 @@ class TeamNeedTestCase(TestCase):
         self.p2 = Province.objects.create(name='p2')
         self.c1 = City.objects.create(name='c1', province=self.p1)
         self.c2 = City.objects.create(name='c2', province=self.p1)
+        self.ct1 = County.objects.create(name='ct1', city=self.c1)
+        self.ct2 = County.objects.create(name='ct2', city=self.c1)
 
         d = json.dumps({'description': 'Team Need Test!',
                         'number': 10,
                         'gender': 0,
-                        'location': [self.p1.id, self.c1.id]})
+                        'location': [self.p1.name, self.c1.name,
+                                     self.ct1.name]})
         r = self.c0.post(
                 reverse('team:team_needs', kwargs={'team_id': self.t0.id}),
                 {'data': d})

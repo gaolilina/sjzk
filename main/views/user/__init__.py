@@ -229,7 +229,7 @@ class Profile(View):
             email: 电子邮箱
             gender: 性别（0-保密，1-男，2-女）
             birthday: 生日
-            location: 所在地区，格式：[province_id, city_id]
+            location: 所在地区，格式：[province, city, county]
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
         user = user or request.user
@@ -275,7 +275,7 @@ class ProfileSelf(Profile):
             email: 电子邮箱
             gender: 性别（0-保密，1-男，2-女）
             birthday: 生日
-            location: 所在地区，格式：[province_id, city_id]
+            location: 所在地区，格式：[province, city, county]
             tags: 标签，格式：['tag1', 'tag2', ...]
 
         """

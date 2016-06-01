@@ -25,6 +25,18 @@ class City(models.Model):
         db_table = 'location_city'
 
 
+class County(models.Model):
+    """
+    县级行政区
+
+    """
+    name = models.CharField(max_length=20)
+    city = models.ForeignKey(City, models.CASCADE, 'counties')
+
+    class Meta:
+        db_table = 'location_county'
+
+
 class LocationManager(models.Manager):
     def get_location(self, obj):
         """
@@ -33,36 +45,43 @@ class LocationManager(models.Manager):
         """
         try:
             r = self.get(object=obj)
-            pid = r.province.id if r.province else None
-            cid = r.city.id if r.city else None
-            return [pid, cid]
+            pro_name = r.province.name if r.province else None
+            cit_name = r.city.name if r.city else None
+            cou_name = r.county.name if r.county else None
+            return [pro_name, cit_name, cou_name]
         except ObjectDoesNotExist:
-            return [None, None]
+            return [None, None, None]
 
     def set_location(self, obj, location):
         """
         设置对象位置信息
 
         :param obj: 带位置属性的对象
-        :param location: 位置信息，格式：[province_id, city_id]
+        :param location: 位置信息，格式：[province_name, city_name, county_name]
 
         """
-        # 检查省、市索引有效性
+        # 检查省、市、区(县)索引有效性
         try:
-            pid, cid = location
-            province = Province.objects.get(id=pid) if pid else None
-            city = City.objects.get(id=cid) if cid else None
+            pro_name, cit_name, cou_name = location
+            province = Province.objects.get(name=pro_name) if pro_name else None
+            city = City.objects.get(name=cit_name) if cit_name else None
+            county = County.objects.get(name=cou_name) if cou_name else None
         except ObjectDoesNotExist:
             raise ValueError('location not exists')
 
         if city and city.province != province:
             raise ValueError('invalid location')
 
+        if county and county.city != city:
+            raise ValueError('invalid location')
+
         r, created = self.get_or_create(
-            object=obj, defaults={'province': province, 'city': city})
+                object=obj, defaults={'province': province, 'city': city,
+                                      'county': county})
         if not created:
             r.province = province
             r.city = city
+            r.county = county
             r.save()
 
 
@@ -76,6 +95,8 @@ class Location(models.Model):
         Province, models.SET_NULL, default=None, null=True)
     city = models.ForeignKey(
         City, models.SET_NULL, default=None, null=True)
+    county = models.ForeignKey(
+        County, models.SET_NULL, default=None, null=True)
 
     objects = LocationManager()
 
