@@ -40,6 +40,9 @@ class Users(View):
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
+                gender: 性别
+                like_count: 点赞数
+                fan_count: 粉丝数
                 icon_url: 用户头像URL
                 create_time: 注册时间
         """
@@ -49,6 +52,9 @@ class Users(View):
         l = [{'id': u.id,
               'username': u.username,
               'name': u.name,
+              'gender': u.profile.gender,
+              'like_count': u.like_count,
+              'follow_count': u.fan_count,
               'icon_url': u.icon_url,
               'create_time': u.create_time} for u in users]
         return JsonResponse({'count': c, 'list': l})
