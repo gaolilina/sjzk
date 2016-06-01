@@ -49,7 +49,7 @@ class Teams(View):
                 icon_url: 团队头像URL
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
-                comment_count: 评论数
+                member_count: 团队成员人数
                 fields: 所属领域，格式：['field1', 'field2']
                 tags: 标签，格式：['tag1', 'tag2', ...]
                 create_time: 注册时间
@@ -66,7 +66,7 @@ class Teams(View):
               'liker_count': TeamLiker.enabled.filter(liked=t).count(),
               'visitor_count': t.visitor_records.filter(
                       update_time__gte=time).count(),
-              'comment_count': TeamComment.enabled.filter(object=t).count(),
+              'member_count': t.member_records.count(),
               'fields': TeamProfile.get_fields(t),
               'tags': TeamTag.objects.get_tags(t),
               'create_time': t.create_time} for t in teams]
@@ -109,7 +109,7 @@ class TeamsSelf(View):
                 icon_url: 团队头像URL
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
-                comment_count: 评论数
+                member_count: 团队成员人数
                 fields: 所属领域，格式：['field1', 'field2']
                 tags: 标签，格式：['tag1', 'tag2', ...]
                 create_time: 注册时间
@@ -131,7 +131,7 @@ class TeamsSelf(View):
               'liker_count': TeamLiker.enabled.filter(liked=t).count(),
               'visitor_count': t.visitor_records.filter(
                       update_time__gte=time).count(),
-              'comment_count': TeamComment.enabled.filter(object=t).count(),
+              'member_count': t.member_records.count(),
               'fields': TeamProfile.get_fields(t),
               'tags': TeamTag.objects.get_tags(t),
               'create_time': t.create_time} for t in teams]

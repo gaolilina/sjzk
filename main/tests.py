@@ -315,7 +315,7 @@ class UserProfileTestCase(TestCase):
         self.assertEqual(r.status_code, 200)
 
         # with invalid value
-        d = json.dumps({'location': [self.p2.name, self.c1.name,
+        d = json.dumps({'location': [None, self.c1.name,
                                      self.ct1.name]})
         r = self.c.post(reverse('self:profile'), {'data': d})
         self.assertEqual(r.status_code, 400)
@@ -828,7 +828,6 @@ class TeamProfileTestCase(TestCase):
                                kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         p = self.profile.copy()
-
         p['owner_id'] = self.u.id
         p['icon_url'] = None
         p['is_recruiting'] = True
@@ -902,6 +901,12 @@ class TeamProfileTestCase(TestCase):
                                 kwargs={'team_id': self.t.id}), {'data': d})
         self.assertEqual(r.status_code, 200)
 
+        # with string values
+        d = json.dumps({'location': ['北京', '北京', '海淀']})
+        r = self.c.post(reverse('team:profile',
+                                kwargs={'team_id': self.t.id}), {'data': d})
+        self.assertEqual(r.status_code, 200)
+
         # clean location
         d = json.dumps({'location': [None, None, None]})
         r = self.c.post(reverse('team:profile',
@@ -915,7 +920,7 @@ class TeamProfileTestCase(TestCase):
         self.assertEqual(r.status_code, 200)
 
         # with invalid value
-        d = json.dumps({'location': [self.p2.name, self.c1.name,
+        d = json.dumps({'location': [None, self.c1.name,
                                      self.ct1.name]})
         r = self.c.post(reverse('team:profile',
                                 kwargs={'team_id': self.t.id}), {'data': d})

@@ -60,14 +60,29 @@ class LocationManager(models.Manager):
         :param location: 位置信息，格式：[province_name, city_name, county_name]
 
         """
-        # 检查省、市、区(县)索引有效性
-        try:
-            pro_name, cit_name, cou_name = location
-            province = Province.objects.get(name=pro_name) if pro_name else None
-            city = City.objects.get(name=cit_name) if cit_name else None
-            county = County.objects.get(name=cou_name) if cou_name else None
-        except ObjectDoesNotExist:
-            raise ValueError('location not exists')
+        pro_name, cit_name, cou_name = location
+        province = None
+        if pro_name and pro_name:
+            try:
+                province = Province.objects.get(name=pro_name)
+            except ObjectDoesNotExist:
+                province = Province.objects.create(name=pro_name)
+        city = None
+        if cit_name:
+            if not province:
+                raise ValueError('invalid location')
+            try:
+                city = City.objects.get(name=cit_name, province=province)
+            except ObjectDoesNotExist:
+                city = City.objects.create(name=cit_name, province=province)
+        county = None
+        if cou_name:
+            if not city:
+                raise ValueError('invalid location')
+            try:
+                county = County.objects.get(name=cou_name, city=city)
+            except ObjectDoesNotExist:
+                county = County.objects.create(name=cou_name, city=city)
 
         if city and city.province != province:
             raise ValueError('invalid location')
