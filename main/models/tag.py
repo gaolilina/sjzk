@@ -19,7 +19,8 @@ class ObjectTagManager(models.Manager):
 
         """
         qs = self.filter(object=obj, is_enabled=True)
-        return [tag.name for tag in qs] if qs else None
+
+        return [tag.name for tag in qs] if qs else [None]
 
     def set_tags(self, obj, tags):
         """

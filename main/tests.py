@@ -295,7 +295,7 @@ class UserProfileTestCase(TestCase):
         self.assertEqual(r.status_code, 200)
         r = self.c.get(reverse('self:profile'))
         r = json.loads(r.content.decode('utf8'))
-        self.assertEqual(r['tags'], None)
+        self.assertEqual(r['tags'], [None])
 
     def test_location_related(self):
         # with both values
