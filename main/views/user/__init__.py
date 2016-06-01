@@ -44,6 +44,7 @@ class Users(View):
                 like_count: 点赞数
                 fan_count: 粉丝数
                 icon_url: 用户头像URL
+                tags: 标签
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
@@ -56,6 +57,7 @@ class Users(View):
               'like_count': u.like_count,
               'follow_count': u.fan_count,
               'icon_url': u.icon_url,
+              'tags': UserTag.objects.get_tags(u),
               'create_time': u.create_time} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
