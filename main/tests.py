@@ -828,6 +828,7 @@ class TeamProfileTestCase(TestCase):
                                kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         p = self.profile.copy()
+        p['id'] = self.t.id
         p['owner_id'] = self.u.id
         p['icon_url'] = None
         p['is_recruiting'] = True

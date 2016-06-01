@@ -216,6 +216,7 @@ class Profile(View):
 
         :param: team_id : 团队ID
         :return:
+            id: 团队ID
             name: 团队名
             owner_id: 创始人id
             icon_url: 团队头像URL
@@ -234,6 +235,7 @@ class Profile(View):
             TeamVisitor.enabled.update_visitor(team, request.user)
 
         r = dict()
+        r['id'] = team.id
         r['name'] = team.name
         r['owner_id'] = team.owner.id
         r['icon_url'] = team.icon_url
