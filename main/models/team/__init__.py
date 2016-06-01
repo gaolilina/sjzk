@@ -74,10 +74,15 @@ class TeamProfile(models.Model):
         """
         获取团队所属领域
         :param team: 团队
-        :return: fields: 所属领域，格式：['field1', 'field2']
+        :return: fields: 所属领域，格式：[field1, field2]
         """
         fields = list()
-        fields.append(team.profile.field1)
+        if team.profile.field1:
+            fields.append(team.profile.field1)
+        else:
+            fields.append(None)
         if team.profile.field2:
             fields.append(team.profile.field2)
+        else:
+            fields.append(None)
         return fields

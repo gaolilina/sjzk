@@ -9,8 +9,6 @@ from main.decorators import require_token, check_object_id, \
 from main.models.location import TeamLocation
 from main.models.tag import TeamTag
 from main.models.like import TeamLiker
-from main.models.visitor import TeamVisitor
-from main.models.comment import TeamComment
 from main.models.team import Team, TeamProfile
 from main.models.visitor import TeamVisitor
 from main.responses import *
