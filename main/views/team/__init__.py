@@ -9,6 +9,7 @@ from main.decorators import require_token, check_object_id, \
 from main.models.location import TeamLocation
 from main.models.tag import TeamTag
 from main.models.like import TeamLiker
+from main.models.follow import TeamFollower
 from main.models.team import Team, TeamProfile
 from main.models.visitor import TeamVisitor
 from main.responses import *
@@ -224,6 +225,9 @@ class Profile(View):
             is_recruiting：是否招募新成员
             description: 团队简介
             url: 团队链接
+            liker_count: 点赞数
+            fan_count: 粉丝数
+            visitor_count: 最近访客数
             location: 所在地区，格式：[province, city, county]
             fields: 所属领域，格式：['field1', 'field2']
             tags: 标签，格式：['tag1', 'tag2', ...]
@@ -234,6 +238,7 @@ class Profile(View):
         if owner != request.user:
             TeamVisitor.enabled.update_visitor(team, request.user)
 
+        time = datetime.now() - timedelta(days=7)
         r = dict()
         r['id'] = team.id
         r['name'] = team.name
@@ -243,6 +248,10 @@ class Profile(View):
         r['is_recruiting'] = team.is_recruiting
         r['description'] = team.profile.description
         r['url'] = team.profile.url
+        r['liker_count'] = TeamLiker.enabled.filter(liked=team).count()
+        r['fan_count'] = TeamFollower.enabled.filter().count()
+        r['visitor_count'] = team.visitor_records.filter(
+            update_time__gte=time).count()
         r['fields'] = TeamProfile.get_fields(team)
         r['location'] = TeamLocation.objects.get_location(team)
         r['tags'] = TeamTag.objects.get_tags(team)

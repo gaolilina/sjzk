@@ -820,6 +820,9 @@ class TeamProfileTestCase(TestCase):
         p['owner_id'] = self.u.id
         p['icon_url'] = None
         p['is_recruiting'] = True
+        p['liker_count'] = 0
+        p['fan_count'] = 0
+        p['visitor_count'] = 0
         p['create_time'] = self.t.create_time.isoformat()[:-3]
         self.assertEqual(r, p)
 
