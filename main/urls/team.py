@@ -7,6 +7,7 @@ from main.views.team.need import Needs, NeedSelf
 from main.views.team.task import Tasks, TaskSelf, TaskMarker, Task
 from main.views.like import TeamLiker, TeamLikers
 from main.views.follow import TeamFan, TeamFans
+from main.views.comment import TeamComment, TeamComments
 from main.views.visitor import TeamVisitors
 
 urls = [
@@ -58,6 +59,13 @@ urls = [
     # 判断用户是否关注过团队(get)
     url(r'^(?P<team_id>[0-9]+)/fans/(?P<other_user_id>[0-9]+)/$',
         TeamFan.as_view(), name='fan'),
+
+    # 获取团队的评论信息列表(get)/对团队进行评论(post)
+    url(r'^(?P<team_id>[0-9]+)/comments/$',
+        TeamComments.as_view(), name='comments'),
+    # 删除团队的某条评论
+    url(r'^(?P<team_id>[0-9]+)/fans/(?P<comment_id>[0-9]+)/$',
+        TeamComment.as_view(), name='comment'),
 
     # 获取团队的访客信息(get)
     url(r'^(?P<team_id>[0-9]+)/visitors/$',
