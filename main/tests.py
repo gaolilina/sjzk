@@ -951,7 +951,8 @@ class TeamIconTestCase(TestCase):
         with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
             r = self.c.post(reverse('team:icon',
                                     kwargs={'team_id': self.t.id}), {'icon': f})
-        self.assertEqual(r.status_code, 200)
+        r = json.loads(r.content.decode('utf8'))
+        self.assertNotEqual(r['icon_url'], None)
         # upload limit
         with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
             r = self.c1.post(reverse('team:icon',

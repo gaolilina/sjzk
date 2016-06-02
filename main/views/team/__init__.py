@@ -356,4 +356,4 @@ class Icon(View):
             team.icon.delete()
         team.icon = icon
         team.save()
-        return Http200()
+        return JsonResponse({'icon_url': team.icon_url})
