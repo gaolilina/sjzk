@@ -248,6 +248,8 @@ class UserProfileTestCase(TestCase):
         p['icon_url'] = None
         p['create_time'] = self.u0.create_time.isoformat()[:-3]
         p['tags'] = ['test']
+        p['counts'] = dict(fan_count=0, followed_count=0,
+                           friend_count=0, visitor_count=0)
         self.assertEqual(r, p)
 
         r = self.c.get(reverse('user:profile', kwargs={'user_id': self.u0.id}))
@@ -258,6 +260,8 @@ class UserProfileTestCase(TestCase):
         p['icon_url'] = None
         p['create_time'] = self.u0.create_time.isoformat()[:-3]
         p['tags'] = ['test']
+        p['counts'] = dict(fan_count=0, followed_count=0,
+                           friend_count=0, visitor_count=0)
         self.assertEqual(r, p)
 
     def test_tag_related(self):

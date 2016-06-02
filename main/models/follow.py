@@ -52,8 +52,10 @@ class TeamFollower(Follower):
     团队的关注者记录
 
     """
-    followed = models.ForeignKey('Team', models.CASCADE, 'follower_records')
-    follower = models.ForeignKey('User', models.CASCADE, 'followed_team_records')
+    followed = models.ForeignKey(
+        'Team', models.CASCADE, 'follower_records')
+    follower = models.ForeignKey(
+        'User', models.CASCADE, 'followed_team_records')
 
     class Meta:
         db_table = 'team_follower'

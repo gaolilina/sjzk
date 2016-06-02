@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import PBKDF2PasswordHasher as Hasher
 from django.db import models, transaction
 
 from ChuangYi.settings import IMAGE_PATH, PRIVATE_IMAGE_PATH
-from main.models.mixins import IconMixin, LikeMixin, FollowMixin
+from main.models.mixins import IconMixin, CountMixin
 
 
 class EnabledUserManager(models.Manager):
@@ -45,7 +45,7 @@ class DisabledUserManager(models.Manager):
             is_enabled=False)
 
 
-class User(models.Model, IconMixin, LikeMixin, FollowMixin):
+class User(models.Model, IconMixin, CountMixin):
     """
     用户账户信息
 

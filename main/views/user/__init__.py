@@ -239,6 +239,8 @@ class Profile(View):
             birthday: 生日
             location: 所在地区，格式：[province, city, county]
             tags: 标签，格式：['tag1', 'tag2', ...]
+            counts: 各种计数
+                fan / followed / friend / visitor
         """
         user = user or request.user
 
@@ -258,6 +260,12 @@ class Profile(View):
         r['birthday'] = user.profile.birthday if user.profile.birthday else None
         r['location'] = UserLocation.objects.get_location(user)
         r['tags'] = UserTag.objects.get_tags(user)
+        r['counts'] = dict(
+            fan_count=user.fan_count,
+            followed_count=user.followed_count,
+            friend_count=user.friend_count,
+            visitor_count=user.visitor_count,
+        )
 
         return JsonResponse(r)
 

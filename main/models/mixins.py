@@ -9,23 +9,29 @@ class IconMixin(object):
         return self.icon.url if self.icon else None
 
 
-class LikeMixin(object):
+# noinspection PyUnresolvedReferences
+class CountMixin(object):
     """
-    点赞数 Mixin
+    各种计数
 
     """
-    # noinspection PyUnresolvedReferences
+    @property
+    def fan_count(self):
+        return self.follower_records.filter(follower__is_enabled=True).count()
+
+    @property
+    def followed_count(self):
+        return self.followed_user_records.filter(followed__is_enabled=True).count() + \
+               self.followed_team_records.filter(followed__is_enabled=True).count()
+
+    @property
+    def friend_count(self):
+        return self.friend_records.count()
+
     @property
     def like_count(self):
         return self.liker_records.filter(liker__is_enabled=True).count()
 
-
-class FollowMixin(object):
-    """
-    粉丝数 Mixin
-
-    """
-    # noinspection PyUnresolvedReferences
     @property
-    def fan_count(self):
-        return self.follower_records.filter(follower__is_enabled=True).count()
+    def visitor_count(self):
+        return self.visitor_records.filter(visitor__is_enabled=True).count()
