@@ -1,4 +1,5 @@
 from django import forms
+from datetime import datetime, timedelta
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.generic import View
@@ -43,11 +44,13 @@ class Users(View):
                 gender: 性别
                 like_count: 点赞数
                 fan_count: 粉丝数
+                visitor_count: 访问数
                 icon_url: 用户头像URL
                 tags: 标签
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
+        time = datetime.now() - timedelta(days=7)
         c = User.enabled.count()
         users = User.enabled.order_by(k)[i:j]
         l = [{'id': u.id,
@@ -55,7 +58,9 @@ class Users(View):
               'name': u.name,
               'gender': u.profile.gender,
               'like_count': u.like_count,
-              'follow_count': u.fan_count,
+              'fan_count': u.fan_count,
+              'visitor_count': u.visitor_records.filter(
+                  update_time__gte=time).count(),
               'icon_url': u.icon_url,
               'tags': UserTag.objects.get_tags(u),
               'create_time': u.create_time} for u in users]
