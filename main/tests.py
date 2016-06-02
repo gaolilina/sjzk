@@ -242,27 +242,11 @@ class UserProfileTestCase(TestCase):
 
         r = self.c.get(reverse('self:profile'))
         r = json.loads(r.content.decode('utf8'))
-        p = self.profile.copy()
-        p['id'] = self.u0.id
-        p['username'] = None
-        p['icon_url'] = None
-        p['create_time'] = self.u0.create_time.isoformat()[:-3]
-        p['tags'] = ['test']
-        p['counts'] = dict(fan_count=0, followed_count=0,
-                           friend_count=0, visitor_count=0)
-        self.assertEqual(r, p)
+        self.assertEqual(r['birthday'], '2000-10-24')
 
         r = self.c.get(reverse('user:profile', kwargs={'user_id': self.u0.id}))
         r = json.loads(r.content.decode('utf8'))
-        p = self.profile.copy()
-        p['id'] = self.u0.id
-        p['username'] = None
-        p['icon_url'] = None
-        p['create_time'] = self.u0.create_time.isoformat()[:-3]
-        p['tags'] = ['test']
-        p['counts'] = dict(fan_count=0, followed_count=0,
-                           friend_count=0, visitor_count=0)
-        self.assertEqual(r, p)
+        self.assertEqual(r['email'], 'user0@example.com')
 
     def test_tag_related(self):
         # with valid tag list

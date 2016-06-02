@@ -239,8 +239,8 @@ class Profile(View):
             birthday: 生日
             location: 所在地区，格式：[province, city, county]
             tags: 标签，格式：['tag1', 'tag2', ...]
-            counts: 各种计数
-                fan / followed / friend / visitor
+            x_counts 各种计数
+                x: fan | followed | friend | like | visitor
         """
         user = user or request.user
 
@@ -248,22 +248,22 @@ class Profile(View):
         if user != request.user:
             UserVisitor.enabled.update_visitor(user, request.user)
 
-        r = dict()
-        r['id'] = user.id
-        r['username'] = user.username
-        r['name'] = user.name
-        r['icon_url'] = user.icon_url
-        r['create_time'] = user.create_time
-        r['description'] = user.profile.description
-        r['email'] = user.profile.email
-        r['gender'] = user.profile.gender
-        r['birthday'] = user.profile.birthday if user.profile.birthday else None
-        r['location'] = UserLocation.objects.get_location(user)
-        r['tags'] = UserTag.objects.get_tags(user)
-        r['counts'] = dict(
+        r = dict(
+            id=user.id,
+            username=user.username,
+            name=user.name,
+            icon_url=user.icon_url,
+            create_time=user.create_time,
+            description=user.profile.description,
+            email=user.profile.email,
+            gender=user.profile.gender,
+            birthday=user.profile.birthday,
+            location=UserLocation.objects.get_location(user),
+            tags=UserTag.objects.get_tags(user),
             fan_count=user.fan_count,
             followed_count=user.followed_count,
             friend_count=user.friend_count,
+            like_count=user.like_count,
             visitor_count=user.visitor_count,
         )
 
