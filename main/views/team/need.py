@@ -58,7 +58,7 @@ class Needs(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-class NeedSelf(View):
+class Need(View):
     get_dict = {
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

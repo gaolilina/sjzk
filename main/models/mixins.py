@@ -9,6 +9,17 @@ class IconMixin(object):
         return self.icon.url if self.icon else None
 
 
+class PictureMixin(object):
+    """
+    图片 Mixin
+
+    """
+    # noinspection PyUnresolvedReferences
+    @property
+    def picture_url(self):
+        return self.picture.url if self.picture else None
+
+
 # noinspection PyUnresolvedReferences
 class CountMixin(object):
     """

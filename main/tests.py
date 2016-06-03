@@ -1,7 +1,10 @@
+import hashlib
 import json
 import os
 from datetime import datetime, date, timedelta
 
+from PIL import Image
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase, TransactionTestCase
 
@@ -12,6 +15,7 @@ from main.models.team import Team
 from main.models.team.need import TeamNeed
 from main.models.team.task import TeamTask
 from main.models.team.member import TeamMember
+from main.models.team.achievement import TeamAchievement
 from main.models.user import User
 
 TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
@@ -1360,4 +1364,98 @@ class TeamTaskTestCase(TestCase):
                 reverse('team:task', kwargs={'team_id': self.t0.id,
                                              'task_id': 1}))
         self.assertEqual(r.status_code, 200)
+
+
+class TeamAchievementTestCase(TestCase):
+    def setUp(self):
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
+        self.t0 = Team.create(self.u0, 'test0')
+        self.t1 = Team.create(self.u1, 'test1')
+
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+        t = datetime.now()
+
+        with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
+            file = SimpleUploadedFile('', b'')
+            with Image.open(f) as image:
+                image.save(file, 'JPEG')
+            md5 = hashlib.md5()
+            md5.update(datetime.now().isoformat().encode())
+            file.name = md5.hexdigest() + '.jpg'
+            for i in range(1, 11):
+                t += timedelta(seconds=1)
+                a = TeamAchievement(team=self.t0,
+                                    description='Achievement'+str(i),
+                                    create_time=t)
+                a.picture = file
+                a.save()
+            for i in range(11, 21):
+                t += timedelta(seconds=1)
+                a = TeamAchievement(team=self.t1,
+                                    description='Achievement'+str(i),
+                                    create_time=t)
+                a.picture = file
+                a.save()
+                image.close()
+                f.close()
+
+    def test_create(self):
+        # 测试发布成果
+        description = 'Team Achievement Test!'
+        with open(os.path.join(TEST_DATA, 'kim.png'), 'rb') as f:
+            r = self.c0.post(reverse('team:team_achievements',
+                                     kwargs={'team_id': self.t0.id}),
+                             {'description': description, 'picture': f})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['achievement_id'], 21)
+
+    def test_get_one_team_list(self):
+        # 测试获取某一团队的成果
+        r = self.c0.get(
+                reverse('team:team_achievements',
+                        kwargs={'team_id': self.t0.id}),
+                {'limit': '20', 'order': '0'})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 10)
+        self.assertEqual(r['list'][0]['description'], 'Achievement1')
+        self.assertNotEqual(r['list'][0]['picture_url'], None)
+
+    def test_get_list(self):
+        # 测试获取所有团队的成果
+        r = self.c0.get(reverse('team:achievements'),
+                        {'limit': '20', 'order': '0'})
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertEqual(r['list'][0]['description'], 'Achievement1')
+
+    def test_get_list_by_create_time_desc(self):
+        r = self.c0.get(reverse('team:achievements'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 20)
+        self.assertEqual(r['list'][0]['description'], 'Achievement20')
+
+    def test_delete(self):
+        # 只能团队创始人删除
+        r = self.c1.delete(
+                reverse('team:achievement_delete',
+                        kwargs={'team_id': self.t0.id,
+                                'achievement_id': 1}))
+        self.assertEqual(r.status_code, 403)
+        # 需求不属于此团队
+        r = self.c1.delete(
+                reverse('team:achievement_delete',
+                        kwargs={'team_id': self.t1.id,
+                                'achievement_id': 1}))
+        self.assertEqual(r.status_code, 400)
+        # 测试删除需求
+        r = self.c0.delete(
+                reverse('team:achievement_delete',
+                        kwargs={'team_id': self.t0.id,
+                                'achievement_id': 1}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.get(reverse('team:achievements'))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 19)
 
