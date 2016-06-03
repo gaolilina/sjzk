@@ -6,7 +6,7 @@ from django.db import models
 class TeamTaskManager(models.Manager):
     def get_queryset(self):
         return super(TeamTaskManager, self).get_queryset().filter(
-            team__is_enabled=True, executors__is_enabled=True)
+            team__is_enabled=True)
 
 
 class TeamTask(models.Model):

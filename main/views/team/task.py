@@ -107,7 +107,7 @@ class Tasks(View):
         try:
             with transaction.atomic():
                 task = TeamTask(
-                            team=team, name=name, description=description)
+                    team=team, name=name, description=description)
                 task.save()
                 for user_id in executors_id:
                     try:
