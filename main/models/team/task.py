@@ -53,7 +53,7 @@ class TeamTaskMarker(models.Model):
     任务完成标记信息
 
     """
-    task = models.OneToOneField(
+    task = models.ForeignKey(
         'TeamTask', models.CASCADE, related_name='marker')
     user = models.ForeignKey(
         'User', models.CASCADE, '+', verbose_name='标记者')

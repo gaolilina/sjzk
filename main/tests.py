@@ -1378,7 +1378,7 @@ class TeamTaskTestCase(TestCase):
         r = self.c0.post(
                 reverse('team:task', kwargs={'team_id': self.t0.id,
                                              'task_id': 1}))
-        self.assertEqual(r.status_code, 400)
+        self.assertEqual(r.status_code, 200)
 
 
 class TeamAchievementTestCase(TestCase):

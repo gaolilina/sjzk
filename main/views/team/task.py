@@ -53,7 +53,6 @@ class Tasks(View):
         # 访问者不能查看团队任务列表
         if (request.user != team.owner) & TeamMember.exist(request.user, team):
             return Http403('recent user has no authority')
-
         i, j, k = offset, offset + limit, self.available_orders[order]
         c = TeamTask.enabled.count()
         tasks = TeamTask.enabled.order_by(k)[i:j]
