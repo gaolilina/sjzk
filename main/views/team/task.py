@@ -1,6 +1,7 @@
 from django import forms
 from datetime import datetime
 from django.db import transaction, IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import View
 from django.http import JsonResponse
 
@@ -87,7 +88,7 @@ class Tasks(View):
             description: 任务描述
             expected_time: 预计完成时间
             executors_id: 执行者ID列表，格式：[user_id1, user_id2,...]
-        :return:
+        :return: task_id: 任务ID
         """
         # 只有团队创始人才能发布任务
         if request.user != team.owner:
@@ -111,7 +112,7 @@ class Tasks(View):
                 for user_id in executors_id:
                     try:
                         user = User.enabled.get(id=user_id)
-                    except IntegrityError:
+                    except ObjectDoesNotExist:
                         return Http400('related executor not exists')
                     if user == team.owner:
                         return Http403('cannot send task to self')
@@ -121,8 +122,8 @@ class Tasks(View):
                     task.executors.add(user)
                 if expected_time:
                     task.expected_time = expected_time
-                task.save()
-                return Http200()
+                    task.save()
+                return JsonResponse({'task_id': task.id})
         except IntegrityError:
             return Http400('task create failed')
 

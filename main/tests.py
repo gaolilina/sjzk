@@ -1272,6 +1272,7 @@ class TeamTaskTestCase(TestCase):
         self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
         self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
         self.c2 = Client(HTTP_USER_TOKEN=self.u2.token.value)
+        self.c3 = Client(HTTP_USER_TOKEN=self.u3.token.value)
 
         time = datetime.now()
         for i in range(1, 21):
@@ -1279,8 +1280,7 @@ class TeamTaskTestCase(TestCase):
             task = TeamTask(team=self.t0, name='task' + str(i),
                             description='Test', create_time=time)
             task.save()
-            task.executors.add(self.u1)
-            task.save()
+            task.executors.add(self.u1, self.u2)
 
     def test_create(self):
         # 测试发布任务
@@ -1290,7 +1290,8 @@ class TeamTaskTestCase(TestCase):
         r = self.c0.post(
                 reverse('team:tasks', kwargs={'team_id': self.t0.id}),
                 {'data': d})
-        self.assertEqual(r.status_code, 200)
+        r = json.loads(r.content.decode('utf8'))
+        self.assertNotEqual(r['task_id'], None)
         # 只有创始人能发布任务
         d = json.dumps({'name': 'Task0',
                         'description': 'Team Task Test!',
@@ -1354,16 +1355,30 @@ class TeamTaskTestCase(TestCase):
         self.assertGreaterEqual(r['list'][0]['name'], r['list'][-1]['name'])
 
     def test_mark_finish(self):
+        # 非执行者不能标记任务完成
+        r = self.c3.post(
+                reverse('team:task_marker', kwargs={'team_id': self.t0.id,
+                                                    'task_id': 1}))
+        self.assertEqual(r.status_code, 403)
         # 用户标记为已完成
         r = self.c1.post(
                 reverse('team:task_marker', kwargs={'team_id': self.t0.id,
                                                     'task_id': 1}))
         self.assertEqual(r.status_code, 200)
-        # 创始人确认
+        # 用户未标记完成
         r = self.c0.post(
                 reverse('team:task', kwargs={'team_id': self.t0.id,
                                              'task_id': 1}))
+        self.assertEqual(r.status_code, 400)
+        # 所有用户标记完成，创始人确认
+        r = self.c2.post(
+                reverse('team:task_marker', kwargs={'team_id': self.t0.id,
+                                                    'task_id': 1}))
         self.assertEqual(r.status_code, 200)
+        r = self.c0.post(
+                reverse('team:task', kwargs={'team_id': self.t0.id,
+                                             'task_id': 1}))
+        self.assertEqual(r.status_code, 400)
 
 
 class TeamAchievementTestCase(TestCase):

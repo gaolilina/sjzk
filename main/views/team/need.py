@@ -40,7 +40,7 @@ class Needs(View):
                 status: 需求状态(未满足:0,已满足:1)
                 number: 需求人数(若干:-1)
                 gender: 性别要求(不限:0,男:1,女:2)
-                location: 地区要求，格式：[province_id, city_id]
+                location: 地区要求，格式：[province, city]
                 create_time: 发布时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
@@ -88,7 +88,7 @@ class Need(View):
                 status: 需求状态(未满足:0,已满足:1)
                 number: 需求人数(若干:-1)
                 gender: 性别要求(不限:0,男:1,女:2)
-                location: 地区要求，格式：[province_id, city_id]
+                location: 地区要求，格式：[province, city]
                 create_time: 发布时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
