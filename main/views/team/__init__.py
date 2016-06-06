@@ -12,7 +12,7 @@ from main.models.like import TeamLiker
 from main.models.follow import TeamFollower
 from main.models.team import Team, TeamProfile
 from main.models.visitor import TeamVisitor
-from main.models.action import TeamAction
+from main.models.action import ActionManager
 from main.responses import *
 
 
@@ -205,7 +205,7 @@ class TeamsSelf(View):
                         raise IntegrityError
                 profile.save()
                 # 发布团队创建的动态
-                TeamAction.objects.create_team(request.user, team)
+                ActionManager.create_team(request.user, team)
                 return JsonResponse({'team_id': team.id})
         except IntegrityError:
             return Http400(error)

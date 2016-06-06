@@ -3,7 +3,10 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 
-from main.models import User, Team, TeamNeed, TeamTask, TeamAchievement
+from main.models import User, Team
+from main.models.team.need import TeamNeed
+from main.models.team.achievement import TeamAchievement
+from main.models.team.task import TeamTask
 
 
 class ActionManager(object):

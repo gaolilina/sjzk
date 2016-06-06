@@ -8,7 +8,7 @@ from main.models.user import User
 from main.models.team import Team
 from main.models.team.member import TeamMember, TeamMemberRequest,\
     TeamInvitation
-from main.models.action import TeamAction
+from main.models.action import ActionManager
 from main.responses import *
 
 
@@ -107,7 +107,7 @@ class MemberSelf(Member):
             team.member_requests.get(sender=user).delete()
             team.member_records.create(member=user)
             # 发布用户加入团队动态
-            TeamAction.objects.join_team(user, team)
+            ActionManager.join_team(user, team)
         return Http200()
 
     @check_object_id(Team.enabled, 'team')
@@ -332,7 +332,7 @@ class InvitationSelf(View):
             team.invitations.get(sender=team).delete()
             team.member_records.create(member=request.user)
             # 发布用户加入团队动态
-            TeamAction.objects.join_team(request.user, team)
+            ActionManager.join_team(request.user, team)
         return Http200()
 
     @check_object_id(Team.enabled, 'team')

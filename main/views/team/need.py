@@ -7,7 +7,7 @@ from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input
 from main.models.team.need import TeamNeed
 from main.models.location import TeamNeedLocation
-from main.models.action import TeamAction
+from main.models.action import ActionManager
 from main.models.team import Team
 from main.responses import *
 
@@ -152,7 +152,7 @@ class Need(View):
                         error = str(e)
                         raise IntegrityError
                 # 创建发布需求的动态
-                TeamAction.objects.create_need(team, need)
+                ActionManager.create_need(team, need)
                 return JsonResponse({'need_id': need.id})
         except IntegrityError:
             return Http400(error)
@@ -178,7 +178,7 @@ class NeedSelf(View):
                 need.status = 1
                 need.save()
                 # 发布需求满足动态
-                TeamAction.objects.meet_need(team, need)
+                ActionManager.meet_need(team, need)
                 return Http200()
         except IntegrityError:
             return Http400()
