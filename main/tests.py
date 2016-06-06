@@ -1210,7 +1210,8 @@ class TeamNeedTestCase(TestCase):
                         'number': 10,
                         'gender': 0,
                         'location': [self.p1.name, self.c1.name,
-                                     self.ct1.name]})
+                                     self.ct1.name],
+                        'deadline': '2016-7-8'})
         r = self.c0.post(
                 reverse('team:team_needs', kwargs={'team_id': self.t0.id}),
                 {'data': d})

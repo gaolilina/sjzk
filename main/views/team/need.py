@@ -114,7 +114,7 @@ class Need(View):
         'gender': forms.IntegerField(required=False),
         'province': forms.CharField(required=False),
         'city': forms.CharField(required=False),
-        'deadline': forms.TimeField(required=False),
+        'deadline': forms.DateTimeField(required=False),
     }
 
     @check_object_id(Team.enabled, 'team')
