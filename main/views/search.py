@@ -48,7 +48,8 @@ class UserSearch(View):
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
         c = User.enabled.filter(username__icontain=data['username']).count()
-        users = User.enabled.order_by(k)[i:j]
+        users = User.enabled.filter(
+            username__icontain=data['username']).order_by(k)[i:j]
         l = [{'id': u.id,
               'username': u.username,
               'name': u.name,
