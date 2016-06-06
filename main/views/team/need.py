@@ -41,8 +41,9 @@ class Needs(View):
                 status: 需求状态(未满足:0,已满足:1)
                 number: 需求人数(若干:-1)
                 gender: 性别要求(不限:0,男:1,女:2)
-                location: 地区要求，格式：[province, city]
+                location: 地区要求，格式：[province, city, county]
                 create_time: 发布时间
+                deadline: 截止时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
         c = TeamNeed.enabled.count()
@@ -55,7 +56,8 @@ class Needs(View):
               'number': n.number,
               'gender': n.gender,
               'location': TeamNeedLocation.objects.get_location(n),
-              'create_time': n.create_time} for n in needs]
+              'create_time': n.create_time,
+              'deadline': n.deadline} for n in needs]
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -89,8 +91,9 @@ class Need(View):
                 status: 需求状态(未满足:0,已满足:1)
                 number: 需求人数(若干:-1)
                 gender: 性别要求(不限:0,男:1,女:2)
-                location: 地区要求，格式：[province, city]
+                location: 地区要求，格式：[province, city, county]
                 create_time: 发布时间
+                deadline: 截止时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
         c = TeamNeed.enabled.filter(team=team).count()
@@ -101,7 +104,8 @@ class Need(View):
               'number': n.number,
               'gender': n.gender,
               'location': TeamNeedLocation.objects.get_location(n),
-              'create_time': n.create_time} for n in needs]
+              'create_time': n.create_time,
+              'deadline': n.deadline} for n in needs]
         return JsonResponse({'count': c, 'list': l})
 
     post_dict = {
@@ -110,6 +114,7 @@ class Need(View):
         'gender': forms.IntegerField(required=False),
         'province': forms.CharField(required=False),
         'city': forms.CharField(required=False),
+        'deadline': forms.TimeField(required=False),
     }
 
     @check_object_id(Team.enabled, 'team')
@@ -125,6 +130,7 @@ class Need(View):
             number: 所需人数(默认为-1,若干)
             gender: 性别要求(默认为0,不限)
             location: 地区要求(默认为空,不限)，格式：[province, city, county]
+            deadline: 截止时间(默认为空)
         :return: need_id: 需求id
         """
         if request.user != team.owner:

@@ -27,6 +27,8 @@ class TeamNeed(models.Model):
 
     create_time = models.DateTimeField(
             '创建时间', default=datetime.now, db_index=True)
+    deadline = models.DateTimeField(
+        '截止时间', default=None, blank=True, null=True, db_index=True)
     update_time = models.DateTimeField(
             '更新时间', auto_now=True, db_index=True)
 
