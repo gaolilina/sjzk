@@ -140,13 +140,14 @@ class Need(View):
         number = data.pop('number') if 'number' in data else -1
         gender = data.pop('gender') if 'gender' in data else 0
 
+        deadline = data.pop('deadline') if 'deadline' in data else None
         location = data.pop('location') if 'location' in data else None
 
         error = ''
         try:
             with transaction.atomic():
                 need = TeamNeed(team=team, description=description,
-                                number=number, gender=gender)
+                                number=number, gender=gender, deadline=deadline)
                 need.save()
                 if location:
                     try:
