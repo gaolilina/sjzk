@@ -33,16 +33,24 @@ def require_token(function):
     return decorator
 
 
-def require_validation(function):
+def require_validation(users):
     """
     对被装饰的方法要求用户身份认证（该装饰器应放在require_token之后）
 
+    :param users: 进行身份检查的用户对象列表，或单个对象
+
     """
-    def decorator(self, request, *args, **kwargs):
-        if request.user.identification.is_validated:
+    def decorator(function):
+        def inner(self, request, *args, **kwargs):
+            if hasattr(users, '__iter__'):
+                for u in users:
+                    if not u.identification.is_validated:
+                        return Http403('user not validated.')
+            else:
+                if not users.identification.is_validated:
+                    return Http403('user not validated.')
             return function(self, request, *args, **kwargs)
-        else:
-            return Http403('validation required.')
+        return inner
     return decorator
 
 
