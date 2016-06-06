@@ -38,6 +38,27 @@ class EnabledUserManager(models.Manager):
             identification.save()
         return user
 
+    def create_validated_user(self, phone_number, password=None, **kwargs):
+        """
+        建立测试用用户（已验证）
+
+        """
+        with transaction.atomic():
+            user = self.create(phone_number=phone_number, **kwargs)
+            if password:
+                user.set_password(password)
+            user.save()
+            if 'name' not in kwargs:
+                user.name = '创易用户 %s' % user.id
+                user.save(update_fields=['name'])
+            token = UserToken(user=user)
+            token.update()
+            profile = UserProfile(user=user, is_validated=True)
+            profile.save()
+            identification = UserIdentification(user=user)
+            identification.save()
+        return user
+
 
 class DisabledUserManager(models.Manager):
     def get_queryset(self):

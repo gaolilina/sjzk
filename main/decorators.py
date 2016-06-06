@@ -33,6 +33,19 @@ def require_token(function):
     return decorator
 
 
+def require_validation(function):
+    """
+    对被装饰的方法要求用户身份认证（该装饰器应放在require_token之后）
+
+    """
+    def decorator(self, request, *args, **kwargs):
+        if request.user.identification.is_validated:
+            return function(self, request, *args, **kwargs)
+        else:
+            return Http403('validation required.')
+    return decorator
+
+
 def validate_input(d):
     """
     对被装饰的方法利用字典进行输入数据验证
