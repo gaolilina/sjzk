@@ -33,6 +33,27 @@ def require_token(function):
     return decorator
 
 
+def require_validation(users):
+    """
+    对被装饰的方法要求用户身份认证（该装饰器应放在require_token之后）
+
+    :param users: 进行身份检查的用户对象列表，或单个对象
+
+    """
+    def decorator(function):
+        def inner(self, request, *args, **kwargs):
+            if hasattr(users, '__iter__'):
+                for u in users:
+                    if not u.identification.is_validated:
+                        return Http403('user not validated.')
+            else:
+                if not users.identification.is_validated:
+                    return Http403('user not validated.')
+            return function(self, request, *args, **kwargs)
+        return inner
+    return decorator
+
+
 def validate_input(d):
     """
     对被装饰的方法利用字典进行输入数据验证
