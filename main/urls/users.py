@@ -5,6 +5,7 @@ from main.views.comment import UserComments
 from main.views.follow import UserFans, UserFan, FollowedUsers, \
     FollowedUser, FollowedTeams, FollowedTeam
 from main.views.like import UserLikers, UserLiker
+from main.views.search import UserSearch
 from main.views.user import Users, Token, Icon, Profile, Identification
 from main.views.user.experience import EducationExperiences, WorkExperiences, \
     FieldworkExperiences
@@ -55,6 +56,8 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/likers/$', UserLikers.as_view(), name='likers'),
     url(r'^(?P<user_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
         UserLiker.as_view(), name='liker'),
+    # 搜索
+    url(r'search/$', UserSearch.as_view(), name='search'),
     # 访客
     url(r'^(?P<user_id>[0-9]+)/visitors/$',
         UserVisitors.as_view(), name='visitors'),
