@@ -47,9 +47,8 @@ class UserSearch(View):
                 create_time: 注册时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
-        c = User.enabled.filter(username__icontain=data['username']).count()
-        users = User.enabled.filter(
-            username__icontain=data['username']).order_by(k)[i:j]
+        users = User.enabled.filter(username__icontain=data['username'])
+        c = users.count()
         l = [{'id': u.id,
               'username': u.username,
               'name': u.name,
@@ -59,5 +58,5 @@ class UserSearch(View):
               'visitor_count': u.visitor_count,
               'icon_url': u.icon_url,
               'tags': UserTag.objects.get_tags(u),
-              'create_time': u.create_time} for u in users]
+              'create_time': u.create_time} for u in users.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
