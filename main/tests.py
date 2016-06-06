@@ -1064,12 +1064,12 @@ class TeamMemberTestCase(TestCase):
                                 kwargs={'team_id': self.t.id}))
         self.assertEqual(r.status_code, 404)
         # 添加成员
-        r = self.c0.post(reverse('team:memberSelf', kwargs={
+        r = self.c0.post(reverse('team:member_self', kwargs={
             'team_id': self.t.id,
             'user_id': self.u2.id}))
         self.assertEqual(r.status_code, 200)
         # 已经是成员,不能添加成员
-        r = self.c0.post(reverse('team:memberSelf', kwargs={
+        r = self.c0.post(reverse('team:member_self', kwargs={
             'team_id': self.t.id,
             'user_id': self.u2.id}))
         self.assertEqual(r.status_code, 403)
@@ -1079,7 +1079,7 @@ class TeamMemberTestCase(TestCase):
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
         # 删除成员
-        r = self.c0.delete(reverse('team:memberSelf', kwargs={
+        r = self.c0.delete(reverse('team:member_self', kwargs={
             'team_id': self.t.id,
             'user_id': self.u2.id}))
         self.assertEqual(r.status_code, 200)
@@ -1153,7 +1153,7 @@ class TeamMemberTestCase(TestCase):
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 2)
         # 删除成员
-        r = self.c0.delete(reverse('team:memberSelf', kwargs={
+        r = self.c0.delete(reverse('team:member_self', kwargs={
             'team_id': self.t.id,
             'user_id': self.u2.id}))
         self.assertEqual(r.status_code, 200)
@@ -1240,18 +1240,18 @@ class TeamNeedTestCase(TestCase):
     def test_delete(self):
         # 只能团队创始人删除
         r = self.c1.delete(
-                reverse('team:need_delete', kwargs={'team_id': self.t0.id,
-                                                    'need_id': 1}))
+                reverse('team:need_self', kwargs={'team_id': self.t0.id,
+                                                  'need_id': 1}))
         self.assertEqual(r.status_code, 403)
         # 需求不属于此团队
         r = self.c1.delete(
-                reverse('team:need_delete', kwargs={'team_id': self.t1.id,
-                                                    'need_id': 1}))
+                reverse('team:need_self', kwargs={'team_id': self.t1.id,
+                                                  'need_id': 1}))
         self.assertEqual(r.status_code, 400)
         # 测试删除需求
         r = self.c0.delete(
-                reverse('team:need_delete', kwargs={'team_id': self.t0.id,
-                                                    'need_id': 1}))
+                reverse('team:need_self', kwargs={'team_id': self.t0.id,
+                                                  'need_id': 1}))
         self.assertEqual(r.status_code, 200)
         r = self.c0.get(reverse('team:needs'))
         r = json.loads(r.content.decode('utf8'))
@@ -1458,13 +1458,13 @@ class TeamAchievementTestCase(TestCase):
                         kwargs={'team_id': self.t0.id,
                                 'achievement_id': 1}))
         self.assertEqual(r.status_code, 403)
-        # 需求不属于此团队
+        # 成果不属于此团队
         r = self.c1.delete(
                 reverse('team:achievement_delete',
                         kwargs={'team_id': self.t1.id,
                                 'achievement_id': 1}))
         self.assertEqual(r.status_code, 400)
-        # 测试删除需求
+        # 测试删除成果
         r = self.c0.delete(
                 reverse('team:achievement_delete',
                         kwargs={'team_id': self.t0.id,

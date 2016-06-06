@@ -8,6 +8,7 @@ from main.models.user import User
 from main.models.team import Team
 from main.models.team.member import TeamMember, TeamMemberRequest,\
     TeamInvitation
+from main.models.action import TeamAction
 from main.responses import *
 
 
@@ -105,19 +106,25 @@ class MemberSelf(Member):
         with transaction.atomic():
             team.member_requests.get(sender=user).delete()
             team.member_records.create(member=user)
+            # 发布用户加入团队动态
+            TeamAction.objects.join_team(user, team)
         return Http200()
 
     @check_object_id(Team.enabled, 'team')
     @check_object_id(User.enabled, 'user')
     @require_token
-    def delete(self, request, team, user):
+    def delete(self, request, team, user=None):
         """
-        删除成员
+        退出团队(默认)/删除成员
 
         :param team_id: 团队ID
-        :param user_id: 用户ID
+        :param user_id: 用户ID(默认为空)
         """
-        user = user or request.user
+        if user:
+            if request.user != team.owner:
+                return Http403('recent user ha not authority')
+        else:
+            user = request.user
 
         if not TeamMember.exist(user, team):
             return Http404('not team\'s member')
@@ -184,7 +191,7 @@ class MemberRequests(View):
     @validate_input(post_dict)
     def post(self, request, team, description=''):
         """
-        向团队发出加入申请，若已发出申请且未被处理则返回403，否则返回200
+        向团队发出加入申请，若已发出申请或受到团队的邀请且未被处理则返回403，否则返回200
 
         :param team_id: 团队ID
         :param description: 附带消息
@@ -276,7 +283,8 @@ class Invitation(View):
     @validate_input(post_dict)
     def post(self, request, team, user, description=''):
         """
-        向用户发出加入团队邀请，若已发出申请且未被处理则返回403，否则返回200
+        向用户发出加入团队邀请，若已发出申请或受到用户的申请且未被处理则返回403，
+        否则返回200
 
         :param team_id: 团队ID
         :param user_id: 用户ID
@@ -323,6 +331,8 @@ class InvitationSelf(View):
         with transaction.atomic():
             team.invitations.get(sender=team).delete()
             team.member_records.create(member=request.user)
+            # 发布用户加入团队动态
+            TeamAction.objects.join_team(request.user, team)
         return Http200()
 
     @check_object_id(Team.enabled, 'team')

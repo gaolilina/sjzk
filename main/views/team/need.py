@@ -7,6 +7,7 @@ from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input
 from main.models.team.need import TeamNeed
 from main.models.location import TeamNeedLocation
+from main.models.action import TeamAction
 from main.models.team import Team
 from main.responses import *
 
@@ -150,9 +151,37 @@ class Need(View):
                     except ValueError as e:
                         error = str(e)
                         raise IntegrityError
+                # 创建发布需求的动态
+                TeamAction.objects.create_need(team, need)
                 return JsonResponse({'need_id': need.id})
         except IntegrityError:
             return Http400(error)
+
+
+class NeedSelf(View):
+    @check_object_id(Team.enabled, 'team')
+    @check_object_id(TeamNeed.enabled, 'need')
+    @require_token
+    def post(self, request, team, need):
+        """
+        需求状态设置为已满足
+
+        :param team_id: 团队ID
+        :param need_id: 需求ID
+        """
+        if request.user != team.owner:
+            return Http403('recent user has no authority')
+        if need.team != team:
+            return Http400('related team need not exists')
+        try:
+            with transaction.atomic():
+                need.status = 1
+                need.save()
+                # 发布需求满足动态
+                TeamAction.objects.meet_need(team, need)
+                return Http200()
+        except IntegrityError:
+            return Http400()
 
     @check_object_id(Team.enabled, 'team')
     @check_object_id(TeamNeed.enabled, 'need')

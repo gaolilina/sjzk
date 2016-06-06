@@ -3,7 +3,7 @@ from django.conf.urls import url
 from main.views.team import Teams, TeamsSelf, Profile, Icon
 from main.views.team.member import Members, Member, MemberSelf, MemberRequest,\
     MemberRequests, Invitation, InvitationSelf, Invitations
-from main.views.team.need import Needs, Need
+from main.views.team.need import Needs, Need, NeedSelf
 from main.views.team.achievement import Achievement, Achievements
 from main.views.team.task import Tasks, TaskSelf, TaskMarker, Task
 from main.views.like import TeamLiker, TeamLikers
@@ -32,7 +32,10 @@ urls = [
     url(r'^member/(?P<team_id>[0-9]+)/$', Member.as_view(), name='member'),
     # 添加用户为团队成员(post)/删除团队成员(delete)
     url(r'^member/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',
-        MemberSelf.as_view(), name='memberSelf'),
+        MemberSelf.as_view(), name='member_self'),
+    # 用户退出团队(delete)
+    url(r'^member/leave/(?P<team_id>[0-9]+)/$', MemberSelf.as_view(),
+        name='member_leave'),
     # 获取团队的加入申请列表(get)/用户向团队发出加入申请(post)
     url(r'^member/requests/(?P<team_id>[0-9]+)/$',
         MemberRequests.as_view(), name='member_requests'),
@@ -77,9 +80,9 @@ urls = [
     # 获取某一团队发布的需求列表(get)/发布需求(post)
     url(r'^(?P<team_id>[0-9]+)/needs/$', Need.as_view(),
         name='team_needs'),
-    # 删除需求(delete)
-    url(r'^(?P<team_id>[0-9]+)/need/(?P<need_id>[0-9]+)$', Need.as_view(),
-        name='need_delete'),
+    # 设置需求为已满足(post)/删除需求(delete)
+    url(r'^(?P<team_id>[0-9]+)/need/(?P<need_id>[0-9]+)$', NeedSelf.as_view(),
+        name='need_self'),
 
     # 获取所有的成果列表(get)
     url(r'^achievements/$', Achievements.as_view(), name='achievements'),

@@ -3,7 +3,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 
-from main.models import User, Team
+from main.models import User, Team, TeamNeed, TeamTask, TeamAchievement
 
 
 class ActionManager(object):
@@ -72,9 +72,17 @@ class ActionManager(object):
         team.actions.create(action='meet_need', object=need)
 
     @staticmethod
+    def create_achievement(team, achievement):
+        """
+        记录发布成果事件
+
+        """
+        team.actions.create(action='create_achievement', object=achievement)
+
+    @staticmethod
     def create_service(team, service):
         """
-        记录发布需求事件
+        记录发布服务事件
 
         """
         team.actions.create(action='create_service', object=service)
@@ -82,7 +90,7 @@ class ActionManager(object):
     @staticmethod
     def provide_service(team, obj, service):
         """
-        记录提供需求事件
+        记录提供服务事件
 
         """
         team.actions.create(action='provide_service', object=obj,
@@ -147,6 +155,9 @@ class Action(models.Model):
     _type_managers = {
         'user': User.enabled,
         'team': Team.enabled,
+        'need': TeamNeed.enabled,
+        'achievement': TeamAchievement.enabled,
+        'task': TeamTask.enabled,
     }
 
     def _get_object(self, type, id):

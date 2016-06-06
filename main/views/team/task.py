@@ -11,6 +11,7 @@ from main.models.user import User
 from main.models.team import Team
 from main.models.team.member import TeamMember
 from main.models.team.task import TeamTask, TeamTaskMarker
+from main.models.action import TeamAction
 from main.responses import *
 
 
@@ -122,6 +123,8 @@ class Tasks(View):
                 if expected_time:
                     task.expected_time = expected_time
                     task.save()
+                # 创建发布任务的动态
+                TeamAction.objects.create_task(team, task)
                 return JsonResponse({'task_id': task.id})
         except IntegrityError:
             return Http400('task create failed')
@@ -245,8 +248,11 @@ class Task(View):
             else:
                 return Http400('task already canceled')
 
-        task.status = 1
-        task.save()
+        with transaction.atomic():
+            task.status = 1
+            task.save()
+            # 发布任务已完成的动态
+            TeamAction.objects.finish_task(team, task)
         return Http200()
 
     @check_object_id(Team.enabled, 'team')

@@ -7,6 +7,7 @@ from main.decorators import check_object_id, require_token, validate_input,\
     process_uploaded_image
 from main.models import Team
 from main.models.team.achievement import TeamAchievement
+from main.models.action import TeamAction
 from main.responses import *
 
 
@@ -116,6 +117,8 @@ class Achievement(View):
             achievement = TeamAchievement(team=team, description=description)
             achievement.picture = picture
             achievement.save()
+            # 创建成果发布的动态
+            TeamAction.objects.create_achievement(team, achievement)
             return JsonResponse({'achievement_id': achievement.id})
 
     @check_object_id(Team.enabled, 'team')

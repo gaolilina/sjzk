@@ -13,6 +13,7 @@ from .tag import Tag, UserTag, TeamTag
 from .team.member import TeamMember, TeamMemberRequest, TeamInvitation
 from .team.need import TeamNeed
 from .team.task import TeamTask, TeamTaskMarker
+from .team.achievement import TeamAchievement
 from .user.experience import UserEducationExperience, UserWorkExperience, \
     UserFieldworkExperience
 from .user.friend import UserFriend, UserFriendRequest
