@@ -10,6 +10,9 @@ from main.views.like import TeamLiker, TeamLikers
 from main.views.follow import TeamFan, TeamFans
 from main.views.comment import TeamComment, TeamComments
 from main.views.visitor import TeamVisitors
+from main.views.team.message import UserContacts, UserMessages, TeamContacts,\
+    TeamMessages
+from main.views.team.notification import Notification, Notifications
 
 urls = [
     # 获取所有的团队列表(get)
@@ -103,4 +106,23 @@ urls = [
     # 创始人确认用户的标记(post)/取消任务(delete)
     url(r'^(?P<team_id>[0-9]+)/task/(?P<task_id>[0-9]+)$', Task.as_view(),
         name='task'),
+
+    # 获取用户的团队联系列表(get)
+    url(r'^contacts/$', UserContacts.as_view(), name='user_contacts'),
+    # 获取用户的与某团队相关的消息(get)/用户向某团队发送消息(post)
+    url(r'^(?P<team_id>[0-9]+)/messages/$', UserMessages.as_view(),
+        name='user_messages'),
+    # 获取团队的用户联系列表(get)
+    url(r'^(?P<team_id>[0-9]+)/contacts/$', TeamContacts.as_view(),
+        name='team_contacts'),
+    # 获取团队的与某用户相关的消息(get)/团队向某用户发送消息(post)
+    url(r'^(?P<team_id>[0-9]+)/messages/(?P<user_id>[0-9]+)/$',
+        TeamMessages.as_view(), name='team_messages'),
+
+    # 获取系统通知列表(get)/将所有通知标记为删除状态(delete)
+    url(r'^(?P<team_id>[0-9]+)/notifications/$', Notifications.as_view(),
+        name='notifications'),
+    # 将某凭据对应的通知标记为删除状态
+    url(r'^(?P<team_id>[0-9]+)/notification/(?P<receipt_id>[0-9]+)/$',
+        Notification.as_view(), name='notification_delete'),
 ]

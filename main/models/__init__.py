@@ -18,4 +18,5 @@ from .user.experience import UserEducationExperience, UserWorkExperience, \
     UserFieldworkExperience
 from .user.friend import UserFriend, UserFriendRequest
 from .user.message import Contact, Message
+from .team.message import UserContact, TeamContact, UserMessage, TeamMessage
 from .visitor import UserVisitor, TeamVisitor

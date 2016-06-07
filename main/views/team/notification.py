@@ -19,7 +19,7 @@ class Notifications(View):
     @validate_input(get_dict)
     def get(self, request, team, offset=0, limit=10):
         """
-        获取通知列表
+        获取系统通知列表
 
         :param team_id: 团队ID
         :param offset: 偏移量
