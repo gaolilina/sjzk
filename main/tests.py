@@ -1475,3 +1475,20 @@ class TeamAchievementTestCase(TestCase):
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 19)
 
+
+class TeamFansTestCase(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
+        self.t0 = Team.create(self.u0, 'test0')
+        self.t1 = Team.create(self.u1, 'test1')
+
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+
+    def test_fans_list(self):
+        # 获取粉丝列表
+        r = self.c0.get(reverse('team:fans', kwargs={'team_id': self.t0.id}))
+        r = json.loads(r.content.decode('utf8'))
+        self.assertEqual(r['count'], 0)

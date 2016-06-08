@@ -71,7 +71,7 @@ urls = [
     url(r'^(?P<team_id>[0-9]+)/comments/$',
         TeamComments.as_view(), name='comments'),
     # 删除团队的某条评论
-    url(r'^(?P<team_id>[0-9]+)/fans/(?P<comment_id>[0-9]+)/$',
+    url(r'^(?P<team_id>[0-9]+)/comments/(?P<comment_id>[0-9]+)/$',
         TeamComment.as_view(), name='comment'),
 
     # 获取团队的访客信息(get)
