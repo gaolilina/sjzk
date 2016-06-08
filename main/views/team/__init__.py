@@ -252,7 +252,7 @@ class Profile(View):
         r['description'] = team.profile.description
         r['url'] = team.profile.url
         r['liker_count'] = TeamLiker.enabled.filter(liked=team).count()
-        r['fan_count'] = TeamFollower.enabled.filter().count()
+        r['fan_count'] = TeamFollower.enabled.filter(followed=team).count()
         r['visitor_count'] = team.visitor_records.filter(
             update_time__gte=time).count()
         r['fields'] = TeamProfile.get_fields(team)
