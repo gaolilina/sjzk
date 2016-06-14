@@ -97,13 +97,12 @@ class EducationExperiences(View):
         exps = user.education_experiences.all()
 
         c = user.education_experiences.count()
-        l = [{
-                 'id': e.id,
-                 'school': e.school,
-                 'degree': e.degree,
-                 'major': e.major,
-                 'begin_time': e.begin_time,
-                 'end_time': e.end_time,
+        l = [{'id': e.id,
+              'school': e.school,
+              'degree': e.degree,
+              'major': e.major,
+              'begin_time': e.begin_time,
+              'end_time': e.end_time,
              } for e in exps]
         return JsonResponse({'count': c, 'list': l})
 
@@ -132,13 +131,13 @@ class WorkExperiences(View):
         exps = getattr(user, self.attr).all()
 
         c = getattr(user, self.attr).count()
-        l = [{
-                 'company': e.company,
-                 'position': e.position,
-                 'description': e.description,
-                 'begin_time': e.begin_time,
-                 'end_time': e.end_time if e.end_time else None,
-             } for e in exps]
+        l = [{'id': e.id,
+              'company': e.company,
+              'position': e.position,
+              'description': e.description,
+              'begin_time': e.begin_time,
+              'end_time': e.end_time if e.end_time else None,
+              } for e in exps]
         return JsonResponse({'count': c, 'list': l})
 
 
