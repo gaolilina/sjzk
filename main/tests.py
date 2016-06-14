@@ -571,7 +571,7 @@ class UserFriendTestCase(TestCase):
         r = self.c2.get(reverse('self:friend_requests'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['id'], self.u0.id)
-        self.assertEqual(r['count'], 0)
+        self.assertEqual(r['count'], 1)
         # 添加到好友
         r = self.c2.post(
             reverse('self:friend', kwargs={'other_user_id': self.u0.id}))
@@ -1058,7 +1058,7 @@ class TeamMemberTestCase(TestCase):
                                 kwargs={'team_id': self.t.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['id'], self.u2.id)
-        self.assertEqual(r['count'], 0)
+        self.assertEqual(r['count'], 1)
         # 成员不能拉取申请列表
         r = self.c1.get(reverse('team:member_requests',
                                 kwargs={'team_id': self.t.id}))
@@ -1142,7 +1142,7 @@ class TeamMemberTestCase(TestCase):
         r = self.c2.get(reverse('team:invitations'))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['list'][0]['id'], self.t.id)
-        self.assertEqual(r['count'], 0)
+        self.assertEqual(r['count'], 1)
         # 同意邀请
         r = self.c2.post(reverse('team:invitation_self',
                                  kwargs={'team_id': self.t.id}))

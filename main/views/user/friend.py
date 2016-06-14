@@ -119,18 +119,20 @@ class FriendRequests(View):
         :param limit: 拉取的数量上限
         :return: user == request.user 时，200 | 404
         :return: user != request.user 时
-            count: 剩余未拉取（未读）的请求条数
+            count: 请求的总条数
             list: 好友请求信息列表
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
                 icon_url: 用户头像URL
                 description: 附带消息
+                is_read: 是否已读
                 create_time: 请求发出的时间
         """
         if not user or user.id == request.user.id:
             # 拉取好友请求信息
-            qs = request.user.friend_requests.filter(is_read=False)
+            c = request.user.friend_requests.count()
+            qs = request.user.friend_requests.all()
             qs = qs[:limit]
 
             l = [{'id': r.sender.id,
@@ -138,11 +140,12 @@ class FriendRequests(View):
                   'name': r.sender.name,
                   'icon_url': r.sender.icon_url,
                   'description': r.description,
+                  'is_read': r.is_read,
                   'create_time': r.create_time} for r in qs]
             # 更新拉取的好友请求信息为已读
             ids = qs.values('id')
             request.user.friend_requests.filter(id__in=ids).update(is_read=True)
-            c = request.user.friend_requests.filter(is_read=False).count()
+
             return JsonResponse({'count': c, 'list': l})
         else:
             # 判断是否对目标用户发送过好友请求，且暂未被对方处理

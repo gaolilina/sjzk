@@ -152,18 +152,20 @@ class MemberRequests(View):
         :param limit: 拉取的数量上限
         :return: request.user 为团队创始人时，200 | 404
         :return: request.user 不为团队创始人时
-            count: 剩余未拉取（未读）的请求条数
+            count: 申请总条数
             list: 加入团队请求信息列表
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
                 icon_url: 用户头像URL
                 description: 附带消息
+                is_read: 是否已读
                 create_time: 请求发出的时间
         """
         if request.user == team.owner:
             # 拉取团队的加入申请信息
-            qs = TeamMemberRequest.enabled.filter(receiver=team, is_read=False)
+            c = TeamMemberRequest.enabled.filter(receiver=team).count()
+            qs = TeamMemberRequest.enabled.filter(receiver=team)
             qs = qs[:limit]
 
             l = [{'id': r.sender.id,
@@ -171,13 +173,12 @@ class MemberRequests(View):
                   'name': r.sender.name,
                   'icon_url': r.sender.icon_url,
                   'description': r.description,
+                  'is_read': r.is_read,
                   'create_time': r.create_time} for r in qs]
             # 更新拉取的加入团队信息为已读
             ids = qs.values('id')
             TeamMemberRequest.enabled.filter(receiver=team, id__in=ids).\
                 update(is_read=True)
-            c = TeamMemberRequest.enabled.filter(receiver=team, is_read=False).\
-                count()
             return JsonResponse({'count': c, 'list': l})
         else:
             # 判断是否对团队创始人发送过加入团队请求，且暂未被处理
@@ -248,29 +249,31 @@ class Invitations(View):
 
         :param limit: 拉取的数量上限
         :return:
-            count: 剩余未拉取（未读）的邀请条数
+            count: 邀请的总条数
             list: 加入团队邀请信息列表
                 id: 团队ID
                 name: 团队名称
                 icon_url: 团队头像URL
                 description: 附带消息
+                is_read: 是否已读
                 create_time: 邀请发出的时间
         """
-        # 拉取团队的加入申请信息
-        qs = TeamInvitation.enabled.filter(receiver=request.user, is_read=False)
+        # 拉取来自团队的邀请信息
+        c = TeamInvitation.enabled.filter(receiver=request.user).count()
+        qs = TeamInvitation.enabled.filter(receiver=request.user)
         qs = qs[:limit]
 
         l = [{'id': r.sender.id,
               'name': r.sender.name,
               'icon_url': r.sender.icon_url,
               'description': r.description,
+              'is_read': r.is_read,
               'create_time': r.create_time} for r in qs]
-        # 更新拉取的加入团队邀请信息为已读
+        # 更新已拉取邀请信息为已读
         ids = qs.values('id')
         TeamInvitation.enabled.filter(
                 receiver=request.user, id__in=ids).update(is_read=True)
-        c = TeamInvitation.enabled.filter(
-                receiver=request.user, is_read=False).count()
+
         return JsonResponse({'count': c, 'list': l})
 
 
