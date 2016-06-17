@@ -17,6 +17,7 @@ from main.models.team.task import TeamTask
 from main.models.team.member import TeamMember
 from main.models.team.achievement import TeamAchievement
 from main.models.user import User
+from main.models.comment import TeamComment
 
 TEST_DATA = os.path.join(settings.BASE_DIR, 'test_data')
 
@@ -1478,7 +1479,6 @@ class TeamAchievementTestCase(TestCase):
 
 class TeamFansTestCase(TestCase):
     def setUp(self):
-        self.c = Client()
         self.u0 = User.enabled.create_user('0')
         self.u1 = User.enabled.create_user('1')
         self.t0 = Team.create(self.u0, 'test0')
@@ -1492,3 +1492,48 @@ class TeamFansTestCase(TestCase):
         r = self.c0.get(reverse('team:fans', kwargs={'team_id': self.t0.id}))
         r = json.loads(r.content.decode('utf8'))
         self.assertEqual(r['count'], 0)
+
+
+class TeamCommentTestCase(TestCase):
+    def setUp(self):
+        self.u0 = User.enabled.create_user('0')
+        self.u1 = User.enabled.create_user('1')
+        self.t0 = Team.create(self.u0, 'team0')
+        self.t1 = Team.create(self.u1, 'team1')
+
+        self.c0 = Client(HTTP_USER_TOKEN=self.u0.token.value)
+        self.c1 = Client(HTTP_USER_TOKEN=self.u1.token.value)
+
+        for i in range(1,21):
+            # 用户u1对团队t0评论
+            comment = TeamComment(object=self.t0, author=self.u1,
+                                  content='comment'+str(i))
+            comment.save()
+
+    def test_create(self):
+        # 用户u0对自己的团队t0评论
+        r = self.c0.post(
+                reverse('team:comments', kwargs={'team_id': self.t0.id}),
+                {'content': 'comment1'})
+        self.assertEqual(r.status_code, 200)
+        # 用户u0对别人的团队t1评论
+        r = self.c0.post(
+                reverse('team:comments', kwargs={'team_id': self.t1.id}),
+                {'content': 'comment1'})
+        self.assertEqual(r.status_code, 200)
+
+    def test_get_list(self):
+        r = self.c0.get(
+                reverse('team:comments', kwargs={'team_id': self.t0.id}))
+        r = json.loads(r.content.decode('utf-8'))
+        self.assertEqual(r['count'], 20)
+
+    def test_delete(self):
+        r = self.c0.delete(
+                reverse('team:comment', kwargs={'team_id': self.t0.id,
+                                                'comment_id': 1}))
+        self.assertEqual(r.status_code, 200)
+        r = self.c0.get(
+                reverse('team:comments', kwargs={'team_id': self.t0.id}))
+        r = json.loads(r.content.decode('utf-8'))
+        self.assertEqual(r['count'], 19)
