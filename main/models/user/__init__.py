@@ -178,16 +178,24 @@ class UserIdentification(models.Model):
 
     is_verified = models.BooleanField(
         '是否通过实名验证', default=False)
-    role = models.CharField(
-        '认证身份', max_length=15, default='', db_index=True)
     name = models.CharField(
         '真实姓名', max_length=15, default='', db_index=True)
+    role = models.CharField(
+        '认证身份', max_length=15, default='', db_index=True)
     id_number = models.CharField(
         '身份证号', max_length=18, default='', db_index=True)
     id_card = models.ImageField(
         '身份证照片', db_index=True, upload_to=PRIVATE_IMAGE_PATH)
+    other_number = models.CharField(
+        '其他证件号码', max_length=18, default='', db_index=True)
     other_card = models.ImageField(
         '其他证件照片', db_index=True, upload_to=PRIVATE_IMAGE_PATH)
+    school = models.CharField(
+        '学校/单位', max_length=20, default='', db_index=True)
+    academy = models.CharField(
+        '学院', max_length=20, default='', db_index=True)
+    profession = models.CharField(
+        '专业/职业', max_length=20, default='', db_index=True)
     update_time = models.DateTimeField(
         '更新时间', auto_now=True, db_index=True)
 

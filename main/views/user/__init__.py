@@ -342,29 +342,45 @@ class Identification(View):
     @require_token
     def get(self, request, user=None):
         """
-        获取用户的身份信息，身份证号仅对本人可见
+        获取用户的身份信息
 
         :return:
             is_verified: 是否通过实名认证
             name: 真实姓名
-            id_number: 身份证号
-            school: 所在学校
-            student_number: 学生证号
+            role: 认证身份
+            id_number: *身份证号
+            other_number: *其他证件号码
+            school: 学校或单位
+            academy: 学院
+            profession: 专业或职业
         """
         user = user or request.user
 
         i = user.identification
-        l = {'is_verified': i.is_verified, 'name': i.name}
+        l = {
+            'is_verified': i.is_verified,
+            'name': i.name,
+            'role': i.role,
+            'school': i.school,
+            'academy': i.academy,
+            'profession': i.profession
+        }
         if user == request.user:
             l['id_number'] = i.id_number
+            l['other_number'] = i.other_number
         return JsonResponse(l)
 
 
 class IdentificationSelf(Identification):
     post_dict = {
         'name': forms.CharField(required=False, min_length=1, max_length=15),
+        'role': forms.CharField(required=False, max_length=15),
         'id_number': forms.RegexField(
             r'^[0-9xX]{18}$', required=False, strip=True),
+        'other_number': forms.CharField(required=False, max_length=18),
+        'school': forms.CharField(required=False, max_length=20),
+        'academy': forms.CharField(required=False, max_length=20),
+        'profession': forms.CharField(required=False, max_length=20),
     }
 
     @require_token
@@ -375,7 +391,12 @@ class IdentificationSelf(Identification):
 
         :param data:
             name: 真实姓名
-            id_number: 身份证号
+            role: 认证身份
+            id_number: *身份证号
+            other_number: *其他证件号码
+            school: 学校或单位
+            academy: 学院
+            profession: 专业或职业
         """
         identification = request.user.identification
         if identification.is_verified:
