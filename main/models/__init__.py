@@ -6,6 +6,7 @@ from .user import User, UserToken, UserProfile, UserIdentification
 from .action import UserAction, TeamAction
 from .comment import UserComment, TeamComment
 from .follow import UserFollower
+from .forum import Board, Post
 from .like import UserLiker, TeamLiker
 from .location import Province, City, UserLocation, TeamLocation
 from main.models.user.notification import Notification, NotificationReceipt
