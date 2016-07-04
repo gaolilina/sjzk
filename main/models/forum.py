@@ -46,7 +46,7 @@ class Board(models.Model):
 
 class EnabledPostManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(is_enabeld=True)
+        return super().get_queryset().filter(is_enabled=True)
 
 
 class MainPostManager(EnabledPostManager):
@@ -57,9 +57,9 @@ class MainPostManager(EnabledPostManager):
 class Post(models.Model):
     """帖子"""
 
-    author = models.ForeignKey('User', 'posts')  # 作者
-    board = models.ForeignKey('Board', 'posts')  # 所属板块
-    parent = models.ForeignKey('Post', 'children')  # 楼主、层主的帖子
+    author = models.ForeignKey('User', related_name='posts')  # 作者
+    board = models.ForeignKey('Board', related_name='posts')  # 所属板块
+    parent = models.ForeignKey('Post', related_name='children')  # 楼主、层主的帖子
 
     content = models.CharField(
         '内容', max_length=250, db_index=True)
