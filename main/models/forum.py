@@ -22,11 +22,11 @@ class Board(models.Model):
     """板块"""
 
     name = models.CharField(
-        '名称', max_length=20, db_index=True)
+        '名称', max_length=20, db_index=True, unique=True)
     description = models.CharField(
         '简介', max_length=50, db_index=True)
-    owners = models.ManyToManyField(
-        'User', 'owned_boards', verbose_name='版主')
+    owner = models.ForeignKey(
+        'User', related_name='owned_board', verbose_name='版主')
     create_time = models.DateTimeField(
         '创建时间', default=datetime.now, db_index=True)
     update_time = models.DateTimeField(
@@ -59,7 +59,7 @@ class Post(models.Model):
 
     author = models.ForeignKey('User', related_name='posts')  # 作者
     board = models.ForeignKey('Board', related_name='posts')  # 所属板块
-    parent = models.ForeignKey('Post', related_name='children')  # 楼主、层主的帖子
+    # parent = models.ForeignKey('Post', related_name='children')  # 楼主、层主的帖子
 
     content = models.CharField(
         '内容', max_length=250, db_index=True)
