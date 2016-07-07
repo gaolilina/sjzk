@@ -22,7 +22,7 @@ class Board(models.Model):
     """板块"""
 
     name = models.CharField(
-        '名称', max_length=20, db_index=True, unique=True)
+        '名称', max_length=20, db_index=True)
     description = models.CharField(
         '简介', max_length=50, db_index=True)
     owner = models.ForeignKey(
