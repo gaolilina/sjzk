@@ -3,7 +3,8 @@ from django.conf.urls import url
 from main.views.team import Teams, TeamsSelf, Profile, Icon
 from main.views.team.member import Members, Member, MemberSelf, MemberRequest,\
     MemberRequests, Invitation, InvitationSelf, Invitations
-from main.views.team.need import Needs, Need, NeedSelf
+from main.views.team.need import Needs, NeedSelf, NeedDetail, MemberNeed, \
+    OutsourceNeed, UndertakeNeed
 from main.views.team.achievement import Achievement, Achievements
 from main.views.team.task import Tasks, TaskSelf, TaskMarker, Task
 from main.views.like import TeamLiker, TeamLikers
@@ -78,12 +79,24 @@ urls = [
     url(r'^(?P<team_id>[0-9]+)/visitors/$',
         TeamVisitors.as_view(), name='visitors'),
 
-    # 获取所有的需求列表(get)
+    # 获取发布中的需求(全部,人员,外包或承接)列表(get)
     url(r'^needs/$', Needs.as_view(), name='needs'),
-    # 获取某一团队发布的需求列表(get)/发布需求(post)
-    url(r'^(?P<team_id>[0-9]+)/needs/$', Need.as_view(),
+    # 获取某一团队发布的需求(全部,人员,外包或承接)列表(get)
+    url(r'^(?P<team_id>[0-9]+)/needs/$', NeedSelf.as_view(),
         name='team_needs'),
-    # 设置需求为已满足(post)/删除需求(delete)
+    # 发布人员需求(post)
+    url(r'^(?P<team_id>[0-9]+)/member_need/$', MemberNeed.as_view(),
+        name='member_need'),
+    # 发布外包需求(post)
+    url(r'^(?P<team_id>[0-9]+)/outsource_need/$', OutsourceNeed.as_view(),
+        name='outsource_need'),
+    # 发布承接需求(post)
+    url(r'^(?P<team_id>[0-9]+)/undertake_need/$', UndertakeNeed.as_view(),
+        name='undertake_need'),
+    # 获取需求详情(get)
+    url(r'^(?P<team_id>[0-9]+)/need_detail/(?P<need_id>[0-9]+)$',
+        NeedDetail.as_view(), name='need_detail'),
+    # 设置需求为已满足(post)/设置需求为已删除(delete)
     url(r'^(?P<team_id>[0-9]+)/need/(?P<need_id>[0-9]+)$', NeedSelf.as_view(),
         name='need_self'),
 
