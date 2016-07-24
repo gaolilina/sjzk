@@ -87,8 +87,5 @@ TIME_FORMAT = 'H:i:s'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-MEDIA_URL = '/upload/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'upload')
-
-IMAGE_PATH = '%Y/%m/%d/'
-PRIVATE_IMAGE_PATH = 'private/%Y/%m/%d/'
+UPLOADED_URL = '/uploaded/'
+UPLOADED_ROOT = os.path.join(BASE_DIR, 'uploaded')

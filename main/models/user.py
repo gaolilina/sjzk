@@ -4,7 +4,6 @@ from datetime import datetime
 from django.contrib.auth.hashers import PBKDF2PasswordHasher
 from django.db import models
 
-from ChuangYi.settings import IMAGE_PATH, PRIVATE_IMAGE_PATH
 from ..models import EnabledManager
 
 
@@ -23,7 +22,7 @@ class User(models.Model):
 
     name = models.CharField(max_length=15, db_index=True)
     description = models.CharField(max_length=100, default='')
-    icon = models.ImageField(db_index=True, upload_to=IMAGE_PATH)
+    icon = models.CharField(max_length=100)
     gender = models.CharField(max_length=1, default='')
     qq = models.CharField(max_length=20, default='')
     wechat = models.CharField(max_length=20, default='')
@@ -36,12 +35,12 @@ class User(models.Model):
     is_verified = models.BooleanField(default=False, db_index=True)
     real_name = models.CharField(max_length=20, default='', db_index=True)
     id_number = models.CharField(max_length=18, default='', db_index=True)
-    id_card = models.ImageField(upload_to=PRIVATE_IMAGE_PATH)
+    id_card = models.CharField(max_length=100)
 
     is_role_verified = models.BooleanField(default=False, db_index=True)
     role = models.CharField(max_length=20, default='', db_index=True)
     other_number = models.CharField(max_length=20, default='')
-    other_card = models.ImageField(upload_to=PRIVATE_IMAGE_PATH)
+    other_card = models.CharField(max_length=100)
     # 学校或公司
     unit1 = models.CharField(max_length=20, default='')
     # 学院或子部门
