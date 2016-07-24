@@ -7,3 +7,4 @@ class EnabledManager(models.Manager):
 
 
 from .user import *
+from .action import Action

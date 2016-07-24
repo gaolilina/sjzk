@@ -54,7 +54,7 @@ class User(models.Model):
 
     class Meta:
         db_table = 'user'
-        ordering = ['time_created']
+        ordering = ['-time_created']
 
     def set_password(self, password):
         hasher = PBKDF2PasswordHasher()
