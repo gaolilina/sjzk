@@ -18,7 +18,7 @@ class Needs(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=1),
-        'type': forms.IntegerField(required=False, min_value=1, max_vale=3),
+        'type': forms.IntegerField(required=False, min_value=1, max_value=3),
     }
     available_orders = ('create_time', '-create_time')
 
