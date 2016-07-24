@@ -6,5 +6,5 @@ class EnabledManager(models.Manager):
         return super().get_queryset().filter(is_enabled=True)
 
 
+from .common import *
 from .user import *
-from .action import Action

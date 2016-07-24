@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib.auth.hashers import PBKDF2PasswordHasher
 from django.db import models
 
-from ..models import EnabledManager
+from ..models import EnabledManager, Action
 
 
 __all__ = ['User']
@@ -68,3 +68,12 @@ class User(models.Model):
         hasher = hashlib.md5()
         hasher.update(random_content.encode())
         self.token = hasher.hexdigest()
+
+
+class UserAction(Action):
+    """用户动态"""
+
+    entity = models.ForeignKey('User', models.CASCADE, 'actions')
+
+    class Meta:
+        db_table = 'user_action'
