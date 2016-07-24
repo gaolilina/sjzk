@@ -1,5 +1,7 @@
 .idea/
+
 __pycache__/
-migrations/
-upload/
-ChuangYi/databases.py
+
+main/migrations/
+uploaded/
+test.db
