@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.decorators import require_token, check_object_id, validate_input
-from main.models.user import User
+from main.models.user_ import User
 from main.models.team import Team
 from main.models.team.member import TeamMember, TeamMemberRequest,\
     TeamInvitation

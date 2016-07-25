@@ -40,9 +40,6 @@ DATE_FORMAT = 'Y-m-d'
 DATE_INPUT_FORMAT = ['%Y-%m-%d']
 
 
-# Media files
-MEDIA_URL = '/uploaded/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'upload')
-
-IMAGE_PATH = '%Y/%m/%d/'
-PRIVATE_IMAGE_PATH = 'private/%Y/%m/%d/'
+# Uploaded files
+UPLOADED_URL = '/uploaded/'
+UPLOADED_ROOT = os.path.join(BASE_DIR, 'uploaded')

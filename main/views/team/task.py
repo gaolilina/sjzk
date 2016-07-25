@@ -7,7 +7,7 @@ from django.http import JsonResponse
 
 from main.decorators import require_token, check_object_id, \
     validate_input, validate_json_input
-from main.models.user import User
+from main.models.user_ import User
 from main.models.team import Team
 from main.models.team.member import TeamMember
 from main.models.team.task import TeamTask, TeamTaskMarker
