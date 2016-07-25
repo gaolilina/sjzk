@@ -379,24 +379,24 @@ class MemberNeed(View):
                 if major:
                     need.major = major
                 if graduate_time:
-                    need.graduate_time = graduate_time
+                    need.time_graduated = graduate_time
                 if age_min and age_max:
                     if age_min > age_max:
                         error = 'invalid age'
                         raise IntegrityError
                     else:
-                        need.age_min = age_min
-                        need.age_max = age_max
+                        need.min_age = age_min
+                        need.max_age = age_max
                 elif age_min:
-                    need.age_min = age_min
+                    need.min_age = age_min
                 elif age_max:
-                    need.age_max = age_max
+                    need.max_age = age_max
                 if gender:
                     need.gender = gender
                 if work_experience:
                     need.work_experience = work_experience
                 if practice_experience:
-                    need.practice_experience = practice_experience
+                    need.fieldwork_experience = practice_experience
                 if project_experience:
                     need.project_experience = practice_experience
                 need.save()

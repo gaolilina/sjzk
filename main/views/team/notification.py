@@ -4,7 +4,7 @@ from django.views.generic import View
 
 from main.decorators import require_token, validate_input, check_object_id
 from main.models import Team
-from main.models.team.notification import TeamNotificationReceipt
+from main.models.notification import TeamNotificationReceipt
 from main.responses import Http403, Http200
 
 

@@ -8,3 +8,4 @@ class EnabledManager(models.Manager):
 
 from .common import *
 from .user import *
+from .team import *

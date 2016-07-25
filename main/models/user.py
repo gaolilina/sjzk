@@ -10,7 +10,7 @@ from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
 
 __all__ = ['User', 'UserAction', 'UserComment', 'UserContact', 'UserExperience',
            'UserFollower', 'UserFriend', 'UserFriendRequest', 'UserLiker',
-           'UserMessage', 'UserTag', 'UserVisitor']
+           'UserMessage', 'UserNotificationReceipt', 'UserTag', 'UserVisitor']
 
 
 class User(models.Model):
@@ -26,7 +26,7 @@ class User(models.Model):
 
     name = models.CharField(max_length=15, db_index=True)
     description = models.CharField(max_length=100, default='')
-    icon = models.CharField(max_length=100)
+    icon = models.CharField(max_length=100, default='')
     gender = models.CharField(max_length=1, default='')
     qq = models.CharField(max_length=20, default='')
     wechat = models.CharField(max_length=20, default='')
@@ -39,12 +39,12 @@ class User(models.Model):
     is_verified = models.BooleanField(default=False, db_index=True)
     real_name = models.CharField(max_length=20, default='', db_index=True)
     id_number = models.CharField(max_length=18, default='', db_index=True)
-    id_card = models.CharField(max_length=100)
+    id_card = models.CharField(max_length=100, default='')
 
     is_role_verified = models.BooleanField(default=False, db_index=True)
     role = models.CharField(max_length=20, default='', db_index=True)
     other_number = models.CharField(max_length=20, default='')
-    other_card = models.CharField(max_length=100)
+    other_card = models.CharField(max_length=100, default='')
     # 学校或公司
     unit1 = models.CharField(max_length=20, default='')
     # 学院或子部门
@@ -191,7 +191,22 @@ class UserMessage(models.Model):
         ordering = ['-time_created']
 
 
+class UserNotificationReceipt(models.Model):
+    """通知接收凭据"""
+
+    notification = models.ForeignKey('Notification', models.CASCADE, '+')
+    user = models.ForeignKey('User', models.CASCADE, 'notifications')
+    is_read = models.BooleanField(default=False, db_index=True)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'notification_receipt'
+        ordering = ['-time_created']
+
+
 class UserTag(Tag):
+    """用户标签"""
+
     entity = models.ForeignKey('User', models.CASCADE, 'tags')
 
     class Meta:
@@ -199,6 +214,8 @@ class UserTag(Tag):
 
 
 class UserVisitor(Visitor):
+    """用户访客"""
+
     visited = models.ForeignKey('User', models.CASCADE, 'visitors')
     visitor = models.ForeignKey('User', models.CASCADE, 'visited_users')
 

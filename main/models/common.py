@@ -2,7 +2,8 @@ from django.db import models
 from django.utils import timezone
 
 
-__all__ = ['Action', 'Comment', 'Follower', 'Liker', 'Tag', 'Visitor']
+__all__ = ['Action', 'Comment', 'Follower', 'Liker', 'Notification', 'Tag',
+           'Visitor']
 
 
 class Action(models.Model):
@@ -60,6 +61,20 @@ class Liker(models.Model):
         ordering = ['-time_created']
 
 
+class Notification(models.Model):
+    """系统通知"""
+
+    # if null, then it's a system notification
+    team = models.ForeignKey('Team', models.CASCADE, 'notifications',
+                             null=True, default=None)
+    content = models.CharField(max_length=200, db_index=True)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'notification'
+        ordering = ['-time_created']
+
+
 class Tag(models.Model):
     """标签记录"""
 
@@ -82,4 +97,3 @@ class Visitor(models.Model):
     class Meta:
         abstract = True
         ordering = ['-time_updated']
-
