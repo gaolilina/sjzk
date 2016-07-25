@@ -8,9 +8,9 @@ from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
     Visitor
 
 
-__all__ = ['User', 'UserAction', 'UserComment', 'UserExperience',
+__all__ = ['User', 'UserAction', 'UserComment', 'UserContact', 'UserExperience',
            'UserFollower', 'UserFriend', 'UserFriendRequest', 'UserLiker',
-           'UserTag', 'UserVisitor']
+           'UserMessage', 'UserTag', 'UserVisitor']
 
 
 class User(models.Model):
@@ -92,6 +92,19 @@ class UserComment(Comment):
         db_table = 'user_comment'
 
 
+class UserContact(models.Model):
+    """用户联系人"""
+
+    user = models.ForeignKey('User', models.CASCADE, 'contacts')
+    other_user = models.ForeignKey('User', models.CASCADE, '+')
+    last_message = models.ForeignKey('Message', models.CASCADE, '+')
+    time_updated = models.DateTimeField(auto_now=True, db_index=True)
+
+    class Meta:
+        db_table = 'user_contact'
+        ordering = ['-time_updated']
+
+
 class UserExperience(models.Model):
     """用户经历资料"""
 
@@ -157,6 +170,25 @@ class UserLiker(Liker):
 
     class Meta:
         db_table = 'user_liker'
+
+
+class UserMessage(models.Model):
+    """消息"""
+
+    user = models.ForeignKey('User', models.CASCADE, 'messages')
+    other_user = models.ForeignKey('User', models.CASCADE, '+')
+    direction = models.IntegerField(choices=(('收', 0), ('发', 1)))
+    content = models.TextField(default='', max_length=100)
+    is_read = models.BooleanField(default=False, db_index=True)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    is_sharing = models.BooleanField(default=False, db_index=True)
+    sharing_object_type = models.TextField(default=None, null=True)
+    sharing_object_id = models.IntegerField(default=None, null=True)
+
+    class Meta:
+        db_table = 'user_message'
+        ordering = ['-time_created']
 
 
 class UserTag(Tag):
