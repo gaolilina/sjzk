@@ -1,24 +1,28 @@
 import hashlib
-from datetime import datetime
 
 from django.contrib.auth.hashers import PBKDF2PasswordHasher
 from django.db import models
+from django.utils import timezone
 
-from ..models import EnabledManager, Action
+from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
+    Visitor
 
 
-__all__ = ['User']
+__all__ = ['User', 'UserAction', 'UserComment', 'UserExperience',
+           'UserFollower', 'UserFriend', 'UserFriendRequest', 'UserLiker',
+           'UserTag', 'UserVisitor']
 
 
 class User(models.Model):
     """用户模型"""
 
     is_enabled = models.BooleanField(default=True, db_index=True)
-    username = models.CharField(max_length=20, default=None, null=True, unique=True)
+    username = models.CharField(
+        max_length=20, default=None, null=True, unique=True)
     password = models.CharField(max_length=128)
-    phone_number = models.CharField( max_length=11, unique=True)
+    phone_number = models.CharField(max_length=11, unique=True)
     token = models.CharField(max_length=32, unique=True)
-    time_created = models.DateTimeField(default=datetime.now, db_index=True)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     name = models.CharField(max_length=15, db_index=True)
     description = models.CharField(max_length=100, default='')
@@ -64,7 +68,7 @@ class User(models.Model):
         return hasher.verify(password, self.password)
 
     def update_token(self):
-        random_content = self.user.phone_number + datetime.now().isoformat()
+        random_content = self.user.phone_number + timezone.now().isoformat()
         hasher = hashlib.md5()
         hasher.update(random_content.encode())
         self.token = hasher.hexdigest()
@@ -77,3 +81,94 @@ class UserAction(Action):
 
     class Meta:
         db_table = 'user_action'
+
+
+class UserComment(Comment):
+    """用户评论"""
+
+    entity = models.ForeignKey('User', models.CASCADE, 'comments')
+
+    class Meta:
+        db_table = 'user_comment'
+
+
+class UserExperience(models.Model):
+    """用户经历资料"""
+
+    # education, work or fieldwork
+    type = models.CharField(max_length=20, db_index=True)
+    # 学校或公司
+    unit = models.CharField(max_length=20, default='')
+    # 职位或专业
+    profession = models.CharField(max_length=20, default='')
+    degree = models.CharField(max_length=20, default='')
+    description = models.CharField(max_length=100, default='')
+    time_in = models.DateField(default=None, null=True)
+    time_out = models.DateField(default=None, null=True)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'user_follower'
+        ordering = ['-time_created']
+
+
+class UserFollower(Follower):
+    """用户关注记录"""
+
+    followed = models.ForeignKey('User', models.CASCADE, 'followers')
+    follower = models.ForeignKey('User', models.CASCADE, 'followed_users')
+
+    class Meta:
+        db_table = 'user_follower'
+
+
+class UserFriend(models.Model):
+    """用户好友记录"""
+
+    user = models.ForeignKey('User', models.CASCADE, 'friends')
+    other_user = models.ForeignKey('User', models.CASCADE, '+')
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'user_friend'
+        ordering = ['-time_created']
+
+
+class UserFriendRequest(models.Model):
+    """用户好友申请记录"""
+
+    # from user to other_user
+    user = models.ForeignKey('User', models.CASCADE, '+')
+    other_user = models.ForeignKey('User', models.CASCADE, 'friend_requests')
+    description = models.CharField(max_length=100, db_index=True)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+    is_read = models.BooleanField(default=False, db_index=True)
+
+    class Meta:
+        db_table = 'user_friend_request'
+        ordering = ['-time_created']
+
+
+class UserLiker(Liker):
+    """用户点赞记录"""
+
+    liked = models.ForeignKey('User', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
+
+    class Meta:
+        db_table = 'user_liker'
+
+
+class UserTag(Tag):
+    entity = models.ForeignKey('User', models.CASCADE, 'tags')
+
+    class Meta:
+        db_table = 'user_tag'
+
+
+class UserVisitor(Visitor):
+    visited = models.ForeignKey('User', models.CASCADE, 'visitors')
+    visitor = models.ForeignKey('User', models.CASCADE, 'visited_users')
+
+    class Meta:
+        db_table = 'user_visitor'
