@@ -2,8 +2,8 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
-from main.decorators import require_token, validate_input, validate_json_input
 from main.models import User, UserTag
+from main.utils.decorators import require_token, validate_args, validate_json_input
 
 
 class UserSearch(View):
@@ -16,7 +16,7 @@ class UserSearch(View):
     conditions = dict(username=forms.CharField(max_length=15))
 
     @require_token
-    @validate_input(pagination)
+    @validate_args(pagination)
     @validate_json_input(conditions)
     def get(self, request, data, offset=0, limit=10, order=1):
         """

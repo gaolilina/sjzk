@@ -2,11 +2,11 @@ from django import forms
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.generic import View
-
-from main.decorators import require_token, check_object_id, \
-    validate_input, validate_json_input
-from main.models.forum import Board, Post
 from main.responses import *
+
+from main.models.forum import Board, Post
+from main.utils.decorators import require_token, fetch_object, \
+    validate_args, validate_json_input
 
 
 class Boards(View):
@@ -21,7 +21,7 @@ class Boards(View):
     ]
 
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """
         获取板块列表
@@ -70,7 +70,7 @@ class BoardSelf(View):
     ]
 
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """
         获取自己创建的板块列表
@@ -143,7 +143,7 @@ class BoardSelf(View):
             return Http400()
 
     @require_token
-    @check_object_id(Board.enabled, 'board')
+    @fetch_object(Board.enabled, 'board')
     def delete(self, request, board):
         """
         删除版块，只是改变is_enabled字段为False，数据库中并不删除
@@ -175,8 +175,8 @@ class Posts(View):
     ]
 
     @require_token
-    @validate_input(get_dict)
-    @check_object_id(Board.enabled, 'board')
+    @validate_args(get_dict)
+    @fetch_object(Board.enabled, 'board')
     def get(self, request, board, offset=0, limit=10, order=1):
         """
         获取帖子列表
@@ -227,7 +227,7 @@ class PostSelf(View):
     ]
 
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """
         获取自己发表的帖子列表
@@ -273,7 +273,7 @@ class PostSelf(View):
         'is_fixed': forms.BooleanField(required=False),
     }
 
-    @check_object_id(Board.enabled, 'board')
+    @fetch_object(Board.enabled, 'board')
     @require_token
     @validate_json_input(post_dict)
     def post(self, request, board, data):
@@ -305,8 +305,8 @@ class PostSelf(View):
             return Http400()
 
     @require_token
-    @check_object_id(Board.enabled, 'board')
-    @check_object_id(Post.enabled, 'post')
+    @fetch_object(Board.enabled, 'board')
+    @fetch_object(Post.enabled, 'post')
     def delete(self, request, board, post):
         """
         删除帖子(版主或发布者有权利)，只是改变is_enabled字段为False，数据库中并不删除

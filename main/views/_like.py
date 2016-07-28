@@ -1,10 +1,10 @@
 from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
-
-from main.decorators import validate_input, require_token, check_object_id
-from main.models import User, Team
 from main.responses import *
+
+from main.models import User, Team
+from main.utils.decorators import validate_args, require_token, fetch_object
 
 
 class Likers(View):
@@ -18,7 +18,7 @@ class Likers(View):
         'follower__name', '-follower__name',
     )
 
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, obj, offset=0, limit=10, order=1):
         """
         获取对象的点赞者列表
@@ -52,7 +52,7 @@ class Likers(View):
 # noinspection PyMethodOverriding
 class UserLikers(Likers):
     @require_token
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     def get(self, request, user=None):
         user = user or request.user
         return super(UserLikers, self).get(request, user)
@@ -61,7 +61,7 @@ class UserLikers(Likers):
 # noinspection PyMethodOverriding
 class TeamLikers(Likers):
     @require_token
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         return super(TeamLikers, self).get(request, team)
 
@@ -77,8 +77,8 @@ class Liker(View):
 
 
 class UserLiker(Liker):
-    @check_object_id(User.enabled, 'user')
-    @check_object_id(User.enabled, 'other_user')
+    @fetch_object(User.enabled, 'user')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def get(self, request, other_user, user=None):
         user = user or request.user
@@ -86,8 +86,8 @@ class UserLiker(Liker):
 
 
 class TeamLiker(Liker):
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(User.enabled, 'other_user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def get(self, request, team, other_user):
         return super(TeamLiker, self).get(request, team, other_user)
@@ -134,29 +134,29 @@ class LikedObject(View):
 
 # noinspection PyMethodOverriding
 class LikedUser(LikedObject):
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     def get(self, request, user):
         return super(LikedUser, self).get(request, user)
 
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     def post(self, request, user):
         return super(LikedUser, self).post(request, user)
 
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     def delete(self, request, user):
         return super(LikedUser, self).delete(request, user)
 
 
 # noinspection PyMethodOverriding
 class LikedTeam(LikedObject):
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         return super(LikedTeam, self).get(request, team)
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     def post(self, request, team):
         return super(LikedTeam, self).post(request, team)
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     def delete(self, request, team):
         return super(LikedTeam, self).delete(request, team)

@@ -1,32 +1,15 @@
 from django.conf.urls import url
 
-from main.views.action import UserActions
-from main.views.comment import UserComments, UserComment
-from main.views.follow import UserFans, UserFan, FollowedUsers, \
-    FollowedUserSelf, FollowedTeams, FollowedTeamSelf
-from main.views.like import UserLikers, UserLiker, LikedUser, LikedTeam
-from main.views.user import Username, Password, IconSelf, ProfileSelf, \
-    IdentificationSelf, IDCard, OtherCard
-from main.views.user.experience import EducationExperiencesSelf, \
-    WorkExperiencesSelf, FieldworkExperiencesSelf, EducationExperience, \
-    WorkExperience, FieldworkExperience
-from main.views.user.friend import Friends, FriendSelf, FriendRequests, \
-    FriendRequest
-from main.views.user.message import Contacts, Messages, ShareUser, ShareTeam
-from main.views.user.notification import Notifications, Notification
-from main.views.visitor import UserVisitors
+from ..views.current_user import *
 
 urls = [
     # 基本信息
     url(r'^username/$', Username.as_view(), name='username'),
     url(r'^password/$', Password.as_view(), name='password'),
-    url(r'^icon/$', IconSelf.as_view(), name='icon'),
-    url(r'^profile/$', ProfileSelf.as_view(), name='profile'),
-    url(r'^identification/$',
-        IdentificationSelf.as_view(), name='identification'),
-    url(r'^identification/id_card/$', IDCard.as_view(), name='id_card'),
-    url(r'^identification/other_card/$',
-        OtherCard.as_view(), name='other_card'),
+    url(r'^icon/$', Icon.as_view(), name='icon'),
+    url(r'^id_card/$', IDCard.as_view(), name='id_card'),
+    url(r'^other_card/$', OtherCard.as_view(), name='other_card'),
+    url(r'^profile/$', Profile.as_view(), name='profile'),
     # 动态
     url(r'actions/$', UserActions.as_view(), name='actions'),
     # 评论

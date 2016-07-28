@@ -2,14 +2,14 @@ from django import forms
 from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
-
-from main.decorators import require_token, check_object_id, validate_input
-from main.models.user_ import User
-from main.models.team import Team
+from main.models.action import ActionManager
 from main.models.team.member import TeamMember, TeamMemberRequest,\
     TeamInvitation
-from main.models.action import ActionManager
+from main.models.user_ import User
 from main.responses import *
+
+from main.models.team import Team
+from main.utils.decorators import require_token, fetch_object, validate_args
 
 
 class Members(View):
@@ -23,9 +23,9 @@ class Members(View):
         'member__name', '-member__name',
     )
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, team, offset=0, limit=10, order=1):
         """
         获取团队的成员列表
@@ -62,8 +62,8 @@ class Members(View):
 class Member(View):
     get_dict = {'user_id': forms.IntegerField(required=False)}
 
-    @check_object_id(Team.enabled, 'team')
-    @validate_input(get_dict)
+    @fetch_object(Team.enabled, 'team')
+    @validate_args(get_dict)
     @require_token
     def get(self, request, team, user_id=None):
         """
@@ -84,8 +84,8 @@ class Member(View):
 
 
 class MemberSelf(Member):
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def post(self, request, team, user):
         """
@@ -110,8 +110,8 @@ class MemberSelf(Member):
             ActionManager.join_team(user, team)
         return Http200()
 
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def delete(self, request, team, user=None):
         """
@@ -138,9 +138,9 @@ class MemberSelf(Member):
 class MemberRequests(View):
     get_dict = {'limit': forms.IntegerField(required=False, min_value=10)}
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, team, limit=10):
         """
         获取团队的加入申请列表
@@ -187,9 +187,9 @@ class MemberRequests(View):
 
     post_dict = {'description': forms.CharField(required=False, max_length=100)}
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
-    @validate_input(post_dict)
+    @validate_args(post_dict)
     def post(self, request, team, description=''):
         """
         向团队发出加入申请，若已发出申请或受到团队的邀请且未被处理则返回403，否则返回200
@@ -217,8 +217,8 @@ class MemberRequests(View):
 
 
 class MemberRequest(View):
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def delete(self, request, team, user):
         """
@@ -241,7 +241,7 @@ class Invitations(View):
     get_dict = {'limit': forms.IntegerField(required=False, min_value=10)}
 
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, limit=10):
         """
         获取用户的加入团队邀请列表
@@ -280,10 +280,10 @@ class Invitations(View):
 class Invitation(View):
     post_dict = {'description': forms.CharField(required=False, max_length=100)}
 
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
-    @validate_input(post_dict)
+    @validate_args(post_dict)
     def post(self, request, team, user, description=''):
         """
         向用户发出加入团队邀请，若已发出申请或受到用户的申请且未被处理则返回403，
@@ -316,7 +316,7 @@ class Invitation(View):
 
 
 class InvitationSelf(View):
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, team):
         """
@@ -338,7 +338,7 @@ class InvitationSelf(View):
             ActionManager.join_team(request.user, team)
         return Http200()
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def delete(self, request, team):
         """

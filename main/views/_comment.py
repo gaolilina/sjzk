@@ -1,11 +1,11 @@
 from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
-
-from main.decorators import check_object_id, require_token, validate_input
-from main.models import User, UserComment as UserCommentModel
-from main.models import Team, TeamComment as TeamCommentModel
 from main.responses import Http200, Http403
+
+from main.models import Team, TeamComment as TeamCommentModel
+from main.models import User, UserComment as UserCommentModel
+from main.utils.decorators import fetch_object, require_token, validate_args
 
 
 class Comments(View):
@@ -14,7 +14,7 @@ class Comments(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     }
 
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, obj=None, offset=0, limit=10):
         """
         获取对象的评论列表
@@ -44,7 +44,7 @@ class Comments(View):
 
     post_dict = {'content': forms.CharField(max_length=100)}
 
-    @validate_input(post_dict)
+    @validate_args(post_dict)
     def post(self, request, obj, content):
         """
         评论某个对象
@@ -56,13 +56,13 @@ class Comments(View):
 
 # noinspection PyMethodOverriding
 class UserComments(Comments):
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user=None):
         user = user or request.user
         return super(UserComments, self).get(request, user)
 
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def post(self, request, user=None):
         user = user or request.user
@@ -70,7 +70,7 @@ class UserComments(Comments):
 
 
 class UserComment(View):
-    @check_object_id(UserCommentModel.enabled, 'comment')
+    @fetch_object(UserCommentModel.enabled, 'comment')
     @require_token
     def delete(self, request, comment):
         """
@@ -86,7 +86,7 @@ class UserComment(View):
 
 # noinspection PyMethodOverriding
 class TeamComments(Comments):
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         """
@@ -107,7 +107,7 @@ class TeamComments(Comments):
         """
         return super(TeamComments, self).get(request, team)
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, team):
         """
@@ -120,8 +120,8 @@ class TeamComments(Comments):
 
 
 class TeamComment(View):
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(TeamCommentModel.enabled, 'comment')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(TeamCommentModel.enabled, 'comment')
     @require_token
     def delete(self, request, team, comment):
         """

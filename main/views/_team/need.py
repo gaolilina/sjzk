@@ -1,16 +1,16 @@
 from django import forms
 from django.db import IntegrityError, transaction
-from django.views.generic import View
 from django.http import JsonResponse
-
-from main.decorators import require_token, check_object_id, \
-    validate_json_input
+from django.views.generic import View
+from main.models.action import ActionManager
+from main.models.location import TeamNeedLocation
 from main.models.team.need import TeamNeed, TeamMemberNeed, \
     TeamOutsourceNeed, TeamUndertakeNeed
-from main.models.location import TeamNeedLocation
-from main.models.action import ActionManager
-from main.models.team import Team
 from main.responses import *
+
+from main.models.team import Team
+from main.utils.decorators import require_token, fetch_object, \
+    validate_json_input
 
 
 class Needs(View):
@@ -75,7 +75,7 @@ class NeedSelf(View):
     }
     available_orders = ('create_time', '-create_time')
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_json_input(get_dict)
     def get(self, request, team, offset=0, limit=10, order=1, type=0):
@@ -120,8 +120,8 @@ class NeedSelf(View):
               'create_time': n.create_time} for n in needs]
         return JsonResponse({'count': c, 'list': l})
 
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(TeamNeed.enabled, 'need')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(TeamNeed.enabled, 'need')
     @require_token
     def post(self, request, team, need):
         """
@@ -145,8 +145,8 @@ class NeedSelf(View):
         except IntegrityError:
             return Http400()
 
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(TeamNeed.enabled, 'need')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(TeamNeed.enabled, 'need')
     @require_token
     def delete(self, request, team, need):
         """
@@ -168,8 +168,8 @@ class NeedSelf(View):
 
 
 class NeedDetail(View):
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(TeamNeed.enabled, 'need')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(TeamNeed.enabled, 'need')
     @require_token
     def get(self, request, team, need):
         """
@@ -311,7 +311,7 @@ class MemberNeed(View):
         'deadline': forms.DateTimeField(),
     }
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_json_input(post_dict)
     def post(self, request, team, data):
@@ -427,7 +427,7 @@ class OutsourceNeed(View):
         'deadline': forms.DateTimeField(),
     }
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_json_input(post_dict)
     def post(self, request, team, data):
@@ -534,7 +534,7 @@ class UndertakeNeed(View):
         'deadline': forms.DateTimeField(),
     }
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_json_input(post_dict)
     def post(self, request, team, data):

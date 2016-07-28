@@ -1,14 +1,14 @@
 from django import forms
-from django.http import JsonResponse
 from django.db import IntegrityError, transaction
+from django.http import JsonResponse
 from django.views.generic import View
-
-from main.decorators import check_object_id, require_token, validate_input,\
-    process_uploaded_image
-from main.models import Team
-from main.models.team.achievement import TeamAchievement
 from main.models.action import ActionManager
+from main.models.team.achievement import TeamAchievement
 from main.responses import *
+
+from main.models import Team
+from main.utils.decorators import fetch_object, require_token, validate_args,\
+    process_uploaded_image
 
 
 class Achievements(View):
@@ -20,7 +20,7 @@ class Achievements(View):
     available_orders = ('create_time', '-create_time')
 
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """
         获取所有团队发布的成果
@@ -61,9 +61,9 @@ class Achievement(View):
     }
     available_orders = ('create_time', '-create_time')
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, team, offset=0, limit=10, order=1):
         """
         获取团队发布的成果
@@ -96,10 +96,10 @@ class Achievement(View):
         'description': forms.CharField(min_length=1, max_length=100)
     }
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @process_uploaded_image('picture')
-    @validate_input(post_dict)
+    @validate_args(post_dict)
     def post(self, request, team, picture, description=''):
         """
         发布成果
@@ -121,8 +121,8 @@ class Achievement(View):
             ActionManager.create_achievement(team, achievement)
             return JsonResponse({'achievement_id': achievement.id})
 
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(TeamAchievement.enabled, 'achievement')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(TeamAchievement.enabled, 'achievement')
     @require_token
     def delete(self, request, team, achievement):
         """

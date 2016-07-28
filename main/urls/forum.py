@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from main.views.forum import Boards, BoardSelf, Posts, PostSelf
+from main.views._forum import Boards, BoardSelf, Posts, PostSelf
 
 urls = [
     # 获取所有的版块(get)

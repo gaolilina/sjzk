@@ -1,11 +1,11 @@
 from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
-
-from main.decorators import check_object_id, require_token, validate_input
-from main.models import User, Team
 from main.models.follow import UserFollower, TeamFollower
 from main.responses import *
+
+from main.models import User, Team
+from main.utils.decorators import fetch_object, require_token, validate_args
 
 
 class Fans(View):
@@ -19,7 +19,7 @@ class Fans(View):
         'follower__name', '-follower__name',
     )
 
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, obj, offset=0, limit=10, order=1):
         """
         获取粉丝列表
@@ -53,7 +53,7 @@ class Fans(View):
 
 # noinspection PyMethodOverriding
 class UserFans(Fans):
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user=None):
         user = user or request.user
@@ -62,7 +62,7 @@ class UserFans(Fans):
 
 # noinspection PyMethodOverriding
 class TeamFans(Fans):
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         return super(TeamFans, self).get(request, team)
@@ -80,8 +80,8 @@ class Fan(View):
 
 # noinspection PyMethodOverriding
 class UserFan(Fan):
-    @check_object_id(User.enabled, 'user')
-    @check_object_id(User.enabled, 'other_user')
+    @fetch_object(User.enabled, 'user')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def get(self, request, other_user, user=None):
         user = user or request.user
@@ -90,8 +90,8 @@ class UserFan(Fan):
 
 # noinspection PyMethodOverriding
 class TeamFan(Fan):
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(User.enabled, 'other_user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def get(self, request, team, other_user):
         return super(TeamFan, self).get(request, team, other_user)
@@ -108,9 +108,9 @@ class FollowedUsers(View):
         'followed__name', '-followed__name',
     ]
 
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, user=None, offset=0, limit=10, order=1):
         """
         获取用户的关注用户列表
@@ -145,8 +145,8 @@ class FollowedUsers(View):
 
 
 class FollowedUser(View):
-    @check_object_id(User.enabled, 'user')
-    @check_object_id(User.enabled, 'other_user')
+    @fetch_object(User.enabled, 'user')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def get(self, request, other_user, user=None):
         """
@@ -160,7 +160,7 @@ class FollowedUser(View):
 
 
 class FollowedUserSelf(FollowedUser):
-    @check_object_id(User.enabled, 'other_user')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def post(self, request, other_user):
         """
@@ -174,7 +174,7 @@ class FollowedUserSelf(FollowedUser):
         other_user.follower_records.create(follower=request.user)
         return Http200()
 
-    @check_object_id(User.enabled, 'other_user')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def delete(self, request, other_user):
         """
@@ -199,10 +199,10 @@ class FollowedTeams(View):
         'followed__name', '-followed__name',
     ]
 
-    @check_object_id(User.enabled, 'user')
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
+    @fetch_object(Team.enabled, 'team')
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, team, user=None, offset=0, limit=10, order=1):
         """
         获取用户的关注团队列表
@@ -235,8 +235,8 @@ class FollowedTeams(View):
 
 
 class FollowedTeam(View):
-    @check_object_id(User.enabled, 'user')
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team, user=None):
         """
@@ -250,7 +250,7 @@ class FollowedTeam(View):
 
 
 class FollowedTeamSelf(FollowedTeam):
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, team):
         """
@@ -264,7 +264,7 @@ class FollowedTeamSelf(FollowedTeam):
         team.follower_records.create(follower=request.user)
         return Http200()
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def delete(self, request, team):
         """

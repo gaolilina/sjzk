@@ -7,10 +7,10 @@ from main.views.team.need import Needs, NeedSelf, NeedDetail, MemberNeed, \
     OutsourceNeed, UndertakeNeed
 from main.views.team.achievement import Achievement, Achievements
 from main.views.team.task import Tasks, TaskSelf, TaskMarker, Task
-from main.views.like import TeamLiker, TeamLikers
-from main.views.follow import TeamFan, TeamFans
-from main.views.comment import TeamComment, TeamComments
-from main.views.visitor import TeamVisitors
+from main.views._like import TeamLiker, TeamLikers
+from main.views._follow import TeamFan, TeamFans
+from main.views._comment import TeamComment, TeamComments
+from main.views._visitor import TeamVisitors
 from main.views.team.message import UserContacts, UserMessages, TeamContacts,\
     TeamMessages
 from main.views.team.notification import Notification, Notifications

@@ -2,10 +2,10 @@ from django import forms
 from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
-
-from main.decorators import require_token, validate_input, check_object_id
-from main.models import User, Team
 from main.responses import *
+
+from main.models import User, Team
+from main.utils.decorators import require_token, validate_args, fetch_object
 
 
 class UserContacts(View):
@@ -15,7 +15,7 @@ class UserContacts(View):
     }
 
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, offset=0, limit=10):
         """
         获取用户的团队联系列表
@@ -61,9 +61,9 @@ class UserMessages(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     }
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, team, offset=0, limit=10):
         """
         获取用户的与某团队相关的消息
@@ -104,9 +104,9 @@ class UserMessages(View):
 
     post_dict = {'content': forms.CharField(max_length=256)}
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
-    @validate_input(post_dict)
+    @validate_args(post_dict)
     @transaction.atomic
     def post(self, request, team, content):
         """
@@ -139,9 +139,9 @@ class TeamContacts(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     }
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, team, offset=0, limit=10):
         """
         获取团队的用户联系列表
@@ -190,10 +190,10 @@ class TeamMessages(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     }
 
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, team, user, offset=0, limit=10):
         """
         获取团队的与某用户相关的消息
@@ -237,10 +237,10 @@ class TeamMessages(View):
 
     post_dict = {'content': forms.CharField(max_length=256)}
 
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
-    @validate_input(post_dict)
+    @validate_args(post_dict)
     @transaction.atomic
     def post(self, request, team, user, content):
         """

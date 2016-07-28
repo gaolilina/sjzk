@@ -1,26 +1,13 @@
 from django.conf.urls import url
 
-from main.views.action import UserActions
-from main.views.comment import UserComments
-from main.views.follow import UserFans, UserFan, FollowedUsers, \
-    FollowedUser, FollowedTeams, FollowedTeam
-from main.views.like import UserLikers, UserLiker
-from main.views.search import UserSearch
-from main.views.user import Users, Token, Icon, Profile, Identification
-from main.views.user.experience import EducationExperiences, WorkExperiences, \
-    FieldworkExperiences
-from main.views.user.friend import Friends, Friend, FriendRequests
-from main.views.visitor import UserVisitors
+from ..views.user import *
 
 urls = [
     # 基本信息
-    url(r'^$', Users.as_view(), name='root'),
+    url(r'^$', List.as_view(), name='root'),
     url(r'^token/$', Token.as_view(), name='token'),
     url(r'^(?P<user_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
-    url(r'^(?P<user_id>[0-9]+)/profile/$',
-        Profile.as_view(), name='profile'),
-    url(r'^(?P<user_id>[0-9]+)/identification/$',
-        Identification.as_view(), name='identification'),
+    url(r'^(?P<user_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     # 动态
     url(r'^(?P<user_id>[0-9]+)/actions/$',
         UserActions.as_view(), name='actions'),

@@ -60,18 +60,31 @@ class User(models.Model):
         ordering = ['-time_created']
 
     def set_password(self, password):
+        """设置密码"""
+
         hasher = PBKDF2PasswordHasher()
         self.password = hasher.encode(password, hasher.salt())
 
     def check_password(self, password):
+        """检查密码"""
+
         hasher = PBKDF2PasswordHasher()
         return hasher.verify(password, self.password)
 
     def update_token(self):
+        """更新用户令牌"""
+
         random_content = self.user.phone_number + timezone.now().isoformat()
         hasher = hashlib.md5()
         hasher.update(random_content.encode())
         self.token = hasher.hexdigest()
+
+    def save_and_generate_name(self):
+        """保存当前实例并生成序列用户名"""
+
+        self.save()
+        self.name = '创易用户 #{}'.format(self.id)
+        self.save()
 
 
 class UserAction(Action):

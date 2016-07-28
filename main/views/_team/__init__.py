@@ -1,19 +1,20 @@
-from django import forms
 from datetime import datetime, timedelta
+
+from django import forms
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.generic import View
-
-from main.decorators import require_token, check_object_id, \
-    validate_input, validate_json_input, process_uploaded_image
+from main.models.action import ActionManager
+from main.models.follow import TeamFollower
+from main.models.like import TeamLiker
 from main.models.location import TeamLocation
 from main.models.tag import TeamTag
-from main.models.like import TeamLiker
-from main.models.follow import TeamFollower
-from main.models.team import Team, TeamProfile
 from main.models.visitor import TeamVisitor
-from main.models.action import ActionManager
 from main.responses import *
+
+from main.models.team import Team, TeamProfile
+from main.utils.decorators import require_token, fetch_object, \
+    validate_args, validate_json_input, process_uploaded_image
 
 
 class Teams(View):
@@ -28,7 +29,7 @@ class Teams(View):
     ]
 
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """
         获取团队列表
@@ -86,7 +87,7 @@ class TeamsSelf(View):
     ]
 
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1, is_owner=True):
         """
         获取自己创建（或参加）的团队列表
@@ -212,7 +213,7 @@ class TeamsSelf(View):
 
 
 class Profile(View):
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         """
@@ -268,7 +269,7 @@ class Profile(View):
         'url': forms.CharField(required=False, max_length=100),
     }
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_json_input(post_dict)
     def post(self, request, team, data):
@@ -339,7 +340,7 @@ class Profile(View):
 
 
 class Icon(View):
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         """
@@ -352,7 +353,7 @@ class Icon(View):
         url = team.icon_url
         return JsonResponse({'icon_url': url})
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @process_uploaded_image('icon')
     def post(self, request, team, icon):

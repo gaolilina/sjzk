@@ -2,8 +2,8 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
-from main.decorators import validate_input, check_object_id, require_token
 from main.models import User, Team
+from main.utils.decorators import validate_args, fetch_object, require_token
 
 
 class ObjectActions(View):
@@ -12,7 +12,7 @@ class ObjectActions(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     }
 
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, obj, offset=0, limit=10):
         """
         获取对象的动态列表
@@ -47,7 +47,7 @@ class ObjectActions(View):
 
 # noinspection PyMethodOverriding
 class UserActions(ObjectActions):
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user=None):
         user = user or request.user
@@ -56,7 +56,7 @@ class UserActions(ObjectActions):
 
 # noinspection PyMethodOverriding
 class TeamActions(ObjectActions):
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         return super(TeamActions, self).get(request, team)

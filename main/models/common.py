@@ -79,8 +79,8 @@ class Tag(models.Model):
     """标签记录"""
 
     entity = None
+    name = models.CharField(max_length=20, db_index=True)
     order = models.IntegerField(db_index=True)
-    tag = models.CharField(max_length=20, db_index=True)
 
     class Meta:
         abstract = True

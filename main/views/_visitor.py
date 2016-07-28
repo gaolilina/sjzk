@@ -4,8 +4,8 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
-from main.decorators import require_token, validate_input, check_object_id
 from main.models import User, Team
+from main.utils.decorators import require_token, validate_args, fetch_object
 
 
 class Visitors(View):
@@ -14,7 +14,7 @@ class Visitors(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     }
 
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, obj, offset=0, limit=10, days=7):
         """
         获取对象一段时间内的访客列表
@@ -51,7 +51,7 @@ class Visitors(View):
 # noinspection PyMethodOverriding
 class UserVisitors(Visitors):
     @require_token
-    @check_object_id(User.enabled, 'user')
+    @fetch_object(User.enabled, 'user')
     def get(self, request, user=None):
         user = user or request.user
         return super(UserVisitors, self).get(request, user)
@@ -60,6 +60,6 @@ class UserVisitors(Visitors):
 # noinspection PyMethodOverriding
 class TeamVisitors(Visitors):
     @require_token
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         return super(TeamVisitors, self).get(request, team)

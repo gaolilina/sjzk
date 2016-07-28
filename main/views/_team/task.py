@@ -1,18 +1,19 @@
-from django import forms
 from datetime import datetime
-from django.db import transaction, IntegrityError
-from django.core.exceptions import ObjectDoesNotExist
-from django.views.generic import View
-from django.http import JsonResponse
 
-from main.decorators import require_token, check_object_id, \
-    validate_input, validate_json_input
-from main.models.user_ import User
-from main.models.team import Team
+from django import forms
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction, IntegrityError
+from django.http import JsonResponse
+from django.views.generic import View
+from main.models.action import ActionManager
 from main.models.team.member import TeamMember
 from main.models.team.task import TeamTask, TeamTaskMarker
-from main.models.action import ActionManager
+from main.models.user_ import User
 from main.responses import *
+
+from main.models.team import Team
+from main.utils.decorators import require_token, fetch_object, \
+    validate_args, validate_json_input
 
 
 class Tasks(View):
@@ -23,9 +24,9 @@ class Tasks(View):
     }
     available_orders = ('create_time', '-create_time', 'name', '-name')
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, team, offset=0, limit=10, order=1):
         """
         获取团队发布的所有任务
@@ -75,7 +76,7 @@ class Tasks(View):
         'expected_time': forms.DateTimeField(required=False),
     }
 
-    @check_object_id(Team.enabled, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_json_input(post_dict)
     def post(self, request, team, data):
@@ -139,7 +140,7 @@ class TaskSelf(View):
     available_orders = ('create_time', '-create_time', 'name', '-name')
 
     @require_token
-    @validate_input(get_dict)
+    @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """
         获取用户收到的所有任务
@@ -188,10 +189,10 @@ class TaskMarker(TaskSelf):
                                        max_length=100)
     }
 
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(TeamTask.enabled, 'task')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(TeamTask.enabled, 'task')
     @require_token
-    @validate_input(post_dict)
+    @validate_args(post_dict)
     def post(self, request, team, task, description=''):
         """
         用户标记任务为已完成
@@ -226,8 +227,8 @@ class TaskMarker(TaskSelf):
 
 
 class Task(View):
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(TeamTask.enabled, 'task')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(TeamTask.enabled, 'task')
     @require_token
     def post(self, request, team, task):
         """
@@ -255,8 +256,8 @@ class Task(View):
             ActionManager.finish_task(team, task)
         return Http200()
 
-    @check_object_id(Team.enabled, 'team')
-    @check_object_id(TeamTask.enabled, 'task')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(TeamTask.enabled, 'task')
     @require_token
     def delete(self, request, team, task):
         """
