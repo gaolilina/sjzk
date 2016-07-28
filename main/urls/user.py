@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from ..views.user import *
+from ..views.action import UserActions
 
 urls = [
     # 基本信息
