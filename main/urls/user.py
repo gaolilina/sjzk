@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from ..views.user import *
-from ..views.action import UserActions
+from ..views.common import UserActions, UserComments, UserComment
 
 urls = [
     # 基本信息
@@ -15,6 +15,8 @@ urls = [
     # 评论
     url(r'^(?P<user_id>[0-9]+)/comments/$',
         UserComments.as_view(), name='comments'),
+    url(r'comments/(?P<comment_id>[0-9]+)/$',
+        UserComment.as_view(), name='comment'),
     # 经历
     url(r'^(?P<user_id>[0-9]+)/experiences/education/$',
         EducationExperiences.as_view(), name='education_experiences'),
