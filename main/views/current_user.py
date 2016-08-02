@@ -4,6 +4,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
+from ..models import User, Team
 from ..utils import abort, save_uploaded_image
 from ..utils.decorators import *
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
@@ -11,7 +12,8 @@ from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
 
 
 __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
-           'ExperienceList']
+           'ExperienceList', 'FollowedUserList', 'FollowedUser',
+           'FollowedTeamList', 'FollowedTeam']
 
 
 class Username(View):
@@ -243,3 +245,142 @@ class ExperienceList(ExperienceList_):
 
         request.user.experiences.filter(type=type).delete()
         abort(200)
+
+
+class FollowedUserList(View):
+    ORDERS = [
+        'create_time', '-create_time',
+        'followed__name', '-followed__name',
+    ]
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取用户的关注用户列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 关注时间升序
+            1: 关注时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 关注的用户总数
+            list: 关注的用户列表
+                id: 用户ID
+                username: 用户名
+                name: 用户昵称
+                time_created: 关注时间
+        """
+        c = request.user.followed_users.count()
+        qs = request.user.followed_users.order_by(
+            self.ORDERS[order])[offset:offset + limit]
+        l = [{'id': r.followed.id,
+              'username': r.followed.username,
+              'name': r.followed.name,
+              'time_created': r.create_time} for r in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FollowedUser(View):
+    @fetch_object(User, 'user')
+    @require_token
+    def get(self, request, user):
+        """判断当前用户是否关注了user"""
+
+        if request.user.followed_users.filter(follower=user).exists():
+            abort(200)
+        abort(404)
+
+    @fetch_object(User, 'user')
+    @require_token
+    def post(self, request, user):
+        """令当前用户关注user"""
+
+        if request.user.followed_users.filter(follower=user).exists():
+            abort(403)
+        request.user.followed_users.create(followed=user)
+        abort(200)
+
+    @fetch_object(User, 'user')
+    @require_token
+    def delete(self, request, user):
+        """令当前用户取消关注user"""
+
+        qs = request.user.followed_users.filter(followed=user)
+        if qs.exists():
+            qs.delete()
+            abort(200)
+        abort(403)
+
+
+class FollowedTeamList(View):
+    ORDERS = [
+        'create_time', '-create_time',
+        'followed__name', '-followed__name',
+    ]
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取用户的关注团队列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 关注时间升序
+            1: 关注时间降序（默认值）
+            2: 团队名称升序
+            3: 团队名称降序
+        :return:
+            count: 关注的团队总数
+            list: 关注的用户列表
+                id: 团队ID
+                name: 团队昵称
+                time_created: 关注时间
+        """
+        c = request.user.followed_teams.count()
+        qs = request.user.followed_teams.order_by(
+            self.ORDERS[order])[offset:offset + limit]
+        l = [{'id': r.followed.id,
+              'name': r.followed.name,
+              'time_created': r.time_created} for r in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FollowedTeam(View):
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    def get(self, request, team):
+        """判断当前用户是否关注了team"""
+
+        if request.user.followed_teams.filter(followed=team).exists():
+            abort(200)
+        abort(404)
+
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    def post(self, request, team):
+        """令当前用户关注team"""
+
+        if request.user.followed_teams.filter(follower=team).exists():
+            abort(403)
+        request.user.followed_teams.create(followed=team)
+        abort(200)
+
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    def delete(self, request, team):
+        """令当前用户取消关注team"""
+
+        qs = request.user.followed_users.filter(followed=team)
+        if qs.exists():
+            qs.delete()
+            abort(200)
+        abort(403)
+

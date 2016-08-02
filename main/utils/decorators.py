@@ -13,15 +13,15 @@ def require_token(function):
     """对被装饰的方法进行用户身份验证，并且当前用户模型存为request.user，
     用户令牌作为请求头X-User-Token进行传递
     """
-    def decorator(*args, **kwargs):
-        token = kwargs['request'].META.get('HTTP_X_USER_TOKEN')
+    def decorator(self, request, *args, **kwargs):
+        token = request.META.get('HTTP_X_USER_TOKEN')
         if not token:
             abort(401)
         try:
             user = User.objects.get(token=token)
             if user.is_enabled:
-                kwargs['request'].user = user
-                return function(*args, **kwargs)
+                request.user = user
+                return function(self, request, *args, **kwargs)
             abort(403)
         except User.DoesNotExist:
             abort(401)
@@ -31,9 +31,9 @@ def require_token(function):
 def require_verification(function):
     """对被装饰的方法要求用户身份认证，该装饰器应放在require_token之后"""
 
-    def decorator(*args, **kwargs):
-        if kwargs['request'].user.is_verified:
-            return function(*args, **kwargs)
+    def decorator(self, request, *args, **kwargs):
+        if request.user.is_verified:
+            return function(self, request, *args, **kwargs)
         abort(403)
     return decorator
 
@@ -43,13 +43,13 @@ def validate_args(d):
     作为关键字参数传入view函数中，若部分数据非法则直接返回400 Bad Request
     """
     def decorator(function):
-        def inner(*args, **kwargs):
-            if kwargs['request'].method == 'GET':
-                data = kwargs['request'].GET
-            elif kwargs['request'].method == 'POST':
-                data = kwargs['request'].POST
+        def inner(self, request, *args, **kwargs):
+            if request.method == 'GET':
+                data = request.GET
+            elif request.method == 'POST':
+                data = request.POST
             else:
-                data = QueryDict(kwargs['request'].body)
+                data = QueryDict(request.body)
             for k, v in d.items():
                 try:
                     kwargs[k] = v.clean(data[k])
@@ -58,7 +58,7 @@ def validate_args(d):
                         abort(400, 'require argument "%s"' % k)
                 except ValidationError:
                     abort(400, 'invalid argument "%s"' % k)
-            return function(*args, **kwargs)
+            return function(self, request, *args, **kwargs)
         return inner
     return decorator
 

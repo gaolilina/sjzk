@@ -8,7 +8,12 @@ from ..utils import abort
 from ..utils.decorators import *
 
 
-class Actions(View):
+__all__ = ['UserActionList', 'TeamActionList', 'UserCommentList',
+           'TeamCommentList', 'UserComment', 'TeamComment', 'UserFollowerList',
+           'TeamFollowerList']
+
+
+class ActionList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
     })
@@ -41,7 +46,7 @@ class Actions(View):
 
 
 # noinspection PyMethodOverriding
-class UserActions(Actions):
+class UserActionList(ActionList):
     @fetch_object(User, 'user')
     @require_token
     def get(self, request, user=None):
@@ -50,14 +55,14 @@ class UserActions(Actions):
 
 
 # noinspection PyMethodOverriding
-class TeamActions(Actions):
+class TeamActionList(ActionList):
     @fetch_object(Team, 'team')
     @require_token
     def get(self, request, team):
-        return super(TeamActions, self).get(request, team)
+        return super(TeamActionList, self).get(request, team)
 
 
-class Comments(View):
+class CommentList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
     })
@@ -93,7 +98,7 @@ class Comments(View):
 
 
 # noinspection PyMethodOverriding
-class UserComments(Comments):
+class UserCommentList(CommentList):
     @fetch_object(User, 'user')
     @require_token
     def get(self, request, user=None):
@@ -107,21 +112,9 @@ class UserComments(Comments):
         return super().post(request, user)
 
 
-class UserComment(View):
-    @fetch_object(UserCommentModel, 'comment')
-    @require_token
-    def delete(self, request, comment):
-        """删除用户评论"""
-
-        if comment.entity == request.user or comment.author == request.user:
-            comment.delete()
-            abort(200)
-        abort(403)
-
-
 # noinspection PyMethodOverriding
-class TeamComments(Comments):
-    @fetch_object(Team.enabled, 'team')
+class TeamCommentList(CommentList):
+    @fetch_object(Team, 'team')
     @require_token
     def get(self, request, team):
         """获取团队的评论信息列表
@@ -137,7 +130,7 @@ class TeamComments(Comments):
         """
         return super().get(request, team)
 
-    @fetch_object(Team.enabled, 'team')
+    @fetch_object(Team, 'team')
     @require_token
     def post(self, request, team):
         """当前用户对团队进行评论"""
@@ -145,10 +138,22 @@ class TeamComments(Comments):
         return super().post(request, team)
 
 
+class UserComment(View):
+    @fetch_object(UserCommentModel, 'comment')
+    @require_token
+    def delete(self, request, comment):
+        """删除用户评论"""
+
+        if comment.entity == request.user or comment.author == request.user:
+            comment.delete()
+            abort(200)
+        abort(403)
+
+
 class TeamComment(View):
     @fetch_object(TeamCommentModel, 'comment')
     @require_token
-    def delete(self, request, team, comment):
+    def delete(self, request, comment):
         """删除团队评论"""
 
         if comment.entity.owner == request.user \
@@ -156,3 +161,57 @@ class TeamComment(View):
             comment.delete()
             abort(200)
         abort(403)
+
+
+class FollowerList(View):
+    get_dict = {
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    }
+    ORDERS = ('time_created', '-time_created',
+              'follower__name', '-follower__name')
+
+    @validate_args(get_dict)
+    def get(self, request, obj, offset=0, limit=10, order=1):
+        """获取粉丝列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 关注时间升序
+            1: 关注时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 粉丝总数
+            list: 粉丝列表
+                id: 用户ID
+                username: 用户名
+                name: 用户昵称
+                time_created: 关注时间
+        """
+        c = obj.followers.count()
+        qs = obj.followers.order_by(self.ORDERS[order])[offset:offset + limit]
+        l = [{'id': r.follower.id,
+              'username': r.follower.username,
+              'name': r.follower.name,
+              'time_created': r.create_time} for r in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+# noinspection PyMethodOverriding
+class UserFollowerList(FollowerList):
+    @fetch_object(User, 'user')
+    @require_token
+    def get(self, request, user=None):
+        user = user or request.user
+        return super().get(request, user)
+
+
+# noinspection PyMethodOverriding
+class TeamFollowerList(FollowerList):
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    def get(self, request, team):
+        return super().get(request, team)
+

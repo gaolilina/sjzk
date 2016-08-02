@@ -1,7 +1,8 @@
 from django.conf.urls import url
 
 from ..views.user import *
-from ..views.common import UserActions, UserComments, UserComment
+from ..views.common import UserActionList, UserCommentList, UserComment,\
+    UserFollowerList
 
 urls = [
     # 基本信息
@@ -10,10 +11,10 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
     url(r'^(?P<user_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     # 动态
-    url(r'^(?P<user_id>[0-9]+)/actions/$', UserActions.as_view(),
+    url(r'^(?P<user_id>[0-9]+)/actions/$', UserActionList.as_view(),
         name='actions'),
     # 评论
-    url(r'^(?P<user_id>[0-9]+)/comments/$', UserComments.as_view(),
+    url(r'^(?P<user_id>[0-9]+)/comments/$', UserCommentList.as_view(),
         name='comments'),
     url(r'comments/(?P<comment_id>[0-9]+)/$', UserComment.as_view(),
         name='comment'),
@@ -29,18 +30,9 @@ urls = [
         kwargs={'type': 'fieldwork'}),
     url(r'experiences/(?P<exp_id>[0-9]+)/$', Experience.as_view(),
         name='comment'),
-    # 关注
-    url(r'^(?P<user_id>[0-9]+)/fans/$', UserFans.as_view(), name='fans'),
-    url(r'^(?P<user_id>[0-9]+)/fans/(?P<other_user_id>[0-9]+)/$',
-        UserFan.as_view(), name='fan'),
-    url(r'^(?P<user_id>[0-9]+)/followed/users/$',
-        FollowedUsers.as_view(), name='followed_users'),
-    url(r'^(?P<user_id>[0-9]+)/followed/users/(?P<other_user_id>[0-9]+)/$',
-        FollowedUser.as_view(), name='followed_user'),
-    url(r'^(?P<user_id>[0-9]+)/followed/teams/$',
-        FollowedTeams.as_view(), name='followed_teams'),
-    url(r'^(?P<user_id>[0-9]+)/followed/teams/(?P<team_id>[0-9]+)/$',
-        FollowedTeam.as_view(), name='followed_team'),
+    # 关注者
+    url(r'^(?P<user_id>[0-9]+)/followers/$', UserFollowerList.as_view(),
+        name='followers'),
     # 好友
     url(r'^(?P<user_id>[0-9]+)/friends/$', Friends.as_view(), name='friends'),
     url(r'^(?P<user_id>[0-9]+)/friends/(?P<other_user_id>[0-9]+)/$',
