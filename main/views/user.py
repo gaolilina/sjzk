@@ -6,10 +6,9 @@ from django.views.generic import View
 from ChuangYi.settings import UPLOADED_URL
 from ..utils import abort
 from ..utils.decorators import *
-from ..models import User, UserVisitor
+from ..models import User, UserVisitor, UserExperience
 
-
-__all__ = ['List', 'Token', 'Icon', 'Profile']
+__all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience']
 
 
 class List(View):
@@ -172,3 +171,66 @@ class Profile(View):
              'unit2': user.unit2,
              'profession': user.profession}
         return JsonResponse(r)
+
+
+# noinspection PyShadowingBuiltins
+class ExperienceList(View):
+    @fetch_object(User.enabled, 'user')
+    @require_token
+    def get(self, request, type, user=None):
+        """获取用户的某类经历
+
+        :return:
+            count: 经历总数
+            list: 经历列表
+                id: 该记录的ID
+                description: 经历描述
+                unit: 学校或公司
+                profession: 专业或职业
+                degree: 学历
+                time_in:
+                time_out:
+        """
+        user = user or request.user
+
+        c = user.education_experiences.filter(type=type).count()
+        l = [{'id': e.id,
+              'description': e.description,
+              'unit': e.unit,
+              'profession': e.profession,
+              'degree': e.degree,
+              'time_in': e.begin_time,
+              'time_out': e.end_time,
+              } for e in user.experiences.filter(type=type)]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class Experience(View):
+    @fetch_object(UserExperience, 'exp')
+    @require_token
+    @validate_args({
+        'description': forms.CharField(max_length=100),
+        'unit': forms.CharField(max_length=20),
+        'profession': forms.CharField(required=False, max_length=20),
+        'degree': forms.CharField(required=False, max_length=20),
+        'time_in': forms.DateField(required=False),
+        'time_out': forms.DateField(required=False),
+    })
+    def post(self, request, exp, **kwargs):
+        """修改用户的某条经历"""
+
+        if exp.user != request.user:
+            abort(403)
+        for k in kwargs:
+            setattr(exp, k, kwargs[k])
+        abort(200)
+
+    @fetch_object(UserExperience, 'exp')
+    @require_token
+    def delete(self, request, exp):
+        """删除用户的某条经历"""
+
+        if exp.user != request.user:
+            abort(403)
+        exp.delete()
+        abort(200)

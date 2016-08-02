@@ -6,10 +6,12 @@ from django.views.generic import View
 
 from ..utils import abort, save_uploaded_image
 from ..utils.decorators import *
-from ..views.user import Icon as Icon_, Profile as Profile_
+from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
+    ExperienceList_
 
 
-__all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile']
+__all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
+           'ExperienceList']
 
 
 class Username(View):
@@ -211,4 +213,33 @@ class Profile(Profile_):
             for k in role_keys:
                 setattr(request.user, k, kwargs[k])
 
+        abort(200)
+
+
+# noinspection PyClassHasNoInit,PyShadowingBuiltins
+class ExperienceList(ExperienceList_):
+    @require_token
+    @validate_args({
+        'description': forms.CharField(max_length=100),
+        'unit': forms.CharField(max_length=20),
+        'profession': forms.CharField(required=False, max_length=20),
+        'degree': forms.CharField(required=False, max_length=20),
+        'time_in': forms.DateField(required=False),
+        'time_out': forms.DateField(required=False),
+    })
+    def post(self, request, type, **kwargs):
+        """增加一条经历"""
+
+        request.user.experiences.create(
+            type=type, description=kwargs['description'], unit=kwargs['unit'],
+            profession=kwargs['profession'], degree=['degree'],
+            time_in=kwargs['time_in'], time_out=kwargs['time_out']
+        )
+        abort(200)
+
+    @require_token
+    def delete(self, request, type):
+        """删除当前用户某类的所有经历"""
+
+        request.user.experiences.filter(type=type).delete()
         abort(200)

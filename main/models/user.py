@@ -121,6 +121,7 @@ class UserContact(models.Model):
 class UserExperience(models.Model):
     """用户经历资料"""
 
+    user = models.ForeignKey('User', models.CASCADE, 'experiences')
     # education, work or fieldwork
     type = models.CharField(max_length=20, db_index=True)
     # 学校或公司
