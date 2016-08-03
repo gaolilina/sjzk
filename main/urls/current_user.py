@@ -36,12 +36,12 @@ urls = [
     url(r'^followed/teams/(?P<team_id>[0-9]+)/$',
         FollowedTeam.as_view(), name='followed_team'),
     # 好友
-    url(r'^friends/$', Friends.as_view(), name='friends'),
-    url(r'^friends/(?P<other_user_id>[0-9]+)/$',
-        FriendSelf.as_view(), name='friend'),
-    url(r'^friends/requests/$',
-        FriendRequests.as_view(), name='friend_requests'),
-    url(r'^friends/requests/(?P<req_id>[0-9]+)/$',
+    url(r'^friends/$', FriendList.as_view(), name='friends'),
+    url(r'^friends/(?P<other_user_id>[0-9]+)/$', Friend.as_view(),
+        name='friend'),
+    url(r'^friend_requests/$', FriendRequestList.as_view(),
+        name='friend_requests'),
+    url(r'^friend_requests/(?P<req_id>[0-9]+)/$',
         FriendRequest.as_view(), name='friend_request'),
     # 点赞
     url(r'likers/$', UserLikers.as_view(), name='likers'),

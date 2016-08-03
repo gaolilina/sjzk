@@ -164,12 +164,11 @@ class UserFriend(models.Model):
 class UserFriendRequest(models.Model):
     """用户好友申请记录"""
 
-    # from user to other_user
-    user = models.ForeignKey('User', models.CASCADE, '+')
-    other_user = models.ForeignKey('User', models.CASCADE, 'friend_requests')
+    # send from other_user
+    user = models.ForeignKey('User', models.CASCADE, 'friend_requests')
+    other_user = models.ForeignKey('User', models.CASCADE, '+')
     description = models.CharField(max_length=100, db_index=True)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
-    is_read = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         db_table = 'user_friend_request'

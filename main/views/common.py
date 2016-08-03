@@ -10,7 +10,7 @@ from ..utils.decorators import *
 
 __all__ = ['UserActionList', 'TeamActionList', 'UserCommentList',
            'TeamCommentList', 'UserComment', 'TeamComment', 'UserFollowerList',
-           'TeamFollowerList']
+           'TeamFollowerList', 'UserFollower', 'TeamFollower']
 
 
 class ActionList(View):
@@ -211,6 +211,33 @@ class UserFollowerList(FollowerList):
 # noinspection PyMethodOverriding
 class TeamFollowerList(FollowerList):
     @fetch_object(Team.enabled, 'team')
+    @require_token
+    def get(self, request, team):
+        return super().get(request, team)
+
+
+class Follower(View):
+    @fetch_object(User, 'other_user')
+    def get(self, request, entity, other_user):
+        """检查某实体的粉丝是否包含other_user"""
+
+        if entity.followers.filter(follower=other_user).exists():
+            abort(200)
+        abort(404)
+
+
+# noinspection PyMethodOverriding
+class UserFollower(Follower):
+    @fetch_object(User, 'user')
+    @require_token
+    def get(self, request, user=None):
+        user = user or request.user
+        return super().get(request, user)
+
+
+# noinspection PyMethodOverriding
+class TeamFollower(Follower):
+    @fetch_object(Team, 'team')
     @require_token
     def get(self, request, team):
         return super().get(request, team)

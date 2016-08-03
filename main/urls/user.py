@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from ..views.user import *
 from ..views.common import UserActionList, UserCommentList, UserComment,\
-    UserFollowerList
+    UserFollowerList, UserFollower
 
 urls = [
     # 基本信息
@@ -33,12 +33,15 @@ urls = [
     # 关注者
     url(r'^(?P<user_id>[0-9]+)/followers/$', UserFollowerList.as_view(),
         name='followers'),
+    url(r'^(?P<user_id>[0-9]+)/followers/(?P<other_user_id>[0-9]+)/$',
+        UserFollower.as_view(), name='followers'),
     # 好友
-    url(r'^(?P<user_id>[0-9]+)/friends/$', Friends.as_view(), name='friends'),
+    url(r'^(?P<user_id>[0-9]+)/friends/$', FriendList.as_view(),
+        name='friends'),
     url(r'^(?P<user_id>[0-9]+)/friends/(?P<other_user_id>[0-9]+)/$',
         Friend.as_view(), name='friend'),
-    url(r'^(?P<user_id>[0-9]+)/friends/requests/$',
-        FriendRequests.as_view(), name='friend_requests'),
+    url(r'^(?P<user_id>[0-9]+)/friend_requests/$',
+        FriendRequestList.as_view(), name='friend_requests'),
     # 点赞
     url(r'^(?P<user_id>[0-9]+)/likers/$', UserLikers.as_view(), name='likers'),
     url(r'^(?P<user_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',

@@ -8,7 +8,9 @@ from ..utils import abort
 from ..utils.decorators import *
 from ..models import User, UserVisitor, UserExperience
 
-__all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience']
+
+__all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
+           'FriendList', 'Friend', 'FriendRequestList']
 
 
 class List(View):
@@ -233,4 +235,85 @@ class Experience(View):
         if exp.user != request.user:
             abort(403)
         exp.delete()
+        abort(200)
+
+
+class FriendList(View):
+    ORDERS = (
+        'create_time', '-create_time',
+        'friend__name', '-friend__name',
+    )
+
+    @fetch_object(User, 'user')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, user=None, offset=0, limit=10, order=1):
+        """
+        获取用户的好友列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 成为好友时间升序
+            1: 成为好友时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 好友总数
+            list: 好友列表
+                id: 用户ID
+                username: 用户名
+                name: 用户昵称
+                time_created: 成为好友时间
+        """
+        user = user or request.user
+
+        c = user.friends.count()
+        qs = user.friends.order_by(self.ORDERS[order])[offset:offset + limit]
+        l = [{'id': r.friend.id,
+              'username': r.friend.username,
+              'name': r.friend.name,
+              'time_created': r.time_created} for r in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class Friend(View):
+    @fetch_object(User, 'user')
+    @fetch_object(User, 'other_user')
+    @require_token
+    def get(self, request, other_user, user=None):
+        """检查两个用户是否为好友关系"""
+
+        user = user or request.user
+
+        if user.friends.filter(other_user=other_user).exists():
+            abort(200)
+        abort(404)
+
+
+class FriendRequestList(View):
+    @fetch_object(User, 'user')
+    @require_token
+    @validate_args({
+        'description': forms.CharField(required=False, max_length=100)
+    })
+    def post(self, request, user, description=''):
+        """向目标用户发出好友申请
+
+        :param description: 附带消息
+        """
+        if user == request.user:
+            abort(403)
+
+        if user.friends.filter(other_user=request.user).exists():
+            abort(403)
+
+        if user.friend_requests.filter(other_user=request.user).exists():
+            abort(200)
+
+        user.friend_requests.create(other_user=request.user,
+                                    description=description)
         abort(200)

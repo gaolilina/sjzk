@@ -8,12 +8,13 @@ from ..models import User, Team
 from ..utils import abort, save_uploaded_image
 from ..utils.decorators import *
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
-    ExperienceList_
+    ExperienceList_, FriendList, Friend as Friend_
 
 
 __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'ExperienceList', 'FollowedUserList', 'FollowedUser',
-           'FollowedTeamList', 'FollowedTeam']
+           'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
+           'FriendRequestList', 'FriendRequest']
 
 
 class Username(View):
@@ -384,3 +385,75 @@ class FollowedTeam(View):
             abort(200)
         abort(403)
 
+
+# noinspection PyClassHasNoInit
+class Friend(Friend_):
+    @fetch_object(User, 'other_user')
+    @require_token
+    def post(self, request, other_user):
+        """将目标用户添加为自己的好友（对方需发送过好友请求）"""
+
+        if not request.user.friend_requests.filter(other_user=other_user) \
+                                           .exists():
+            abort(403)
+
+        if request.user.firends.filter(other_user=other_user).exists():
+            abort(403)
+
+        request.user.friends.create(other_user=other_user)
+        other_user.friends.create(other_user=request.user)
+        abort(200)
+
+    @fetch_object(User, 'other_user')
+    @require_token
+    def delete(self, request, other_user):
+        """删除好友"""
+
+        if not request.user.friends.filter(other_user=other_user).exists():
+            abort(404)
+
+        from ..models import UserFriend
+        UserFriend.objects.filter(user=request.user, other_user=other_user) \
+                          .delete()
+        UserFriend.objects.filter(user=other_user, other_user=request.user) \
+                          .delete()
+        abort(200)
+
+
+# noinspection PyClassHasNoInit
+class FriendRequestList(View):
+    @require_token
+    def get(self, request, limit=10):
+        """按请求时间逆序获取当前用户收到的的好友请求信息，
+        拉取后的请求标记为已读
+
+        :return:
+            count: 请求的总条数
+            list: 好友请求信息列表
+                id: 用户ID
+                username: 用户名
+                name: 用户昵称
+                description: 附带消息
+                time_created: 请求发出的时间
+        """
+        # 拉取好友请求信息
+        c = request.user.friend_requests.count()
+        qs = request.user.friend_requests.all()[:limit]
+
+        l = [{'id': r.sender.id,
+              'username': r.other_user.username,
+              'name': r.other_user.name,
+              'description': r.description,
+              'time_created': r.time_created} for r in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+    post_dict = {'description': forms.CharField(required=False, max_length=100)}
+
+
+class FriendRequest(View):
+    @require_token
+    def delete(self, request, req_id):
+        """忽略某条好友请求"""
+
+        request.user.friend_requests.filter(pk=req_id).delete()
+        abort(200)
