@@ -10,7 +10,7 @@ from main.views.team.task import Tasks, TaskSelf, TaskMarker, Task
 from main.views._like import TeamLiker, TeamLikers
 from main.views._follow import TeamFan, TeamFans
 from main.views._comment import TeamComment, TeamComments
-from main.views._visitor import TeamVisitors
+from main.views._visitor import TeamVisitorList
 from main.views.team.message import UserContacts, UserMessages, TeamContacts,\
     TeamMessages
 from main.views.team.notification import Notification, Notifications
@@ -77,7 +77,7 @@ urls = [
 
     # 获取团队的访客信息(get)
     url(r'^(?P<team_id>[0-9]+)/visitors/$',
-        TeamVisitors.as_view(), name='visitors'),
+        TeamVisitorList.as_view(), name='visitors'),
 
     # 获取发布中的需求(全部,人员,外包或承接)列表(get)
     url(r'^needs/$', Needs.as_view(), name='needs'),

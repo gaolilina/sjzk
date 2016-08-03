@@ -11,7 +11,8 @@ from ..utils.decorators import *
 __all__ = ['UserActionList', 'TeamActionList', 'UserCommentList',
            'TeamCommentList', 'UserComment', 'TeamComment', 'UserFollowerList',
            'TeamFollowerList', 'UserFollower', 'TeamFollower',
-           'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker']
+           'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker',
+           'UserVisitorList', 'TeamVisitorList']
 
 
 class ActionList(View):
@@ -323,3 +324,44 @@ class TeamLiker(Liker):
     @require_token
     def get(self, request, team, other_user):
         return super(TeamLiker, self).get(request, team, other_user)
+
+
+class VisitorList(View):
+    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    def get(self, request, entity, offset=0, limit=10):
+        """获取对象的访客列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :return:
+            count: 一段时间内的访客人数
+            list: 访客列表
+                id: 用户ID
+                username: 用户名
+                name: 用户昵称
+                time_updated: 来访时间
+        """
+        c = entity.visitors.count()
+        qs = entity.visitors.all()[offset:offset + limit]
+        l = [{'id': i.visitor.id,
+              'username': i.visitor.username,
+              'name': i.visitor.name,
+              'update_time': i.time_updated} for i in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+# noinspection PyMethodOverriding
+class UserVisitorList(VisitorList):
+    @require_token
+    @fetch_object(User, 'user')
+    def get(self, request, user=None):
+        user = user or request.user
+        return super().get(request, user)
+
+
+# noinspection PyMethodOverriding
+class TeamVisitorList(VisitorList):
+    @require_token
+    @fetch_object(Team, 'team')
+    def get(self, request, team):
+        return super().get(request, team)

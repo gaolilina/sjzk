@@ -2,11 +2,11 @@ from django.conf.urls import url
 
 from ..views.user import *
 from ..views.common import UserActionList, UserCommentList, UserComment,\
-    UserFollowerList, UserFollower, UserLikerList, UserLiker
+    UserFollowerList, UserFollower, UserLikerList, UserLiker, UserVisitorList
 
 urls = [
     # 基本信息
-    url(r'^$', List.as_view(), name='root'),
+    url(r'^$', List.as_view(), name='list'),
     url(r'^token/$', Token.as_view(), name='token'),
     url(r'^(?P<user_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
     url(r'^(?P<user_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
@@ -48,8 +48,8 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
         UserLiker.as_view(), name='liker'),
     # 搜索
-    url(r'search/$', UserSearch.as_view(), name='search'),
+    url(r'search/$', Search.as_view(), name='search'),
     # 访客
     url(r'^(?P<user_id>[0-9]+)/visitors/$',
-        UserVisitors.as_view(), name='visitors'),
+        UserVisitorList.as_view(), name='visitors'),
 ]

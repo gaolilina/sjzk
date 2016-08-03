@@ -10,7 +10,7 @@ from ..models import User, UserVisitor, UserExperience
 
 
 __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
-           'FriendList', 'Friend', 'FriendRequestList']
+           'FriendList', 'Friend', 'FriendRequestList', 'Search']
 
 
 class List(View):
@@ -317,3 +317,55 @@ class FriendRequestList(View):
         user.friend_requests.create(other_user=request.user,
                                     description=description)
         abort(200)
+
+
+class Search(View):
+    ORDERS = ('create_time', '-create_time', 'name', '-name')
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'username': forms.CharField(max_length=20),
+    })
+    def get(self, request, offset=0, limit=10, order=1, **kwargs):
+        """
+        搜索用户
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :param kwargs: 搜索条件
+            username: 用户名包含字段
+
+        :return:
+            count: 用户总数
+            list: 用户列表
+                id: 用户ID
+                username: 用户名
+                name: 用户昵称
+                gender: 性别
+                like_count: 点赞数
+                fan_count: 粉丝数
+                visitor_count: 访问数
+                tags: 标签
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        users = User.enabled.filter(username__icontain=kwargs['username'])
+        c = users.count()
+        l = [{'id': u.id,
+              'username': u.username,
+              'name': u.name,
+              'gender': u.profile.gender,
+              'like_count': u.like_count,
+              'fan_count': u.fan_count,
+              'visitor_count': u.visitor_count,
+              'icon_url': u.icon_url,
+              'tags': u.tags.values_list('name', flat=True),
+              'time_created': u.time_created} for u in users.order_by(k)[i:j]]
+        return JsonResponse({'count': c, 'list': l})

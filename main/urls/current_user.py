@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from ..views.current_user import *
 from ..views.common import UserActionList, UserCommentList, UserFollowerList, \
-    UserLikerList, UserLiker
+    UserLikerList, UserLiker, UserVisitorList
 
 urls = [
     # 基本信息
@@ -53,5 +53,5 @@ urls = [
     url(r'liked/teams/(?P<team_id>[0-9]+)/$',
         LikedTeam.as_view(), name='liked_team'),
     # 访客
-    url(r'^visitors/$', UserVisitors.as_view(), name='visitors'),
+    url(r'^visitors/$', UserVisitorList.as_view(), name='visitors'),
 ]
