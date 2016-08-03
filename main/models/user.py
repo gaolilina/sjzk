@@ -185,38 +185,6 @@ class UserLiker(Liker):
         db_table = 'user_liker'
 
 
-class UserMessage(models.Model):
-    """消息"""
-
-    user = models.ForeignKey('User', models.CASCADE, 'messages')
-    other_user = models.ForeignKey('User', models.CASCADE, '+')
-    direction = models.IntegerField(choices=(('收', 0), ('发', 1)))
-    content = models.TextField(default='', max_length=100)
-    is_read = models.BooleanField(default=False, db_index=True)
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-
-    is_sharing = models.BooleanField(default=False, db_index=True)
-    sharing_object_type = models.TextField(default=None, null=True)
-    sharing_object_id = models.IntegerField(default=None, null=True)
-
-    class Meta:
-        db_table = 'user_message'
-        ordering = ['-time_created']
-
-
-class UserNotificationReceipt(models.Model):
-    """通知接收凭据"""
-
-    notification = models.ForeignKey('Notification', models.CASCADE, '+')
-    user = models.ForeignKey('User', models.CASCADE, 'notifications')
-    is_read = models.BooleanField(default=False, db_index=True)
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-
-    class Meta:
-        db_table = 'notification_receipt'
-        ordering = ['-time_created']
-
-
 class UserTag(Tag):
     """用户标签"""
 
