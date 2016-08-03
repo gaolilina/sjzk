@@ -10,7 +10,8 @@ from ..utils.decorators import *
 
 __all__ = ['UserActionList', 'TeamActionList', 'UserCommentList',
            'TeamCommentList', 'UserComment', 'TeamComment', 'UserFollowerList',
-           'TeamFollowerList', 'UserFollower', 'TeamFollower']
+           'TeamFollowerList', 'UserFollower', 'TeamFollower',
+           'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker']
 
 
 class ActionList(View):
@@ -242,3 +243,83 @@ class TeamFollower(Follower):
     def get(self, request, team):
         return super().get(request, team)
 
+
+class LikerList(View):
+    ORDERS = (
+        'create_time', '-create_time',
+        'follower__name', '-follower__name',
+    )
+
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, obj, offset=0, limit=10, order=1):
+        """获取对象的点赞者列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 点赞时间升序
+            1: 点赞时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 总点赞量
+            list: 点赞者列表
+                id: 用户ID
+                username: 用户名
+                name: 用户昵称
+                icon_url: 用户头像URL
+                create_time: 点赞时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        c = obj.likers.count()
+        qs = obj.likers.order_by(k)[i:j]
+        l = [{'id': r.liker.id,
+              'username': r.liker.username,
+              'name': r.liker.name,
+              'time_created': r.time_created} for r in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+# noinspection PyMethodOverriding
+class UserLikerList(LikerList):
+    @require_token
+    @fetch_object(User, 'user')
+    def get(self, request, user=None):
+        user = user or request.user
+        return super().get(request, user)
+
+
+# noinspection PyMethodOverriding
+class TeamLikerList(LikerList):
+    @require_token
+    @fetch_object(Team, 'team')
+    def get(self, request, team):
+        return super().get(request, team)
+
+
+class Liker(View):
+    def get(self, request, entity, other_user):
+        """判断other_user是否对某个实体点过赞"""
+
+        if entity.likers.filter(liker=other_user).exists():
+            abort(200)
+        abort(404)
+
+
+class UserLiker(Liker):
+    @fetch_object(User.enabled, 'user')
+    @fetch_object(User.enabled, 'other_user')
+    @require_token
+    def get(self, request, other_user, user=None):
+        user = user or request.user
+        return super(UserLiker, self).get(request, user, other_user)
+
+
+class TeamLiker(Liker):
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'other_user')
+    @require_token
+    def get(self, request, team, other_user):
+        return super(TeamLiker, self).get(request, team, other_user)

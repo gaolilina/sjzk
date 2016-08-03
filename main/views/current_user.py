@@ -14,7 +14,7 @@ from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
 __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'ExperienceList', 'FollowedUserList', 'FollowedUser',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
-           'FriendRequestList', 'FriendRequest']
+           'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam']
 
 
 class Username(View):
@@ -355,7 +355,7 @@ class FollowedTeamList(View):
 
 
 class FollowedTeam(View):
-    @fetch_object(Team.enabled, 'team')
+    @fetch_object(Team, 'team')
     @require_token
     def get(self, request, team):
         """判断当前用户是否关注了team"""
@@ -364,7 +364,7 @@ class FollowedTeam(View):
             abort(200)
         abort(404)
 
-    @fetch_object(Team.enabled, 'team')
+    @fetch_object(Team, 'team')
     @require_token
     def post(self, request, team):
         """令当前用户关注team"""
@@ -374,7 +374,7 @@ class FollowedTeam(View):
         request.user.followed_teams.create(followed=team)
         abort(200)
 
-    @fetch_object(Team.enabled, 'team')
+    @fetch_object(Team, 'team')
     @require_token
     def delete(self, request, team):
         """令当前用户取消关注team"""
@@ -457,3 +457,60 @@ class FriendRequest(View):
 
         request.user.friend_requests.filter(pk=req_id).delete()
         abort(200)
+
+
+class LikedEntity(View):
+    """与当前用户点赞行为相关的View"""
+
+    @require_token
+    def get(self, request, entity):
+        """判断当前用户是否对某个对象点过赞"""
+
+        if entity.likers.filter(liker=request.user).exists():
+            abort(200)
+        abort(404)
+
+    @require_token
+    def post(self, request, entity):
+        """对某个对象点赞"""
+
+        if not entity.likers.filter(liker=request.user).exists():
+            entity.likers.create(liker=request.user)
+        abort(200)
+
+    @require_token
+    def delete(self, request, entity):
+        """对某个对象取消点赞"""
+
+        entity.likers.filter(liker=request.user).delete()
+        abort(200)
+
+
+# noinspection PyMethodOverriding
+class LikedUser(LikedEntity):
+    @fetch_object(User, 'user')
+    def get(self, request, user):
+        return super().get(request, user)
+
+    @fetch_object(User, 'user')
+    def post(self, request, user):
+        return super().post(request, user)
+
+    @fetch_object(User, 'user')
+    def delete(self, request, user):
+        return super().delete(request, user)
+
+
+# noinspection PyMethodOverriding
+class LikedTeam(LikedEntity):
+    @fetch_object(Team, 'team')
+    def get(self, request, team):
+        return super().get(request, team)
+
+    @fetch_object(Team, 'team')
+    def post(self, request, team):
+        return super().post(request, team)
+
+    @fetch_object(Team, 'team')
+    def delete(self, request, team):
+        return super().delete(request, team)
