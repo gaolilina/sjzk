@@ -81,7 +81,6 @@ class TeamInvitation(models.Model):
     team = models.ForeignKey('Team', models.CASCADE, 'invitations')
     user = models.ForeignKey('User', models.CASCADE, 'invitations')
     description = models.CharField(max_length=100)
-    is_read = models.BooleanField(default=False, db_index=True)
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
@@ -120,7 +119,6 @@ class TeamMemberRequest(models.Model):
     user = models.ForeignKey('User', models.CASCADE, '+')
     description = models.TextField(max_length=100)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
-    is_read = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         db_table = 'team_member_request'

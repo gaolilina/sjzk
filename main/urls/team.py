@@ -7,30 +7,15 @@ urls = [
     url(r'^(?P<team_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     url(r'^(?P<team_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
 
-    # 获取团队成员列表(get)
-    url(r'^members/(?P<team_id>[0-9]+)/$', Members.as_view(), name='members'),
-    # 检查当前用户是否为团队成员(get)
-    url(r'^member/(?P<team_id>[0-9]+)/$', Member.as_view(), name='member'),
-    # 添加用户为团队成员(post)/删除团队成员(delete)
-    url(r'^member/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',
-        MemberSelf.as_view(), name='member_self'),
-    # 用户退出团队(delete)
-    url(r'^member/leave/(?P<team_id>[0-9]+)/$', MemberSelf.as_view(),
-        name='member_leave'),
-    # 获取团队的加入申请列表(get)/用户向团队发出加入申请(post)
-    url(r'^member/requests/(?P<team_id>[0-9]+)/$',
-        MemberRequests.as_view(), name='member_requests'),
-    # 忽略用户的加入团队申请(delete)
-    url(r'^member/request/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',
+    url(r'^(?P<team_id>[0-9]+)/members/$', MemberList.as_view(),
+        name='member_list'),
+    url(r'^(?P<team_id>[0-9]+)/members/(?P<user_id>[0-9]+)/$', Member.as_view(),
+        name='member'),
+    url(r'^(?P<team_id>[0-9]+)/member_requests/$',
+        MemberRequestList.as_view(), name='member_requests'),
+    url(r'^(?P<team_id>[0-9]+)/member_requests/(?P<user_id>[0-9]+)/$',
         MemberRequest.as_view(), name='member_request'),
-    # 获取用户的加入团队邀请列表(get)
-    url(r'^invitations/$',
-        Invitations.as_view(), name='invitations'),
-    # 同意团队的加入邀请并成为团队成员（post）/忽略团队的加入团队邀请(delete)
-    url(r'^invitation/(?P<team_id>[0-9]+)/$',
-        InvitationSelf.as_view(), name='invitation_self'),
-    # 团队向用户发出加入邀请(post)
-    url(r'^invitation/(?P<team_id>[0-9]+)/(?P<user_id>[0-9]+)/$',
+    url(r'^(?P<team_id>[0-9]+)/invitations/(?P<user_id>[0-9]+)/$',
         Invitation.as_view(), name='invitation'),
 
     # 获取团队的点赞者信息列表(get)

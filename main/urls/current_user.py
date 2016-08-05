@@ -57,4 +57,9 @@ urls = [
     # 与当前用户相关的团队
     url(r'^teams/$', RelatedTeamList.as_view(), name='teams'),
     url(r'^teams/owned/$', OwnedTeamList.as_view(), name='owned_teams'),
+    # 团队邀请
+    url(r'^invitations/$', InvitationList.as_view(),
+        name='invitations'),
+    url(r'^invitations/(?P<invitation_id>[0-9]+)/$', Invitation.as_view(),
+        name='invitation'),
 ]
