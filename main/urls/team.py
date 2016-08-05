@@ -1,24 +1,10 @@
 from django.conf.urls import url
 
-from main.views.team import Teams, TeamsSelf, Profile, Icon
-from main.views.team.member import Members, Member, MemberSelf, MemberRequest,\
-    MemberRequests, Invitation, InvitationSelf, Invitations
-from main.views.team.need import Needs, NeedSelf, NeedDetail, MemberNeed, \
-    OutsourceNeed, UndertakeNeed
-from main.views.team.achievement import Achievement, Achievements
-from main.views.team.task import Tasks, TaskSelf, TaskMarker, Task
-from main.views._like import TeamLiker, TeamLikers
-from main.views._follow import TeamFan, TeamFans
-from main.views._comment import TeamComment, TeamComments
-from main.views._visitor import TeamVisitorList
-from main.views.team.message import UserContacts, UserMessages, TeamContacts,\
-    TeamMessages
-from main.views.team.notification import Notification, Notifications
+from ..views.team import *
 
 urls = [
-    # 获取所有的团队列表(get)
-    url(r'^$', Teams.as_view(), name='teams'),
-    # 创建团队(post)
+    url(r'^$', TeamList.as_view(), name='list'),
+
     url(r'^create/$', TeamsSelf.as_view(), name='team_create'),
     # 获取自己创建的团队列表(get)
     url(r'^owned/$', TeamsSelf.as_view(), name='teams_owned'),
