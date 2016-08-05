@@ -3,17 +3,8 @@ from django.conf.urls import url
 from ..views.team import *
 
 urls = [
-    url(r'^$', TeamList.as_view(), name='list'),
-
-    url(r'^create/$', TeamsSelf.as_view(), name='team_create'),
-    # 获取自己创建的团队列表(get)
-    url(r'^owned/$', TeamsSelf.as_view(), name='teams_owned'),
-    # 获取自己参加的团队列表(get)
-    url(r'^joined/$', TeamsSelf.as_view(), name='teams_joined'),
-    # 获取团队的基本信息(get)/修改团队的基本信息(post)
-    url(r'^(?P<team_id>[0-9]+)/profile/$',
-        Profile.as_view(), name='profile'),
-    # 获取(get)/设置团队头像(post)
+    url(r'^$', List.as_view(), name='list'),
+    url(r'^(?P<team_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     url(r'^(?P<team_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
 
     # 获取团队成员列表(get)

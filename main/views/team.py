@@ -1,17 +1,19 @@
 from django import forms
 from django.db import transaction
+from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.views import View
 
+from ChuangYi.settings import UPLOADED_URL
 from ..models import Team
-from ..utils import action
+from ..utils import abort, action, save_uploaded_image
 from ..utils.decorators import *
 
-__all__ = ['TeamList']
+__all__ = ['List', 'Profile', 'Icon']
 
 
-class TeamList(View):
-    ORDERS = ('create_time', '-create_time', 'name', '-name')
+class List(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     # noinspection PyUnusedLocal
     @require_token
@@ -111,227 +113,137 @@ class TeamList(View):
         action.create_team(request.user, team)
         return JsonResponse({'team_id': team.id})
 
-# class TeamsSelf(View):
-#     get_dict = {
-#         'offset': forms.IntegerField(required=False, min_value=0),
-#         'limit': forms.IntegerField(required=False, min_value=0),
-#         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-#         'is_owner': forms.BooleanField(required=False),
-#     }
-#     available_orders = [
-#         'create_time', '-create_time',
-#         'name', '-name',
-#     ]
-#
-#     @require_token
-#     @validate_args(get_dict)
-#     def get(self, request, offset=0, limit=10, order=1, is_owner=True):
-#         """
-#         获取自己创建（或参加）的团队列表
-#         :param offset: 偏移量
-#         :param limit: 数量上限
-#         :param order: 排序方式
-#             0: 注册时间升序
-#             1: 注册时间降序（默认值）
-#             2: 昵称升序
-#             3: 昵称降序
-#         :param is_owner: 是否为自己创建(默认为True)
-#             True：是
-#             False：否
-#         :return:
-#             count: 团队总数
-#             list: 团队列表
-#                 id: 团队ID
-#                 name: 团队名
-#                 owner_id: 创建者ID
-#                 icon_url: 团队头像URL
-#                 liker_count: 点赞数
-#                 visitor_count: 最近7天访问数
-#                 member_count: 团队成员人数
-#                 fields: 所属领域，格式：['field1', 'field2']
-#                 tags: 标签，格式：['tag1', 'tag2', ...]
-#                 create_time: 注册时间
-#         """
-#         i, j, k = offset, offset + limit, self.available_orders[order]
-#         time = datetime.now() - timedelta(days=7)
-#
-#         if is_owner:
-#             c = Team.enabled.filter(owner=request.user).count()
-#             teams = Team.enabled.filter(owner=request.user).order_by(k)[i:j]
-#         else:
-#             c = Team.enabled.filter(member_records__member=request.user).count()
-#             teams = Team.enabled.filter(
-#                 member_records__member=request.user).order_by(k)[i:j]
-#         l = [{'id': t.id,
-#               'name': t.name,
-#               'icon_url': t.icon_url,
-#               'owner_id': t.owner.id,
-#               'liker_count': TeamLiker.enabled.filter(liked=t).count(),
-#               'visitor_count': t.visitor_records.filter(
-#                   update_time__gte=time).count(),
-#               'member_count': t.member_records.count(),
-#               'fields': TeamProfile.get_fields(t),
-#               'tags': TeamTag.objects.get_tags(t),
-#               'create_time': t.create_time} for t in teams]
-#         return JsonResponse({'count': c, 'list': l})
-#
-#
-#
-# class Profile(View):
-#     @fetch_object(Team.enabled, 'team')
-#     @require_token
-#     def get(self, request, team):
-#         """
-#         获取团队的基本资料
-#
-#         :param: team_id : 团队ID
-#         :return:
-#             id: 团队ID
-#             name: 团队名
-#             owner_id: 创始人id
-#             icon_url: 团队头像URL
-#             create_time: 注册时间
-#             is_recruiting：是否招募新成员
-#             description: 团队简介
-#             url: 团队链接
-#             liker_count: 点赞数
-#             fan_count: 粉丝数
-#             visitor_count: 最近访客数
-#             location: 所在地区，格式：[province, city, county]
-#             fields: 所属领域，格式：['field1', 'field2']
-#             tags: 标签，格式：['tag1', 'tag2', ...]
-#         """
-#         owner = team.owner
-#
-#         # 更新访客记录
-#         if owner != request.user:
-#             TeamVisitor.enabled.update_visitor(team, request.user)
-#
-#         time = datetime.now() - timedelta(days=7)
-#         r = dict()
-#         r['id'] = team.id
-#         r['name'] = team.name
-#         r['owner_id'] = team.owner.id
-#         r['icon_url'] = team.icon_url
-#         r['create_time'] = team.create_time
-#         r['is_recruiting'] = team.is_recruiting
-#         r['description'] = team.profile.description
-#         r['url'] = team.profile.url
-#         r['liker_count'] = TeamLiker.enabled.filter(liked=team).count()
-#         r['fan_count'] = TeamFollower.enabled.filter(followed=team).count()
-#         r['visitor_count'] = team.visitor_records.filter(
-#             update_time__gte=time).count()
-#         r['fields'] = TeamProfile.get_fields(team)
-#         r['location'] = TeamLocation.objects.get_location(team)
-#         r['tags'] = TeamTag.objects.get_tags(team)
-#
-#         return JsonResponse(r)
-#
-#     post_dict = {
-#         'name': forms.CharField(required=False, min_length=1, max_length=20),
-#         'is_recruiting': forms.BooleanField(required=False),
-#         'description': forms.CharField(required=False, max_length=100),
-#         'url': forms.CharField(required=False, max_length=100),
-#     }
-#
-#     @fetch_object(Team.enabled, 'team')
-#     @require_token
-#     @validate_json_input(post_dict)
-#     def post(self, request, team, kwargs):
-#         """
-#         修改团队资料
-#
-#         :param team: 团队ID
-#         :param kwargs:
-#             name: 团队名
-#             description: 团队简介
-#             is_recruiting：是否招募新成员
-#             url: 团队链接
-#             location: 所在地区，格式：[province, city, county]
-#             fields: 所属领域，格式：['field1', 'field2']
-#             tags: 标签，格式：['tag1', 'tag2', ...]
-#
-#         """
-#         if request.user != team.owner:
-#             return Http400('Editing is limited for current user')
-#
-#         team_name = kwargs.pop('name') if 'name' in kwargs else ''
-#         location = kwargs.pop('location') if 'location' in kwargs else None
-#         fields = kwargs.pop('fields') if 'fields' in kwargs else None
-#         tags = kwargs.pop('tags') if 'tags' in kwargs else None
-#         profile = team.profile
-#         for k, v in kwargs.items():
-#             setattr(profile, k, v)
-#
-#         error = ''
-#         try:
-#             with transaction.atomic():
-#                 if location:
-#                     try:
-#                         TeamLocation.objects.set_location(team, location)
-#                     except TypeError:
-#                         error = 'invalid location'
-#                         raise IntegrityError
-#                     except ValueError as e:
-#                         error = str(e)
-#                         raise IntegrityError
-#                 if fields:
-#                     if len(fields) > 2:
-#                         return Http400('too many fields')
-#                     for i, name in enumerate(fields):
-#                         name = name.strip().lower()
-#                         if not name:
-#                             return Http400('blank tag is not allowed')
-#                         fields[i] = name
-#                     team.profile.field1 = fields[0]
-#                     if len(fields) > 1:
-#                         team.profile.field2 = fields[1]
-#                 if tags:
-#                     try:
-#                         TeamTag.objects.set_tags(team, tags)
-#                     except TypeError:
-#                         error = 'invalid tag list'
-#                         raise IntegrityError
-#                     except ValueError as e:
-#                         error = str(e)
-#                         raise IntegrityError
-#                 if team_name:
-#                     team.name = team_name
-#                     team.save()
-#                 profile.save()
-#                 return Http200()
-#         except IntegrityError:
-#             return Http400(error)
-#
-#
-# class Icon(View):
-#     @fetch_object(Team.enabled, 'team')
-#     @require_token
-#     def get(self, request, team):
-#         """
-#         获取团队头像URL
-#
-#         :param team: 团队
-#         :return:
-#             icon_url: url | null
-#         """
-#         url = team.icon_url
-#         return JsonResponse({'icon_url': url})
-#
-#     @fetch_object(Team.enabled, 'team')
-#     @require_token
-#     @process_uploaded_image('icon')
-#     def post(self, request, team, icon):
-#         """
-#         设置团队的头像
-#
-#         :param team: 团队
-#
-#         """
-#         if request.user != team.owner:
-#             return Http400('Editing is limited for current user')
-#         if team.icon:
-#             team.icon.delete()
-#         team.icon = icon
-#         team.save()
-#         return JsonResponse({'icon_url': team.icon_url})
+
+class Profile(View):
+    @fetch_object(Team, 'team')
+    @require_token
+    def get(self, request, team):
+        """获取团队的基本资料
+
+        :param: team_id : 团队ID
+        :return:
+            id: 团队ID
+            name: 团队名
+            owner_id: 创始人id
+            time_created: 注册时间
+            is_recruiting：是否招募新成员
+            description: 团队简介
+            url: 团队链接
+            liker_count: 点赞数
+            fan_count: 粉丝数
+            visitor_count: 最近访客数
+            province:
+            city:
+            county:
+            fields: 所属领域，格式：['field1', 'field2']
+            tags: 标签，格式：['tag1', 'tag2', ...]
+        """
+        if team.owner != request.user:
+            team.visotors.update_or_create(visitor=request.user)
+
+        r = dict()
+        r['id'] = team.id
+        r['name'] = team.name
+        r['owner_id'] = team.owner.id
+        r['time_created'] = team.time_created
+        r['is_recruiting'] = team.is_recruiting
+        r['description'] = team.description
+        r['url'] = team.url
+        r['liker_count'] = team.likers.count()
+        r['fan_count'] = team.followers.count()
+        r['visitor_count'] = team.visitors.count()
+        r['fields'] = [team.fields1, team.field2]
+        r['province'] = team.province
+        r['city'] = team.city
+        r['county'] = team.county
+        r['tags'] = team.tags.values_list('name', flat=True)
+
+        return JsonResponse(r)
+
+    @fetch_object(Team, 'team')
+    @require_token
+    @validate_args({
+        'name': forms.CharField(max_length=20),
+        'description': forms.CharField(required=False, max_length=100),
+        'is_recruiting': forms.BooleanField(required=False),
+        'url': forms.CharField(required=False, max_length=100),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'county': forms.CharField(required=False, max_length=20),
+        'fields': forms.CharField(required=False, max_length=100),
+        'tags': forms.CharField(required=False, max_length=100),
+    })
+    def post(self, request, team, **kwargs):
+        """修改团队资料
+
+        :param team: 团队ID
+        :param kwargs:
+            name: 团队名
+            description: 团队简介
+            is_recruiting：是否招募新成员
+            url: 团队链接
+            province:
+            city:
+            county:
+            fields: 团队领域，格式:'field1|field2'
+            tags: 标签，格式：'tag1|tag2|tag3|...'
+        """
+        if request.user != team.owner:
+            abort(403)
+
+        fields = kwargs.pop('fields', None)
+        tags = kwargs.pop('tags', None)
+
+        for k in kwargs:
+            setattr(team, k, kwargs[k])
+
+        if fields:
+            fields = fields.split('|')[:2]
+        if len(fields) < 2:
+            fields.append('')
+        team.field1, team.field2 = fields[0].strip(), fields[1].strip()
+
+        team.save()
+
+        if tags:
+            tags = tags.split('|')[:5]
+        with transaction.atomic():
+            request.user.tags.delete()
+            order = 0
+            for tag in tags:
+                tag = tag.strip()
+                if tag:
+                    request.user.tags.create(name=tag, order=order)
+                    order += 1
+
+        abort(200)
+
+
+class Icon(View):
+    @fetch_object(Team, 'team')
+    @require_token
+    def get(self, request, team):
+        """获取团队头像"""
+
+        if team.icon:
+            return HttpResponseRedirect(UPLOADED_URL + team.icon)
+        abort(404)
+
+    @fetch_object(Team, 'team')
+    @require_token
+    def post(self, request, team):
+        """设置团队的头像"""
+
+        if request.user != team.owner:
+            abort(403)
+
+        icon = request.FILES.get('image')
+        if not icon:
+            abort(400)
+
+        filename = save_uploaded_image(icon)
+        if filename:
+            team.icon = filename
+            team.save()
+            abort(200)
+        abort(400)

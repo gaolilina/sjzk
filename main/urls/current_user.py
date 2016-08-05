@@ -54,4 +54,7 @@ urls = [
         LikedTeam.as_view(), name='liked_team'),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view(), name='visitors'),
+    # 与当前用户相关的团队
+    url(r'^teams/$', RelatedTeamList.as_view(), name='teams'),
+    url(r'^teams/owned/$', OwnedTeamList.as_view(), name='owned_teams'),
 ]

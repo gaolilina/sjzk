@@ -13,7 +13,7 @@ __all__ = ['Team', 'TeamAction', 'TeamAchievement', 'TeamComment',
 class Team(models.Model):
     """团队模型"""
 
-    owner = models.ForeignKey('User', models.CASCADE, 'teams')
+    owner = models.ForeignKey('User', models.CASCADE, 'owned_teams')
     name = models.CharField(max_length=20, db_index=True)
     description = models.CharField(max_length=100, default='')
     url = models.CharField(max_length=100)
@@ -104,7 +104,7 @@ class TeamMember(models.Model):
     """团队成员"""
 
     team = models.ForeignKey('Team', models.CASCADE, 'members')
-    user = models.ForeignKey('User', models.CASCADE, '+')
+    user = models.ForeignKey('User', models.CASCADE, 'teams')
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
