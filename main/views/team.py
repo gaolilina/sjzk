@@ -5,12 +5,13 @@ from django.http import JsonResponse
 from django.views import View
 
 from ChuangYi.settings import UPLOADED_URL
-from ..models import Team, User
+from ..models import Team, User, TeamAchievement
 from ..utils import abort, action, save_uploaded_image
 from ..utils.decorators import *
 
 __all__ = ('List', 'Profile', 'Icon', 'MemberList', 'Member',
-           'MemberRequestList', 'MemberRequest', 'Invitation')
+           'MemberRequestList', 'MemberRequest', 'Invitation',
+           'AllAchievementList', 'AllAchievement', 'AchievementList')
 
 
 class List(View):
@@ -458,3 +459,112 @@ class Invitation(View):
 
         team.invitations.create(user=user, description=description)
         abort(200)
+
+
+class AllAchievementList(View):
+    ORDERS = ('time_created', '-time_created')
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取所有团队发布的成果
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 发布时间升序
+            1: 发布时间降序（默认值）
+        :return:
+            count: 成果总数
+            list: 成果列表
+                id: 成果ID
+                team_id: 团队ID
+                team_name: 团队名称
+                description: 成果描述
+                picture_url: 图片URL
+                time_created: 发布时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        c = TeamAchievement.objects.count()
+        achievements = TeamAchievement.objects.order_by(k)[i:j]
+        l = [{'id': a.id,
+              'team_id': a.team.id,
+              'team_name': a.team.name,
+              'description': a.description,
+              'picture_url': a.picture_url,
+              'time_created': a.time_created} for a in achievements]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class AllAchievement(View):
+    @fetch_object(TeamAchievement, 'achievement')
+    @require_token
+    def delete(self, request, team, achievement):
+        """删除成果"""
+
+        if request.user != achievement.team.owner:
+            abort(403)
+        achievement.delete()
+        abort(200)
+
+
+class AchievementList(View):
+    ORDERS = ('time_created', '-time_created')
+
+    @fetch_object(Team, 'team')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, team, offset=0, limit=10, order=1):
+        """获取团队发布的成果
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 发布时间升序
+            1: 发布时间降序（默认值）
+        :return:
+            count: 成果总数
+            list: 成果列表
+                id: 成果ID
+                description: 成果描述
+                picture_url: 图片URL
+                time_created: 发布时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        c = team.achievements.count()
+        achievements = team.achievements.order_by(k)[i:j]
+        l = [{'id': a.id,
+              'description': a.description,
+              'picture_url': a.picture_url,
+              'time_created': a.time_created} for a in achievements]
+        return JsonResponse({'count': c, 'list': l})
+
+    @fetch_object(Team, 'team')
+    @require_token
+    @validate_args({
+        'description': forms.CharField(min_length=1, max_length=100),
+    })
+    def post(self, request, team, description):
+        """发布成果
+
+        :param description: 成果描述
+        :return: achievement_id: 成果id
+        """
+        if request.user != team.owner:
+            abort(403)
+
+        achievement = TeamAchievement(team=team, description=description)
+        picture = request.FILES.get('image')
+        if picture:
+            filename = save_uploaded_image(picture)
+            if filename:
+                achievement.picture = filename
+        achievement.save()
+        return JsonResponse({'achievement_id': achievement.id})
+
