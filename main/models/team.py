@@ -126,72 +126,37 @@ class TeamMemberRequest(models.Model):
 
 
 class TeamNeed(models.Model):
-    """团队需求"""
+    """团队需求信息"""
 
-    team = None
-
-    title = models.CharField(max_length=20, db_index=True)
-    # pending, finished, deleted
-    status = models.CharField(max_length=3, default='pending')
-    # 需求人数
-    number = models.IntegerField(null=True, default=None)
+    team = models.ForeignKey('Team', models.CASCADE, 'needs')
+    # member, outsource, undertake
+    type = models.CharField(max_length=10, db_index=True)
+    title = models.TextField(max_length=20)
+    description = models.CharField(max_length=200, default='')
+    # 0: pending, 1: completed, 2: removed
+    status = models.IntegerField(default=0, db_index=True)
+    number = models.IntegerField()
     field = models.CharField(max_length=20)
     skill = models.CharField(max_length=20)
-    deadline = models.DateField(default=None, null=True, db_index=True)
+    deadline = models.DateTimeField(default=None, null=True, db_index=True)
 
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-
-    class Meta:
-        abstract = True
-        ordering = ['-time_created']
-
-
-class TeamMemberNeed(TeamNeed):
-    """人员需求"""
-
-    min_age = models.IntegerField(default=None, null=True)
-    max_age = models.IntegerField(default=None, null=True)
+    age_min = models.IntegerField(default=0)
+    age_max = models.IntegerField(default=0)
     gender = models.CharField(max_length=1, default='')
     degree = models.CharField(max_length=20, default='')
     major = models.CharField(max_length=20, default='')
     time_graduated = models.DateField(default=None, null=True)
-    work_experience = models.CharField(max_length=100, default='')
-    fieldwork_experience = models.CharField(max_length=100, default='')
-    project_experience = models.CharField(max_length=100, default='')
 
-    class Meta:
-        db_table = 'team_member_need'
-
-
-class TeamOutsourceNeed(TeamNeed):
-    """外包需求"""
-
-    min_age = models.IntegerField(default=None, null=True)
-    max_age = models.IntegerField(default=None, null=True)
-    gender = models.CharField(max_length=1, default='')
-    degree = models.CharField(max_length=20, default='')
-    major = models.CharField(max_length=20, default='')
-    cost = models.IntegerField()
+    cost = models.IntegerField(default=0)
     cost_unit = models.CharField(max_length=1)
-    description = models.CharField(max_length=300)
-    time_begin = models.DateTimeField()
-    time_end = models.DateTimeField()
+    time_started = models.DateTimeField(default=None, null=True)
+    time_ended = models.DateTimeField(default=None, null=True)
+
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
-        db_table = 'team_outsource_need'
-
-
-class TeamUndertakeNeed(TeamNeed):
-    """承接需求"""
-
-    cost = models.IntegerField()
-    cost_unit = models.CharField(max_length=1)
-    description = models.CharField(max_length=300)
-    time_begin = models.DateTimeField()
-    time_end = models.DateTimeField()
-
-    class Meta:
-        db_table = 'team_undertake_need'
+        db_table = 'team_need'
+        ordering = ['-time_created']
 
 
 class TeamTag(Tag):
