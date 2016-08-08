@@ -2,8 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 
-__all__ = ['Action', 'Comment', 'Follower', 'Liker', 'Notification', 'Tag',
-           'Visitor']
+__all__ = ['Action', 'Comment', 'Follower', 'Liker', 'Tag', 'Visitor']
 
 
 class Action(models.Model):

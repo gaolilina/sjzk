@@ -51,35 +51,20 @@ urls = [
     url(r'^(?P<team_id>[0-9]+)/visitors/$',
         TeamVisitorList.as_view(), name='visitors'),
 
-    # 获取发布中的需求(全部,人员,外包或承接)列表(get)
-    url(r'^needs/$', Needs.as_view(), name='needs'),
-    # 获取某一团队发布的需求(全部,人员,外包或承接)列表(get)
-    url(r'^(?P<team_id>[0-9]+)/needs/$', NeedSelf.as_view(),
-        name='team_needs'),
-    # 发布人员需求(post)
-    url(r'^(?P<team_id>[0-9]+)/member_need/$', MemberNeed.as_view(),
-        name='member_need'),
-    # 发布外包需求(post)
-    url(r'^(?P<team_id>[0-9]+)/outsource_need/$', OutsourceNeed.as_view(),
-        name='outsource_need'),
-    # 发布承接需求(post)
-    url(r'^(?P<team_id>[0-9]+)/undertake_need/$', UndertakeNeed.as_view(),
-        name='undertake_need'),
-    # 获取需求详情(get)
-    url(r'^(?P<team_id>[0-9]+)/need_detail/(?P<need_id>[0-9]+)$',
-        NeedDetail.as_view(), name='need_detail'),
-    # 设置需求为已满足(post)/设置需求为已删除(delete)
-    url(r'^(?P<team_id>[0-9]+)/need/(?P<need_id>[0-9]+)$', NeedSelf.as_view(),
-        name='need_self'),
-
-    # 获取团队发布的所有任务(get)/发布任务(post)
-    url(r'^(?P<team_id>[0-9]+)/tasks/$', Tasks.as_view(), name='tasks'),
-    # 获取用户收到的所有任务(get)
-    url(r'^tasks/$', TaskSelf.as_view(), name='tasks_self'),
-    # 用户标记任务为已完成(post)
-    url(r'^(?P<team_id>[0-9]+)/task/marker/(?P<task_id>[0-9]+)$',
-        TaskMarker.as_view(), name='task_marker'),
-    # 创始人确认用户的标记(post)/取消任务(delete)
-    url(r'^(?P<team_id>[0-9]+)/task/(?P<task_id>[0-9]+)$', Task.as_view(),
-        name='task'),
+    # 需求
+    url(r'^needs/$', AllNeedList.as_view(), name='all_needs'),
+    url(r'^needs/(?P<need_id>[0-9]+)/$', Need.as_view(), name='need'),
+    url(r'^needs/member/$', AllNeedList.as_view(),
+        name='all_member_needs', kwargs={'type': 0}),
+    url(r'^needs/outsource/$', AllNeedList.as_view(),
+        name='all_outsource_needs', kwargs={'type': 1}),
+    url(r'^needs/undertake/$', AllNeedList.as_view(),
+        name='all_undertake_needs', kwargs={'type': 2}),
+    url(r'^(?P<team_id>[0-9]+)/needs/$', NeedList.as_view(), name='needs'),
+    url(r'^(?P<team_id>[0-9]+)/needs/member/$', NeedList.as_view(),
+        name='member_needs', kwargs={'type': 0}),
+    url(r'^(?P<team_id>[0-9]+)/needs/outsource/$', NeedList.as_view(),
+        name='outsource_needs', kwargs={'type': 1}),
+    url(r'^(?P<team_id>[0-9]+)/needs/undertake/$', NeedList.as_view(),
+        name='undertake_needs', kwargs={'type': 2}),
 ]

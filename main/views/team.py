@@ -5,13 +5,14 @@ from django.http import JsonResponse
 from django.views import View
 
 from ChuangYi.settings import UPLOADED_URL
-from ..models import Team, User, TeamAchievement
+from ..models import Team, User, TeamAchievement, TeamNeed
 from ..utils import abort, action, save_uploaded_image
 from ..utils.decorators import *
 
 __all__ = ('List', 'Profile', 'Icon', 'MemberList', 'Member',
            'MemberRequestList', 'MemberRequest', 'Invitation',
-           'AllAchievementList', 'AllAchievement', 'AchievementList')
+           'AllAchievementList', 'AllAchievement', 'AchievementList',
+           'AllNeedList', 'NeedList', 'Need')
 
 
 class List(View):
@@ -223,6 +224,7 @@ class Profile(View):
         abort(200)
 
 
+# noinspection PyUnusedLocal
 class Icon(View):
     @fetch_object(Team, 'team')
     @require_token
@@ -253,6 +255,7 @@ class Icon(View):
         abort(400)
 
 
+# noinspection PyUnusedLocal
 class MemberList(View):
     ORDERS = (
         'time_created',
@@ -296,6 +299,7 @@ class MemberList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
+# noinspection PyUnusedLocal
 class Member(View):
     @fetch_object(Team, 'team')
     @fetch_object(User, 'user')
@@ -461,6 +465,7 @@ class Invitation(View):
         abort(200)
 
 
+# noinspection PyUnusedLocal
 class AllAchievementList(View):
     ORDERS = ('time_created', '-time_created')
 
@@ -499,6 +504,7 @@ class AllAchievementList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
+# noinspection PyUnusedLocal
 class AllAchievement(View):
     @fetch_object(TeamAchievement, 'achievement')
     @require_token
@@ -511,6 +517,7 @@ class AllAchievement(View):
         abort(200)
 
 
+# noinspection PyUnusedLocal
 class AchievementList(View):
     ORDERS = ('time_created', '-time_created')
 
@@ -568,3 +575,317 @@ class AchievementList(View):
         achievement.save()
         return JsonResponse({'achievement_id': achievement.id})
 
+
+# noinspection PyUnusedLocal
+class AllNeedList(View):
+    # noinspection PyShadowingBuiltins
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, type=None, offset=0, limit=10):
+        """
+        获取发布中的需求列表
+
+        :param offset: 偏移量
+        :return:
+            count: 需求总数
+            list: 需求列表
+                need_id: 需求ID
+                team_id: 团队ID
+                team_name: 团队名称
+                icon_url: 团队头像
+                status: 需求状态
+                title: 需求标题
+                create_time: 发布时间
+        """
+        qs = TeamNeed.objects.filter(status=0) if type is None \
+            else TeamNeed.objects.filter(status=0, type=type)
+        c = qs.count()
+        needs = qs[offset:offset + limit]
+        l = [{'id': n.id,
+              'team_id': n.team.id,
+              'team_name': n.team.name,
+              'status': n.status,
+              'title': n.title,
+              'time_created': n.time_created} for n in needs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class NeedList(View):
+    # noinspection PyShadowingBuiltins
+    @fetch_object(Team, 'team')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'status': forms.CharField(required=False, max_length=10),
+    })
+    def get(self, request, team, type=None, status=None, offset=0, limit=10):
+        """
+        :param offset: 偏移量
+        :param status: 需求状态 - 0: pending, 1: completed, 2: removed
+        :return:
+            count: 需求总数
+            list: 需求列表
+                id: 需求ID
+                team_id: 团队ID
+                team_name: 团队名称
+                icon_url: 团队头像
+                status: 需求状态
+                title: 需求标题
+                create_time: 发布时间
+        """
+        qs = team.needs
+        if type is not None:
+            qs = qs.filter(type=type)
+        if request.user == team.owner and status:
+            qs = qs.filter(status=status)
+        else:
+            qs = qs.filter(status=0)
+        c = qs.count()
+        needs = qs[offset:offset + limit]
+        l = [{'id': n.id,
+              'team_id': n.team.id,
+              'team_name': n.team.name,
+              'status': n.status,
+              'title': n.title,
+              'time_created': n.time_created} for n in needs]
+        return JsonResponse({'count': c, 'list': l})
+
+    # noinspection PyShadowingBuiltins
+    @fetch_object(Team, 'team')
+    @require_token
+    def post(self, request, team, type):
+        """发布需求
+
+        人员需求：
+            deadline: 截止时间
+            description: 需求描述
+            number: 所需人数
+            age_min: 最小年龄
+            age_max: 最大年龄
+            gender: 性别要求
+            field: 领域
+            skill: 技能
+            degree: 学历
+            major: 专业
+            time_graduated: 毕业时间
+        外包需求：
+            deadline: 截止时间
+            description: 需求描述
+            number: 所需人数
+            age_min: 最小年龄
+            age_max: 最大年龄
+            gender: 性别要求
+            field: 领域
+            skill: 技能
+            degree: 学历
+            major: 专业
+            cost: 费用
+            cost_unit: 费用单位
+            time_started: 外包任务开始时间
+            time_ended: 外包任务结束时间
+        承接需求：
+            deadline: 截止时间
+            description: 需求描述
+            number: 团队人数
+            field: 领域
+            skill: 技能
+            degree: 学历
+            major: 专业
+            cost: 费用
+            cost_unit: 费用单位
+            time_started: 承接开始时间
+            time_ended: 承接结束时间
+        """
+        if request.user != team.owner:
+            abort(403)
+
+        if type == 0:
+            pass
+        elif type == 1:
+            pass
+        elif type == 2:
+            pass
+        else:
+            abort(500)
+
+    @validate_args({
+        'deadline': forms.DateTimeField(),
+        'title': forms.CharField(max_length=20),
+        'description': forms.CharField(required=False, max_length=200),
+        'number': forms.IntegerField(min_value=1),
+        'gender': forms.CharField(required=False, max_length=1),
+        'field': forms.CharField(required=False, max_length=20),
+        'skill': forms.CharField(required=False, max_length=20),
+        'degree': forms.CharField(required=False, max_length=20),
+        'major': forms.CharField(required=False, max_length=20),
+        'age_min': forms.IntegerField(
+            required=False, min_value=0, max_value=99),
+        'age_max': forms.IntegerField(
+            required=False, min_value=1, max_value=100),
+        'time_graduated': forms.DateField(required=False),
+    })
+    def create_member_need(self, request, team, **kwargs):
+        n = team.needs.create(type=0)
+        for k in kwargs:
+            setattr(n, k, kwargs[k])
+        n.save()
+        abort(200)
+
+    @validate_args({
+        'deadline': forms.DateTimeField(),
+        'title': forms.CharField(max_length=20),
+        'description': forms.CharField(required=False, max_length=200),
+        'number': forms.IntegerField(min_value=1),
+        'gender': forms.CharField(required=False, max_length=1),
+        'field': forms.CharField(required=False, max_length=20),
+        'skill': forms.CharField(required=False, max_length=20),
+        'degree': forms.CharField(required=False, max_length=20),
+        'major': forms.CharField(required=False, max_length=20),
+        'age_min': forms.IntegerField(
+            required=False, min_value=0, max_value=99),
+        'age_max': forms.IntegerField(
+            required=False, min_value=1, max_value=100),
+        'cost': forms.IntegerField(required=False),
+        'cost_unit': forms.CharField(required=False, max_length=1),
+        'time_started': forms.DateField(),
+        'time_ended': forms.DateField(),
+    })
+    def create_outsource_need(self, request, team, **kwargs):
+        n = team.needs.create(type=1)
+        for k in kwargs:
+            setattr(n, k, kwargs[k])
+        n.save()
+        abort(200)
+
+    @validate_args({
+        'deadline': forms.DateTimeField(),
+        'title': forms.CharField(max_length=20),
+        'description': forms.CharField(required=False, max_length=200),
+        'number': forms.IntegerField(min_value=1),
+        'field': forms.CharField(required=False, max_length=20),
+        'skill': forms.CharField(required=False, max_length=20),
+        'degree': forms.CharField(required=False, max_length=20),
+        'major': forms.CharField(required=False, max_length=20),
+        'cost': forms.IntegerField(required=False),
+        'cost_unit': forms.CharField(required=False, max_length=1),
+        'time_started': forms.DateField(),
+        'time_ended': forms.DateField(),
+    })
+    def create_undertake_need(self, request, team, **kwargs):
+        n = team.needs.create(type=2)
+        for k in kwargs:
+            setattr(n, k, kwargs[k])
+        n.save()
+        abort(200)
+
+
+class Need(View):
+    member_keys = ('id', 'title', 'description', 'number', 'age_min',
+                   'age_max', 'gender', 'field', 'skill', 'degree', 'major',
+                   'time_graduated', 'deadline')
+    outsource_keys = ('id', 'title', 'description', 'number', 'age_min',
+                      'age_max', 'gender', 'field', 'skill', 'degree', 'major',
+                      'cost', 'cost_unit', 'time_started', 'time_ended',
+                      'deadline')
+    undertake_keys = ('id', 'title', 'description', 'number', 'field', 'skill',
+                      'degree', 'major', 'cost', 'cost_unit',
+                      'time_started', 'time_ended', 'deadline')
+
+    @fetch_object(TeamNeed, 'need')
+    @require_token
+    def get(self, request, need):
+        """获取需求详情
+
+        :return:
+            if type==0(人员需求)：
+                id: 需求id
+                title: 需求标题
+                description: 需求描述
+                team_id: 团队ID
+                team_name: 团队名称
+                number: 所需人数
+                age_min: 最小年龄
+                age_max: 最大年龄
+                gender: 性别要求
+                field: 领域
+                skill: 技能
+                degree: 学历
+                major: 专业
+                time_graduated: 毕业时间
+                deadline: 截止时间
+            if type==1(外包需求):
+                id: 需求id
+                title: 需求标题
+                description: 需求描述
+                team_id: 团队ID
+                team_name: 团队名称
+                number: 所需人数
+                age_min: 最小年龄
+                age_max: 最大年龄
+                gender: 性别要求
+                field: 领域
+                skill: 技能
+                degree: 学历
+                major: 专业
+                cost: 费用
+                cost_unit: 费用单位
+                time_started: 任务开始时间
+                time_ended: 任务结束时间
+                deadline: 截止时间
+            if type==2(承接需求):
+                id: 需求id
+                deadline: 截止时间
+                title: 需求标题
+                description: 需求描述
+                team_id: 团队ID
+                team_name: 团队名称
+                number: 团队人数
+                field: 领域
+                skill: 技能
+                degree: 学历
+                major: 专业
+                cost: 费用
+                cost_unit: 费用单位
+                time_started: 任务开始时间
+                time_ended: 任务结束时间
+        """
+
+        d = {'team_id': need.team.id, 'team_name': need.team.name}
+        if need.type == 0:
+            keys = self.member_keys
+        elif need.type == 1:
+            keys = self.outsource_keys
+        elif need.type == 2:
+            keys = self.undertake_keys
+        else:
+            abort(500)
+
+        # noinspection PyUnboundLocalVariable
+        for k in keys:
+            d[k] = getattr(need, k)
+
+        return JsonResponse(d)
+
+    @fetch_object(TeamNeed, 'need')
+    @require_token
+    def post(self, request, need):
+        """将需求标记成已满足"""
+
+        if request.user != need.team.owner:
+            abort(403)
+        need.status = 1
+        need.save()
+        abort(200)
+
+    @fetch_object(TeamNeed, 'need')
+    @require_token
+    def delete(self, request, need):
+        """将需求标记成已删除"""
+
+        if request.user != need.team.owner:
+            abort(403)
+        need.status = 2
+        need.save()
+        abort(200)

@@ -3,6 +3,7 @@ from django.conf.urls import url
 from ..views.current_user import *
 from ..views.common import UserActionList, UserCommentList, UserFollowerList, \
     UserLikerList, UserLiker, UserVisitorList
+from ..views.forum import BoardList
 
 urls = [
     # 基本信息
@@ -62,4 +63,7 @@ urls = [
         name='invitations'),
     url(r'^invitations/(?P<invitation_id>[0-9]+)/$', Invitation.as_view(),
         name='invitation'),
+    # 论坛版块
+    url(r'^forum_boards/$', BoardList.as_view(),
+        name='forum_boards', kwargs={'owned_only': True}),
 ]

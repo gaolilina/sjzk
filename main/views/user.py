@@ -10,8 +10,7 @@ from ..models import User, UserVisitor, UserExperience
 
 
 __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
-           'FriendList', 'Friend', 'FriendRequestList', 'Search',
-           'InvitationList']
+           'FriendList', 'Friend', 'FriendRequestList', 'Search']
 
 
 class List(View):

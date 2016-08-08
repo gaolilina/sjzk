@@ -8,9 +8,9 @@ from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
     Visitor
 
 
-__all__ = ['User', 'UserAction', 'UserComment', 'UserContact', 'UserExperience',
+__all__ = ['User', 'UserAction', 'UserComment', 'UserExperience',
            'UserFollower', 'UserFriend', 'UserFriendRequest', 'UserLiker',
-           'UserMessage', 'UserNotificationReceipt', 'UserTag', 'UserVisitor']
+           'UserTag', 'UserVisitor']
 
 
 class User(models.Model):
@@ -103,19 +103,6 @@ class UserComment(Comment):
 
     class Meta:
         db_table = 'user_comment'
-
-
-class UserContact(models.Model):
-    """用户联系人"""
-
-    user = models.ForeignKey('User', models.CASCADE, 'contacts')
-    other_user = models.ForeignKey('User', models.CASCADE, '+')
-    last_message = models.ForeignKey('Message', models.CASCADE, '+')
-    time_updated = models.DateTimeField(auto_now=True, db_index=True)
-
-    class Meta:
-        db_table = 'user_contact'
-        ordering = ['-time_updated']
 
 
 class UserExperience(models.Model):

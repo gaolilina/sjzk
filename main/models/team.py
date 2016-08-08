@@ -6,8 +6,7 @@ from . import EnabledManager, Action, Comment, Follower, Liker, Tag, Visitor
 
 __all__ = ['Team', 'TeamAction', 'TeamAchievement', 'TeamComment',
            'TeamFollower', 'TeamInvitation', 'TeamLiker', 'TeamMember',
-           'TeamMemberRequest', 'TeamMemberNeed', 'TeamOutsourceNeed',
-           'TeamUndertakeNeed', 'TeamTag', 'TeamVisitor']
+           'TeamMemberRequest', 'TeamNeed', 'TeamTag', 'TeamVisitor']
 
 
 class Team(models.Model):
@@ -129,28 +128,28 @@ class TeamNeed(models.Model):
     """团队需求信息"""
 
     team = models.ForeignKey('Team', models.CASCADE, 'needs')
-    # member, outsource, undertake
-    type = models.CharField(max_length=10, db_index=True)
+    # 0: member, 1: outsource, 2: undertake
+    type = models.IntegerField(db_index=True)
     title = models.TextField(max_length=20)
-    description = models.CharField(max_length=200, default='')
+    description = models.CharField(default='', max_length=200)
     # 0: pending, 1: completed, 2: removed
     status = models.IntegerField(default=0, db_index=True)
-    number = models.IntegerField()
-    field = models.CharField(max_length=20)
-    skill = models.CharField(max_length=20)
+    number = models.IntegerField(default=None, null=True)
+    field = models.CharField(default='', max_length=20)
+    skill = models.CharField(default='', max_length=20)
     deadline = models.DateTimeField(default=None, null=True, db_index=True)
 
     age_min = models.IntegerField(default=0)
     age_max = models.IntegerField(default=0)
-    gender = models.CharField(max_length=1, default='')
-    degree = models.CharField(max_length=20, default='')
-    major = models.CharField(max_length=20, default='')
+    gender = models.CharField(default='', max_length=1)
+    degree = models.CharField(default='', max_length=20)
+    major = models.CharField(default='', max_length=20)
     time_graduated = models.DateField(default=None, null=True)
 
     cost = models.IntegerField(default=0)
-    cost_unit = models.CharField(max_length=1)
-    time_started = models.DateTimeField(default=None, null=True)
-    time_ended = models.DateTimeField(default=None, null=True)
+    cost_unit = models.CharField(default='', max_length=1)
+    time_started = models.DateField(default=None, null=True)
+    time_ended = models.DateField(default=None, null=True)
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
