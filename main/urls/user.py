@@ -49,6 +49,8 @@ urls = [
         UserLiker.as_view(), name='liker'),
     # 搜索
     url(r'search/$', Search.as_view(), name='search'),
+    # 验证码
+    url(r'validation_code/$', ValidationCode.as_view(), name='validation_code'),
     # 访客
     url(r'^(?P<user_id>[0-9]+)/visitors/$',
         UserVisitorList.as_view(), name='visitors'),

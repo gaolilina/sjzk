@@ -6,11 +6,12 @@ from django.views.generic import View
 from ChuangYi.settings import UPLOADED_URL
 from ..utils import abort
 from ..utils.decorators import *
-from ..models import User, UserVisitor, UserExperience
+from ..models import User, UserVisitor, UserExperience, UserValidationCode
 
 
 __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
-           'FriendList', 'Friend', 'FriendRequestList', 'Search']
+           'FriendList', 'Friend', 'FriendRequestList', 'Search',
+           'ValidationCode']
 
 
 class List(View):
@@ -59,9 +60,13 @@ class List(View):
     @validate_args({
         'phone_number': forms.CharField(min_length=11, max_length=11),
         'password': forms.CharField(min_length=6, max_length=32),
+        'validation_code': forms.CharField(min_length=6, max_length=6),
     })
-    def post(self, request, phone_number, password):
+    def post(self, request, phone_number, password, validation_code):
         """注册，若成功返回用户令牌"""
+
+        if not UserValidationCode.verify(phone_number, validation_code):
+            abort(400)
 
         try:
             user = User(phone_number=phone_number)
@@ -369,3 +374,18 @@ class Search(View):
               'tags': u.tags.values_list('name', flat=True),
               'time_created': u.time_created} for u in users.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
+
+
+class ValidationCode(View):
+    @validate_args({
+        'phone_number': forms.CharField(min_length=11, max_length=11),
+    })
+    def get(self, request, phone_number):
+        """获取验证码"""
+
+        if not phone_number.isdigit():
+            abort(400)
+
+        return JsonResponse({
+            'validation_code': UserValidationCode.generate(phone_number),
+        })
