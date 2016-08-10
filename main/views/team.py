@@ -372,6 +372,7 @@ class MemberRequestList(View):
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
+                icon_url: 用户头像
                 description: 附带消息
                 time_created: 请求发出的时间
         """
@@ -380,9 +381,10 @@ class MemberRequestList(View):
             c = team.member_requests.count()
             qs = team.member_requests.all()[offset:offset + limit]
 
-            l = [{'id': r.sender.id,
-                  'username': r.sender.username,
-                  'name': r.sender.name,
+            l = [{'id': r.user.id,
+                  'username': r.user.username,
+                  'name': r.user.name,
+                  'icon_url': r.user.icon_url,
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
@@ -394,7 +396,7 @@ class MemberRequestList(View):
     @fetch_object(Team, 'team')
     @require_token
     @validate_args({
-        'description': forms.CharField(required=False, max_length=100)
+        'description': forms.CharField(required=False, max_length=100),
     })
     def post(self, request, team, description=''):
         """向团队发出加入申请
@@ -412,6 +414,10 @@ class MemberRequestList(View):
 
         if team.invitations.filter(user=request.user).exists():
             abort(403)
+
+        for need in team.needs:
+            if need.member_requests.filter(sender=request.user).exists():
+                abort(403)
 
         team.member_requests.create(user=request.user, description=description)
         abort(200)
@@ -439,7 +445,7 @@ class Invitation(View):
     @fetch_object(User, 'user')
     @require_token
     @validate_args({
-        'description': forms.CharField(required=False, max_length=100)
+        'description': forms.CharField(required=False, max_length=100),
     })
     def post(self, request, team, user, description=''):
         """向用户发出加入团队邀请
@@ -460,6 +466,10 @@ class Invitation(View):
 
         if team.member_requests.filter(user=user).exists():
             abort(403)
+
+        for need in team.needs:
+            if need.member_requests.filter(sender=request.user).exists():
+                abort(403)
 
         team.invitations.create(user=user, description=description)
         abort(200)
@@ -889,3 +899,181 @@ class Need(View):
         need.status = 2
         need.save()
         abort(200)
+
+
+class MemberNeedRequestList(View):
+    @fetch_object(TeamNeed, 'need')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, need, offset=0, limit=10):
+        """获取人员需求的加入申请列表
+
+        :param offset: 偏移量
+        :return: request.user 不为团队创始人时，404
+        :return: request.user 为团队创始人时
+            count: 申请总数
+            list: 申请列表
+                id: 申请者ID
+                username: 申请者用户名
+                name: 申请者昵称
+                icon_url: 申请者头像
+                description: 备注
+                create_time: 申请时间
+        """
+        if request.user == need.team.owner:
+            # 拉取人员需求下团队的加入申请信息
+            c = need.member_requests.count()
+            qs = need.member_requests.all()[offset:offset + limit]
+
+            l = [{'id': r.sender.id,
+                  'username': r.sender.username,
+                  'name': r.sender.name,
+                  'icon_url': r.sender.icon_url,
+                  'description': r.description,
+                  'time_created': r.time_created} for r in qs]
+            return JsonResponse({'count': c, 'list': l})
+
+        abort(404)
+
+    @fetch_object(TeamNeed, 'need')
+    @require_token
+    @validate_args({
+        'description': forms.CharField(required=False, max_length=100),
+    })
+    def post(self, request, need, description=''):
+        """向人员需求发出加入申请
+
+        :param description: 附带消息
+        """
+        if request.user == need.team.owner:
+            abort(403)
+
+        if need.team.members.exist(user=request.user):
+            abort(403)
+
+        if need.team.member_requests.filter(user=request.user).exists():
+            abort(200)
+
+        if need.team.invitations.filter(user=request.user).exists():
+            abort(403)
+
+        need.member_requests.create(sender=request.user,
+                                    description=description)
+        abort(200)
+
+
+class MemberNeedRequest(View):
+    @fetch_object(TeamNeed, 'need')
+    @fetch_object(User, 'user')
+    @require_token
+    def post(self, request, need, user):
+        """将目标用户添加为自己的团队成员（对方需发送过人员需求下的加入团队申请）"""
+
+        if request.user != need.team.owner:
+            abort(403)
+
+        if not need.member_requests.filter(sender=user):
+            abort(403)
+
+        # 若对方已是团队成员则不做处理
+        if need.team.members.filter(user=user).exists():
+            abort(200)
+
+        # 在事务中建立关系，并删除对应的加团队申请
+        with transaction.atomic():
+            need.member_requests.filter(sender=user).delete()
+            need.team.members.create(user=user)
+            action.join_team(user, need.team)
+        abort(200)
+
+    @fetch_object(TeamNeed, 'need')
+    @fetch_object(User, 'user')
+    @require_token
+    def delete(self, request, need, user):
+        """忽略某用户人员需求下的加团队请求"""
+
+        if request.user != need.team.owner:
+            abort(403)
+
+        qs = need.member_requests.filter(sender=user)
+        if not qs.exists():
+            abort(404)
+        qs.delete()
+        abort(200)
+
+
+class OutsourceNeedRequestList(View):
+    @fetch_object(TeamNeed, 'need')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, need, offset=0, limit=10):
+        """获取外包需求的合作申请列表
+
+        :param offset: 偏移量
+        :return: request.user 不为团队创始人时，404
+        :return: request.user 为团队创始人时
+            count: 申请总数
+            list: 申请列表
+                id: 申请者ID
+                team_id: 申请团队ID
+                name: 申请团队名称
+                icon_url: 申请团队头像
+                create_time: 申请时间
+        """
+        if request.user == need.team.owner:
+            # 拉取需求的申请合作信息
+            c = need.cooperation_requests.count()
+            qs = need.cooperation_requests.all()[offset:offset + limit]
+
+            l = [{'id': r.sender.owner.id,
+                  'team_id': r.sender.id,
+                  'name': r.sender.name,
+                  'icon_url': r.sender.icon_url,
+                  'time_created': r.time_created} for r in qs]
+            return JsonResponse({'count': c, 'list': l})
+        abort(404)
+
+    @fetch_object(TeamNeed, 'need')
+    @require_token
+    def post(self, request, need, description=''):
+        """向外包需求发出合作申请
+
+        """
+        pass
+
+
+class OutsourceNeedRequest(View):
+    @fetch_object(TeamNeed, 'need')
+    @fetch_object(User, 'user')
+    @require_token
+    def post(self, request, need, user):
+        """同意乙方团队的加入申请并将创始人加入自己团队（对方需发送过合作申请）"""
+
+        pass
+
+    @fetch_object(TeamNeed, 'need')
+    @fetch_object(User, 'user')
+    @require_token
+    def delete(self, request, need, user):
+        """忽略某团队的合作申请"""
+
+        if request.user != need.team.owner:
+            abort(403)
+
+        qs = need.cooperation_requests.filter(sender=user)
+        if not qs.exists():
+            abort(404)
+        qs.delete()
+        abort(200)
+
+
+class UndertakeNeedRequestList(View):
+    pass
+
+
+class UndertakeNeedRequest(View):
+    pass

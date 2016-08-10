@@ -158,6 +158,45 @@ class TeamNeed(models.Model):
         ordering = ['-time_created']
 
 
+class MemberNeedRequest(models.Model):
+    """人员需求的申请加入记录"""
+
+    need = models.ForeignKey('TeamNeed', models.CASCADE, 'member_requests')
+    sender = models.ForeignKey('User', models.CASCADE, 'member_requests')
+    description = models.TextField(max_length=100)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'member_need_request'
+        ordering = ['-time_created']
+
+
+class NeedCooperationRequest(models.Model):
+    """外包、承接需求的合作申请记录"""
+
+    need = models.ForeignKey('TeamNeed', models.CASCADE, 'cooperation_requests')
+    sender = models.ForeignKey('Team', models.CASCADE, 'cooperation_requests')
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'need_cooperation_request'
+        ordering = ['-time_created']
+
+
+class NeedCooperationInvitation(models.Model):
+    """外包、承接需求的合作邀请记录"""
+
+    need = models.ForeignKey('TeamNeed', models.CASCADE,
+                             'cooperation_invitations')
+    invitee = models.ForeignKey('Team', models.CASCADE,
+                                'cooperation_invitations')
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'need_cooperation_invitation'
+        ordering = ['-time_created']
+
+
 class TeamTag(Tag):
     """团队标签"""
 
