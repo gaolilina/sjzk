@@ -2,12 +2,12 @@ from django import forms
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
-from django.views import View
+from django.views.generic import View
 
 from ChuangYi.settings import UPLOADED_URL
-from ..models import Team, User, TeamAchievement, TeamNeed
-from ..utils import abort, action, save_uploaded_image
-from ..utils.decorators import *
+from main.models import Team, User, TeamAchievement, TeamNeed
+from main.utils import abort, action, save_uploaded_image
+from main.utils.decorators import *
 
 __all__ = ('List', 'Profile', 'Icon', 'MemberList', 'Member',
            'MemberRequestList', 'MemberRequest', 'Invitation',
