@@ -122,7 +122,7 @@ class UserExperience(models.Model):
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
-        db_table = 'user_follower'
+        db_table = 'user_experience'
         ordering = ['-time_created']
 
 
