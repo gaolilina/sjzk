@@ -84,4 +84,21 @@ urls = [
         NeedInvitation.as_view(), name='team_cooperation_invitations'),
     url(r'^(?P<team_id>[0-9]+)/needs/invitation/(?P<need_id>[0-9]+)/$',
         NeedInvitation.as_view(), name='need_cooperation_invitation'),
+
+    # 任务
+    url(r'^(?P<team_id>[0-9]+)/internal_tasks/$', InternalTaskList.as_view(),
+        name='team_internal_tasks'),
+    url(r'^owned_internal_tasks/$', InternalTasks.as_view(),
+        name='owned_internal_tasks'),
+    url(r'^internal_tasks/(?P<need_id>[0-9]+)/$', InternalTasks.as_view(),
+        name='internal_tasks'),
+    url(r'^(?P<need_id>[0-9]+)/internal_task/$', TeamInternalTask.as_view(),
+        name='internal_task'),
+
+    url(r'^(?P<team_id>[0-9]+)/external_tasks/$', ExternalTaskList.as_view(),
+        name='team_external_tasks'),
+    url(r'^external_tasks/(?P<need_id>[0-9]+)/$', ExternalTasks.as_view(),
+        name='external_tasks'),
+    url(r'^(?P<need_id>[0-9]+)/external_task/$', TeamExternalTask.as_view(),
+        name='external_task'),
 ]

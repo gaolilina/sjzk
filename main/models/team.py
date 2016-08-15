@@ -6,7 +6,8 @@ from . import EnabledManager, Action, Comment, Follower, Liker, Tag, Visitor
 
 __all__ = ['Team', 'TeamAction', 'TeamAchievement', 'TeamComment',
            'TeamFollower', 'TeamInvitation', 'TeamLiker', 'TeamMember',
-           'TeamMemberRequest', 'TeamNeed', 'TeamTag', 'TeamVisitor']
+           'TeamMemberRequest', 'TeamNeed', 'TeamTag', 'TeamVisitor',
+           'InternalTask', 'ExternalTask']
 
 
 class Team(models.Model):
@@ -195,6 +196,67 @@ class NeedCooperationInvitation(models.Model):
     class Meta:
         db_table = 'need_cooperation_invitation'
         ordering = ['-time_created']
+
+
+class InternalTask(models.Model):
+    """内部任务"""
+
+    team = models.ForeignKey('Team', models.CASCADE, 'internal_tasks')
+    executor = models.ForeignKey('User', models.CASCADE, 'internal_tasks')
+
+    title = models.CharField(max_length=20, db_index=True)
+    content = models.TextField(max_length=100, db_index=True)
+    status = models.IntegerField(
+        default=0, db_index=True,
+        choices=(('等待接受', 0), ('再派任务', 1),
+                 ('等待完成', 2), ('等待验收', 3),
+                 ('再次提交', 4), ('按时结束', 5),
+                 ('超时结束', 6), ('终止', 7)))
+    deadline = models.DateTimeField(db_index=True)
+    assign_num = models.IntegerField(default=1)
+    submit_num = models.IntegerField(default=1)
+    finish_time = models.DateTimeField(
+        default=None, blank=True, null=True, db_index=True)
+
+    create_time = models.DateTimeField(
+        default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'internal_task'
+        ordering = ['-create_time']
+
+
+class ExternalTask(models.Model):
+    """外部任务"""
+
+    team = models.ForeignKey('Team', models.CASCADE, 'outsource_external_tasks')
+    executor = models.ForeignKey(
+        'Team', models.CASCADE, 'undertake_external_tasks')
+
+    title = models.CharField(max_length=20, db_index=True)
+    content = models.TextField(default='', max_length=100, db_index=True)
+    expend = models.IntegerField(default=-1, db_index=True)
+    expend_actual = models.IntegerField(default=-1, db_index=True)
+    status = models.IntegerField(
+        default=0, db_index=True,
+        choices=(('等待接受', 0), ('再派任务', 1),
+                 ('等待完成', 2), ('等待验收', 3),
+                 ('再次提交', 4), ('等待支付', 6),
+                 ('再次支付', 7), ('等待确认', 8),
+                 ('按时结束', 9),('超时结束', 10)))
+    deadline = models.DateTimeField(db_index=True)
+    assign_num = models.IntegerField(default=1)
+    submit_num = models.IntegerField(default=1)
+    pay_num = models.IntegerField(default=1)
+    finish_time = models.DateTimeField(
+        default=None, blank=True, null=True, db_index=True)
+
+    create_time = models.DateTimeField(
+        default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'external_task'
+        ordering = ['-create_time']
 
 
 class TeamTag(Tag):

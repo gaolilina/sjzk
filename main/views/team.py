@@ -1,11 +1,14 @@
 from django import forms
 from django.db import transaction
+from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.views.generic import View
 
 from ChuangYi.settings import UPLOADED_URL
-from main.models import Team, User, TeamAchievement, TeamNeed
+from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
+    ExternalTask
 from main.utils import abort, action, save_uploaded_image
 from main.utils.decorators import *
 
@@ -14,7 +17,9 @@ __all__ = ('List', 'Profile', 'Icon', 'MemberList', 'Member',
            'AllAchievementList', 'AllAchievement', 'AchievementList',
            'AllNeedList', 'NeedList', 'Need', 'MemberNeedRequestList',
            'MemberNeedRequest', 'NeedRequestList', 'NeedRequest',
-           'NeedInvitationList', 'NeedInvitation',)
+           'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
+           'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
+           'ExternalTasks', 'TeamExternalTask')
 
 
 class List(View):
@@ -630,11 +635,14 @@ class NeedList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
-        'status': forms.CharField(required=False, max_length=10),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'type': forms.IntegerField(required=False, min_value=0, max_value=2)
     })
     def get(self, request, team, type=None, status=None, offset=0, limit=10):
         """
         :param offset: 偏移量
+        :param type: 需求类型 - 0: member, 1: outsource, 2: undertake
         :param status: 需求状态 - 0: pending, 1: completed, 2: removed
         :return:
             count: 需求总数
@@ -714,11 +722,11 @@ class NeedList(View):
             abort(403)
 
         if type == 0:
-            pass
+            self.create_member_need(request, team)
         elif type == 1:
-            pass
+            self.create_outsource_need(request, team)
         elif type == 2:
-            pass
+            self.create_undertake_need(request, team)
         else:
             abort(500)
 
@@ -1245,4 +1253,466 @@ class NeedInvitation(View):
         if not qs.exists():
             abort(404)
         qs.delete()
+        abort(200)
+
+
+class InternalTaskList(View):
+    @fetch_object(Team, 'team')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+    })
+    def get(self, request, team, status=None, offset=0, limit=10):
+        """获取团队的内部任务列表
+        :param offset: 偏移量
+        :param status: 任务状态 - 0: pending, 1: completed, 2: terminated
+        :return:
+            count: 任务总数
+            list: 任务列表
+                id: 任务ID
+                status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
+                                  ('等待完成', 2), ('等待验收', 3),
+                                  ('再次提交', 4), ('按时结束', 5),
+                                  ('超时结束', 6), ('终止', 7)
+                title: 任务标题
+                executor_id: 执行者ID
+                executor_name: 执行者昵称
+                icon_url: 执行者头像
+                create_time: 发布时间
+        """
+        qs = team.internal_tasks
+        if status is not None:
+            if status == 0:
+                qs = qs.filter(status__range=[0,4])
+            elif status == 1:
+                qs = qs.filter(status__in=[5,6])
+            else:
+                qs = qs.filter(status=7)
+
+        c = qs.count()
+        tasks = qs[offset:offset + limit]
+        l = [{'id': t.id,
+              'status': t.status,
+              'title': t.title,
+              'executor_id': t.executor.id,
+              'executor_name': t.executor.name,
+              'icon_url': t.executor.icon_url,
+              'time_created': t.time_created} for t in tasks]
+        return JsonResponse({'count': c, 'list': l})
+
+    @fetch_object(Team, 'team')
+    @require_token
+    @validate_args({
+        'executor_id': forms.IntegerField(),
+        'title': forms.CharField(max_length=20),
+        'content': forms.CharField(max_length=200),
+        'deadline': forms.DateTimeField(),
+    })
+    def post(self, request, team, **kwargs):
+        """发布内部任务
+
+        :param: executor_id: 执行者ID
+        :param: title: 标题
+        :param: content: 内容
+        :param；deadline: 截止时间
+        """
+        if request.user != team.owner:
+            abort(403)
+        executor_id = kwargs.pop('executor_id')
+        executor = None
+        try:
+            executor = User.objects.get(id=executor_id)
+        except ObjectDoesNotExist:
+            abort(403)
+
+        if not team.members.filter(user=executor).exists():
+            abort(404)
+        t = team.internal_tasks.create(status=0, executor=executor)
+        for k in kwargs:
+            setattr(t, k, kwargs[k])
+        t.save()
+        abort(200)
+
+
+class InternalTasks(View):
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+    })
+    def get(self, request, status=None, offset=0, limit=10):
+        """获取用户的内部任务列表
+        :param offset: 偏移量
+        :param status: 任务状态 - 0: pending, 1: completed, 2: terminated
+        :return:
+            count: 任务总数
+            list: 任务列表
+                id: 任务ID
+                team_id: 团队ID
+                team_name: 团队名称
+                icon_url: 团队头像
+                status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
+                                  ('等待完成', 2), ('等待验收', 3),
+                                  ('再次提交', 4), ('按时结束', 5),
+                                  ('超时结束', 6), ('终止', 7)
+                title: 任务标题
+                create_time: 发布时间
+        """
+        qs = request.user.internal_tasks
+        if status is not None:
+            if status == 0:
+                qs = qs.filter(status__range=[0,4])
+            elif status == 1:
+                qs = qs.filter(status__in=[5,6])
+            else:
+                qs = qs.filter(status=7)
+
+        c = qs.count()
+        tasks = qs[offset:offset + limit]
+        l = [{'id': t.id,
+              'team_id': t.team.id,
+              'team_name': t.team.name,
+              'icon_url': t.team.icon_url,
+              'status': t.status,
+              'title': t.title,
+              'time_created': t.time_created} for t in tasks]
+        return JsonResponse({'count': c, 'list': l})
+
+    @fetch_object(InternalTask, 'task')
+    @require_token
+    @validate_args({
+        'title': forms.CharField(required=False, max_length=20),
+        'content': forms.CharField(required=False, max_length=200),
+        'deadline': forms.DateTimeField(required=False),
+    })
+    def post(self, request, task, **kwargs):
+        """再派任务状态下的任务修改
+        :param task_id: 任务ID
+        :param title: 任务标题
+        :param content: 任务内容
+        :param deadline: 任务期限
+
+        """
+        if request.user != task.team.owner:
+            abort(403)
+        if task.status != 1:
+            abort(404)
+
+        for k in kwargs:
+            setattr(task, k, kwargs[k])
+        task.save()
+        abort(200)
+
+
+class TeamInternalTask(View):
+    keys = ('id','title', 'content', 'status', 'deadline', 'assign_num',
+            'submit_num', 'finish_time', 'create_time')
+
+    @fetch_object(InternalTask, 'task')
+    @require_token
+    def get(self, request, task):
+        """获取内部任务详情
+
+        :return:
+            id: 任务id
+            executor_id: 执行者ID
+            executor_name: 执行者名称
+            team_id: 团队ID
+            team_name: 团队名称
+            title: 任务标题
+            content: 任务内容
+            status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
+                              ('等待完成', 2), ('等待验收', 3),
+                              ('再次提交', 4), ('按时结束', 5),
+                              ('超时结束', 6), ('终止', 7)
+            deadline: 任务期限
+            assign_num: 任务分派次数
+            submit_num: 任务提交次数
+            finish_time: 任务完成时间
+            create_time: 任务创建时间
+        """
+
+        d = {'executor_id': task.executor.id,
+             'executor_name': task.executor.name,
+             'team_id': task.team.id,
+             'team_name': task.team.name}
+
+        # noinspection PyUnboundLocalVariable
+        for k in self.keys:
+            d[k] = getattr(task, k)
+
+        return JsonResponse(d)
+
+    @fetch_object(InternalTask, 'task')
+    @require_token
+    @validate_args({
+        'status': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def post(self, request, task, status=None):
+        """
+        修改内部任务的状态(默认为None, 后台确认任务是按时还是超时完成)
+        :param status:
+        要修改的任务状态 - ('等待接受', 0), ('再派任务', 1),
+                          ('等待完成', 2), ('等待验收', 3),
+                          ('再次提交', 4), ('按时结束', 5),
+                          ('超时结束', 6), ('终止', 7)
+        """
+        if request.user != task.team.owner and request.user != task.executor:
+            abort(403)
+
+        # 任务已经终止，不允许操作
+        if task.status == 7:
+            abort(404)
+
+        if status is None:
+            task.finish_time = timezone.now()
+            if task.finish_time > task.deadline:
+                task.status = 6
+            else:
+                task.status = 5
+            task.save()
+            abort(200)
+
+        # 如果任务状态为再派任务-->等待接受，则分派次数+1
+        if status == 1 and task.status == 0:
+            task.assign_num += 1
+        # 如果任务状态为再次提交-->等待验收，则提交次数+1
+        if status == 4 and task.status == 3:
+            task.submit_num += 1
+
+        task.status = status
+        task.save()
+        abort(200)
+
+
+class ExternalTaskList(View):
+    @fetch_object(Team, 'team')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=1),
+        'type': forms.IntegerField(required=False, min_value=0, max_value=1),
+    })
+    def get(self, request, team, status=None, type=0, offset=0, limit=10):
+        """获取团队的外包/承接任务列表
+        :param offset: 偏移量
+        :param type: 任务类型 - 0: outsource, 1: undertake
+        :param status: 任务状态 - 0: pending, 1: completed
+        :return:
+            count: 任务总数
+            list: 任务列表
+                if type==0（团队的外包任务）
+                    id: 任务ID
+                    status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
+                                      ('等待完成', 2), ('等待验收', 3),
+                                      ('再次提交', 4), ('等待支付', 6),
+                                      ('再次支付', 7), ('等待确认', 8),
+                                      ('按时结束', 9),('超时结束', 10)
+                    title: 任务标题
+                    executor_id: 执行团队ID
+                    executor_name: 执行团队昵称
+                    icon_url: 执行团队头像
+                    create_time: 发布时间
+                if type==1（团队的承接任务）
+                    id: 任务ID
+                    status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
+                                      ('等待完成', 2), ('等待验收', 3),
+                                      ('再次提交', 4), ('等待支付', 6),
+                                      ('再次支付', 7), ('等待确认', 8),
+                                      ('按时结束', 9),('超时结束', 10)
+                    title: 任务标题
+                    team_id: 外包团队ID
+                    team_name: 外包团队昵称
+                    icon_url: 外包团队头像
+                    create_time: 发布时间
+        """
+        if type == 0:
+            qs = team.outsource_external_tasks
+            if status is not None:
+                if status == 0:
+                    qs = qs.filter(status__range=[0,8])
+                else:
+                    qs = qs.filter(status__in=[9,10])
+
+            c = qs.count()
+            tasks = qs[offset:offset + limit]
+            l = [{'id': t.id,
+                  'status': t.status,
+                  'title': t.title,
+                  'executor_id': t.executor.id,
+                  'executor_name': t.executor.name,
+                  'icon_url': t.executor.icon_url,
+                  'time_created': t.time_created} for t in tasks]
+            return JsonResponse({'count': c, 'list': l})
+        else:
+            qs = team.undertake_external_tasks
+            if status is not None:
+                if status == 0:
+                    qs = qs.filter(status__range=[0,8])
+                else:
+                    qs = qs.filter(status__in=[9,10])
+
+            c = qs.count()
+            tasks = qs[offset:offset + limit]
+            l = [{'id': t.id,
+                  'status': t.status,
+                  'title': t.title,
+                  'team_id': t.team.id,
+                  'team_name': t.team.name,
+                  'icon_url': t.team.icon_url,
+                  'time_created': t.time_created} for t in tasks]
+            return JsonResponse({'count': c, 'list': l})
+
+    @fetch_object(Team, 'team')
+    @require_token
+    @validate_args({
+        'executor_id': forms.IntegerField(),
+        'title': forms.CharField(max_length=20),
+        'content': forms.CharField(max_length=200),
+        'deadline': forms.DateTimeField(),
+    })
+    def post(self, request, team, **kwargs):
+        """发布外包任务
+
+        :param: executor_id: 执行者ID
+        :param: title: 标题
+        :param: content: 内容
+        :param；deadline: 截止时间
+        """
+        if request.user != team.owner:
+            abort(403)
+        executor_id = kwargs.pop('executor_id')
+        executor = None
+        try:
+            executor = Team.objects.get(id=executor_id)
+        except ObjectDoesNotExist:
+            abort(403)
+
+        if not team.members.filter(user=executor.owner).exists():
+            abort(404)
+        t = team.outsource_external_tasks.create(status=0, executor=executor)
+        for k in kwargs:
+            setattr(t, k, kwargs[k])
+        t.save()
+        abort(200)
+
+
+class ExternalTasks(View):
+    @fetch_object(ExternalTask, 'task')
+    @require_token
+    @validate_args({
+        'title': forms.CharField(required=False, max_length=20),
+        'content': forms.CharField(required=False, max_length=200),
+        'deadline': forms.DateTimeField(required=False),
+    })
+    def post(self, request, task, **kwargs):
+        """再派任务状态下的任务修改
+        :param task_id: 任务ID
+        :param title: 任务标题
+        :param content: 任务内容
+        :param deadline: 任务期限
+
+        """
+        if request.user != task.team.owner:
+            abort(403)
+        if task.status != 1:
+            abort(404)
+
+        for k in kwargs:
+            setattr(task, k, kwargs[k])
+        task.save()
+        abort(200)
+
+
+class TeamExternalTask(View):
+    keys = ('id','title', 'content', 'status', 'expend', 'expend_actual',
+            'deadline', 'assign_num', 'submit_num', 'pay_num', 'finish_time',
+            'create_time')
+
+    @fetch_object(ExternalTask, 'task')
+    @require_token
+    def get(self, request, task):
+        """获取外部任务详情
+
+        :return:
+            id: 任务id
+            executor_id: 执行团队ID
+            executor_name: 执行团队名称
+            team_id: 团队ID
+            team_name: 团队名称
+            title: 任务标题
+            content: 任务内容
+            status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
+                              ('等待完成', 2), ('等待验收', 3),
+                              ('再次提交', 4), ('等待支付', 6),
+                              ('再次支付', 7), ('等待确认', 8),
+                              ('按时结束', 9),('超时结束', 10)
+            expend: 预计费用
+            expend_actual: 实际费用
+            assign_num: 分派次数
+            submit_num: 提交次数
+            pay_num: 支付次数
+            deadline: 任务期限
+            finish_time: 任务完成时间
+            create_time: 任务创建时间
+        """
+
+        d = {'executor_id': task.executor.id,
+             'executor_name': task.executor.name,
+             'team_id': task.team.id,
+             'team_name': task.team.name}
+
+        # noinspection PyUnboundLocalVariable
+        for k in self.keys:
+            d[k] = getattr(task, k)
+
+        return JsonResponse(d)
+
+    @fetch_object(ExternalTask, 'task')
+    @require_token
+    @validate_args({
+        'status': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def post(self, request, task, status=None):
+        """
+        修改外部任务的状态(默认为None, 后台确认任务是按时还是超时完成)
+        :param status:
+            任务状态 - ('等待接受', 0), ('再派任务', 1),
+                      ('等待完成', 2), ('等待验收', 3),
+                      ('再次提交', 4), ('等待支付', 6),
+                      ('再次支付', 7), ('等待确认', 8),
+                      ('按时结束', 9),('超时结束', 10)
+        """
+        if request.user != task.team.owner and request.user != task.executor:
+            abort(403)
+
+        # 任务已经终止，不允许操作
+        if task.status == 7:
+            abort(404)
+
+        if status is None:
+            task.finish_time = timezone.now()
+            if task.finish_time > task.deadline:
+                task.status = 10
+            else:
+                task.status = 9
+            task.save()
+            abort(200)
+
+        # 如果任务状态为再派任务-->等待接受，则分派次数+1
+        if status == 1 and task.status == 0:
+            task.assign_num += 1
+        # 如果任务状态为再次提交-->等待验收，则提交次数+1
+        if status == 4 and task.status == 3:
+            task.submit_num += 1
+        # 如果任务状态为再次支付-->等待确认，则支付次数+1
+        if status == 7 and task.status == 6:
+            task.pay_num += 1
+
+        task.status = status
+        task.save()
         abort(200)
