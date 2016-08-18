@@ -45,7 +45,7 @@ urls = [
     # 评论
     url(r'^(?P<team_id>[0-9]+)/comments/$', TeamCommentList.as_view(),
         name='comments'),
-    url(r'^(?P<team_id>[0-9]+)/comments/(?P<comment_id>[0-9]+)/$',
+    url(r'^comments/(?P<comment_id>[0-9]+)/$',
         TeamComment.as_view(), name='comment'),
     # 访客
     url(r'^(?P<team_id>[0-9]+)/visitors/$',

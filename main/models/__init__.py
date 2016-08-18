@@ -10,3 +10,4 @@ from .common import *
 from .user import *
 from .team import *
 from .forum import *
+from .activity import *

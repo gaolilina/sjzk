@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from ..models import User, Team, UserComment as UserCommentModel, \
-    TeamComment as TeamCommentModel
+    TeamComment as TeamCommentModel, \
+    Activity, ActivityComment as ActivityCommentModel
 from ..utils import abort
 from ..utils.decorators import *
 
@@ -12,7 +13,8 @@ __all__ = ['UserActionList', 'TeamActionList', 'UserCommentList',
            'TeamCommentList', 'UserComment', 'TeamComment', 'UserFollowerList',
            'TeamFollowerList', 'UserFollower', 'TeamFollower',
            'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker',
-           'UserVisitorList', 'TeamVisitorList']
+           'UserVisitorList', 'TeamVisitorList',
+           'ActivityCommentList', 'ActivityComment']
 
 
 class ActionList(View):
@@ -140,6 +142,32 @@ class TeamCommentList(CommentList):
         return super().post(request, team)
 
 
+# noinspection PyMethodOverriding
+class ActivityCommentList(CommentList):
+    @fetch_object(Activity, 'activity')
+    @require_token
+    def get(self, request, activity):
+        """获取团队的评论信息列表
+
+        :return:
+            count: 评论总数
+            list: 评论列表
+                id: 评论ID
+                author_id: 评论者ID
+                author_name: 评论者昵称
+                content: 内容
+                time_created: 发布时间
+        """
+        return super().get(request, activity)
+
+    @fetch_object(Activity, 'activity')
+    @require_token
+    def post(self, request, activity):
+        """当前用户对活动进行评论"""
+
+        return super().post(request, activity)
+
+
 class UserComment(View):
     @fetch_object(UserCommentModel, 'comment')
     @require_token
@@ -160,6 +188,18 @@ class TeamComment(View):
 
         if comment.entity.owner == request.user \
                 or comment.author == request.user:
+            comment.delete()
+            abort(200)
+        abort(403)
+
+
+class ActivityComment(View):
+    @fetch_object(ActivityCommentModel, 'comment')
+    @require_token
+    def delete(self, request, comment):
+        """删除活动评论"""
+
+        if comment.author == request.user:
             comment.delete()
             abort(200)
         abort(403)
