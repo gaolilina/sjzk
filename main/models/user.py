@@ -210,7 +210,10 @@ class UserValidationCode(models.Model):
         from datetime import timedelta
         from random import Random
 
-        r = cls.objects.get_or_create(phone_number=phone_number)
+        try:
+            r = cls.objects.get(phone_number=phone_number)
+        except cls.DoesNotExist:
+            r = cls(phone_number)
         r.time_expired = timezone.now() + timedelta(minutes=minutes)
         random = Random()
         while True:
