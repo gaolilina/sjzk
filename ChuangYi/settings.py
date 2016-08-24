@@ -15,7 +15,7 @@ DEBUG = True
 WSGI_APPLICATION = 'ChuangYi.wsgi.application'
 INSTALLED_APPS = ['main.apps.ChuangYi']
 ROOT_URLCONF = 'main.urls'
-MIDDLEWARE_CLASSES = []
+MIDDLEWARE_CLASSES = ['main.utils.abort.AbortExceptionHandler']
 TEMPLATES = []
 
 
