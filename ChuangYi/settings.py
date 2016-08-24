@@ -23,7 +23,7 @@ TEMPLATES = []
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'test.db',
+        'NAME': os.path.join(BASE_DIR, 'test.db'),
     },
 }
 
