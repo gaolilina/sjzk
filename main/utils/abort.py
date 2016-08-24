@@ -13,7 +13,9 @@ class AbortExceptionHandler(object):
 
     def process_exception(self, request, exception):
         if isinstance(exception, AbortException):
-            return HttpResponse(exception.message, status_code=exception.code)
+            r = HttpResponse(exception.message)
+            r.status_code = exception.code
+            return r
 
 
 def abort(code, message=''):
