@@ -614,7 +614,7 @@ class AllNeedList(View):
                 icon_url: 团队头像
                 status: 需求状态
                 title: 需求标题
-                create_time: 发布时间
+                time_created: 发布时间
         """
         qs = TeamNeed.objects.filter(status=0) if type is None \
             else TeamNeed.objects.filter(status=0, type=type)
@@ -653,7 +653,7 @@ class NeedList(View):
                 icon_url: 团队头像
                 status: 需求状态
                 title: 需求标题
-                create_time: 发布时间
+                time_created: 发布时间
         """
         qs = team.needs
         if type is not None:
@@ -930,7 +930,7 @@ class MemberNeedRequestList(View):
                 name: 申请者昵称
                 icon_url: 申请者头像
                 description: 备注
-                create_time: 申请时间
+                time_created: 申请时间
         """
         if request.user == need.team.owner:
             # 拉取人员需求下团队的加入申请信息
@@ -1033,7 +1033,7 @@ class NeedRequestList(View):
                 team_id: 申请团队ID
                 name: 申请团队名称
                 icon_url: 申请团队头像
-                create_time: 申请时间
+                time_created: 申请时间
         """
         if request.user == need.team.owner and need.team == team:
             # 拉取需求的申请合作信息
@@ -1084,7 +1084,7 @@ class NeedRequest(View):
                 title: 申请的需求标题
                 name: 申请团队名称
                 icon_url: 申请团队头像
-                create_time: 申请时间
+                time_created: 申请时间
         """
         if request.user == team.owner:
             # 拉取申请合作信息
@@ -1154,7 +1154,7 @@ class NeedInvitationList(View):
                 team_id: 被邀请团队ID
                 name: 被邀请团队名称
                 icon_url: 被邀请团队头像
-                create_time: 邀请时间
+                time_created: 邀请时间
         """
         if request.user == need.team.owner and need.team == team:
             # 拉取邀请合作信息
@@ -1204,7 +1204,7 @@ class NeedInvitation(View):
                 title: 邀请方需求标题
                 name: 邀请方团队名称
                 icon_url: 邀请方团队头像
-                create_time: 邀请时间
+                time_created: 邀请时间
         """
         if request.user == team.owner:
             # 拉取邀请合作信息
@@ -1280,7 +1280,7 @@ class InternalTaskList(View):
                 executor_id: 执行者ID
                 executor_name: 执行者昵称
                 icon_url: 执行者头像
-                create_time: 发布时间
+                time_created: 发布时间
         """
         qs = team.internal_tasks
         if status is not None:
@@ -1359,7 +1359,7 @@ class InternalTasks(View):
                                   ('再次提交', 4), ('按时结束', 5),
                                   ('超时结束', 6), ('终止', 7)
                 title: 任务标题
-                create_time: 发布时间
+                time_created: 发布时间
         """
         qs = request.user.internal_tasks
         if status is not None:
@@ -1409,7 +1409,7 @@ class InternalTasks(View):
 
 class TeamInternalTask(View):
     keys = ('id','title', 'content', 'status', 'deadline', 'assign_num',
-            'submit_num', 'finish_time', 'create_time')
+            'submit_num', 'finish_time', 'time_created')
 
     @fetch_object(InternalTask, 'task')
     @require_token
@@ -1432,7 +1432,7 @@ class TeamInternalTask(View):
             assign_num: 任务分派次数
             submit_num: 任务提交次数
             finish_time: 任务完成时间
-            create_time: 任务创建时间
+            time_created: 任务创建时间
         """
 
         d = {'executor_id': task.executor.id,
@@ -1516,7 +1516,7 @@ class ExternalTaskList(View):
                     executor_id: 执行团队ID
                     executor_name: 执行团队昵称
                     icon_url: 执行团队头像
-                    create_time: 发布时间
+                    time_created: 发布时间
                 if type==1（团队的承接任务）
                     id: 任务ID
                     status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
@@ -1528,7 +1528,7 @@ class ExternalTaskList(View):
                     team_id: 外包团队ID
                     team_name: 外包团队昵称
                     icon_url: 外包团队头像
-                    create_time: 发布时间
+                    time_created: 发布时间
         """
         if type == 0:
             qs = team.outsource_external_tasks
@@ -1631,7 +1631,7 @@ class ExternalTasks(View):
 class TeamExternalTask(View):
     keys = ('id','title', 'content', 'status', 'expend', 'expend_actual',
             'deadline', 'assign_num', 'submit_num', 'pay_num', 'finish_time',
-            'create_time')
+            'time_created')
 
     @fetch_object(ExternalTask, 'task')
     @require_token
@@ -1658,7 +1658,7 @@ class TeamExternalTask(View):
             pay_num: 支付次数
             deadline: 任务期限
             finish_time: 任务完成时间
-            create_time: 任务创建时间
+            time_created: 任务创建时间
         """
 
         d = {'executor_id': task.executor.id,

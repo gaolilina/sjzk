@@ -218,12 +218,12 @@ class InternalTask(models.Model):
     finish_time = models.DateTimeField(
         default=None, blank=True, null=True, db_index=True)
 
-    create_time = models.DateTimeField(
+    time_created = models.DateTimeField(
         default=timezone.now, db_index=True)
 
     class Meta:
         db_table = 'internal_task'
-        ordering = ['-create_time']
+        ordering = ['-time_created']
 
 
 class ExternalTask(models.Model):
@@ -251,12 +251,12 @@ class ExternalTask(models.Model):
     finish_time = models.DateTimeField(
         default=None, blank=True, null=True, db_index=True)
 
-    create_time = models.DateTimeField(
+    time_created = models.DateTimeField(
         default=timezone.now, db_index=True)
 
     class Meta:
         db_table = 'external_task'
-        ordering = ['-create_time']
+        ordering = ['-time_created']
 
 
 class TeamTag(Tag):

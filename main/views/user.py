@@ -245,7 +245,7 @@ class Experience(View):
 
 class FriendList(View):
     ORDERS = (
-        'create_time', '-create_time',
+        'time_created', '-time_created',
         'friend__name', '-friend__name',
     )
 
@@ -325,7 +325,7 @@ class FriendRequestList(View):
 
 
 class Search(View):
-    ORDERS = ('create_time', '-create_time', 'name', '-name')
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @require_token
     @validate_args({

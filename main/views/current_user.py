@@ -251,7 +251,7 @@ class ExperienceList(ExperienceList_):
 
 class FollowedUserList(View):
     ORDERS = [
-        'create_time', '-create_time',
+        'time_created', '-time_created',
         'followed__name', '-followed__name',
     ]
 
@@ -283,7 +283,7 @@ class FollowedUserList(View):
         l = [{'id': r.followed.id,
               'username': r.followed.username,
               'name': r.followed.name,
-              'time_created': r.create_time} for r in qs]
+              'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -321,7 +321,7 @@ class FollowedUser(View):
 
 class FollowedTeamList(View):
     ORDERS = [
-        'create_time', '-create_time',
+        'time_created', '-time_created',
         'followed__name', '-followed__name',
     ]
 
@@ -519,7 +519,7 @@ class LikedTeam(LikedEntity):
 
 
 class RelatedTeamList(View):
-    ORDERS = ('team__create_time', '-team__create_time',
+    ORDERS = ('team__time_created', '-team__time_created',
               'team__name', '-team__name')
 
     # noinspection PyUnusedLocal
@@ -567,7 +567,7 @@ class RelatedTeamList(View):
 
 
 class OwnedTeamList(View):
-    ORDERS = ('create_time', '-create_time', 'name', '-name')
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     # noinspection PyUnusedLocal
     @require_token

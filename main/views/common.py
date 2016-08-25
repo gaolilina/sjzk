@@ -28,7 +28,7 @@ class ActionList(View):
         :param limit: 数量上限
         :return:
             count: 动态总数（包括标记为disabled的内容）
-            last_create_time: 最近更新时间
+            last_time_created: 最近更新时间
             list: 动态列表
                 action: 相关动作
                 object_type: 相关对象的类型
@@ -237,7 +237,7 @@ class FollowerList(View):
         l = [{'id': r.follower.id,
               'username': r.follower.username,
               'name': r.follower.name,
-              'time_created': r.create_time} for r in qs]
+              'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -287,7 +287,7 @@ class TeamFollower(Follower):
 
 class LikerList(View):
     ORDERS = (
-        'create_time', '-create_time',
+        'time_created', '-time_created',
         'follower__name', '-follower__name',
     )
 
@@ -311,7 +311,7 @@ class LikerList(View):
                 username: 用户名
                 name: 用户昵称
                 icon_url: 用户头像URL
-                create_time: 点赞时间
+                time_created: 点赞时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
         c = obj.likers.count()
