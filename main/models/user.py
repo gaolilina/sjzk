@@ -74,7 +74,7 @@ class User(models.Model):
     def update_token(self):
         """更新用户令牌"""
 
-        random_content = self.user.phone_number + timezone.now().isoformat()
+        random_content = self.phone_number + timezone.now().isoformat()
         hasher = hashlib.md5()
         hasher.update(random_content.encode())
         self.token = hasher.hexdigest()
