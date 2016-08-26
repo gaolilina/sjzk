@@ -1,3 +1,5 @@
+from functools import wraps
+
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import QueryDict
 
@@ -13,6 +15,7 @@ def require_token(function):
     """对被装饰的方法进行用户身份验证，并且当前用户模型存为request.user，
     用户令牌作为请求头X-User-Token进行传递
     """
+    @wraps(function)
     def decorator(self, request, *args, **kwargs):
         token = request.META.get('HTTP_X_USER_TOKEN')
         if not token:
@@ -31,6 +34,7 @@ def require_token(function):
 def require_verification(function):
     """对被装饰的方法要求用户身份认证，该装饰器应放在require_token之后"""
 
+    @wraps(function)
     def decorator(self, request, *args, **kwargs):
         if request.user.is_verified:
             return function(self, request, *args, **kwargs)
@@ -43,6 +47,7 @@ def validate_args(d):
     作为关键字参数传入view函数中，若部分数据非法则直接返回400 Bad Request
     """
     def decorator(function):
+        @wraps(function)
         def inner(self, request, *args, **kwargs):
             if request.method == 'GET':
                 data = request.GET
@@ -69,6 +74,7 @@ def fetch_object(model, object_name):
     若关键字参数中没有 "xxx_id" 则忽略
     """
     def decorator(function):
+        @wraps(function)
         def inner(*args, **kwargs):
             arg = object_name + '_id'
             if arg in kwargs:
