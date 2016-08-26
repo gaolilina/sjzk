@@ -99,6 +99,7 @@ class Token(View):
             if not user.check_password(password):
                 abort(401)
             user.update_token()
+            user.save()
             return JsonResponse({'token': user.token})
 
 
