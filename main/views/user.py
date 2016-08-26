@@ -166,8 +166,7 @@ class Profile(View):
              'county': user.county,
              'tags': user.tags.values_list('name', flat=True),
              'follower_count': user.followers.count(),
-             'followed_count': user.followed_users.count()
-                               + user.follower_teams.count(),
+             'followed_count': user.followed_users.count() + user.followed_teams.count(),
              'friend_count': user.friends.count(),
              'liker_count': user.likers.count(),
              'visitor_count': user.visitors.count(),
