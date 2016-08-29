@@ -102,10 +102,7 @@ class List(View):
         for k in kwargs:
             setattr(team, k, kwargs[k])
 
-        if fields:
-            fields = fields.split('|')[:2]
-        if len(fields) < 2:
-            fields.append('')
+        fields = fields.split('|')[:2] if fields is not None else ('', '')
         team.field1, team.field2 = fields[0].strip(), fields[1].strip()
         team.save()
 
