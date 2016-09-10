@@ -11,6 +11,8 @@ urls = [
     url(r'^$', List.as_view(), name='list'),
     url(r'^(?P<team_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     url(r'^(?P<team_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
+    # 团队搜索
+    url(r'^search/$', Search.as_view(), name='search'),
     # 成员
     url(r'^(?P<team_id>[0-9]+)/members/$', MemberList.as_view(),
         name='member_list'),

@@ -12,7 +12,7 @@ from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
 from main.utils import abort, action, save_uploaded_image
 from main.utils.decorators import *
 
-__all__ = ('List', 'Profile', 'Icon', 'MemberList', 'Member',
+__all__ = ('List', 'Search', 'Profile', 'Icon', 'MemberList', 'Member',
            'MemberRequestList', 'MemberRequest', 'Invitation',
            'AllAchievementList', 'AllAchievement', 'AchievementList',
            'AllNeedList', 'NeedList', 'Need', 'MemberNeedRequestList',
@@ -119,6 +119,55 @@ class List(View):
 
         action.create_team(request.user, team)
         return JsonResponse({'team_id': team.id})
+
+
+class Search(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'name': forms.CharField(max_length=20),
+    })
+    def get(self, request, offset=0, limit=10, order=1, **kwargs):
+        """搜索团队
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :param kwargs: 搜索条件
+            name: 团队名包含字段
+
+        :return:
+            count: 团队总数
+            list: 团队列表
+                id: 团队ID
+                name: 团队名
+                owner_id: 创建者ID
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                member_count: 团队成员人数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        teams = Team.enabled.filter(name__icontain=kwargs['name'])
+        c = teams.count()
+        l = [{'id': t.id,
+              'name': t.name,
+              'owner_id': t.owner.id,
+              'liker_count': t.likers.count(),
+              'visitor_count': t.visitors.count(),
+              'member_count': t.members.count(),
+              'fields': [t.field1, t.field2],
+              'tags': t.tags.values_list('name', flat=True),
+              'time_created': t.time_created} for t in teams.order_by(k)[i:j]]
+        return JsonResponse({'count': c, 'list': l})
 
 
 class Profile(View):
