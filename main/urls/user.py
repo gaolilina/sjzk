@@ -3,6 +3,7 @@ from django.conf.urls import url
 from ..views.user import *
 from ..views.common import UserActionList, UserCommentList, UserComment,\
     UserFollowerList, UserFollower, UserLikerList, UserLiker, UserVisitorList
+from ..views.recommend import UserRecommend
 
 urls = [
     # 基本信息
@@ -54,4 +55,6 @@ urls = [
     # 访客
     url(r'^(?P<user_id>[0-9]+)/visitors/$',
         UserVisitorList.as_view(), name='visitors'),
+    # 推荐
+    url(r'^recommend/', UserRecommend.as_view(), name='recommend_users'),
 ]

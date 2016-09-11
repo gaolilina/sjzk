@@ -4,6 +4,8 @@ from ..views.team import *
 from ..views.common import TeamActionList, TeamCommentList, TeamComment, \
     TeamFollowerList, TeamFollower, TeamLikerList, TeamLiker, \
     TeamVisitorList
+from ..views.recommend import TeamRecommend, OutsourceNeedTeamRecommend, \
+    UndertakeNeedTeamRecommend
 
 
 urls = [
@@ -103,4 +105,11 @@ urls = [
         name='external_tasks'),
     url(r'^(?P<need_id>[0-9]+)/external_task/$', TeamExternalTask.as_view(),
         name='external_task'),
+    # 推荐
+    url(r'^(?P<team_id>[0-9]+)/recommend/', TeamRecommend.as_view(),
+        name='recommend_teams'),
+    url(r'^(?P<need_id>[0-9]+)/outsource/recommend/',
+        OutsourceNeedTeamRecommend.as_view(), name='outsource_recommend'),
+    url(r'^(?P<need_id>[0-9]+)/undertake/recommend/',
+        UndertakeNeedTeamRecommend.as_view(), name='undertake_recommend'),
 ]

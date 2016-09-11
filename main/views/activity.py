@@ -1,6 +1,6 @@
 from django import forms
 from django.http import JsonResponse
-from django.views import View
+from django.views.generic import View
 
 from ..models import Activity, Team
 from ..utils import abort
