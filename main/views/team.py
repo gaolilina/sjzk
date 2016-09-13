@@ -65,8 +65,8 @@ class List(View):
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
-              'tags': json.dumps(
-                  list(t.tags.get_queryset().values_list('name', flat=True))),
+              'tags':
+                  list(t.tags.get_queryset().values_list('name', flat=True)),
               'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
