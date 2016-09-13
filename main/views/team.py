@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.views.generic import View
+import json
 
 from ChuangYi.settings import UPLOADED_URL
 from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
@@ -64,7 +65,8 @@ class List(View):
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
-              'tags': t.tags.get_queryset().values_list('name', flat=True),
+              'tags': json.dumps(
+                  list(t.tags.get_queryset().values_list('name', flat=True))),
               'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
