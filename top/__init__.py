@@ -5,7 +5,8 @@ class appinfo(object):
     def __init__(self,appkey,secret):
         self.appkey = appkey
         self.secret = secret
-        
+
+
 def getDefaultAppInfo():
     pass
 
