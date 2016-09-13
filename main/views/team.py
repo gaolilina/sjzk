@@ -56,7 +56,7 @@ class List(View):
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
         c = Team.enabled.count()
-        teams = Team.enabled.order_by(k)[i:j]
+        teams = Team.enabled.all().order_by(k)[i:j]
         l = [{'id': t.id,
               'name': t.name,
               'owner_id': t.owner.id,
