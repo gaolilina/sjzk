@@ -54,7 +54,7 @@ class List(View):
               'gender': u.gender,
               'liker_count': u.likers.count(),
               'follower_count': u.followers.count(),
-              'visitor_count': u.visitor.count()} for u in users]
+              'visitor_count': u.visitors.count()} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
     @validate_args({
