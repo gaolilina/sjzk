@@ -21,12 +21,12 @@ a = top.api.UserGetRequest()
 
 '''
 # a = top.api.UserGetRequest()
-url = 'http://gw.api.taobao.com/router/rest'
+url = 'gw.api.taobao.com'
 port = 80
 appkey = '23449950'
 secret = '8af97d379aa5df46ceed21b2ff4b3b13'
-a = top.api.OpenimUsersGetRequest(url,port)
-a.set_app_info(top.appinfo(appkey,secret))
+a = top.api.OpenimUsersGetRequest()
+a.set_app_info(top.appinfo(appkey, secret))
 '''
 可以在运行期替换掉默认的appkey和secret的设置
 a.set_app_info(top.appinfo("appkey","*******"))

@@ -4,6 +4,7 @@ try:
 except ImportError:
     import http.client as httplib
 import urllib.parse
+import urllib
 import time
 import hashlib
 import json
@@ -52,7 +53,7 @@ def sign(secret, parameters):
         parameters = "%s%s%s" % (secret,
             str().join('%s%s' % (key, parameters[key]) for key in keys),
             secret)
-    sign = hashlib.md5(parameters).hexdigest().upper()
+    sign = hashlib.md5(parameters.encode('utf-8')).hexdigest().upper()
     return sign
 
 
