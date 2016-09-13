@@ -165,7 +165,8 @@ class Profile(View):
              'province': user.province,
              'city': user.city,
              'county': user.county,
-             'tags': user.tags.values_list('name', flat=True),
+             'tags':
+                 list(user.tags.get_queryset().values_list('name', flat=True)),
              'follower_count': user.followers.count(),
              'followed_count': user.followed_users.count() + user.followed_teams.count(),
              'friend_count': user.friends.count(),
@@ -372,7 +373,8 @@ class Search(View):
               'fan_count': u.fan_count,
               'visitor_count': u.visitor_count,
               'icon_url': u.icon_url,
-              'tags': u.tags.values_list('name', flat=True),
+              'tags':
+                  list(u.tags.get_queryset().values_list('name', flat=True)),
               'time_created': u.time_created} for u in users.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
 
