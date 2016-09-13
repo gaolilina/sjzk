@@ -47,7 +47,7 @@ def sign(secret, parameters):
     # 如果parameters 是字典类的话
     if hasattr(parameters, "items"):
         keys = parameters.keys()
-        keys.sort()
+        sorted(keys)
         
         parameters = "%s%s%s" % (secret,
             str().join('%s%s' % (key, parameters[key]) for key in keys),
@@ -223,7 +223,7 @@ class RestApi(object):
             P_APPKEY: self.__app_key,
             P_SIGN_METHOD: "md5",
             P_VERSION: '2.0',
-            P_TIMESTAMP: str(long(time.time() * 1000)),
+            P_TIMESTAMP: str(time.time() * 1000),
             P_PARTNER_ID: SYSTEM_GENERATE_VERSION,
             P_API: self.getapiname(),
         }
@@ -275,7 +275,7 @@ class RestApi(object):
 
     def getApplicationParameters(self):
         application_parameter = {}
-        for key, value in self.__dict__.iteritems():
+        for key, value in self.__dict__.items():
             if not key.startswith("__") and not key in self.getMultipartParas()\
                     and not key.startswith("_RestApi__") and value is not None:
                 if(key.startswith("_")):

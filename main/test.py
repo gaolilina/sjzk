@@ -7,7 +7,7 @@ import top.api
 注意：默认的只需要设置一次就可以了
 
 '''
-top.appinfo("23449950", "8af97d379aa5df46ceed21b2ff4b3b13")
+#top.appinfo("23449950", "8af97d379aa5df46ceed21b2ff4b3b13")
 
 '''
 使用自定义的域名和端口（测试沙箱环境使用）
@@ -21,9 +21,12 @@ a = top.api.UserGetRequest()
 
 '''
 # a = top.api.UserGetRequest()
-a = top.api.UserGetRequest()
-
-
+url = 'http://gw.api.taobao.com/router/rest'
+port = 80
+appkey = '23449950'
+secret = '8af97d379aa5df46ceed21b2ff4b3b13'
+a = top.api.OpenimUsersGetRequest(url,port)
+a.set_app_info(top.appinfo(appkey,secret))
 '''
 可以在运行期替换掉默认的appkey和secret的设置
 a.set_app_info(top.appinfo("appkey","*******"))

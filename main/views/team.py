@@ -111,11 +111,12 @@ class List(View):
         with transaction.atomic():
             request.user.tags.all().delete()
             order = 0
-            for tag in tags:
-                tag = tag.strip()
-                if tag:
-                    request.user.tags.create(name=tag, order=order)
-                    order += 1
+            if tags:
+                for tag in tags:
+                    tag = tag.strip()
+                    if tag:
+                        request.user.tags.create(name=tag, order=order)
+                        order += 1
 
         action.create_team(request.user, team)
         return JsonResponse({'team_id': team.id})
