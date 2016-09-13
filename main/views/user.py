@@ -50,7 +50,8 @@ class List(View):
               'time_created': u.time_created,
               'username': u.username,
               'name': u.name,
-              'tags': u.tags.values_list('name', flat=True),
+              'tags':
+                  list(u.tags.get_queryset().values_list('name', flat=True)),
               'gender': u.gender,
               'liker_count': u.likers.count(),
               'follower_count': u.followers.count(),
