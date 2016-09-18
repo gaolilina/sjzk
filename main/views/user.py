@@ -2,6 +2,7 @@ from django import forms
 from django.db import IntegrityError
 from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
+from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL
 from ..utils import abort
@@ -74,6 +75,12 @@ class List(View):
             user.set_password(password)
             user.update_token()
             user.save_and_generate_name()
+            rcloud = RongCloud()
+            token = rcloud.User.getToken(
+                userId=user.id, name=phone_number,
+                portraitUri='http://www.rongcloud.cn/images/logo.png')
+            user.token = token
+            user.save()
             return JsonResponse({'token': user.token})
         except IntegrityError:
             abort(403)

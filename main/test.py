@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # coding=utf-8
-import os
 import json
 import logging
 
@@ -15,9 +14,8 @@ class ExampleTestCase(TestCase):
     def setUp(self):
         # app_key = os.environ['APP_KEY']
         # app_secret = os.environ['APP_SECRET']
-        app_key = '82hegw5uh8wdx'
-        app_secret = 'jGKdv4sJX0is'
-        self.rcloud = RongCloud(app_key, app_secret)
+        # self.rcloud = RongCloud(app_key, app_secret)
+        self.rcloud = RongCloud()
 
     def log(self, title, message):
         logging.info('{0}: {1}'.format(title, message))

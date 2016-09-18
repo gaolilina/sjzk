@@ -7,7 +7,6 @@ create datetime : 2016-09-05
   
 v2.0.1 
 '''
-import os
 from .user import User
 from .message import Message
 from .wordfilter import Wordfilter
@@ -20,9 +19,11 @@ from .sms import SMS
 class RongCloud:
     def __init__(self, app_key=None, app_secret=None):
         if app_key is None:
-            app_key = os.environ.get('APP_KEY', '')
+            # app_key = os.environ.get('APP_KEY', '')
+            app_key = '82hegw5uh8wdx'
         if app_secret is None:
-            app_secret = os.environ.get('APP_SECRET', '')
+            # app_secret = os.environ.get('APP_SECRET', '')
+            app_secret = 'jGKdv4sJX0is'
         self.User = User(app_key, app_secret)
         self.Message = Message(app_key, app_secret)
         self.Wordfilter = Wordfilter(app_key, app_secret)
