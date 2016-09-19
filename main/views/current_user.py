@@ -288,7 +288,7 @@ class FollowedUserList(View):
 
 
 class FollowedUser(View):
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user):
         """判断当前用户是否关注了user"""
@@ -297,7 +297,7 @@ class FollowedUser(View):
             abort(200)
         abort(404)
 
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def post(self, request, user):
         """令当前用户关注user"""
@@ -307,7 +307,7 @@ class FollowedUser(View):
         request.user.followed_users.create(followed=user)
         abort(200)
 
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def delete(self, request, user):
         """令当前用户取消关注user"""
@@ -356,7 +356,7 @@ class FollowedTeamList(View):
 
 
 class FollowedTeam(View):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         """判断当前用户是否关注了team"""
@@ -365,7 +365,7 @@ class FollowedTeam(View):
             abort(200)
         abort(404)
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, team):
         """令当前用户关注team"""
@@ -375,7 +375,7 @@ class FollowedTeam(View):
         request.user.followed_teams.create(followed=team)
         abort(200)
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def delete(self, request, team):
         """令当前用户取消关注team"""
@@ -389,7 +389,7 @@ class FollowedTeam(View):
 
 # noinspection PyClassHasNoInit
 class Friend(Friend_):
-    @fetch_object(User, 'other_user')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def post(self, request, other_user):
         """将目标用户添加为自己的好友（对方需发送过好友请求）"""
@@ -405,7 +405,7 @@ class Friend(Friend_):
         other_user.friends.create(other_user=request.user)
         abort(200)
 
-    @fetch_object(User, 'other_user')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def delete(self, request, other_user):
         """删除好友"""
@@ -490,30 +490,30 @@ class LikedEntity(View):
 
 # noinspection PyMethodOverriding
 class LikedUser(LikedEntity):
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     def get(self, request, user):
         return super().get(request, user)
 
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     def post(self, request, user):
         return super().post(request, user)
 
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     def delete(self, request, user):
         return super().delete(request, user)
 
 
 # noinspection PyMethodOverriding
 class LikedTeam(LikedEntity):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         return super().get(request, team)
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     def post(self, request, team):
         return super().post(request, team)
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     def delete(self, request, team):
         return super().delete(request, team)
 
@@ -645,7 +645,7 @@ class InvitationList(View):
 class Invitation(View):
     from ..models import TeamInvitation
 
-    @fetch_object(TeamInvitation, 'invitation')
+    @fetch_object(TeamInvitation.objects, 'invitation')
     @require_token
     def post(self, request, invitation):
         """同意团队的加入邀请并成为团队成员（需收到过加入团队邀请）"""
@@ -666,7 +666,7 @@ class Invitation(View):
             invitation.delete()
         abort(200)
 
-    @fetch_object(TeamInvitation, 'invitation')
+    @fetch_object(TeamInvitation.objects, 'invitation')
     @require_token
     def delete(self, request, invitation):
         """忽略某邀请"""

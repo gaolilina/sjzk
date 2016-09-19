@@ -135,7 +135,7 @@ class OutsourceNeedTeamRecommend(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @require_token
-    @fetch_object(TeamNeed, 'need')
+    @fetch_object(TeamNeed.objects, 'need')
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
@@ -209,7 +209,7 @@ class UndertakeNeedTeamRecommend(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @require_token
-    @fetch_object(TeamNeed, 'need')
+    @fetch_object(TeamNeed.objects, 'need')
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),

@@ -112,7 +112,7 @@ class Token(View):
 
 
 class Icon(View):
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user=None):
         """获取用户头像"""
@@ -124,7 +124,7 @@ class Icon(View):
 
 
 class Profile(View):
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user=None):
         """获取用户的基本资料
@@ -222,7 +222,7 @@ class ExperienceList(View):
 
 
 class Experience(View):
-    @fetch_object(UserExperience, 'exp')
+    @fetch_object(UserExperience.objects, 'exp')
     @require_token
     @validate_args({
         'description': forms.CharField(max_length=100),
@@ -241,7 +241,7 @@ class Experience(View):
             setattr(exp, k, kwargs[k])
         abort(200)
 
-    @fetch_object(UserExperience, 'exp')
+    @fetch_object(UserExperience.objects, 'exp')
     @require_token
     def delete(self, request, exp):
         """删除用户的某条经历"""
@@ -258,7 +258,7 @@ class FriendList(View):
         'friend__name', '-friend__name',
     )
 
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -295,8 +295,8 @@ class FriendList(View):
 
 
 class Friend(View):
-    @fetch_object(User, 'user')
-    @fetch_object(User, 'other_user')
+    @fetch_object(User.enabled, 'user')
+    @fetch_object(User.enabled, 'other_user')
     @require_token
     def get(self, request, other_user, user=None):
         """检查两个用户是否为好友关系"""
@@ -309,7 +309,7 @@ class Friend(View):
 
 
 class FriendRequestList(View):
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100)

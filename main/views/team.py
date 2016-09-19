@@ -212,7 +212,7 @@ class Profile(View):
         r['liker_count'] = team.likers.count()
         r['fan_count'] = team.followers.count()
         r['visitor_count'] = team.visitors.count()
-        r['fields'] = [team.fields1, team.field2]
+        r['fields'] = [team.field1, team.field2]
         r['province'] = team.province
         r['city'] = team.city
         r['county'] = team.county
@@ -221,7 +221,7 @@ class Profile(View):
 
         return JsonResponse(r)
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'name': forms.CharField(max_length=20),
@@ -284,7 +284,7 @@ class Profile(View):
 
 # noinspection PyUnusedLocal
 class Icon(View):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         """获取团队头像"""
@@ -293,7 +293,7 @@ class Icon(View):
             return HttpResponseRedirect(UPLOADED_URL + team.icon)
         abort(404)
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, team):
         """设置团队的头像"""
@@ -322,7 +322,7 @@ class MemberList(View):
         '-user__name',
     )
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -359,7 +359,7 @@ class MemberList(View):
 
 # noinspection PyUnusedLocal
 class Member(View):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @fetch_object(User, 'user')
     @require_token
     def get(self, request, team, user):
@@ -369,8 +369,8 @@ class Member(View):
             abort(200)
         abort(404)
 
-    @fetch_object(Team, 'team')
-    @fetch_object(User, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def post(self, request, team, user):
         """将目标用户添加为自己的团队成员（对方需发送过加入团队申请）"""
@@ -392,8 +392,8 @@ class Member(View):
             action.join_team(user, team)
         abort(200)
 
-    @fetch_object(Team, 'team')
-    @fetch_object(User, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def delete(self, request, team, user):
         """退出团队(默认)/删除成员"""
@@ -411,7 +411,7 @@ class Member(View):
 
 
 class MemberRequestList(View):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @validate_args({'offset': forms.IntegerField(required=False)})
     @require_token
     def get(self, request, team, offset=0, limit=10):
@@ -451,7 +451,7 @@ class MemberRequestList(View):
             abort(200)
         abort(404)
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100),
@@ -482,8 +482,8 @@ class MemberRequestList(View):
 
 
 class MemberRequest(View):
-    @fetch_object(Team, 'team')
-    @fetch_object(User, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def delete(self, request, team, user):
         """忽略某用户的加团队请求"""
@@ -499,8 +499,8 @@ class MemberRequest(View):
 
 
 class Invitation(View):
-    @fetch_object(Team, 'team')
-    @fetch_object(User, 'user')
+    @fetch_object(Team.enabled, 'team')
+    @fetch_object(User.enabled, 'user')
     @require_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100),
@@ -574,7 +574,7 @@ class AllAchievementList(View):
 
 # noinspection PyUnusedLocal
 class AllAchievement(View):
-    @fetch_object(TeamAchievement, 'achievement')
+    @fetch_object(TeamAchievement.objects, 'achievement')
     @require_token
     def delete(self, request, team, achievement):
         """删除成果"""
@@ -589,7 +589,7 @@ class AllAchievement(View):
 class AchievementList(View):
     ORDERS = ('time_created', '-time_created')
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -620,7 +620,7 @@ class AchievementList(View):
               'time_created': a.time_created} for a in achievements]
         return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'description': forms.CharField(min_length=1, max_length=100),
@@ -682,7 +682,7 @@ class AllNeedList(View):
 
 class NeedList(View):
     # noinspection PyShadowingBuiltins
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -724,7 +724,7 @@ class NeedList(View):
         return JsonResponse({'count': c, 'list': l})
 
     # noinspection PyShadowingBuiltins
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, team, type):
         """发布需求
@@ -864,7 +864,7 @@ class Need(View):
                       'degree', 'major', 'cost', 'cost_unit',
                       'time_started', 'time_ended', 'deadline')
 
-    @fetch_object(TeamNeed, 'need')
+    @fetch_object(TeamNeed.objects, 'need')
     @require_token
     def get(self, request, need):
         """获取需求详情
@@ -939,7 +939,7 @@ class Need(View):
 
         return JsonResponse(d)
 
-    @fetch_object(TeamNeed, 'need')
+    @fetch_object(TeamNeed.objects, 'need')
     @require_token
     def post(self, request, need):
         """将需求标记成已满足"""
@@ -963,7 +963,7 @@ class Need(View):
 
 
 class MemberNeedRequestList(View):
-    @fetch_object(TeamNeed, 'need')
+    @fetch_object(TeamNeed.objects, 'need')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -998,7 +998,7 @@ class MemberNeedRequestList(View):
 
         abort(404)
 
-    @fetch_object(TeamNeed, 'need')
+    @fetch_object(TeamNeed.objects, 'need')
     @require_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100),
@@ -1026,8 +1026,8 @@ class MemberNeedRequestList(View):
 
 
 class MemberNeedRequest(View):
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(User, 'user')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def post(self, request, need, user):
         """将目标用户添加为自己的团队成员（对方需发送过人员需求下的加入团队申请）"""
@@ -1049,8 +1049,8 @@ class MemberNeedRequest(View):
             action.join_team(user, need.team)
         abort(200)
 
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(User, 'user')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def delete(self, request, need, user):
         """忽略某用户人员需求下的加团队请求"""
@@ -1066,8 +1066,8 @@ class MemberNeedRequest(View):
 
 
 class NeedRequestList(View):
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(Team, 'team')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1099,8 +1099,8 @@ class NeedRequestList(View):
             return JsonResponse({'count': c, 'list': l})
         abort(404)
 
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(Team, 'team')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, need, team):
         """向需求发出合作申请
@@ -1117,7 +1117,7 @@ class NeedRequestList(View):
 
 
 class NeedRequest(View):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1151,8 +1151,8 @@ class NeedRequest(View):
             return JsonResponse({'count': c, 'list': l})
         abort(404)
 
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(Team, 'team')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, need, team):
         """同意加入申请并将创始人加入自己团队（对方需发送过合作申请）"""
@@ -1171,8 +1171,8 @@ class NeedRequest(View):
             abort(200)
         abort(404)
 
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(Team, 'team')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def delete(self, request, need, team):
         """忽略某团队的合作申请"""
@@ -1188,8 +1188,8 @@ class NeedRequest(View):
 
 
 class NeedInvitationList(View):
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(Team, 'team')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1219,8 +1219,8 @@ class NeedInvitationList(View):
             return JsonResponse({'count': c, 'list': l})
         abort(404)
 
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(Team, 'team')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, need, team):
         """向团队发出合作邀请
@@ -1237,7 +1237,7 @@ class NeedInvitationList(View):
 
 
 class NeedInvitation(View):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1271,8 +1271,8 @@ class NeedInvitation(View):
             return JsonResponse({'count': c, 'list': l})
         abort(404)
 
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(Team, 'team')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, need, team):
         """同意邀请并将加入他人的团队（对方需发送过合作邀请）"""
@@ -1291,8 +1291,8 @@ class NeedInvitation(View):
             abort(200)
         abort(404)
 
-    @fetch_object(TeamNeed, 'need')
-    @fetch_object(Team, 'team')
+    @fetch_object(TeamNeed.objects, 'need')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def delete(self, request, need, team):
         """忽略某来自需求的合作邀请"""
@@ -1308,7 +1308,7 @@ class NeedInvitation(View):
 
 
 class InternalTaskList(View):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1353,7 +1353,7 @@ class InternalTaskList(View):
               'time_created': t.time_created} for t in tasks]
         return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'executor_id': forms.IntegerField(),
@@ -1432,7 +1432,7 @@ class InternalTasks(View):
               'time_created': t.time_created} for t in tasks]
         return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(InternalTask, 'task')
+    @fetch_object(InternalTask.objects, 'task')
     @require_token
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
@@ -1462,7 +1462,7 @@ class TeamInternalTask(View):
     keys = ('id','title', 'content', 'status', 'deadline', 'assign_num',
             'submit_num', 'finish_time', 'time_created')
 
-    @fetch_object(InternalTask, 'task')
+    @fetch_object(InternalTask.objects, 'task')
     @require_token
     def get(self, request, task):
         """获取内部任务详情
@@ -1497,7 +1497,7 @@ class TeamInternalTask(View):
 
         return JsonResponse(d)
 
-    @fetch_object(InternalTask, 'task')
+    @fetch_object(InternalTask.objects, 'task')
     @require_token
     @validate_args({
         'status': forms.IntegerField(required=False, min_value=0, max_value=3),
@@ -1540,7 +1540,7 @@ class TeamInternalTask(View):
 
 
 class ExternalTaskList(View):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1618,7 +1618,7 @@ class ExternalTaskList(View):
                   'time_created': t.time_created} for t in tasks]
             return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'executor_id': forms.IntegerField(),
@@ -1653,7 +1653,7 @@ class ExternalTaskList(View):
 
 
 class ExternalTasks(View):
-    @fetch_object(ExternalTask, 'task')
+    @fetch_object(ExternalTask.objects, 'task')
     @require_token
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
@@ -1684,7 +1684,7 @@ class TeamExternalTask(View):
             'deadline', 'assign_num', 'submit_num', 'pay_num', 'finish_time',
             'time_created')
 
-    @fetch_object(ExternalTask, 'task')
+    @fetch_object(ExternalTask.objects, 'task')
     @require_token
     def get(self, request, task):
         """获取外部任务详情
@@ -1723,7 +1723,7 @@ class TeamExternalTask(View):
 
         return JsonResponse(d)
 
-    @fetch_object(ExternalTask, 'task')
+    @fetch_object(ExternalTask.objects, 'task')
     @require_token
     @validate_args({
         'status': forms.IntegerField(required=False, min_value=0, max_value=3),

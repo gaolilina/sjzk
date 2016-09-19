@@ -30,7 +30,7 @@ class List(View):
 
 
 class Detail(View):
-    @fetch_object(Activity, 'activity')
+    @fetch_object(Activity.objects, 'activity')
     @require_token
     def get(self, request, activity):
         """获取活动详情"""
@@ -51,7 +51,7 @@ class Detail(View):
 
 
 class UserParticipatorList(View):
-    @fetch_object(Activity, 'activity')
+    @fetch_object(Activity.objects, 'activity')
     @require_token
     @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
     def get(self, request, activity, offset=0, limit=10):
@@ -64,7 +64,7 @@ class UserParticipatorList(View):
               'username': p.user.username} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(Activity, 'activity')
+    @fetch_object(Activity.objects, 'activity')
     @require_token
     def post(self, request, activity):
         """报名"""
@@ -78,7 +78,7 @@ class UserParticipatorList(View):
 
 
 class TeamParticipatorList(View):
-    @fetch_object(Activity, 'activity')
+    @fetch_object(Activity.objects, 'activity')
     @require_token
     @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
     def get(self, request, activity, offset=0, limit=10):
@@ -90,7 +90,7 @@ class TeamParticipatorList(View):
               'name': p.team.name} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(Activity, 'activity')
+    @fetch_object(Activity.objects, 'activity')
     @validate_args({'team_id': forms.IntegerField()})
     @require_token
     def post(self, request, activity, team_id):

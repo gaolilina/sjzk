@@ -81,7 +81,7 @@ class BoardList(View):
 
 class Board(View):
     @require_token
-    @fetch_object(ForumBoard, 'board')
+    @fetch_object(ForumBoard.enabled, 'board')
     def delete(self, request, board):
         """删除版块，只是改变is_enabled字段为False，数据库中并不删除"""
 
@@ -95,7 +95,7 @@ class Board(View):
 class PostList(View):
     @require_token
     @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
-    @fetch_object(ForumBoard, 'board')
+    @fetch_object(ForumBoard.enabled, 'board')
     def get(self, request, board, offset=0, limit=10):
         """获取主题帖列表
 
@@ -123,7 +123,7 @@ class PostList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @require_token
-    @fetch_object(ForumPost, 'board')
+    @fetch_object(ForumPost.objects, 'board')
     def post(self, request, board, title, content):
         """发主题帖"""
 
@@ -134,7 +134,7 @@ class PostList(View):
 class Post(View):
     @require_token
     @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
-    @fetch_object(ForumPost, 'post')
+    @fetch_object(ForumPost.objects, 'post')
     def get(self, request, post, offset=0, limit=10):
         """获取主题帖的回帖列表
 
@@ -165,7 +165,7 @@ class Post(View):
         return JsonResponse({'count': c, 'list': l})
 
     @require_token
-    @fetch_object(ForumPost, 'post')
+    @fetch_object(ForumPost.objects, 'post')
     def post(self, request, post, title, content):
         """回主题帖"""
 
@@ -174,7 +174,7 @@ class Post(View):
         return JsonResponse({'post_id': p.id})
 
     @require_token
-    @fetch_object(ForumPost, 'post')
+    @fetch_object(ForumPost.objects, 'post')
     def delete(self, request, post):
         """删除帖子"""
 

@@ -51,7 +51,7 @@ class ActionList(View):
 
 # noinspection PyMethodOverriding
 class UserActionList(ActionList):
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user=None):
         user = user or request.user
@@ -60,7 +60,7 @@ class UserActionList(ActionList):
 
 # noinspection PyMethodOverriding
 class TeamActionList(ActionList):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         return super(TeamActionList, self).get(request, team)
@@ -103,13 +103,13 @@ class CommentList(View):
 
 # noinspection PyMethodOverriding
 class UserCommentList(CommentList):
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user=None):
         user = user or request.user
         return super().get(request, user)
 
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def post(self, request, user=None):
         user = user or request.user
@@ -118,7 +118,7 @@ class UserCommentList(CommentList):
 
 # noinspection PyMethodOverriding
 class TeamCommentList(CommentList):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         """获取团队的评论信息列表
@@ -134,7 +134,7 @@ class TeamCommentList(CommentList):
         """
         return super().get(request, team)
 
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def post(self, request, team):
         """当前用户对团队进行评论"""
@@ -144,7 +144,7 @@ class TeamCommentList(CommentList):
 
 # noinspection PyMethodOverriding
 class ActivityCommentList(CommentList):
-    @fetch_object(Activity, 'activity')
+    @fetch_object(Activity.enabled, 'activity')
     @require_token
     def get(self, request, activity):
         """获取团队的评论信息列表
@@ -160,7 +160,7 @@ class ActivityCommentList(CommentList):
         """
         return super().get(request, activity)
 
-    @fetch_object(Activity, 'activity')
+    @fetch_object(Activity.enabled, 'activity')
     @require_token
     def post(self, request, activity):
         """当前用户对活动进行评论"""
@@ -169,7 +169,7 @@ class ActivityCommentList(CommentList):
 
 
 class UserComment(View):
-    @fetch_object(UserCommentModel, 'comment')
+    @fetch_object(UserCommentModel.objects, 'comment')
     @require_token
     def delete(self, request, comment):
         """删除用户评论"""
@@ -181,7 +181,7 @@ class UserComment(View):
 
 
 class TeamComment(View):
-    @fetch_object(TeamCommentModel, 'comment')
+    @fetch_object(TeamCommentModel.objects, 'comment')
     @require_token
     def delete(self, request, comment):
         """删除团队评论"""
@@ -194,7 +194,7 @@ class TeamComment(View):
 
 
 class ActivityComment(View):
-    @fetch_object(ActivityCommentModel, 'comment')
+    @fetch_object(ActivityCommentModel.objects, 'comment')
     @require_token
     def delete(self, request, comment):
         """删除活动评论"""
@@ -243,7 +243,7 @@ class FollowerList(View):
 
 # noinspection PyMethodOverriding
 class UserFollowerList(FollowerList):
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user=None):
         user = user or request.user
@@ -259,7 +259,7 @@ class TeamFollowerList(FollowerList):
 
 
 class Follower(View):
-    @fetch_object(User, 'other_user')
+    @fetch_object(User.enabled, 'other_user')
     def get(self, request, entity, other_user):
         """检查某实体的粉丝是否包含other_user"""
 
@@ -270,7 +270,7 @@ class Follower(View):
 
 # noinspection PyMethodOverriding
 class UserFollower(Follower):
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, user=None):
         user = user or request.user
@@ -279,7 +279,7 @@ class UserFollower(Follower):
 
 # noinspection PyMethodOverriding
 class TeamFollower(Follower):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         return super().get(request, team)
@@ -326,7 +326,7 @@ class LikerList(View):
 # noinspection PyMethodOverriding
 class UserLikerList(LikerList):
     @require_token
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     def get(self, request, user=None):
         user = user or request.user
         return super().get(request, user)
@@ -335,7 +335,7 @@ class UserLikerList(LikerList):
 # noinspection PyMethodOverriding
 class TeamLikerList(LikerList):
     @require_token
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         return super().get(request, team)
 
@@ -393,7 +393,7 @@ class VisitorList(View):
 # noinspection PyMethodOverriding
 class UserVisitorList(VisitorList):
     @require_token
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     def get(self, request, user=None):
         user = user or request.user
         return super().get(request, user)
@@ -402,6 +402,6 @@ class UserVisitorList(VisitorList):
 # noinspection PyMethodOverriding
 class TeamVisitorList(VisitorList):
     @require_token
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         return super().get(request, team)
