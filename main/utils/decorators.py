@@ -80,7 +80,7 @@ def fetch_object(model, object_name):
             if arg in kwargs:
                 try:
                     obj_id = int(kwargs.pop(arg))
-                    obj = model.objects.get(id=obj_id)
+                    obj = model.get(id=obj_id)
                 except ObjectDoesNotExist:
                     abort(404)
                 else:

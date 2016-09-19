@@ -1374,7 +1374,7 @@ class InternalTaskList(View):
         executor_id = kwargs.pop('executor_id')
         executor = None
         try:
-            executor = User.objects.get(id=executor_id)
+            executor = User.enabled.get(id=executor_id)
         except ObjectDoesNotExist:
             abort(403)
 
@@ -1639,7 +1639,7 @@ class ExternalTaskList(View):
         executor_id = kwargs.pop('executor_id')
         executor = None
         try:
-            executor = Team.objects.get(id=executor_id)
+            executor = Team.enabled.get(id=executor_id)
         except ObjectDoesNotExist:
             abort(403)
 
