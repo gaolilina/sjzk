@@ -175,7 +175,7 @@ class Search(View):
 
 
 class Profile(View):
-    @fetch_object(Team, 'team')
+    @fetch_object(Team.enabled, 'team')
     @require_token
     def get(self, request, team):
         """获取团队的基本资料
