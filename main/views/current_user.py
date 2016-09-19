@@ -1,9 +1,11 @@
 from django import forms
 from django.db import IntegrityError
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
 
+from ChuangYi.settings import UPLOADED_URL
+from rongcloud import RongCloud
 from ..models import User, Team
 from ..utils import abort, action, save_uploaded_image
 from ..utils.decorators import *
@@ -41,6 +43,17 @@ class Username(View):
         try:
             request.user.username = username.lower()
             request.user.save()
+            # 更改融云上的用户信息
+            if not request.user.icon:
+                portraitUri = HttpResponseRedirect(
+                    UPLOADED_URL + request.user.icon)
+            else:
+                portraitUri = 'http://www.rongcloud.cn/images/logo.png'
+            rcloud = RongCloud()
+            rcloud.User.refresh(
+                userId=request.user.id,
+                name=request.user.username,
+                portraitUri=portraitUri)
             return JsonResponse({'username': request.user.username})
         except IntegrityError:
             abort(403, 'username is used')
@@ -80,6 +93,17 @@ class Icon(Icon_):
         if filename:
             request.user.icon = filename
             request.user.save()
+            # 用户头像更换后调用融云接口更改融云上的用户头像
+            if not request.user.username:
+                username = request.user.username
+            else:
+                username = request.user.phone_number
+            portraitUri = HttpResponseRedirect(UPLOADED_URL + request.user.icon)
+            rcloud = RongCloud()
+            rcloud.User.refresh(
+                userId=request.user.id,
+                name=username,
+                portraitUri=portraitUri)
             abort(200)
         abort(400)
 

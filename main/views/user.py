@@ -75,6 +75,7 @@ class List(View):
             user.set_password(password)
             user.update_token()
             user.save_and_generate_name()
+            # 注册成功后给融云服务器发送请求获取Token
             rcloud = RongCloud()
             token = rcloud.User.getToken(
                 userId=user.id, name=phone_number,
