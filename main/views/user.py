@@ -1,6 +1,7 @@
 from django import forms
 from django.db import IntegrityError
 from django.http import JsonResponse, HttpResponseRedirect
+from django.db import transaction
 from django.views.generic import View
 from rongcloud import RongCloud
 
@@ -70,22 +71,23 @@ class List(View):
         if not UserValidationCode.verify(phone_number, validation_code):
             abort(400)
 
-        try:
-            user = User(phone_number=phone_number)
-            user.set_password(password)
-            user.update_token()
-            user.save_and_generate_name()
-            # 注册成功后给融云服务器发送请求获取Token
-            rcloud = RongCloud()
-            r = rcloud.User.getToken(
-                userId=user.id, name=phone_number,
-                portraitUri='http://www.rongcloud.cn/images/logo.png')
-            token = r.result['token']
-            user.token = token
-            user.save()
-            return JsonResponse({'token': user.token})
-        except IntegrityError:
-            abort(403)
+        with transaction.atomic():
+            try:
+                user = User(phone_number=phone_number)
+                user.set_password(password)
+                # user.update_token()
+                user.save_and_generate_name()
+                # 注册成功后给融云服务器发送请求获取Token
+                rcloud = RongCloud()
+                r = rcloud.User.getToken(
+                    userId=user.id, name=phone_number,
+                    portraitUri='http://www.rongcloud.cn/images/logo.png')
+                token = r.result['token']
+                user.token = token
+                user.save()
+                return JsonResponse({'token': user.token})
+            except IntegrityError:
+                abort(403)
 
 
 class Token(View):
@@ -108,7 +110,18 @@ class Token(View):
                 abort(403)
             if not user.check_password(password):
                 abort(401)
-            user.update_token()
+            # user.update_token()
+            if not request.user.icon:
+                portraitUri = HttpResponseRedirect(
+                    UPLOADED_URL + request.user.icon)
+            else:
+                portraitUri = 'http://www.rongcloud.cn/images/logo.png'
+            rcloud = RongCloud()
+            r = rcloud.User.getToken(
+                userId=user.id, name=username,
+                portraitUri=portraitUri)
+            token = r.result['token']
+            user.token = token
             user.save()
             return JsonResponse({'token': user.token})
 
