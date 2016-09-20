@@ -111,9 +111,9 @@ class Token(View):
             if not user.check_password(password):
                 abort(401)
             # user.update_token()
-            if not request.user.icon:
+            if not user.icon:
                 portraitUri = HttpResponseRedirect(
-                    UPLOADED_URL + request.user.icon)
+                    UPLOADED_URL + user.icon)
             else:
                 portraitUri = 'http://www.rongcloud.cn/images/logo.png'
             rcloud = RongCloud()
