@@ -77,9 +77,10 @@ class List(View):
             user.save_and_generate_name()
             # 注册成功后给融云服务器发送请求获取Token
             rcloud = RongCloud()
-            token = rcloud.User.getToken(
+            r = rcloud.User.getToken(
                 userId=user.id, name=phone_number,
                 portraitUri='http://www.rongcloud.cn/images/logo.png')
+            token = r.result['token']
             user.token = token
             user.save()
             return JsonResponse({'token': user.token})
