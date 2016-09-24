@@ -53,7 +53,8 @@ class List(View):
               'time_created': u.time_created,
               'username': u.username,
               'name': u.name,
-              'icon_url': u.icon_url,
+              'icon_url': HttpResponseRedirect(UPLOADED_URL + u.icon)
+                    if u.icon else '',
               'tags':
                   list(u.tags.get_queryset().values_list('name', flat=True)),
               'gender': u.gender,
