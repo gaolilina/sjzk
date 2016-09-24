@@ -184,7 +184,8 @@ class Profile(View):
              'time_created': user.time_created,
              'username': user.username,
              'name': user.name,
-             'icon_url': user.icon_url,
+             'icon_url': HttpResponseRedirect(UPLOADED_URL + user.icon)
+                    if user.icon else '',
              'description': user.description,
              'email': user.email,
              'gender': user.gender,
@@ -310,7 +311,8 @@ class FriendList(View):
         l = [{'id': r.friend.id,
               'username': r.friend.username,
               'name': r.friend.name,
-              'icon_url': r.icon_url,
+              'icon_url': HttpResponseRedirect(UPLOADED_URL + r.icon)
+                    if r.icon else '',
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -401,7 +403,8 @@ class Search(View):
               'like_count': u.like_count,
               'fan_count': u.fan_count,
               'visitor_count': u.visitor_count,
-              'icon_url': u.icon_url,
+              'icon_url': HttpResponseRedirect(UPLOADED_URL + u.icon)
+                    if u.icon else '',
               'tags':
                   list(u.tags.get_queryset().values_list('name', flat=True)),
               'time_created': u.time_created} for u in users.order_by(k)[i:j]]
