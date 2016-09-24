@@ -148,6 +148,7 @@ class Profile(View):
             id: 用户ID
             username: 用户名
             name: 昵称
+            icon_url
             time_created: 注册时间
             description: 个人简介
             qq:
@@ -180,6 +181,7 @@ class Profile(View):
              'time_created': user.time_created,
              'username': user.username,
              'name': user.name,
+             'icon_url': user.icon_url,
              'description': user.description,
              'email': user.email,
              'gender': user.gender,
