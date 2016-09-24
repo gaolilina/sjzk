@@ -40,6 +40,7 @@ class List(View):
                 time_created: 注册时间
                 username: 用户名
                 name: 用户昵称
+                icon_url: 用户头像
                 tags: 标签
                 gender: 性别
                 liker_count: 点赞数
@@ -52,6 +53,7 @@ class List(View):
               'time_created': u.time_created,
               'username': u.username,
               'name': u.name,
+              'icon_url': u.icon_url,
               'tags':
                   list(u.tags.get_queryset().values_list('name', flat=True)),
               'gender': u.gender,
@@ -148,7 +150,7 @@ class Profile(View):
             id: 用户ID
             username: 用户名
             name: 昵称
-            icon_url
+            icon_url: 头像
             time_created: 注册时间
             description: 个人简介
             qq:
@@ -307,6 +309,7 @@ class FriendList(View):
         l = [{'id': r.friend.id,
               'username': r.friend.username,
               'name': r.friend.name,
+              'icon_url': r.icon_url,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -379,6 +382,7 @@ class Search(View):
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
+                icon_url: 用户头像
                 gender: 性别
                 like_count: 点赞数
                 fan_count: 粉丝数
