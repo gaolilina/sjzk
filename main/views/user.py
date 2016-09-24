@@ -80,7 +80,7 @@ class List(View):
                 # 注册成功后给融云服务器发送请求获取Token
                 rcloud = RongCloud()
                 r = rcloud.User.getToken(
-                    userId=user.id, name=phone_number,
+                    userId=user.id, name=user.name,
                     portraitUri='http://www.rongcloud.cn/images/logo.png')
                 token = r.result['token']
                 user.token = token
@@ -118,7 +118,7 @@ class Token(View):
                 portraitUri = 'http://www.rongcloud.cn/images/logo.png'
             rcloud = RongCloud()
             r = rcloud.User.getToken(
-                userId=user.id, name=username,
+                userId=user.id, name=user.name,
                 portraitUri=portraitUri)
             token = r.result['token']
             user.token = token

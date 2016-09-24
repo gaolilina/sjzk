@@ -52,7 +52,7 @@ class Username(View):
             rcloud = RongCloud()
             rcloud.User.refresh(
                 userId=request.user.id,
-                name=request.user.username,
+                name=request.user.name,
                 portraitUri=portraitUri)
             return JsonResponse({'username': request.user.username})
         except IntegrityError:
@@ -94,15 +94,11 @@ class Icon(Icon_):
             request.user.icon = filename
             request.user.save()
             # 用户头像更换后调用融云接口更改融云上的用户头像
-            if not request.user.username:
-                username = request.user.username
-            else:
-                username = request.user.phone_number
             portraitUri = HttpResponseRedirect(UPLOADED_URL + request.user.icon)
             rcloud = RongCloud()
             rcloud.User.refresh(
                 userId=request.user.id,
-                name=username,
+                name=request.user.name,
                 portraitUri=portraitUri)
             abort(200)
         abort(400)
@@ -214,6 +210,17 @@ class Profile(Profile_):
         name = kwargs.pop('name', None)
         if name:
             request.user.name = name
+            # 用户昵称更换后调用融云接口更改融云上的用户头像
+            if request.user.icon:
+                portraitUri = HttpResponseRedirect(
+                    UPLOADED_URL + request.user.icon)
+            else:
+                portraitUri = "http://www.rongcloud.cn/images/logo.png"
+            rcloud = RongCloud()
+            rcloud.User.refresh(
+                userId=request.user.id,
+                name=request.user.name,
+                portraitUri=portraitUri)
         normal_keys = ('description', 'qq', 'wechat', 'email', 'gender',
                        'birthday', 'province', 'city', 'county')
         for k in normal_keys:
