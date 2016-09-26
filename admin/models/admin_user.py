@@ -19,8 +19,10 @@ class AdminUser(models.Model):
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
     role = models.IntegerField(default=1)
 
+    name = models.CharField(max_length=15, default='', db_index=True)
     description = models.CharField(max_length=100, default='')
     icon = models.CharField(max_length=100, default='')
+    gender = models.CharField(max_length=1, default='')
     email = models.EmailField(default='')
     phone_number = models.CharField(max_length=11, default='', unique=True)
 

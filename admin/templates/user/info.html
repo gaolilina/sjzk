@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="{% url 'admin:admin_user:info' %}" method="post">
+<table>
+    <tr>
+        <td rowspan="5"><img src="{% static 'img/user.png' %}" /></td>
+        <td>昵　　称：</td>
+        <td><input name="name" type="text" value="{{ u.name }}" /></td>
+    </tr>
+    <tr>
+        <td>性　　别：</td>
+        <td><input name="gender" type="radio" value="女" {% ifequal u.gender '女' %}checked="checked" {% endifequal %}/>女<input name="gender" type="radio" value="男" {% ifequal u.gender '男' %}checked="checked" {% endifequal %}/>男</td>
+    </tr>
+    <tr>
+        <td>手机号码：</td>
+        <td><input name="phone_number" type="text" value="{{ u.phone_number }}" /></td>
+    </tr>
+    <tr>
+        <td>电子邮箱：</td>
+        <td><input name="email" type="email" value="{{ u.email }}" /></td>
+    </tr>
+    <tr>
+        <td>个人简介：</td>
+        <td><textarea name="description">{{ u.description }}</textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2">{{ msg }}</td>
+        <td>
+            <div class="buttons">
+                <input type="submit" value="保存" />
+                <input type="reset" value="取消" />
+            </div>
+        </td>
+    </tr>
+</table>
+
+</form>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb=1 %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb=1 lb=2 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb=1 lb=2 rb=1 %}{% endblock %}
+
+{% block css %}
+<style>
+    form {
+        padding: 30px;
+    }
+    form img {
+        width: 100px;
+        height: 100px;
+    }
+    td {
+        padding: 5px 8px;
+        vertical-align: top;
+    }
+
+    input[type=text], input[type=email], textarea {
+        border: 2px solid #C5DBAD;
+    }
+
+    input[type=radio] {
+        margin-right: 5px;
+    }
+
+    input[type=radio] ~ input {
+        margin-left: 15px;
+    }
+
+    .buttons {
+        float: right;
+    }
+
+    input[type=submit], input[type=reset] {
+        border: 0 none;
+        border-radius: 3px;
+        padding: 2px 5px;
+        background: #85A365;
+        color: white;
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}

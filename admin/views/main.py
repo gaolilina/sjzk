@@ -16,7 +16,7 @@ class Login(View):
         return HttpResponse(template.render(context))
 
     @validate_args({
-        'username': forms.CharField(),
+        'username': forms.CharField(max_length=20),
         'password': forms.CharField(min_length=6, max_length=20, strip=False),
     })
     def post(self, request, username, password):

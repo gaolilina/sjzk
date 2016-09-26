@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
-from admin.views.admin_user import AdminUsers
+from admin.views.admin_user import AdminUsersInfo
 
 urls = [
-    url(r'^$', AdminUsers.as_view(), name='info'),
+    url(r'^$', AdminUsersInfo.as_view(), name='info'),
 ]
