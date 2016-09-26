@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="#" method="post">
+    <img src="{% static 'img/user.png' %}" /><br/>
+    <input placeholder="用户名" name="username" type="text" autofocus><br/>
+    <input placeholder="密码" name="password" type="password" value=""><br/>
+    {{ msg }}<br/>
+    <input type="submit" value="注册" />
+</form>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb=1 %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb=1 lb=1 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb=1 lb=1 rb=1 %}{% endblock %}
+
+{% block css %}
+<style>
+    form {
+        text-align: center;
+    }
+
+    form * {
+        margin-top: 10px;
+    }
+
+    form img {
+        width: 120px;
+        height: 120px;
+        margin-top: 50px;
+    }
+
+    form input {
+        margin-top: 10px;
+        border: 2px solid #eee;
+        border-radius: 5px;
+        font-size: 16px;
+        width: 300px;
+        height: 30px;
+    }
+
+    form input[type=submit] {
+        width: 60px;
+        margin-left: 240px;
+        margin-bottom: 50px;
+        background: #ddd;
+        color: white;
+        border: 0 none;
+    }
+</style>
+{% endblock %}

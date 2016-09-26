@@ -13,10 +13,28 @@ DEBUG = True
 
 # Application definition
 WSGI_APPLICATION = 'ChuangYi.wsgi.application'
-INSTALLED_APPS = ['main.apps.ChuangYi']
+INSTALLED_APPS = [
+    'django.contrib.staticfiles',
+    'admin.apps.ChuangYiAdmin',
+    'main.apps.ChuangYi'
+]
 ROOT_URLCONF = 'main.urls'
 MIDDLEWARE_CLASSES = ['main.utils.abort.AbortExceptionHandler']
-TEMPLATES = []
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 
 # Database
@@ -38,6 +56,13 @@ DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATETIME_INPUT_FORMAT = ['%Y-%m-%d %H:%M:%S']
 DATE_FORMAT = 'Y-m-d'
 DATE_INPUT_FORMAT = ['%Y-%m-%d']
+
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (   
+  os.path.join(BASE_DIR, 'static'), 
+)
 
 
 # Uploaded files

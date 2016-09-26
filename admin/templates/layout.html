@@ -1,0 +1,27 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}创易{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+    {% block css %}{% endblock %}
+</head>
+
+<body>
+    <div class="top">
+        <img src="{% static 'img/logo.png' %}" />
+        <div class="topbar">{% block topbar %}{% include 'topbar.html' %}{% endblock %}</div>
+    </div>
+    <div class="left">
+        <div class="leftbar">{% block leftbar %}{% include 'leftbar.html' %}{% endblock %}</div>
+    </div>
+    <div class="right">
+        <div class="container">
+            <div class="rightbar">{% block rightbar %}{% include 'rightbar.html' %}{% endblock %}</div>
+            <div class="content">{% block content %}{% endblock %}</div>
+        </div>
+    </div>
+</body>
+
+</html>

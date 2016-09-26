@@ -1,0 +1,7 @@
+{% if tb == 1 %}
+<ul>
+    <li{% if lb == 1 %} class="active"{% endif %}><a href="{% url 'admin:login' %}">注册、登录</a></li>
+    <li{% if lb == 2 %} class="active"{% endif %}><a href="{% url 'admin:admin_user:info' %}">个人信息修改</a></li>
+    <li{% if lb == 3 %} class="active"{% endif %}><a href="#">实名认证</a></li>
+</ul>
+{% endif %}

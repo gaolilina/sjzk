@@ -1,0 +1,142 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: #333;
+}
+
+ul {
+    list-style: none;
+}
+li {
+    text-align: center;
+}
+li:hover {
+    cursor: pointer;
+}
+
+.top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64.5px;
+}
+
+.top img {
+    width: 89.5px;
+    height: 44.5px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.top .topbar {
+    display: inline-block;
+    margin-left: 50px;
+}
+
+.topbar ul {
+    position: fixed;
+    top: 0;
+    left: 150px;
+    right: 0;
+    height: 64.5px;
+}
+
+.topbar li {
+    display: inline-block;
+    margin: 15px 5px;
+    padding: 0px 10px;
+    font-size: 17px;
+    line-height: 34.5px;
+    background: none;
+}
+.topbar li.active {
+    background: #C4D9AE;
+}
+.topbar li.active a {
+    color: white;
+}
+
+.left {
+    background: #F4F5F7;
+    position: fixed;
+    top: 64.5px;
+    bottom: 0;
+    left: 0px;
+    width: 200px;
+    border-right: 1px solid #E2ECDD;
+    box-sizing: border-box;
+}
+
+.left .leftbar {
+    margin: 15px;
+    background: white;
+}
+
+.leftbar ul {
+    border: 1px solid #E2ECDD;
+}
+
+.leftbar li::before {
+    content: "*";
+}
+.leftbar li.active::before {
+    color: #85A365;
+}
+
+.leftbar li {
+    padding: 10px 0;
+    border-bottom: 1px solid #E2ECDD;
+    border-bottom-style: dashed;
+}
+.leftbar li.active a {
+    color: #85A365;
+}
+.leftbar li:last-child {
+    border-bottom: 0px none;
+}
+
+.right {
+    background: #F4F5F7;
+    position: fixed;
+    top: 64.5px;
+    bottom: 0;
+    left: 200px;
+    right: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    border-bottom: 1px solid #E2ECDD;
+}
+
+.rightbar {
+    margin-top: 30px;
+    border-top: 1px solid #E2ECDD;
+}
+
+.rightbar ul {
+    background: #C4D9AE;
+    margin: 20px;
+}
+
+.rightbar li {
+    display: inline-block;
+    padding: 5px 10px;;
+}
+.rightbar li.active {
+    background: #84A463;
+}
+
+.rightbar li a {
+    color: white;
+}
+
+.content {
+    margin: 20px;
+    background: white;
+}
