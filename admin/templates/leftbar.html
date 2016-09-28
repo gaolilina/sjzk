@@ -5,3 +5,8 @@
     <li{% if lb == 3 %} class="active"{% endif %}><a href="{% url 'admin:admin_user:identify' %}">实名认证</a></li>
 </ul>
 {% endif %}
+{% if tb == 4 %}
+<ul>
+    <li{% if lb == 1 %} class="active"{% endif %}><a href="{% url 'admin:login' %}">个人用户</a></li>
+</ul>
+{% endif %}

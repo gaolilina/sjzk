@@ -15,3 +15,11 @@
         </ul>
     {% endif %}
 {% endif %}
+{% if tb == 4 %}
+    {% if lb == 1 %}
+        <ul>
+            <li{% if rb == 1 %} class="active"{% endif %}><a href="{% url 'admin:user:user' mod.id %}">个人信息</a></li>
+            <li{% if rb == 3 %} class="active"{% endif %}><a href="#">身份认证</a></li>
+        </ul>
+    {% endif %}
+{% endif %}
