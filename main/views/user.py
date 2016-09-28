@@ -7,6 +7,7 @@ from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL
 from ..utils import abort
+from ..utils import RandCode
 from ..utils.decorators import *
 from ..models import User, UserVisitor, UserExperience, UserValidationCode
 
@@ -420,7 +421,10 @@ class ValidationCode(View):
 
         if not phone_number.isdigit():
             abort(400)
-
         return JsonResponse({
             'validation_code': UserValidationCode.generate(phone_number),
         })
+        # code = UserValidationCode.generate(phone_number)
+        # r = RandCode()
+        # r.send_sms(phone_number, code)
+        # abort(200)

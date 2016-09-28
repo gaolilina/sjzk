@@ -4,6 +4,7 @@ from PIL import Image
 from django.utils import timezone
 
 from .abort import abort
+from .RandCode import *
 
 
 __all__ = ['abort', 'save_uploaded_image']
