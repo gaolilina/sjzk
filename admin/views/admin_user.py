@@ -10,7 +10,7 @@ from admin.utils.decorators import require_cookie
 class AdminUsersInfo(View):
     @require_cookie
     def get(self, request):
-        template = loader.get_template("user/info.html")
+        template = loader.get_template("admin_user/info.html")
         context = Context({'u': request.user})
         return HttpResponse(template.render(context))
 
@@ -28,6 +28,28 @@ class AdminUsersInfo(View):
             setattr(user, k, kwargs[k])
         user.save()
 
-        template = loader.get_template("user/info.html")
+        template = loader.get_template("admin_user/info.html")
+        context = Context({'u': user, 'msg': '保存成功'})
+        return HttpResponse(template.render(context))
+
+class AdminUsersIndentify(View):
+    @require_cookie
+    def get(self, request):
+        template = loader.get_template("admin_user/identify.html")
+        context = Context({'u': request.user})
+        return HttpResponse(template.render(context))
+
+    @require_cookie
+    @validate_args({
+        'real_name': forms.CharField(max_length=20, required=False),
+        'id_number': forms.CharField(max_length=18, required=False),
+    })
+    def post(self, request, **kwargs):
+        user = request.user
+        for k in kwargs:
+            setattr(user, k, kwargs[k])
+        user.save()
+
+        template = loader.get_template("admin_user/identify.html")
         context = Context({'u': user, 'msg': '保存成功'})
         return HttpResponse(template.render(context))

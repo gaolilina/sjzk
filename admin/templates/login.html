@@ -5,7 +5,7 @@
     <img src="{% static 'img/user.png' %}" /><br/>
     <input placeholder="用户名" name="username" type="text" autofocus><br/>
     <input placeholder="密码" name="password" type="password" value=""><br/>
-    <div>忘记密码？　　　　<a href="{% url 'admin:register' %}">没有账号？现在注册！</a></div>
+    <div><a href="{% url 'admin:register' %}">没有账号？现在注册！</a>　　　　　　　　</div>
     {{ msg }}<br/>
     <input type="submit" value="登录" />
 </form>
