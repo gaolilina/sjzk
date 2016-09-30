@@ -132,7 +132,7 @@ class RandCode(object):
             # result = "%s&sign=%s" % (data, urllib.parse.quote(
                     # sign.encode('base64').strip()))
             result = "%s&sign=%s" % (data, urllib.parse.quote(
-                base64.b64encode(sign)))
+                base64.b64encode(sign.encode('utf-8'))))
         return result
 
     def __build_request_string(self, dict):
