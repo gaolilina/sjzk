@@ -127,7 +127,7 @@ class RandCode(object):
             else:
                 sign = hmac.new(
                     self.APP_SECRET.encode('utf-8'),
-                    data, hashlib.sha1).digest()
+                    data.encode('utf-8'), hashlib.sha1).digest()
             result = "%s&sign=%s" % ( data, urllib.parse.quote(
                     sign.encode('base64').strip()) )
         return result
