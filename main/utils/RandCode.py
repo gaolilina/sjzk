@@ -130,8 +130,7 @@ class RandCode(object):
         return result
 
     def __build_request_string(self, dict):
-        keys = dict.keys()
-        keys.sort()
+        keys = sorted(dict)
         return '&'.join([ key + "=" + dict[key] for key in keys ])
 
     def __date_time(self):
