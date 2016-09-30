@@ -79,7 +79,7 @@ class RandCode(object):
         else:
             url = '%s?%s' % (url, data)
             req = urllib.request.Request(url)
-        return urllib.request.urlopen(req).read()
+        return urllib.request.urlopen(req).read().decode('utf-8')
 
     def __fetch_access_token(self):
         access_token = self.ACCESS_TOKEN
@@ -90,7 +90,7 @@ class RandCode(object):
 				'app_secret':self.APP_SECRET,
 				}
             res = self.__request_data('post', data, self.TOKEN_API)
-            json_data = json.loads(res).decode()
+            json_data = json.loads(res)
             if json_data['res_code'] == '0':
                 access_token = json_data['access_token']
             else:
