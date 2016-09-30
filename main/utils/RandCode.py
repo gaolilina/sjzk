@@ -79,7 +79,7 @@ class RandCode(object):
         else:
             url = '%s?%s' % (url, data)
             req = urllib.request.Request(url)
-        return urllib.request.urlopen(req)
+        return urllib.request.urlopen(req).read()
 
     def __fetch_access_token(self):
         access_token = self.ACCESS_TOKEN
