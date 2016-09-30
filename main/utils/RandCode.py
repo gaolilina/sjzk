@@ -90,7 +90,7 @@ class RandCode(object):
 				'app_secret':self.APP_SECRET,
 				}
             res = self.__request_data('post', data, self.TOKEN_API)
-            json_data = json.loads(res)
+            json_data = json.loads(res).decode()
             if json_data['res_code'] == '0':
                 access_token = json_data['access_token']
             else:
