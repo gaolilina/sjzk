@@ -12,8 +12,8 @@ import hashlib
 
 class RandCode(object):
 
-	APP_ID = ''
-	APP_SECRET = ''
+	APP_ID = '414085560000257238'
+	APP_SECRET = '0661fd8c18e40d60110020952ed6f454'
 	ACCESS_TOKEN = ''
 	RANDCODE_TOKEN = ''
 	TOKEN_API = 'https://oauth.api.189.cn/emp/oauth2/v2/access_token'
