@@ -121,10 +121,13 @@ class RandCode(object):
         if data:
             if isinstance(data, dict):
                 data = self.__build_request_string(data)
-                sign = hmac.new(self.APP_SECRET, urllib.parse.urlencode(data),
-                                hashlib.sha1).digest()
+                sign = hmac.new(
+                    self.APP_SECRET.encode('utf-8'),
+                    urllib.parse.urlencode(data), hashlib.sha1).digest()
             else:
-                sign = hmac.new(self.APP_SECRET, data, hashlib.sha1).digest()
+                sign = hmac.new(
+                    self.APP_SECRET.encode('utf-8'),
+                    data, hashlib.sha1).digest()
             result = "%s&sign=%s" % ( data, urllib.parse.quote(
                     sign.encode('base64').strip()) )
         return result
