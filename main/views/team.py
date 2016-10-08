@@ -200,6 +200,10 @@ class Profile(View):
         """
         if team.owner != request.user:
             team.visitors.update_or_create(visitor=request.user)
+        tag_list = []
+        tags = team.tags
+        for tag in tags:
+            tag_list.append(tag.name)
 
         r = dict()
         r['id'] = team.id
@@ -216,8 +220,7 @@ class Profile(View):
         r['province'] = team.province
         r['city'] = team.city
         r['county'] = team.county
-        r['tags'] = list(
-            team.tags.values_list('name', flat=True).order_by('name'))[0],
+        r['tags'] = tag_list
 
         return JsonResponse(r)
 
