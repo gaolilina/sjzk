@@ -199,7 +199,7 @@ class Profile(View):
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
         if team.owner != request.user:
-            team.visotors.update_or_create(visitor=request.user)
+            team.visitors.update_or_create(visitor=request.user)
 
         r = dict()
         r['id'] = team.id
@@ -465,7 +465,7 @@ class MemberRequestList(View):
         if request.user == team.owner:
             abort(403)
 
-        if team.members.exist(user=request.user):
+        if team.members.exists(user=request.user):
             abort(403)
 
         if team.member_requests.filter(user=request.user).exists():
