@@ -216,7 +216,8 @@ class Profile(View):
         r['province'] = team.province
         r['city'] = team.city
         r['county'] = team.county
-        r['tags'] = team.tags.values_list('name', flat=True).order_by('name'),
+        r['tags'] = list(
+            team.tags.values_list('name', flat=True).order_by('name')),
 
         return JsonResponse(r)
 
