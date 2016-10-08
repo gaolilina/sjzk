@@ -201,7 +201,7 @@ class Profile(View):
         if team.owner != request.user:
             team.visitors.update_or_create(visitor=request.user)
         tag_list = []
-        tags = team.tags
+        tags = team.tags.all()
         for tag in tags:
             tag_list.append(tag.name)
 
