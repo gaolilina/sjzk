@@ -592,7 +592,7 @@ class RelatedTeamList(View):
               'visitor_count': t.team.visitors.count(),
               'member_count': t.team.members.count(),
               'fields': [t.team.field1, t.team.field2],
-              'tags': t.team.tags.values_list('name', flat=True),
+              'tags': [tag.name for tag in t.team.tags.all()],
               'time_created': t.team.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
@@ -639,7 +639,7 @@ class OwnedTeamList(View):
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
-              'tags': t.tags.values_list('name', flat=True),
+              'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 

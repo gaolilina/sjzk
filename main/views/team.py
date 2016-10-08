@@ -65,8 +65,7 @@ class List(View):
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
-              'tags':
-                  list(t.tags.get_queryset().values_list('name', flat=True)),
+              'tags':[tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
@@ -168,8 +167,7 @@ class Search(View):
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
-              'tags':
-                  list(t.tags.get_queryset().values_list('name', flat=True)),
+              'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in teams.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
 
@@ -200,10 +198,6 @@ class Profile(View):
         """
         if team.owner != request.user:
             team.visitors.update_or_create(visitor=request.user)
-        tag_list = []
-        tags = team.tags.all()
-        for tag in tags:
-            tag_list.append(tag.name)
 
         r = dict()
         r['id'] = team.id
@@ -220,7 +214,7 @@ class Profile(View):
         r['province'] = team.province
         r['city'] = team.city
         r['county'] = team.county
-        r['tags'] = tag_list
+        r['tags'] = [tag.name for tag in team.tags.all()]
 
         return JsonResponse(r)
 
