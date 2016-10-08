@@ -1013,7 +1013,7 @@ class MemberNeedRequestList(View):
         if request.user == need.team.owner:
             abort(403)
 
-        if need.team.members.exists(user=request.user):
+        if need.team.members.filter(user=request.user).exists():
             abort(403)
 
         if need.team.member_requests.filter(user=request.user).exists():
