@@ -465,7 +465,7 @@ class MemberRequestList(View):
         if request.user == team.owner:
             abort(403)
 
-        if team.members.exists(user=request.user):
+        if team.members.filter(user=request.user).exists():
             abort(403)
 
         if team.member_requests.filter(user=request.user).exists():
