@@ -471,7 +471,7 @@ class MemberRequestList(View):
         if team.invitations.filter(user=request.user).exists():
             abort(403)
 
-        for need in team.needs:
+        for need in team.needs.all():
             if need.member_requests.filter(sender=request.user).exists():
                 abort(403)
 
