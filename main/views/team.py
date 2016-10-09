@@ -439,8 +439,8 @@ class MemberRequestList(View):
             l = [{'id': r.user.id,
                   'username': r.user.username,
                   'name': r.user.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.icon)
-                  if r.icon else '',
+                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.user.icon)
+                  if r.user.icon else '',
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
