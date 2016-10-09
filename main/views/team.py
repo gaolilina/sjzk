@@ -471,7 +471,7 @@ class MemberRequestList(View):
         if team.invitations.filter(user=request.user).exists():
             abort(403)
 
-        for need in team.needs:
+        for need in team.needs.all():
             if need.member_requests.filter(sender=request.user).exists():
                 abort(403)
 
@@ -990,7 +990,7 @@ class MemberNeedRequestList(View):
                   'username': r.sender.username,
                   'name': r.sender.name,
                   'icon_url': HttpResponseRedirect(UPLOADED_URL + r.sender.icon)
-                  if r.secder.icon else '',
+                  if r.sender.icon else '',
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
