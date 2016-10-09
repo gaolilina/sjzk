@@ -990,7 +990,7 @@ class MemberNeedRequestList(View):
                   'username': r.sender.username,
                   'name': r.sender.name,
                   'icon_url': HttpResponseRedirect(UPLOADED_URL + r.sender.icon)
-                  if r.secder.icon else '',
+                  if r.sender.icon else '',
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
