@@ -4,8 +4,7 @@ from django.utils import timezone
 from . import EnabledManager, Comment
 
 
-__all__ = ['Competition', 'CompetitionUserParticipator', 'CompetitionTeamParticipator',
-           'CompetitionComment']
+__all__ = ['Competition', 'CompetitionTeamParticipator', 'CompetitionComment']
 
 
 class Competition(models.Model):
