@@ -4,12 +4,12 @@ from django.utils import timezone
 from . import EnabledManager, Comment
 
 
-__all__ = ['Activity', 'ActivityUserParticipator', 'ActivityTeamParticipator',
-           'ActivityComment']
+__all__ = ['Competition', 'CompetitionUserParticipator', 'CompetitionTeamParticipator',
+           'CompetitionComment']
 
 
-class Activity(models.Model):
-    """活动基本信息"""
+class Competition(models.Model):
+    """竞赛基本信息"""
 
     name = models.CharField(max_length=50, db_index=True)
     content = models.CharField(max_length=1000)
@@ -25,24 +25,24 @@ class Activity(models.Model):
     enabled = EnabledManager()
 
     class Meta:
-        db_table = 'activity'
+        db_table = 'competition'
         ordering = ['-time_created']
 
 
-class ActivityUserParticipator(models.Model):
-    """活动参与者（用户）"""
+class CompetitionTeamParticipator(models.Model):
+    """竞赛参与者（团队）"""
 
-    activity = models.ForeignKey('Activity', models.CASCADE, 'user_participators')
-    user = models.ForeignKey('User', models.CASCADE, '+')
-
-    class Meta:
-        db_table = 'activity_user_participator'
-
-
-class ActivityComment(Comment):
-    """活动评论"""
-
-    entity = models.ForeignKey('Activity', models.CASCADE, 'comments')
+    competition = models.ForeignKey('Competition', models.CASCADE, 'team_participators')
+    team = models.ForeignKey('Team', models.CASCADE, '+')
 
     class Meta:
-        db_table = 'activity_comment'
+        db_table = 'competition_team_participator'
+
+
+class CompetitionComment(Comment):
+    """竞赛评论"""
+
+    entity = models.ForeignKey('Competition', models.CASCADE, 'comments')
+
+    class Meta:
+        db_table = 'competition_comment'
