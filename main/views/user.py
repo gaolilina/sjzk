@@ -418,7 +418,7 @@ class ValidationCode(View):
         if not phone_number.isdigit():
             abort(400)
         code = UserValidationCode.generate(phone_number)
-        data = {"mobile":{{phone_number}}, "vercode":{{code}}}
+        data = {"mobile": phone_number, "vercode": code}
         send_message(data)
         return JsonResponse({
             'validation_code': code,
