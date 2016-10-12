@@ -65,8 +65,7 @@ class List(View):
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
-              'tags':
-                  list(t.tags.get_queryset().values_list('name', flat=True)),
+              'tags':[tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
@@ -168,8 +167,7 @@ class Search(View):
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
-              'tags':
-                  list(t.tags.get_queryset().values_list('name', flat=True)),
+              'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in teams.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
 
@@ -199,7 +197,7 @@ class Profile(View):
             tags: 标签，格式：['tag1', 'tag2', ...]
         """
         if team.owner != request.user:
-            team.visotors.update_or_create(visitor=request.user)
+            team.visitors.update_or_create(visitor=request.user)
 
         r = dict()
         r['id'] = team.id
@@ -216,8 +214,7 @@ class Profile(View):
         r['province'] = team.province
         r['city'] = team.city
         r['county'] = team.county
-        r['tags'] = list(
-            team.tags.get_queryset().values_list('name', flat=True)),
+        r['tags'] = [tag.name for tag in team.tags.all()]
 
         return JsonResponse(r)
 
@@ -442,8 +439,8 @@ class MemberRequestList(View):
             l = [{'id': r.user.id,
                   'username': r.user.username,
                   'name': r.user.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.icon)
-                  if r.icon else '',
+                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.user.icon)
+                  if r.user.icon else '',
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
@@ -465,7 +462,7 @@ class MemberRequestList(View):
         if request.user == team.owner:
             abort(403)
 
-        if team.members.exist(user=request.user):
+        if team.members.filter(user=request.user).exists():
             abort(403)
 
         if team.member_requests.filter(user=request.user).exists():
@@ -474,7 +471,7 @@ class MemberRequestList(View):
         if team.invitations.filter(user=request.user).exists():
             abort(403)
 
-        for need in team.needs:
+        for need in team.needs.all():
             if need.member_requests.filter(sender=request.user).exists():
                 abort(403)
 
@@ -993,7 +990,7 @@ class MemberNeedRequestList(View):
                   'username': r.sender.username,
                   'name': r.sender.name,
                   'icon_url': HttpResponseRedirect(UPLOADED_URL + r.sender.icon)
-                  if r.secder.icon else '',
+                  if r.sender.icon else '',
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
@@ -1013,7 +1010,7 @@ class MemberNeedRequestList(View):
         if request.user == need.team.owner:
             abort(403)
 
-        if need.team.members.exist(user=request.user):
+        if need.team.members.filter(user=request.user).exists():
             abort(403)
 
         if need.team.member_requests.filter(user=request.user).exists():

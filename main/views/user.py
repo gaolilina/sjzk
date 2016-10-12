@@ -6,7 +6,7 @@ from django.views.generic import View
 from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL
-from ..utils import abort
+from ..utils import abort, send_message
 from ..utils.decorators import *
 from ..models import User, UserVisitor, UserExperience, UserValidationCode
 
@@ -55,8 +55,7 @@ class List(View):
               'name': u.name,
               'icon_url': HttpResponseRedirect(UPLOADED_URL + u.icon)
                     if u.icon else '',
-              'tags':
-                  list(u.tags.get_queryset().values_list('name', flat=True)),
+              'tags': [tag.name for tag in u.tags.all()],
               'gender': u.gender,
               'liker_count': u.likers.count(),
               'follower_count': u.followers.count(),
@@ -193,8 +192,7 @@ class Profile(View):
              'province': user.province,
              'city': user.city,
              'county': user.county,
-             'tags':
-                 list(user.tags.get_queryset().values_list('name', flat=True)),
+             'tags': [tag.name for tag in user.tags.all()],
              'follower_count': user.followers.count(),
              'followed_count': user.followed_users.count() + user.followed_teams.count(),
              'friend_count': user.friends.count(),
@@ -405,8 +403,7 @@ class Search(View):
               'visitor_count': u.visitor_count,
               'icon_url': HttpResponseRedirect(UPLOADED_URL + u.icon)
                     if u.icon else '',
-              'tags':
-                  list(u.tags.get_queryset().values_list('name', flat=True)),
+              'tags': [tag.name for tag in u.tags.all()],
               'time_created': u.time_created} for u in users.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
 
@@ -420,7 +417,9 @@ class ValidationCode(View):
 
         if not phone_number.isdigit():
             abort(400)
-
+        code = UserValidationCode.generate(phone_number)
+        data = {"mobile": phone_number, "vercode": code}
+        send_message(data)
         return JsonResponse({
-            'validation_code': UserValidationCode.generate(phone_number),
+            'validation_code': code,
         })

@@ -7,7 +7,7 @@ from ..utils import abort
 from ..utils.decorators import *
 
 
-__all__ = ['List', 'Detail', 'UserParticipatorList', 'TeamParticipatorList']
+__all__ = ['List', 'Detail', 'UserParticipatorList']
 
 
 class List(View):
@@ -75,35 +75,3 @@ class UserParticipatorList(View):
         if not activity.user_participators.filter(user=request.user).exists():
             activity.user_participators.create(user=request.user)
         abort(200)
-
-
-class TeamParticipatorList(View):
-    @fetch_object(Activity.enabled, 'activity')
-    @require_token
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
-    def get(self, request, activity, offset=0, limit=10):
-        """获取报名团队列表"""
-
-        c = activity.team_participators.count()
-        qs = activity.team_participators.all()[offset: offset + limit]
-        l = [{'id': p.team.id,
-              'name': p.team.name} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
-
-    @fetch_object(Activity.enabled, 'activity')
-    @validate_args({'team_id': forms.IntegerField()})
-    @require_token
-    def post(self, request, activity, team_id):
-        """报名"""
-
-        if not activity.allow_team:
-            abort(403)
-
-        try:
-            team = Team.enabled.get(id=team_id)
-        except Team.DoesNotExist:
-            abort(400)
-        else:
-            if not activity.team_participators.filter(team=team).exists():
-                activity.team_participators.create(team=team)
-            abort(200)
