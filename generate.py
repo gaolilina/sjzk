@@ -51,6 +51,22 @@ view_class_text = """class {{cls_name}}(View):
         template = loader.get_template("user/{{tbl_name}}.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
+
+class {{cls_name}}Search(View):
+    @require_cookie
+    @validate_args({
+        'username': forms.CharField(required=False, max_length=20),
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, username='', page=0):
+        list = []
+        if username == '':
+            uid = 0
+        else:
+            uid = User.objects.get(username=username).id
+        template = loader.get_template("user/search.html")
+        context = Context({'page': page, 'username': username, 'list': list})
+        return HttpResponse(template.render(context))
 """
 
 for mod_name, mod_class in inspect.getmembers(users):
@@ -75,9 +91,9 @@ for mod_name, mod_class in inspect.getmembers(users):
 </form>
 {% endblock %}
 
-{% block topbar %}{% include 'topbar.html' with tb=4 %}{% endblock %}
-{% block leftbar %}{% include 'leftbar.html' with tb=4 lb=1 %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb=4 lb=1 rb=1 %}{% endblock %}
+{% block topbar %}{% include 'topbar.html' with tb='user_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='user_admin' lb='user' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='user' rb='{{tbl_name}}' %}{% endblock %}
 
 {% block css %}
 <style>
@@ -129,17 +145,24 @@ for mod_name, mod_class in inspect.getmembers(users):
 
         tbl_name = mod_class._meta.db_table
         
-        url_text += "url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + ".as_view(), name='" + tbl_name + "'),"
+        url_text += "url(r'^" + tbl_name + "/$', " + mod_name  + "Search.as_view(), name='" + tbl_name + "_search'),url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + ".as_view(), name='" + tbl_name + "'),"
 
         args_text = ""
         content_text = ""
         for fld in mod_class._meta.get_fields():
             if isinstance(fld, models.CharField):
+                if fld.name == 'password':
+                    continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if fld.max_length > 0 else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'text')
+                if fld.name == 'gender':
+                    content_text += '<tr><td>' + fld.help_text + '：</td><td>{% include "parts/gender.html" %}</td></tr>'
+                elif fld.name == 'description':
+                    content_text += '<tr><td>' + fld.help_text + '：</td><td><textarea name=' + fld.name + '>{{ mod.' + fld.name + ' }}</textarea></td></tr>'
+                else:
+                    content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'text')
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
-                content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'text')
+                content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'datetime')
@@ -149,6 +172,8 @@ for mod_name, mod_class in inspect.getmembers(users):
             elif isinstance(fld, models.IntegerField):
                 args_text += "'" + fld.name + "': forms.IntegerField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'text')
+            elif isinstance(fld, models.ForeignKey):
+                content_text += '<tr><td>' + fld.help_text + '：</td><td><a href="{% url "admin:user:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         
         view_text += view_class_text.replace('{{cls_name}}', mod_name).replace('{{tbl_name}}', tbl_name).replace('{{args}}', args_text)
         template_file = codecs.open("./admin/templates/user/" + tbl_name + ".html", "w", "utf-8")

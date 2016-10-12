@@ -15,11 +15,20 @@
         </ul>
     {% endif %}
 {% endif %}
-{% if tb == 4 %}
-    {% if lb == 1 %}
+{% if tb == 'user_admin' %}
+    {% if lb == 'user' %}
         <ul>
-            <li{% if rb == 1 %} class="active"{% endif %}><a href="{% url 'admin:user:user' mod.id %}">个人信息</a></li>
-            <li{% if rb == 3 %} class="active"{% endif %}><a href="#">身份认证</a></li>
+            <li{% if rb == 'user' %} class="active"{% endif %}><a href="{% url 'admin:user:user_search' %}">用户信息</a></li>
+            <li{% if rb == 'user_action' %} class="active"{% endif %}><a href="{% url 'admin:user:user_action_search' %}">用户动态</a></li>
+            <li{% if rb == 'user_comment' %} class="active"{% endif %}><a href="{% url 'admin:user:user_comment_search' %}">用户评论</a></li>
+            <li{% if rb == 'user_experience' %} class="active"{% endif %}><a href="{% url 'admin:user:user_experience_search' %}">用户经历</a></li>
+            <li{% if rb == 'user_follower' %} class="active"{% endif %}><a href="{% url 'admin:user:user_follower_search' %}">用户关注</a></li>
+            <li{% if rb == 'user_friend' %} class="active"{% endif %}><a href="{% url 'admin:user:user_friend_search' %}">用户好友</a></li>
+            <li{% if rb == 'user_friend_request' %} class="active"{% endif %}><a href="{% url 'admin:user:user_friend_request_search' %}">好友申请</a></li>
+            <li{% if rb == 'user_liker' %} class="active"{% endif %}><a href="{% url 'admin:user:user_liker_search' %}">用户点赞</a></li>
+            <li{% if rb == 'user_tag' %} class="active"{% endif %}><a href="{% url 'admin:user:user_tag_search' %}">用户标签</a></li>
+            <li{% if rb == 'user_validation_code' %} class="active"{% endif %}><a href="{% url 'admin:user:user_validation_code_search' %}">验证码</a></li>
+            <li{% if rb == 'user_visitor' %} class="active"{% endif %}><a href="{% url 'admin:user:user_visitor_search' %}">用户访客</a></li>
         </ul>
     {% endif %}
 {% endif %}
