@@ -20,7 +20,7 @@ def send_message(data):
     data['pwd'] = 'c334c800ae8802557106fe09d70f3eb8'
     data['template'] = '100006'
     params = urllib.parse.urlencode(data)
-    print(111)
+    print(params)
     f = urllib.request.urlopen(
         "http://api.sms.cn/sms/?ac=send?%s" % params)
     print(f)

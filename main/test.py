@@ -11,20 +11,6 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 
-class MessageTestCase(TestCase):
-    def setUp(self):
-        pass
-
-    def send_message(self):
-        phone_number = '13051391335'
-        code = '123456'
-        data = {"mobile": phone_number, "content": {"code": code}}
-        print(000)
-        send_message(data)
-        print(222)
-
-
-'''
 class ExampleTestCase(TestCase):
     def setUp(self):
         # app_key = os.environ['APP_KEY']
@@ -32,9 +18,16 @@ class ExampleTestCase(TestCase):
         # self.rcloud = RongCloud(app_key, app_secret)
         self.rcloud = RongCloud()
 
+    def test_sendMessage(self):
+        phone_number = '18811611286'
+        # phone_number = '13051391335'
+        code = '123456'
+        data = {"mobile": phone_number, "content": json.dumps({"code": code})}
+        send_message(data)
+
     def log(self, title, message):
         logging.info('{0}: {1}'.format(title, message))
-
+'''
     def test_getToken(self):
         r = self.rcloud.User.getToken(
             userId='userId1',

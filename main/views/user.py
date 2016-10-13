@@ -1,3 +1,4 @@
+import json
 from django import forms
 from django.db import IntegrityError
 from django.http import JsonResponse, HttpResponseRedirect
@@ -418,7 +419,7 @@ class ValidationCode(View):
         if not phone_number.isdigit():
             abort(400)
         code = UserValidationCode.generate(phone_number)
-        data = {"mobile": phone_number, "content": {"code": code}}
+        data = {"mobile": phone_number, "content": json.dumps({"code": code})}
         send_message(data)
         return JsonResponse({
             'validation_code': code,
