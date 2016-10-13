@@ -4,7 +4,8 @@ from django.utils import timezone
 from . import EnabledManager, Comment
 
 
-__all__ = ['Competition', 'CompetitionTeamParticipator', 'CompetitionComment']
+__all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
+           'CompetitionComment']
 
 
 class Competition(models.Model):
@@ -27,6 +28,23 @@ class Competition(models.Model):
         db_table = 'competition'
         ordering = ['-time_created']
 
+
+class CompetitionStage(models.Model):
+    """竞赛阶段"""
+
+    competition = models.ForeignKey('Competition', models.CASCADE, 'stages')
+    # 0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
+    status = models.IntegerField(default=0, db_index=True)
+    province = models.CharField(max_length=20, default='', db_index=True)
+    city = models.CharField(max_length=20, default='', db_index=True)
+    min_member = models.IntegerField(default=1, db_index=True)
+    max_member = models.IntegerField(default=1, db_index=True)
+    school = models.CharField(max_length=20, default='')
+    # 0:不限, 1:学生, 2:教师, 3:社会人员
+    user_type = models.IntegerField(default=0, db_index=True)
+
+    class Meta:
+        db_table = 'competition_stage'
 
 class CompetitionTeamParticipator(models.Model):
     """竞赛参与者（团队）"""

@@ -4,7 +4,8 @@ from django.utils import timezone
 from . import EnabledManager, Comment
 
 
-__all__ = ['Activity', 'ActivityUserParticipator', 'ActivityComment']
+__all__ = ['Activity', 'ActivityStage','ActivityUserParticipator',
+           'ActivityComment']
 
 
 class Activity(models.Model):
@@ -26,6 +27,22 @@ class Activity(models.Model):
     class Meta:
         db_table = 'activity'
         ordering = ['-time_created']
+
+
+class ActivityStage(models.Model):
+    """活动阶段"""
+
+    activity = models.ForeignKey('Activity', models.CASCADE, 'stages')
+    # 0:前期宣传, 1:报名, 2:结束
+    status = models.IntegerField(default=0, db_index=True)
+    province = models.CharField(max_length=20, default='', db_index=True)
+    city = models.CharField(max_length=20, default='', db_index=True)
+    school = models.CharField(max_length=20, default='')
+    # 0:不限, 1:学生, 2:教师, 3:社会人员
+    user_type = models.IntegerField(default=0, db_index=True)
+
+    class Meta:
+        db_table = 'activity_stage'
 
 
 class ActivityUserParticipator(models.Model):
