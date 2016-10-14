@@ -419,7 +419,9 @@ class ValidationCode(View):
         if not phone_number.isdigit():
             abort(400)
         code = UserValidationCode.generate(phone_number)
-        data = {"mobile": phone_number, "content": json.dumps({"code": code})}
+        data = {"mobile": phone_number,
+                "content": "您本次的验证码为：" +
+                           code + "，如非本人操作，请忽略！【创易】"}
         send_message(data)
         return JsonResponse({
             'validation_code': code,

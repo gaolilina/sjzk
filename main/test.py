@@ -22,7 +22,8 @@ class ExampleTestCase(TestCase):
         phone_number = '18811611286'
         # phone_number = '13051391335'
         code = '123456'
-        data = {"mobile": phone_number, "content": json.dumps({"code": code})}
+        data = {"mobile": phone_number, "content":
+            "您本次的验证码为：" + code + "，如非本人操作，请忽略！【创易】"}
         send_message(data)
 
     def log(self, title, message):
