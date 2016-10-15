@@ -120,6 +120,8 @@ class List(View):
                         order += 1
 
         action.create_team(request.user, team)
+        request.user.score += 30
+        request.user.save()
         return JsonResponse({'team_id': team.id})
 
 

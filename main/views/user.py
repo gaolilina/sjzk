@@ -422,7 +422,7 @@ class ValidationCode(View):
         data = {"mobile": phone_number,
                 "content": "您本次的验证码为：" +
                            code + "，如非本人操作，请忽略！【创易】"}
-        send_message(data)
+        # send_message(data)
         return JsonResponse({
             'validation_code': code,
         })
