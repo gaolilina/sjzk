@@ -350,6 +350,8 @@ class FollowedUser(View):
         if request.user.followed_users.filter(follower=user).exists():
             abort(403)
         request.user.followed_users.create(followed=user)
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @fetch_object(User.enabled, 'user')
@@ -418,6 +420,8 @@ class FollowedTeam(View):
         if request.user.followed_teams.filter(follower=team).exists():
             abort(403)
         request.user.followed_teams.create(followed=team)
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @fetch_object(Team.enabled, 'team')
@@ -448,6 +452,8 @@ class Friend(Friend_):
 
         request.user.friends.create(other_user=other_user)
         other_user.friends.create(other_user=request.user)
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @fetch_object(User.enabled, 'other_user')
@@ -523,6 +529,8 @@ class LikedEntity(View):
 
         if not entity.likers.filter(liker=request.user).exists():
             entity.likers.create(liker=request.user)
+            request.user.score += 10
+            request.user.save()
         abort(200)
 
     @require_token
@@ -709,6 +717,8 @@ class Invitation(View):
             # 发布用户加入团队动态
             action.join_team(request.user, invitation.team)
             invitation.delete()
+            request.user.score += 10
+            request.user.save()
         abort(200)
 
     @fetch_object(TeamInvitation.objects, 'invitation')

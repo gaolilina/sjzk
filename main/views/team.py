@@ -641,6 +641,8 @@ class AchievementList(View):
             if filename:
                 achievement.picture = filename
         achievement.save()
+        request.user.score += 10
+        request.user.save()
         return JsonResponse({'achievement_id': achievement.id})
 
 
@@ -802,6 +804,8 @@ class NeedList(View):
         for k in kwargs:
             setattr(n, k, kwargs[k])
         n.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @validate_args({
@@ -828,6 +832,8 @@ class NeedList(View):
         for k in kwargs:
             setattr(n, k, kwargs[k])
         n.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @validate_args({
@@ -849,6 +855,8 @@ class NeedList(View):
         for k in kwargs:
             setattr(n, k, kwargs[k])
         n.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
 
@@ -948,6 +956,8 @@ class Need(View):
             abort(403)
         need.status = 1
         need.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @fetch_object(TeamNeed, 'need')
@@ -1048,6 +1058,8 @@ class MemberNeedRequest(View):
             need.member_requests.filter(sender=user).delete()
             need.team.members.create(user=user)
             action.join_team(user, need.team)
+            request.user.score += 10
+            request.user.save()
         abort(200)
 
     @fetch_object(TeamNeed.objects, 'need')
@@ -1114,6 +1126,8 @@ class NeedRequestList(View):
             abort(404)
         if request.user == team.owner:
             need.cooperation_requests.create(sender=team)
+            request.user.score += 10
+            request.user.save()
             abort(200)
         abort(404)
 
@@ -1172,6 +1186,8 @@ class NeedRequest(View):
                     abort(200)
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
+                request.user.score += 10
+                request.user.save()
             abort(200)
         abort(404)
 
@@ -1238,6 +1254,8 @@ class NeedInvitationList(View):
             abort(404)
         if request.user == team.owner:
             need.cooperation_invitations.create(invitee=team)
+            request.user.score += 10
+            request.user.save()
             abort(200)
         abort(404)
 
@@ -1296,6 +1314,8 @@ class NeedInvitation(View):
                     abort(200)
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
+                request.user.score += 10
+                request.user.save()
             abort(200)
         abort(404)
 
@@ -1393,6 +1413,8 @@ class InternalTaskList(View):
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
 
@@ -1662,6 +1684,8 @@ class ExternalTaskList(View):
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
 

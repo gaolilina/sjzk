@@ -100,6 +100,8 @@ class CommentList(View):
         """评论某个对象"""
 
         obj.comments.create(author=request.user, content=content)
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
 
