@@ -172,6 +172,7 @@ class Profile(View):
             unit1:
             unit2:
             profession:
+            score: 积分
         """
         user = user or request.user
 
@@ -205,7 +206,8 @@ class Profile(View):
              'role': user.role,
              'unit1': user.unit1,
              'unit2': user.unit2,
-             'profession': user.profession}
+             'profession': user.profession,
+             'score': user.score}
         return JsonResponse(r)
 
 

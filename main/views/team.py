@@ -197,6 +197,7 @@ class Profile(View):
             county:
             fields: 所属领域，格式：['field1', 'field2']
             tags: 标签，格式：['tag1', 'tag2', ...]
+            score: 积分
         """
         if team.owner != request.user:
             team.visitors.update_or_create(visitor=request.user)
@@ -216,6 +217,7 @@ class Profile(View):
         r['province'] = team.province
         r['city'] = team.city
         r['county'] = team.county
+        r['score'] = team.score
         r['tags'] = [tag.name for tag in team.tags.all()]
 
         return JsonResponse(r)
@@ -634,6 +636,10 @@ class AchievementList(View):
         if request.user != team.owner:
             abort(403)
 
+        achievement_num = team.achievements.count()
+        if achievement_num == 0:
+            team.score += 20
+
         achievement = TeamAchievement(team=team, description=description)
         picture = request.FILES.get('image')
         if picture:
@@ -641,8 +647,11 @@ class AchievementList(View):
             if filename:
                 achievement.picture = filename
         achievement.save()
+
         request.user.score += 10
         request.user.save()
+        team.score += 10
+        team.save()
         return JsonResponse({'achievement_id': achievement.id})
 
 
@@ -800,6 +809,11 @@ class NeedList(View):
         'time_graduated': forms.DateField(required=False),
     })
     def create_member_need(self, request, team, **kwargs):
+        team_needs = TeamNeed.objects.filter(team=team, type=0)
+        if team_needs.count() == 0:
+            team.score += 20
+            team.save()
+
         n = team.needs.create(type=0)
         for k in kwargs:
             setattr(n, k, kwargs[k])
@@ -828,6 +842,11 @@ class NeedList(View):
         'time_ended': forms.DateField(),
     })
     def create_outsource_need(self, request, team, **kwargs):
+        team_needs = TeamNeed.objects.filter(team=team, type=1)
+        if team_needs.count() == 0:
+            team.score += 20
+            team.save()
+
         n = team.needs.create(type=1)
         for k in kwargs:
             setattr(n, k, kwargs[k])
@@ -851,6 +870,11 @@ class NeedList(View):
         'time_ended': forms.DateField(),
     })
     def create_undertake_need(self, request, team, **kwargs):
+        team_needs = TeamNeed.objects.filter(team=team, type=2)
+        if team_needs.count() == 0:
+            team.score += 20
+            team.save()
+
         n = team.needs.create(type=2)
         for k in kwargs:
             setattr(n, k, kwargs[k])
@@ -1188,6 +1212,8 @@ class NeedRequest(View):
                 action.join_team(team.owner, need.team)
                 request.user.score += 10
                 request.user.save()
+                team.score += 10
+                team.save()
             abort(200)
         abort(404)
 
@@ -1316,6 +1342,8 @@ class NeedInvitation(View):
                 action.join_team(team.owner, need.team)
                 request.user.score += 10
                 request.user.save()
+                team.score += 10
+                team.save()
             abort(200)
         abort(404)
 
@@ -1415,6 +1443,8 @@ class InternalTaskList(View):
         t.save()
         request.user.score += 10
         request.user.save()
+        team.score += 10
+        team.save()
         abort(200)
 
 
@@ -1686,6 +1716,8 @@ class ExternalTaskList(View):
         t.save()
         request.user.score += 10
         request.user.save()
+        team.score += 10
+        team.save()
         abort(200)
 
 
