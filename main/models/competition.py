@@ -46,6 +46,7 @@ class CompetitionStage(models.Model):
     class Meta:
         db_table = 'competition_stage'
 
+
 class CompetitionTeamParticipator(models.Model):
     """竞赛参与者（团队）"""
 
