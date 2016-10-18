@@ -527,7 +527,7 @@ class Invitation(View):
         if team.member_requests.filter(user=user).exists():
             abort(403)
 
-        for need in team.needs:
+        for need in team.needs.all():
             if need.member_requests.filter(sender=request.user).exists():
                 abort(403)
 
@@ -1397,9 +1397,10 @@ class InternalTaskList(View):
                 qs = qs.filter(status__in=[5,6])
             else:
                 qs = qs.filter(status=7)
-
+            tasks = qs[offset:offset + limit]
+        else:
+            tasks = qs.all()[offset:offset + limit]
         c = qs.count()
-        tasks = qs[offset:offset + limit]
         l = [{'id': t.id,
               'status': t.status,
               'title': t.title,
@@ -1481,9 +1482,11 @@ class InternalTasks(View):
                 qs = qs.filter(status__in=[5,6])
             else:
                 qs = qs.filter(status=7)
+            tasks = qs[offset:offset + limit]
+        else:
+            tasks = qs.all()[offset:offset + limit]
 
         c = qs.count()
-        tasks = qs[offset:offset + limit]
         l = [{'id': t.id,
               'team_id': t.team.id,
               'team_name': t.team.name,
@@ -1650,9 +1653,10 @@ class ExternalTaskList(View):
                     qs = qs.filter(status__range=[0,8])
                 else:
                     qs = qs.filter(status__in=[9,10])
-
+                tasks = qs[offset:offset + limit]
+            else:
+                tasks = qs.all()[offset:offset + limit]
             c = qs.count()
-            tasks = qs[offset:offset + limit]
             l = [{'id': t.id,
                   'status': t.status,
                   'title': t.title,

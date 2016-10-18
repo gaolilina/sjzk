@@ -231,7 +231,7 @@ class ExperienceList(View):
         """
         user = user or request.user
 
-        c = user.education_experiences.filter(type=type).count()
+        c = user.experiences.filter(type=type).count()
         l = [{'id': e.id,
               'description': e.description,
               'unit': e.unit,
