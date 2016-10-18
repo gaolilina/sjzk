@@ -261,6 +261,7 @@ class Experience(View):
             abort(403)
         for k in kwargs:
             setattr(exp, k, kwargs[k])
+        exp.save()
         abort(200)
 
     @fetch_object(UserExperience.objects, 'exp')
