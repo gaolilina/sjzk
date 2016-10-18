@@ -237,8 +237,8 @@ class ExperienceList(View):
               'unit': e.unit,
               'profession': e.profession,
               'degree': e.degree,
-              'time_in': e.begin_time,
-              'time_out': e.end_time,
+              'time_in': e.time_in,
+              'time_out': e.time_out,
               } for e in user.experiences.filter(type=type)]
         return JsonResponse({'count': c, 'list': l})
 
