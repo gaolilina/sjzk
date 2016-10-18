@@ -279,7 +279,7 @@ class ExperienceList(ExperienceList_):
 
         request.user.experiences.create(
             type=type, description=kwargs['description'], unit=kwargs['unit'],
-            profession=kwargs['profession'], degree=['degree'],
+            profession=kwargs['profession'], degree=kwargs['degree'],
             time_in=kwargs['time_in'], time_out=kwargs['time_out']
         )
         request.user.score += 50
