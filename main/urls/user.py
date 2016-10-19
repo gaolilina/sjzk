@@ -11,6 +11,9 @@ urls = [
     url(r'^token/$', Token.as_view(), name='token'),
     url(r'^(?P<user_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
     url(r'^(?P<user_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
+    # 获取某用户的团队
+    url(r'^(?P<user_id>[0-9]+)/teams/$',
+        TeamList.as_view(), name='others_teams'),
     # 动态
     url(r'^(?P<user_id>[0-9]+)/actions/$', UserActionList.as_view(),
         name='actions'),
