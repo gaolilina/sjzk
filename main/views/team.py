@@ -120,6 +120,8 @@ class List(View):
                         order += 1
 
         action.create_team(request.user, team)
+        request.user.score += 30
+        request.user.save()
         return JsonResponse({'team_id': team.id})
 
 
@@ -195,6 +197,7 @@ class Profile(View):
             county:
             fields: 所属领域，格式：['field1', 'field2']
             tags: 标签，格式：['tag1', 'tag2', ...]
+            score: 积分
         """
         if team.owner != request.user:
             team.visitors.update_or_create(visitor=request.user)
@@ -214,6 +217,7 @@ class Profile(View):
         r['province'] = team.province
         r['city'] = team.city
         r['county'] = team.county
+        r['score'] = team.score
         r['tags'] = [tag.name for tag in team.tags.all()]
 
         return JsonResponse(r)
@@ -523,7 +527,7 @@ class Invitation(View):
         if team.member_requests.filter(user=user).exists():
             abort(403)
 
-        for need in team.needs:
+        for need in team.needs.all():
             if need.member_requests.filter(sender=request.user).exists():
                 abort(403)
 
@@ -632,6 +636,10 @@ class AchievementList(View):
         if request.user != team.owner:
             abort(403)
 
+        achievement_num = team.achievements.count()
+        if achievement_num == 0:
+            team.score += 20
+
         achievement = TeamAchievement(team=team, description=description)
         picture = request.FILES.get('image')
         if picture:
@@ -639,6 +647,11 @@ class AchievementList(View):
             if filename:
                 achievement.picture = filename
         achievement.save()
+
+        request.user.score += 10
+        request.user.save()
+        team.score += 10
+        team.save()
         return JsonResponse({'achievement_id': achievement.id})
 
 
@@ -796,10 +809,17 @@ class NeedList(View):
         'time_graduated': forms.DateField(required=False),
     })
     def create_member_need(self, request, team, **kwargs):
+        team_needs = TeamNeed.objects.filter(team=team, type=0)
+        if team_needs.count() == 0:
+            team.score += 20
+            team.save()
+
         n = team.needs.create(type=0)
         for k in kwargs:
             setattr(n, k, kwargs[k])
         n.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @validate_args({
@@ -822,10 +842,17 @@ class NeedList(View):
         'time_ended': forms.DateField(),
     })
     def create_outsource_need(self, request, team, **kwargs):
+        team_needs = TeamNeed.objects.filter(team=team, type=1)
+        if team_needs.count() == 0:
+            team.score += 20
+            team.save()
+
         n = team.needs.create(type=1)
         for k in kwargs:
             setattr(n, k, kwargs[k])
         n.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @validate_args({
@@ -843,10 +870,17 @@ class NeedList(View):
         'time_ended': forms.DateField(),
     })
     def create_undertake_need(self, request, team, **kwargs):
+        team_needs = TeamNeed.objects.filter(team=team, type=2)
+        if team_needs.count() == 0:
+            team.score += 20
+            team.save()
+
         n = team.needs.create(type=2)
         for k in kwargs:
             setattr(n, k, kwargs[k])
         n.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
 
@@ -946,6 +980,8 @@ class Need(View):
             abort(403)
         need.status = 1
         need.save()
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @fetch_object(TeamNeed, 'need')
@@ -1046,6 +1082,8 @@ class MemberNeedRequest(View):
             need.member_requests.filter(sender=user).delete()
             need.team.members.create(user=user)
             action.join_team(user, need.team)
+            request.user.score += 10
+            request.user.save()
         abort(200)
 
     @fetch_object(TeamNeed.objects, 'need')
@@ -1112,6 +1150,8 @@ class NeedRequestList(View):
             abort(404)
         if request.user == team.owner:
             need.cooperation_requests.create(sender=team)
+            request.user.score += 10
+            request.user.save()
             abort(200)
         abort(404)
 
@@ -1170,6 +1210,10 @@ class NeedRequest(View):
                     abort(200)
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
+                request.user.score += 10
+                request.user.save()
+                team.score += 10
+                team.save()
             abort(200)
         abort(404)
 
@@ -1236,6 +1280,8 @@ class NeedInvitationList(View):
             abort(404)
         if request.user == team.owner:
             need.cooperation_invitations.create(invitee=team)
+            request.user.score += 10
+            request.user.save()
             abort(200)
         abort(404)
 
@@ -1294,6 +1340,10 @@ class NeedInvitation(View):
                     abort(200)
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
+                request.user.score += 10
+                request.user.save()
+                team.score += 10
+                team.save()
             abort(200)
         abort(404)
 
@@ -1347,9 +1397,10 @@ class InternalTaskList(View):
                 qs = qs.filter(status__in=[5,6])
             else:
                 qs = qs.filter(status=7)
-
+            tasks = qs[offset:offset + limit]
+        else:
+            tasks = qs.all()[offset:offset + limit]
         c = qs.count()
-        tasks = qs[offset:offset + limit]
         l = [{'id': t.id,
               'status': t.status,
               'title': t.title,
@@ -1391,6 +1442,10 @@ class InternalTaskList(View):
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
+        request.user.score += 10
+        request.user.save()
+        team.score += 10
+        team.save()
         abort(200)
 
 
@@ -1427,9 +1482,11 @@ class InternalTasks(View):
                 qs = qs.filter(status__in=[5,6])
             else:
                 qs = qs.filter(status=7)
+            tasks = qs[offset:offset + limit]
+        else:
+            tasks = qs.all()[offset:offset + limit]
 
         c = qs.count()
-        tasks = qs[offset:offset + limit]
         l = [{'id': t.id,
               'team_id': t.team.id,
               'team_name': t.team.name,
@@ -1596,9 +1653,10 @@ class ExternalTaskList(View):
                     qs = qs.filter(status__range=[0,8])
                 else:
                     qs = qs.filter(status__in=[9,10])
-
+                tasks = qs[offset:offset + limit]
+            else:
+                tasks = qs.all()[offset:offset + limit]
             c = qs.count()
-            tasks = qs[offset:offset + limit]
             l = [{'id': t.id,
                   'status': t.status,
                   'title': t.title,
@@ -1660,6 +1718,10 @@ class ExternalTaskList(View):
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
+        request.user.score += 10
+        request.user.save()
+        team.score += 10
+        team.save()
         abort(200)
 
 

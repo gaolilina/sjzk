@@ -5,6 +5,7 @@ import logging
 
 from django.test import TestCase
 from rongcloud import RongCloud
+from .utils import send_message
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.INFO)
@@ -17,9 +18,17 @@ class ExampleTestCase(TestCase):
         # self.rcloud = RongCloud(app_key, app_secret)
         self.rcloud = RongCloud()
 
+    def test_sendMessage(self):
+        # phone_number = '18811611286'
+        phone_number = '13051391335'
+        code = '123456'
+        data = {"mobile": phone_number, "content":
+            "您本次的验证码为：" + code + "，如非本人操作，请忽略！【创易】"}
+        send_message(data)
+
     def log(self, title, message):
         logging.info('{0}: {1}'.format(title, message))
-
+'''
     def test_getToken(self):
         r = self.rcloud.User.getToken(
             userId='userId1',
@@ -415,4 +424,4 @@ class ExampleTestCase(TestCase):
         self.log('verifyCode', r)
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
-
+'''

@@ -52,6 +52,9 @@ class User(models.Model):
     # 专用或职业
     profession = models.CharField(max_length=20, default='')
 
+    # 用户积分
+    score = models.IntegerField(default=50, db_index=True)
+
     objects = models.Manager()
     enabled = EnabledManager()
 

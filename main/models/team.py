@@ -25,6 +25,9 @@ class Team(models.Model):
     is_recruiting = models.BooleanField(default=True, db_index=True)
     is_enabled = models.BooleanField(default=True, db_index=True)
 
+    # 团队积分
+    score = models.IntegerField(default=50, db_index=True)
+
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     enabled = EnabledManager()

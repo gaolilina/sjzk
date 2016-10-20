@@ -1,3 +1,4 @@
+import json
 from django import forms
 from django.db import IntegrityError
 from django.http import JsonResponse, HttpResponseRedirect
@@ -12,7 +13,7 @@ from ..models import User, UserVisitor, UserExperience, UserValidationCode
 
 
 __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
-           'FriendList', 'Friend', 'FriendRequestList', 'Search',
+           'FriendList', 'Friend', 'FriendRequestList', 'Search', 'TeamList',
            'ValidationCode']
 
 
@@ -171,6 +172,7 @@ class Profile(View):
             unit1:
             unit2:
             profession:
+            score: 积分
         """
         user = user or request.user
 
@@ -204,7 +206,8 @@ class Profile(View):
              'role': user.role,
              'unit1': user.unit1,
              'unit2': user.unit2,
-             'profession': user.profession}
+             'profession': user.profession,
+             'score': user.score}
         return JsonResponse(r)
 
 
@@ -228,14 +231,14 @@ class ExperienceList(View):
         """
         user = user or request.user
 
-        c = user.education_experiences.filter(type=type).count()
+        c = user.experiences.filter(type=type).count()
         l = [{'id': e.id,
               'description': e.description,
               'unit': e.unit,
               'profession': e.profession,
               'degree': e.degree,
-              'time_in': e.begin_time,
-              'time_out': e.end_time,
+              'time_in': e.time_in,
+              'time_out': e.time_out,
               } for e in user.experiences.filter(type=type)]
         return JsonResponse({'count': c, 'list': l})
 
@@ -258,6 +261,7 @@ class Experience(View):
             abort(403)
         for k in kwargs:
             setattr(exp, k, kwargs[k])
+        exp.save()
         abort(200)
 
     @fetch_object(UserExperience.objects, 'exp')
@@ -408,6 +412,54 @@ class Search(View):
         return JsonResponse({'count': c, 'list': l})
 
 
+class TeamList(View):
+    ORDERS = ('team__time_created', '-team__time_created',
+              'team__name', '-team__name')
+
+    @fetch_object(User.enabled, 'user')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, user, offset=0, limit=10, order=1):
+        """获取某用户的团队列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 团队总数
+            list: 团队列表
+                id: 团队ID
+                name: 团队名
+                owner_id: 创建者ID
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                member_count: 团队成员人数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        c = user.teams.count()
+        teams = user.teams.order_by(k)[i:j]
+        l = [{'id': t.team.id,
+              'name': t.team.name,
+              'owner_id': t.team.owner.id,
+              'liker_count': t.team.likers.count(),
+              'visitor_count': t.team.visitors.count(),
+              'member_count': t.team.members.count(),
+              'fields': [t.team.field1, t.team.field2],
+              'tags': [tag.name for tag in t.team.tags.all()],
+              'time_created': t.team.time_created} for t in teams]
+        return JsonResponse({'count': c, 'list': l})
+
+
 class ValidationCode(View):
     @validate_args({
         'phone_number': forms.CharField(min_length=11, max_length=11),
@@ -418,8 +470,10 @@ class ValidationCode(View):
         if not phone_number.isdigit():
             abort(400)
         code = UserValidationCode.generate(phone_number)
-        data = {"mobile": phone_number, "vercode": code}
-        send_message(data)
+        data = {"mobile": phone_number,
+                "content": "您本次的验证码为：" +
+                           code + "，如非本人操作，请忽略！【创易】"}
+        # send_message(data)
         return JsonResponse({
             'validation_code': code,
         })

@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.db import IntegrityError
 from django.db import transaction
@@ -24,7 +25,8 @@ class Username(View):
     @require_token
     def get(self, request):
         """获取当前用户的用户名"""
-
+        request.user.score += 10
+        request.user.save()
         return JsonResponse({'username': request.user.username})
 
     @require_token
@@ -91,6 +93,8 @@ class Icon(Icon_):
 
         filename = save_uploaded_image(icon)
         if filename:
+            if not request.user.icon:
+                request.user.score += 50
             request.user.icon = filename
             request.user.save()
             # 用户头像更换后调用融云接口更改融云上的用户头像
@@ -126,6 +130,8 @@ class IDCard(View):
 
         filename = save_uploaded_image(id_card, is_private=True)
         if filename:
+            if not request.user.id_card:
+                request.user.score += 200
             request.user.id_card = filename
             request.user.save()
             abort(200)
@@ -154,6 +160,8 @@ class OtherCard(View):
 
         filename = save_uploaded_image(other_card, is_private=True)
         if filename:
+            if not request.user.other_card:
+                request.user.score += 200
             request.user.other_card = filename
             request.user.save()
             abort(200)
@@ -207,8 +215,10 @@ class Profile(Profile_):
             profession:
         """
 
-        name = kwargs.pop('name', None)
-        if name:
+        name = kwargs.pop('name', '')
+        if len(name) > 0:
+            if re.match(r'创易用户 #\w+', name):
+                request.user.score += 50
             request.user.name = name
             # 用户昵称更换后调用融云接口更改融云上的用户头像
             if request.user.icon:
@@ -248,6 +258,8 @@ class Profile(Profile_):
             for k in role_keys:
                 setattr(request.user, k, kwargs[k])
 
+        request.user.score += 50
+        request.user.save()
         abort(200)
 
 
@@ -267,9 +279,11 @@ class ExperienceList(ExperienceList_):
 
         request.user.experiences.create(
             type=type, description=kwargs['description'], unit=kwargs['unit'],
-            profession=kwargs['profession'], degree=['degree'],
+            profession=kwargs['profession'], degree=kwargs['degree'],
             time_in=kwargs['time_in'], time_out=kwargs['time_out']
         )
+        request.user.score += 50
+        request.user.save()
         abort(200)
 
     @require_token
@@ -336,6 +350,8 @@ class FollowedUser(View):
         if request.user.followed_users.filter(follower=user).exists():
             abort(403)
         request.user.followed_users.create(followed=user)
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @fetch_object(User.enabled, 'user')
@@ -404,6 +420,8 @@ class FollowedTeam(View):
         if request.user.followed_teams.filter(follower=team).exists():
             abort(403)
         request.user.followed_teams.create(followed=team)
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @fetch_object(Team.enabled, 'team')
@@ -434,6 +452,8 @@ class Friend(Friend_):
 
         request.user.friends.create(other_user=other_user)
         other_user.friends.create(other_user=request.user)
+        request.user.score += 10
+        request.user.save()
         abort(200)
 
     @fetch_object(User.enabled, 'other_user')
@@ -509,6 +529,8 @@ class LikedEntity(View):
 
         if not entity.likers.filter(liker=request.user).exists():
             entity.likers.create(liker=request.user)
+            request.user.score += 10
+            request.user.save()
         abort(200)
 
     @require_token
@@ -695,6 +717,8 @@ class Invitation(View):
             # 发布用户加入团队动态
             action.join_team(request.user, invitation.team)
             invitation.delete()
+            request.user.score += 10
+            request.user.save()
         abort(200)
 
     @fetch_object(TeamInvitation.objects, 'invitation')
