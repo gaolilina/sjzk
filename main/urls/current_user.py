@@ -13,6 +13,8 @@ urls = [
     url(r'^id_card/$', IDCard.as_view(), name='id_card'),
     url(r'^other_card/$', OtherCard.as_view(), name='other_card'),
     url(r'^profile/$', Profile.as_view(), name='profile'),
+    url(r'^identity_verification/$',
+        IdentityVerification.as_view(), name='identity_verification'),
     # 动态
     url(r'actions/$', UserActionList.as_view(), name='actions'),
     # 评论

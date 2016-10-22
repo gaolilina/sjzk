@@ -4,9 +4,9 @@ from PIL import Image
 from django.utils import timezone
 
 from .abort import abort
-from .http import send_message
+from .http import send_message, identity_verify
 
-__all__ = ['abort', 'send_message','save_uploaded_image']
+__all__ = ['abort', 'send_message', 'identity_verify', 'save_uploaded_image']
 
 
 def save_uploaded_image(image, is_private=False):

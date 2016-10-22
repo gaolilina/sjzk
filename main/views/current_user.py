@@ -8,7 +8,7 @@ from django.views.generic import View
 from ChuangYi.settings import UPLOADED_URL
 from rongcloud import RongCloud
 from ..models import User, Team
-from ..utils import abort, action, save_uploaded_image
+from ..utils import abort, action, save_uploaded_image, identity_verify
 from ..utils.decorators import *
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
     ExperienceList_, FriendList, Friend as Friend_
@@ -18,7 +18,8 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'ExperienceList', 'FollowedUserList', 'FollowedUser',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
-           'RelatedTeamList', 'OwnedTeamList', 'InvitationList', 'Invitation']
+           'RelatedTeamList', 'OwnedTeamList', 'InvitationList', 'Invitation',
+           'IdentityVerification']
 
 
 class Username(View):
@@ -183,9 +184,6 @@ class Profile(Profile_):
         'city': forms.CharField(required=False, max_length=20),
         'county': forms.CharField(required=False, max_length=20),
         'tags': forms.CharField(required=False, max_length=100),
-        'real_name': forms.CharField(required=False, max_length=20),
-        'id_number': forms.CharField(
-            required=False, min_length=18, max_length=18),
         'role': forms.CharField(required=False, max_length=20),
         'unit1': forms.CharField(required=False, max_length=20),
         'unit2': forms.CharField(required=False, max_length=20),
@@ -206,8 +204,6 @@ class Profile(Profile_):
             city:
             county:
             tags: 标签，格式：'tag1|tag2|...'，最多5个
-            real_name:
-            id_number:
             role:
             other_number:
             unit1:
@@ -248,16 +244,42 @@ class Profile(Profile_):
                     request.user.tags.create(name=tag, order=order)
                     order += 1
 
-        id_keys = ('real_name', 'id_number')
-        if not request.user.is_verified:
-            for k in id_keys:
-                setattr(request.user, k, kwargs[k])
-
         role_keys = ('role', 'other_number', 'unit1', 'unit2', 'profession')
         if not request.user.is_role_verified:
             for k in role_keys:
                 setattr(request.user, k, kwargs[k])
 
+        request.user.score += 50
+        request.user.save()
+        abort(200)
+
+
+# noinspection PyClassHasNoInit
+class IdentityVerification(Profile_):
+    @require_token
+    @validate_args({
+        'real_name': forms.CharField(required=False, max_length=20),
+        'id_number': forms.CharField(
+            required=False, min_length=18, max_length=18),
+    })
+    def post(self, request, **kwargs):
+        """实名认证
+
+        :param kwargs:
+            real_name:
+            id_number:
+        """
+
+        id_keys = ('real_name', 'id_number')
+        # 调用第三方接口验证身份证的正确性
+        res = identity_verify(kwargs['id_number'])
+        error_code = res["error_code"]
+        if error_code != 0:
+            abort(404, res["reason"])
+
+        if not request.user.is_verified:
+            for k in id_keys:
+                setattr(request.user, k, kwargs[k])
         request.user.score += 50
         request.user.save()
         abort(200)

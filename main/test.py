@@ -5,7 +5,7 @@ import logging
 
 from django.test import TestCase
 from rongcloud import RongCloud
-from .utils import send_message
+from .utils import send_message, identity_verify
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.INFO)
@@ -28,6 +28,23 @@ class ExampleTestCase(TestCase):
 
     def log(self, title, message):
         logging.info('{0}: {1}'.format(title, message))
+
+    def test_identityVerify(self):
+        id_number = '430723199212023303'
+        res = identity_verify(id_number)
+        print(res)
+        error_code = res['error_code']
+        print(error_code)
+        if error_code == 203801:
+            print('请输入正确的15或18位身份证')
+        elif error_code == 203802:
+            print('错误的身份证或无结果')
+        elif error_code == 203803:
+            print('身份证校验位不正确')
+        elif error_code == 203804:
+            print('查询失败')
+        else:
+            print('验证成功')
 '''
     def test_getToken(self):
         r = self.rcloud.User.getToken(
