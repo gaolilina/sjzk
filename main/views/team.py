@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.views.generic import View
+from rongcloud import RongCloud
 import json
 
 from ChuangYi.settings import UPLOADED_URL
@@ -81,7 +82,7 @@ class List(View):
         'tags': forms.CharField(required=False, max_length=100),
     })
     def post(self, request, **kwargs):
-        """新建团队
+        """新建团队，同时调用融云接口为该团队创建一个对应的群聊
 
         :param kwargs:
             name: 团队名称
@@ -99,10 +100,17 @@ class List(View):
         tags = kwargs.pop('tags', None)
 
         team = Team(owner=request.user, name=name)
+        # 调用融云接口创建团队群聊
+        rcloud = RongCloud()
+        r = rcloud.Group.create(
+            userId=request.user.id,
+            groupId=team.id,
+            groupName=name)
+        if r.result['code'] != 200:
+            abort(404, 'create group chat failed')
 
         for k in kwargs:
             setattr(team, k, kwargs[k])
-
         fields = fields.split('|')[:2] if fields is not None else ('', '')
         team.field1, team.field2 = fields[0].strip(), fields[1].strip()
         team.save()
@@ -258,6 +266,12 @@ class Profile(View):
 
         for k in kwargs:
             setattr(team, k, kwargs[k])
+            if k == "name":
+                rcloud = RongCloud()
+                r = rcloud.Group.refresh(
+                    groupId=team.id, groupName=kwargs['name'])
+                if r.result['code'] != 200:
+                    abort(404, 'refresh group chat failed')
 
         if fields:
             fields = fields.split('|')[:2]
@@ -386,6 +400,15 @@ class Member(View):
         if team.members.filter(user=user).exists():
             abort(200)
 
+        # 调用融云接口将用户添加进团队群聊
+        rcloud = RongCloud()
+        r = rcloud.Group.join(
+            userId=user.id,
+            groupId=team.id,
+            groupName=team.name)
+        if r.result['code'] != 200:
+            abort(404, 'add member to group chat failed')
+
         # 在事务中建立关系，并删除对应的加团队申请
         with transaction.atomic():
             team.member_requests.filter(user=user).delete()
@@ -406,6 +429,14 @@ class Member(View):
 
         qs = team.members.filter(user=user)
         if qs.exists():
+            # 调用融云接口从团队群聊中删除该用户
+            rcloud = RongCloud()
+            r = rcloud.Group.quit(
+                userId=user.id,
+                groupId=team.id)
+            if r.result['code'] != 200:
+                abort(404, 'remove member from group chat failed')
+
             qs.delete()
             abort(200)
         abort(404)

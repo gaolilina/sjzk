@@ -733,6 +733,15 @@ class Invitation(View):
             invitation.delete()
             abort(200)
 
+        # 调用融云接口将用户添加进团队群聊
+        rcloud = RongCloud()
+        r = rcloud.Group.join(
+            userId=request.user.id,
+            groupId=invitation.team.id,
+            groupName=invitation.team.name)
+        if r.result['code'] != 200:
+            abort(404, 'add member to group chat failed')
+
         # 在事务中建立关系，并删除对应的加团队邀请
         with transaction.atomic():
             invitation.team.members.create(user=request.user)
