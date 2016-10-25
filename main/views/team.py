@@ -31,6 +31,7 @@ class List(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -139,6 +140,7 @@ class Search(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
         'name': forms.CharField(max_length=20),
     })
@@ -341,8 +343,8 @@ class MemberList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-
     })
     def get(self, request, team, offset=0, limit=10, order=1):
         """获取团队的成员列表
@@ -444,7 +446,10 @@ class Member(View):
 
 class MemberRequestList(View):
     @fetch_object(Team.enabled, 'team')
-    @validate_args({'offset': forms.IntegerField(required=False)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     @require_token
     def get(self, request, team, offset=0, limit=10):
         """获取团队的加入申请列表
@@ -573,6 +578,7 @@ class AllAchievementList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -626,6 +632,7 @@ class AchievementList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, team, offset=0, limit=10, order=1):
@@ -692,6 +699,7 @@ class AllNeedList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, type=None, offset=0, limit=10):
         """
@@ -1032,6 +1040,7 @@ class MemberNeedRequestList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, need, offset=0, limit=10):
         """获取人员需求的加入申请列表
@@ -1139,6 +1148,7 @@ class NeedRequestList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, need, team, offset=0, limit=10):
         """获取需求的合作申请列表
@@ -1192,6 +1202,7 @@ class NeedRequest(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, team, offset=0, limit=10):
         """获取团队发出的的合作申请列表
@@ -1270,6 +1281,7 @@ class NeedInvitationList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, need, team, offset=0, limit=10):
         """获取需求的合作邀请列表
@@ -1322,6 +1334,7 @@ class NeedInvitation(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, team, offset=0, limit=10):
         """获取当前团队的需求合作邀请列表

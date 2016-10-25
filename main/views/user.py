@@ -23,6 +23,7 @@ class List(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -285,6 +286,7 @@ class FriendList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, user=None, offset=0, limit=10, order=1):
@@ -364,6 +366,7 @@ class Search(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
         'username': forms.CharField(max_length=20),
     })
@@ -420,6 +423,7 @@ class TeamList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, user, offset=0, limit=10, order=1):

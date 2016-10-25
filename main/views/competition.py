@@ -12,7 +12,10 @@ __all__ = ['List', 'Detail', 'TeamParticipatorList']
 
 class List(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     def get(self, request, offset=0, limit=10):
         """获取活动列表"""
 
@@ -53,7 +56,10 @@ class Detail(View):
 class TeamParticipatorList(View):
     @fetch_object(Competition.enabled, 'competition')
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     def get(self, request, competition, offset=0, limit=10):
         """获取报名团队列表"""
 

@@ -325,6 +325,7 @@ class FollowedUserList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -397,6 +398,7 @@ class FollowedTeamList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -497,7 +499,10 @@ class Friend(Friend_):
 # noinspection PyClassHasNoInit
 class FriendRequestList(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     def get(self, request, offset, limit=10):
         """按请求时间逆序获取当前用户收到的的好友请求信息，
         拉取后的请求标记为已读
@@ -601,6 +606,7 @@ class RelatedTeamList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -648,6 +654,7 @@ class OwnedTeamList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -691,7 +698,10 @@ class OwnedTeamList(View):
 # noinspection PyClassHasNoInit
 class InvitationList(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     def get(self, request, offset=0, limit=10):
         """获取当前用户的团队邀请列表
 

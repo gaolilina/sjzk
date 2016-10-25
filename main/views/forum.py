@@ -17,6 +17,7 @@ class BoardList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1, owned_only=False):
@@ -94,7 +95,10 @@ class Board(View):
 
 class PostList(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     @fetch_object(ForumBoard.enabled, 'board')
     def get(self, request, board, offset=0, limit=10):
         """获取主题帖列表
@@ -133,7 +137,10 @@ class PostList(View):
 
 class Post(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     @fetch_object(ForumPost.objects, 'post')
     def get(self, request, post, offset=0, limit=10):
         """获取主题帖的回帖列表

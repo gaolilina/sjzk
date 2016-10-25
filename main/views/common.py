@@ -22,6 +22,7 @@ __all__ = ['UserActionList', 'TeamActionList', 'UserCommentList',
 class ActionList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, entity, offset=0, limit=10):
         """获取对象的动态列表
@@ -71,6 +72,7 @@ class TeamActionList(ActionList):
 class CommentList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, entity=None, offset=0, limit=10):
         """获取对象的评论列表
@@ -334,6 +336,7 @@ class LikerList(View):
 
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, obj, offset=0, limit=10, order=1):
@@ -408,7 +411,10 @@ class TeamLiker(Liker):
 
 
 class VisitorList(View):
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     def get(self, request, entity, offset=0, limit=10):
         """获取对象的访客列表
 

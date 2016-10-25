@@ -3,6 +3,9 @@
 import json
 import logging
 
+from django.core.urlresolvers import reverse
+from django.test import Client, TestCase
+from .models import User, Team
 from django.test import TestCase
 from rongcloud import RongCloud
 from .utils import send_message, identity_verify
@@ -17,7 +20,32 @@ class ExampleTestCase(TestCase):
         # app_secret = os.environ['APP_SECRET']
         # self.rcloud = RongCloud(app_key, app_secret)
         self.rcloud = RongCloud()
-
+        self.c = Client()
+        user1 = User('111')
+        user2 = User('222')
+        self.s1 = Team(owner=user1, name='aaa')
+        self.s1.save()
+        self.s2 = Team(owner=user2, name='bbb')
+        self.s2.save()
+        self.s3 = Team(owner=user2, name='ccc')
+        self.s3.save()
+        self.s4 = Team(owner=user2, name='ddd')
+        self.s4.save()
+        self.s5 = Team(owner=user2, name='eee')
+        self.s5.save()
+        self.s6 = Team(owner=user2, name='fff')
+        self.s6.save()
+        self.s7 = Team(owner=user2, name='ggg')
+        self.s7.save()
+        self.s8 = Team(owner=user2, name='hhh')
+        self.s8.save()
+        self.s9 = Team(owner=user2, name='iii')
+        self.s9.save()
+        self.s10 = Team(owner=user2, name='jjj')
+        self.s10.save()
+        self.s11 = Team(owner=user2, name='kkk')
+        self.s11.save()
+        
     def log(self, title, message):
         logging.info('{0}: {1}'.format(title, message))
 
@@ -232,7 +260,7 @@ class ExampleTestCase(TestCase):
         self.log('getList', r)
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
-    '''
+
     def test_create(self):
         r = self.rcloud.Group.create(
             # userId='{"userId1","userid2","userId3"}',
@@ -266,7 +294,7 @@ class ExampleTestCase(TestCase):
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
 
-    '''
+
     def test_sync(self):
         groupInfo = [("groupId1", "groupName1"), ("groupId2", "groupName2"),
                      ("groupId3", "groupName3")]
