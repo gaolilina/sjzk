@@ -726,7 +726,7 @@ class AllNeedList(View):
         need_dic = dict()
         for n in needs:
             members = dict()
-            if not n.members:
+            if n.members:
                 ids = n.members.split("|")
                 for id in ids:
                     id = int(id)
@@ -784,7 +784,7 @@ class NeedList(View):
         need_dic = dict()
         for n in needs:
             members = dict()
-            if not n.members:
+            if n.members:
                 ids = n.members.split("|")
                 for id in ids:
                     id = int(id)
@@ -1041,7 +1041,7 @@ class Need(View):
             d[k] = getattr(need, k)
 
         members = dict()
-        if not need.members:
+        if need.members:
             ids = need.members.split("|")
             for uid in ids:
                 uid = int(uid)
