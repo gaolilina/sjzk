@@ -715,18 +715,32 @@ class AllNeedList(View):
                 icon_url: 团队头像
                 status: 需求状态
                 title: 需求标题
+                members: 需求的加入者
                 time_created: 发布时间
         """
         qs = TeamNeed.objects.filter(status=0) if type is None \
             else TeamNeed.objects.filter(status=0, type=type)
         c = qs.count()
         needs = qs[offset:offset + limit]
-        l = [{'id': n.id,
-              'team_id': n.team.id,
-              'team_name': n.team.name,
-              'status': n.status,
-              'title': n.title,
-              'time_created': n.time_created} for n in needs]
+        l = list()
+        need_dic = dict()
+        for n in needs:
+            members = dict()
+            ids = n.members.split("|")
+            for id in ids:
+                id = int(id)
+                if n.type == 0:
+                    members[id] = User.enabled.get(id=id).name
+                else:
+                    members[id] = Team.enabled.get(id=id).name
+            need_dic['id'] = n.id
+            need_dic['team_id'] = n.team.id
+            need_dic['team_name'] = n.team.name
+            need_dic['status'] = n.status
+            need_dic['title'] = n.title
+            need_dic['members'] = members
+            need_dic['time_created'] = n.time_created
+            l.append(need_dic)
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -765,12 +779,25 @@ class NeedList(View):
             qs = qs.filter(status=0)
         c = qs.count()
         needs = qs[offset:offset + limit]
-        l = [{'id': n.id,
-              'team_id': n.team.id,
-              'team_name': n.team.name,
-              'status': n.status,
-              'title': n.title,
-              'time_created': n.time_created} for n in needs]
+        l = list()
+        need_dic = dict()
+        for n in needs:
+            members = dict()
+            ids = n.members.split("|")
+            for id in ids:
+                id = int(id)
+                if n.type == 0:
+                    members[id] = User.enabled.get(id=id).name
+                else:
+                    members[id] = Team.enabled.get(id=id).name
+            need_dic['id'] = n.id
+            need_dic['team_id'] = n.team.id
+            need_dic['team_name'] = n.team.name
+            need_dic['status'] = n.status
+            need_dic['title'] = n.title
+            need_dic['members'] = members
+            need_dic['time_created'] = n.time_created
+            l.append(need_dic)
         return JsonResponse({'count': c, 'list': l})
 
     # noinspection PyShadowingBuiltins
@@ -955,6 +982,7 @@ class Need(View):
                 skill: 技能
                 degree: 学历
                 major: 专业
+                members: 已加入成员
                 time_graduated: 毕业时间
                 deadline: 截止时间
             if type==1(外包需求):
@@ -973,6 +1001,7 @@ class Need(View):
                 major: 专业
                 cost: 费用
                 cost_unit: 费用单位
+                members: 已加入团队
                 time_started: 任务开始时间
                 time_ended: 任务结束时间
                 deadline: 截止时间
@@ -990,6 +1019,7 @@ class Need(View):
                 major: 专业
                 cost: 费用
                 cost_unit: 费用单位
+                members: 已加入团队
                 time_started: 任务开始时间
                 time_ended: 任务结束时间
         """
@@ -1008,6 +1038,15 @@ class Need(View):
         for k in keys:
             d[k] = getattr(need, k)
 
+        members = dict()
+        ids = need.members.split("|")
+        for uid in ids:
+            uid = int(uid)
+            if need.type == 0:
+                members[uid] = User.enabled.get(id=uid).name
+            else:
+                members[uid] = Team.enabled.get(id=uid).name
+        d['members'] = members
         return JsonResponse(d)
 
     @fetch_object(TeamNeed.objects, 'need')
@@ -1120,6 +1159,12 @@ class MemberNeedRequest(View):
         # 在事务中建立关系，并删除对应的加团队申请
         with transaction.atomic():
             need.member_requests.filter(sender=user).delete()
+            # 保存需求的加入成员Id
+            if len(need.members) > 0:
+                need.members = need.members + "|" + str(user.id)
+            else:
+                need.members = str(user.id)
+            need.save()
             need.team.members.create(user=user)
             action.join_team(user, need.team)
             request.user.score += 10
@@ -1250,6 +1295,13 @@ class NeedRequest(View):
                 need.cooperation_request.filter(sender=team).delete()
                 if need.team.members.filter(user=team.owner).exists():
                     abort(200)
+                # 保存需求的加入团队Id
+                if len(need.members) > 0:
+                    need.members = need.members + "|" + str(team.id)
+                else:
+                    need.members = str(team.id)
+                need.save()
+
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
                 request.user.score += 10
@@ -1382,6 +1434,12 @@ class NeedInvitation(View):
                 need.cooperation_invitations.filter(invitee=team).delete()
                 if need.team.members.filter(user=team.owner).exists():
                     abort(200)
+                # 保存需求的加入团队Id
+                if len(need.members) > 0:
+                    need.members = need.members + "|" + str(team.id)
+                else:
+                    need.members = str(team.id)
+                need.save()
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
                 request.user.score += 10

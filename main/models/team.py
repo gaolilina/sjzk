@@ -154,7 +154,8 @@ class TeamNeed(models.Model):
     cost_unit = models.CharField(default='', max_length=1)
     time_started = models.DateField(default=None, null=True)
     time_ended = models.DateField(default=None, null=True)
-
+    # 成员或团队Id
+    members = models.CharField(default='', max_length=100)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
