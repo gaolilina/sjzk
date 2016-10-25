@@ -101,6 +101,7 @@ class List(View):
         tags = kwargs.pop('tags', None)
 
         team = Team(owner=request.user, name=name)
+        team.save()
         # 调用融云接口创建团队群聊
         rcloud = RongCloud()
         r = rcloud.Group.create(
