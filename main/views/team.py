@@ -726,13 +726,14 @@ class AllNeedList(View):
         need_dic = dict()
         for n in needs:
             members = dict()
-            ids = n.members.split("|")
-            for id in ids:
-                id = int(id)
-                if n.type == 0:
-                    members[id] = User.enabled.get(id=id).name
-                else:
-                    members[id] = Team.enabled.get(id=id).name
+            if not n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
             need_dic['id'] = n.id
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
@@ -783,13 +784,14 @@ class NeedList(View):
         need_dic = dict()
         for n in needs:
             members = dict()
-            ids = n.members.split("|")
-            for id in ids:
-                id = int(id)
-                if n.type == 0:
-                    members[id] = User.enabled.get(id=id).name
-                else:
-                    members[id] = Team.enabled.get(id=id).name
+            if not n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
             need_dic['id'] = n.id
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
@@ -1039,13 +1041,14 @@ class Need(View):
             d[k] = getattr(need, k)
 
         members = dict()
-        ids = need.members.split("|")
-        for uid in ids:
-            uid = int(uid)
-            if need.type == 0:
-                members[uid] = User.enabled.get(id=uid).name
-            else:
-                members[uid] = Team.enabled.get(id=uid).name
+        if not need.members:
+            ids = need.members.split("|")
+            for uid in ids:
+                uid = int(uid)
+                if need.type == 0:
+                    members[uid] = User.enabled.get(id=uid).name
+                else:
+                    members[uid] = Team.enabled.get(id=uid).name
         d['members'] = members
         return JsonResponse(d)
 
