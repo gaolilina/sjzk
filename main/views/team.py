@@ -104,8 +104,8 @@ class List(View):
         # 调用融云接口创建团队群聊
         rcloud = RongCloud()
         r = rcloud.Group.create(
-            userId=request.user.id,
-            groupId=team.id,
+            userId=str(request.user.id),
+            groupId=str(team.id),
             groupName=name)
         if r.result['code'] != 200:
             abort(404, 'create group chat failed')
@@ -271,7 +271,7 @@ class Profile(View):
             if k == "name":
                 rcloud = RongCloud()
                 r = rcloud.Group.refresh(
-                    groupId=team.id, groupName=kwargs['name'])
+                    groupId=str(team.id), groupName=kwargs['name'])
                 if r.result['code'] != 200:
                     abort(404, 'refresh group chat failed')
 
@@ -405,8 +405,8 @@ class Member(View):
         # 调用融云接口将用户添加进团队群聊
         rcloud = RongCloud()
         r = rcloud.Group.join(
-            userId=user.id,
-            groupId=team.id,
+            userId=str(user.id),
+            groupId=str(team.id),
             groupName=team.name)
         if r.result['code'] != 200:
             abort(404, 'add member to group chat failed')
@@ -434,8 +434,8 @@ class Member(View):
             # 调用融云接口从团队群聊中删除该用户
             rcloud = RongCloud()
             r = rcloud.Group.quit(
-                userId=user.id,
-                groupId=team.id)
+                userId=str(user.id),
+                groupId=str(team.id))
             if r.result['code'] != 200:
                 abort(404, 'remove member from group chat failed')
 
