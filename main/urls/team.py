@@ -58,6 +58,11 @@ urls = [
     # 需求
     url(r'^needs/$', AllNeedList.as_view(), name='all_needs'),
     url(r'^needs/(?P<need_id>[0-9]+)/$', Need.as_view(), name='need'),
+    url(r'^(?P<need_id>[0-9]+)/need/users/$',
+        NeedUserList.as_view(), name='need_users'),
+    url(r'^(?P<need_id>[0-9]+)/need/teams/$',
+        NeedTeamList.as_view(), name='need_teams'),
+
     url(r'^needs/member/$', AllNeedList.as_view(),
         name='all_member_needs', kwargs={'type': 0}),
     url(r'^needs/outsource/$', AllNeedList.as_view(),

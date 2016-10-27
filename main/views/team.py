@@ -21,7 +21,7 @@ __all__ = ('List', 'Search', 'Profile', 'Icon', 'MemberList', 'Member',
            'MemberNeedRequest', 'NeedRequestList', 'NeedRequest',
            'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
            'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
-           'ExternalTasks', 'TeamExternalTask')
+           'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList')
 
 
 class List(View):
@@ -789,8 +789,8 @@ class NeedList(View):
         c = qs.count()
         needs = qs[offset:offset + limit]
         l = list()
-        need_dic = dict()
         for n in needs:
+            need_dic = dict()
             members = dict()
             if n.members:
                 ids = n.members.split("|")
@@ -1083,6 +1083,131 @@ class Need(View):
         need.status = 2
         need.save()
         abort(200)
+
+
+class NeedUserList(View):
+    ORDERS = (
+        'time_created',
+        '-time_created',
+        'name',
+        '-name',
+    )
+
+    @fetch_object(TeamNeed.enabled, 'need')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, need, offset=0, limit=10, order=1):
+        """获取需求的成员列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 成为成员时间升序
+            1: 成为成员时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 成员总数
+            list: 成员列表
+                id: 用户ID
+                username:用户名
+                name: 用户昵称
+                icon_url: 用户头像
+                tags: 标签
+                gender: 性别
+                liker_count: 点赞数
+                follower_count: 粉丝数
+                visitor_count: 访问数
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        uids = []
+        if need.members:
+            ids = need.members.split("|")
+            for uid in ids:
+                uids.append(int(uid))
+            members = User.enabled.get(id__icontain=uids)
+            c = members.count()
+            rs = members.order_by(k)[i:j]
+            l = [{'id': r.id,
+                  'username': r.username,
+                  'name': r.name,
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.icon) if r.icon else '',
+                  'tags': [tag.name for tag in r.tags.all()],
+                  'gender': r.gender,
+                  'liker_count': r.likers.count(),
+                  'follower_count': r.followers.count(),
+                  'visitor_count': r.visitors.count(),
+                  'time_created': r.time_created} for r in rs]
+        else:
+            c = 0
+            l = []
+        return JsonResponse({'count': c, 'list': l})
+
+
+class NeedTeamList(View):
+    ORDERS = (
+        'time_created',
+        '-time_created',
+        'name',
+        '-name',
+    )
+
+    @fetch_object(TeamNeed.enabled, 'need')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, need, offset=0, limit=10, order=1):
+        """获取需求的成员列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 成为成员时间升序
+            1: 成为成员时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 成员总数
+            list: 成员列表
+                id: 团队ID
+                name: 团队昵称
+                owner_id: 创建者ID
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                member_count: 团队成员人数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        tids = []
+        if need.members:
+            ids = need.members.split("|")
+            for tid in ids:
+                tids.append(int(tid))
+            members = Team.enabled.get(id__icontain=tids)
+            c = members.count()
+            rs = members.order_by(k)[i:j]
+            l = [{'id': r.id,
+                  'name': r.name,
+                  'owner_id': r.owner.id,
+                  'liker_count': r.likers.count(),
+                  'visitor_count': r.visitors.count(),
+                  'member_count': r.members.count(),
+                  'fields': [r.field1, r.field2],
+                  'tags':[tag.name for tag in r.tags.all()],
+                  'time_created': r.time_created} for r in rs]
+        else:
+            c = 0
+            l = []
+        return JsonResponse({'count': c, 'list': l})
 
 
 class MemberNeedRequestList(View):
