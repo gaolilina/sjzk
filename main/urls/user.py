@@ -12,7 +12,7 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
     url(r'^(?P<user_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     # 获取某用户的团队
-    url(r'^owned_teams/$',
+    url(r'^(?P<user_id>[0-9]+)/owned_teams/$',
         TeamOwnedList.as_view(), name='owned_teams'),
     url(r'^(?P<user_id>[0-9]+)/joined_teams/$',
         TeamJoinedList.as_view(), name='joined_teams'),

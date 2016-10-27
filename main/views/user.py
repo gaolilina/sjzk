@@ -426,7 +426,7 @@ class TeamOwnedList(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
-    def get(self, request, offset=0, limit=10, order=1):
+    def get(self, request, user, offset=0, limit=10, order=1):
         """获取某用户创建的团队列表
 
         :param offset: 偏移量
@@ -450,7 +450,7 @@ class TeamOwnedList(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        teams = Team.enabled.filter(owner=request.user)
+        teams = Team.enabled.filter(owner=user)
         c = teams.count()
         l = [{'id': t.team.id,
               'name': t.team.name,
