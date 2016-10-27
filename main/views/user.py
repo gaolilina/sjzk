@@ -9,12 +9,12 @@ from rongcloud import RongCloud
 from ChuangYi.settings import UPLOADED_URL
 from ..utils import abort, send_message
 from ..utils.decorators import *
-from ..models import User, UserVisitor, UserExperience, UserValidationCode
+from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
 
 
 __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
-           'FriendList', 'Friend', 'FriendRequestList', 'Search', 'TeamList',
-           'ValidationCode']
+           'FriendList', 'Friend', 'FriendRequestList', 'Search',
+           'TeamOwnedList', 'TeamJoinedList', 'ValidationCode']
 
 
 class List(View):
@@ -415,7 +415,57 @@ class Search(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-class TeamList(View):
+class TeamOwnedList(View):
+    ORDERS = ('team__time_created', '-team__time_created',
+              'team__name', '-team__name')
+
+    @fetch_object(User.enabled, 'user')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取某用户创建的团队列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 团队总数
+            list: 团队列表
+                id: 团队ID
+                name: 团队名
+                owner_id: 创建者ID
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                member_count: 团队成员人数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        teams = Team.enabled.filter(owner=request.user)
+        c = teams.count()
+        l = [{'id': t.team.id,
+              'name': t.team.name,
+              'owner_id': t.team.owner.id,
+              'liker_count': t.team.likers.count(),
+              'visitor_count': t.team.visitors.count(),
+              'member_count': t.team.members.count(),
+              'fields': [t.team.field1, t.team.field2],
+              'tags': [tag.name for tag in t.team.tags.all()],
+              'time_created': t.team.time_created} for t in teams.order_by(
+                k)[i:j]]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class TeamJoinedList(View):
     ORDERS = ('team__time_created', '-team__time_created',
               'team__name', '-team__name')
 
@@ -427,7 +477,7 @@ class TeamList(View):
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, user, offset=0, limit=10, order=1):
-        """获取某用户的团队列表
+        """获取某用户参加的团队列表
 
         :param offset: 偏移量
         :param limit: 数量上限
