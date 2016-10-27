@@ -701,8 +701,10 @@ class AllNeedList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'type': forms.IntegerField(required=False, min_value=0, max_value=2)
     })
-    def get(self, request, type=None, offset=0, limit=10):
+    def get(self, request, type=None, status=None, offset=0, limit=10):
         """
         获取发布中的需求列表
 
@@ -719,8 +721,13 @@ class AllNeedList(View):
                 members: 需求的加入者
                 time_created: 发布时间
         """
-        qs = TeamNeed.objects.filter(status=0) if type is None \
-            else TeamNeed.objects.filter(status=0, type=type)
+        qs = TeamNeed.objects.all()
+        if type is not None:
+            qs = qs.filter(type=type)
+        if status:
+            qs = qs.filter(status=status)
+        else:
+            qs = qs.filter(status=0)
         c = qs.count()
         needs = qs[offset:offset + limit]
         l = list()
