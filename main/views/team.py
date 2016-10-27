@@ -721,7 +721,7 @@ class AllNeedList(View):
                 members: 需求的加入者
                 time_created: 发布时间
         """
-        qs = TeamNeed.objects.all()
+        qs = TeamNeed.objects
         if type is not None:
             qs = qs.filter(type=type)
         if status:
