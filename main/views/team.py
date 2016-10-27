@@ -731,8 +731,8 @@ class AllNeedList(View):
         c = qs.count()
         needs = qs[offset:offset + limit]
         l = list()
-        need_dic = dict()
         for n in needs:
+            need_dic = dict()
             members = dict()
             if n.members:
                 ids = n.members.split("|")
