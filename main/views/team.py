@@ -101,11 +101,12 @@ class List(View):
         tags = kwargs.pop('tags', None)
 
         team = Team(owner=request.user, name=name)
+        team.save()
         # 调用融云接口创建团队群聊
         rcloud = RongCloud()
         r = rcloud.Group.create(
-            userId=request.user.id,
-            groupId=team.id,
+            userId=str(request.user.id),
+            groupId=str(team.id),
             groupName=name)
         if r.result['code'] != 200:
             abort(404, 'create group chat failed')
@@ -271,7 +272,7 @@ class Profile(View):
             if k == "name":
                 rcloud = RongCloud()
                 r = rcloud.Group.refresh(
-                    groupId=team.id, groupName=kwargs['name'])
+                    groupId=str(team.id), groupName=kwargs['name'])
                 if r.result['code'] != 200:
                     abort(404, 'refresh group chat failed')
 
@@ -405,8 +406,8 @@ class Member(View):
         # 调用融云接口将用户添加进团队群聊
         rcloud = RongCloud()
         r = rcloud.Group.join(
-            userId=user.id,
-            groupId=team.id,
+            userId=str(user.id),
+            groupId=str(team.id),
             groupName=team.name)
         if r.result['code'] != 200:
             abort(404, 'add member to group chat failed')
@@ -434,8 +435,8 @@ class Member(View):
             # 调用融云接口从团队群聊中删除该用户
             rcloud = RongCloud()
             r = rcloud.Group.quit(
-                userId=user.id,
-                groupId=team.id)
+                userId=str(user.id),
+                groupId=str(team.id))
             if r.result['code'] != 200:
                 abort(404, 'remove member from group chat failed')
 
@@ -726,13 +727,14 @@ class AllNeedList(View):
         need_dic = dict()
         for n in needs:
             members = dict()
-            ids = n.members.split("|")
-            for id in ids:
-                id = int(id)
-                if n.type == 0:
-                    members[id] = User.enabled.get(id=id).name
-                else:
-                    members[id] = Team.enabled.get(id=id).name
+            if n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
             need_dic['id'] = n.id
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
@@ -783,13 +785,14 @@ class NeedList(View):
         need_dic = dict()
         for n in needs:
             members = dict()
-            ids = n.members.split("|")
-            for id in ids:
-                id = int(id)
-                if n.type == 0:
-                    members[id] = User.enabled.get(id=id).name
-                else:
-                    members[id] = Team.enabled.get(id=id).name
+            if n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
             need_dic['id'] = n.id
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
@@ -1039,13 +1042,14 @@ class Need(View):
             d[k] = getattr(need, k)
 
         members = dict()
-        ids = need.members.split("|")
-        for uid in ids:
-            uid = int(uid)
-            if need.type == 0:
-                members[uid] = User.enabled.get(id=uid).name
-            else:
-                members[uid] = Team.enabled.get(id=uid).name
+        if need.members:
+            ids = need.members.split("|")
+            for uid in ids:
+                uid = int(uid)
+                if need.type == 0:
+                    members[uid] = User.enabled.get(id=uid).name
+                else:
+                    members[uid] = Team.enabled.get(id=uid).name
         d['members'] = members
         return JsonResponse(d)
 
