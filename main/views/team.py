@@ -1093,7 +1093,7 @@ class NeedUserList(View):
         '-name',
     )
 
-    @fetch_object(TeamNeed.enabled, 'need')
+    @fetch_object(TeamNeed.objects, 'need')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1157,7 +1157,7 @@ class NeedTeamList(View):
         '-name',
     )
 
-    @fetch_object(TeamNeed.enabled, 'need')
+    @fetch_object(TeamNeed.objects, 'need')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
