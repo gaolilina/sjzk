@@ -1129,8 +1129,7 @@ class NeedUserList(View):
             ids = need.members.split("|")
             for uid in ids:
                 uids.append(int(uid))
-#            members = User.enabled.filter(id__range=uids)
-            members = User.enabled.filter(id__range=[6])
+            members = User.enabled.filter(id__in=uids)
             c = members.count()
             rs = members.order_by(k)[i:j]
             l = [{'id': r.id,
@@ -1193,7 +1192,7 @@ class NeedTeamList(View):
             ids = need.members.split("|")
             for tid in ids:
                 tids.append(int(tid))
-            members = Team.enabled.filter(id__range=tids)
+            members = Team.enabled.filter(id__in=tids)
             c = members.count()
             rs = members.order_by(k)[i:j]
             l = [{'id': r.id,
