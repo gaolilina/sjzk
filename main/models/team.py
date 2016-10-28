@@ -15,6 +15,7 @@ class Team(models.Model):
 
     owner = models.ForeignKey('User', models.CASCADE, 'owned_teams')
     name = models.CharField(max_length=20, db_index=True)
+    icon = models.CharField(max_length=100, default='')
     description = models.CharField(max_length=100, default='')
     url = models.CharField(max_length=100)
     field1 = models.CharField(max_length=10, db_index=True, default='')
