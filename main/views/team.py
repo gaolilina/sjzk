@@ -1129,7 +1129,7 @@ class NeedUserList(View):
             ids = need.members.split("|")
             for uid in ids:
                 uids.append(int(uid))
-            members = User.enabled.get(id__range=uids)
+            members = User.enabled.filter(id__range=uids)
             c = members.count()
             rs = members.order_by(k)[i:j]
             l = [{'id': r.id,
