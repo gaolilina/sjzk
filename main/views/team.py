@@ -1192,7 +1192,7 @@ class NeedTeamList(View):
             ids = need.members.split("|")
             for tid in ids:
                 tids.append(int(tid))
-            members = Team.enabled.get(id__range=tids)
+            members = Team.enabled.filter(id__range=tids)
             c = members.count()
             rs = members.order_by(k)[i:j]
             l = [{'id': r.id,
