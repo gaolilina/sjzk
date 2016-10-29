@@ -210,7 +210,7 @@ class InternalTask(models.Model):
     executor = models.ForeignKey('User', models.CASCADE, 'internal_tasks')
 
     title = models.CharField(max_length=20)
-    content = models.TextField(max_length=100, db_index=True)
+    content = models.TextField(max_length=100)
     status = models.IntegerField(
         default=0, db_index=True,
         choices=(('等待接受', 0), ('再派任务', 1),
