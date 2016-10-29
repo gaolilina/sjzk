@@ -21,7 +21,7 @@ class User(models.Model):
         max_length=20, default=None, null=True, unique=True)
     password = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=11, unique=True)
-    token = models.CharField(max_length=256, unique=True)
+    token = models.CharField(max_length=256)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     name = models.CharField(max_length=15)
