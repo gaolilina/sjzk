@@ -10,7 +10,7 @@ __all__ = ['ForumBoard', 'ForumPost']
 class ForumBoard(models.Model):
     """板块"""
 
-    name = models.CharField(max_length=20, db_index=True)
+    name = models.CharField(max_length=20)
     description = models.CharField(max_length=100)
     owner = models.ForeignKey(
         'User', models.CASCADE, 'forum_boards', default=None, null=True)

@@ -11,7 +11,7 @@ __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
 class Competition(models.Model):
     """竞赛基本信息"""
 
-    name = models.CharField(max_length=50, db_index=True)
+    name = models.CharField(max_length=50)
     content = models.CharField(max_length=1000)
     deadline = models.DateTimeField(db_index=True)
     time_started = models.DateTimeField(db_index=True)
@@ -35,8 +35,8 @@ class CompetitionStage(models.Model):
     competition = models.ForeignKey('Competition', models.CASCADE, 'stages')
     # 0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
     status = models.IntegerField(default=0, db_index=True)
-    province = models.CharField(max_length=20, default='', db_index=True)
-    city = models.CharField(max_length=20, default='', db_index=True)
+    province = models.CharField(max_length=20, default='')
+    city = models.CharField(max_length=20, default='')
     min_member = models.IntegerField(default=1, db_index=True)
     max_member = models.IntegerField(default=1, db_index=True)
     school = models.CharField(max_length=20, default='')

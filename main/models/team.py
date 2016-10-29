@@ -14,15 +14,15 @@ class Team(models.Model):
     """团队模型"""
 
     owner = models.ForeignKey('User', models.CASCADE, 'owned_teams')
-    name = models.CharField(max_length=20, db_index=True)
+    name = models.CharField(max_length=20)
     icon = models.CharField(max_length=100, default='')
     description = models.CharField(max_length=100, default='')
     url = models.CharField(max_length=100)
     field1 = models.CharField(max_length=10, db_index=True, default='')
     field2 = models.CharField(max_length=10, db_index=True, default='')
-    province = models.CharField(max_length=20, default='', db_index=True)
-    city = models.CharField(max_length=20, default='', db_index=True)
-    county = models.CharField(max_length=20, default='', db_index=True)
+    province = models.CharField(max_length=20, default='')
+    city = models.CharField(max_length=20, default='')
+    county = models.CharField(max_length=20, default='')
     is_recruiting = models.BooleanField(default=True, db_index=True)
     is_enabled = models.BooleanField(default=True, db_index=True)
 
@@ -209,7 +209,7 @@ class InternalTask(models.Model):
     team = models.ForeignKey('Team', models.CASCADE, 'internal_tasks')
     executor = models.ForeignKey('User', models.CASCADE, 'internal_tasks')
 
-    title = models.CharField(max_length=20, db_index=True)
+    title = models.CharField(max_length=20)
     content = models.TextField(max_length=100, db_index=True)
     status = models.IntegerField(
         default=0, db_index=True,
@@ -238,8 +238,8 @@ class ExternalTask(models.Model):
     executor = models.ForeignKey(
         'Team', models.CASCADE, 'undertake_external_tasks')
 
-    title = models.CharField(max_length=20, db_index=True)
-    content = models.TextField(default='', max_length=100, db_index=True)
+    title = models.CharField(max_length=20)
+    content = models.TextField(default='', max_length=100)
     expend = models.IntegerField(default=-1, db_index=True)
     expend_actual = models.IntegerField(default=-1, db_index=True)
     status = models.IntegerField(

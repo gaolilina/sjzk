@@ -21,10 +21,10 @@ class User(models.Model):
         max_length=20, default=None, null=True, unique=True)
     password = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=11, unique=True)
-    token = models.CharField(max_length=32, unique=True)
+    token = models.CharField(max_length=256, unique=True)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
-    name = models.CharField(max_length=15, db_index=True)
+    name = models.CharField(max_length=15)
     description = models.CharField(max_length=100, default='')
     icon = models.CharField(max_length=100, default='')
     gender = models.CharField(max_length=1, default='')
@@ -32,17 +32,17 @@ class User(models.Model):
     wechat = models.CharField(max_length=20, default='')
     email = models.EmailField(default='')
     birthday = models.DateField(default=None, null=True, db_index=True)
-    province = models.CharField(max_length=20, default='', db_index=True)
-    city = models.CharField(max_length=20, default='', db_index=True)
-    county = models.CharField(max_length=20, default='', db_index=True)
+    province = models.CharField(max_length=20, default='')
+    city = models.CharField(max_length=20, default='')
+    county = models.CharField(max_length=20, default='')
 
     is_verified = models.BooleanField(default=False, db_index=True)
-    real_name = models.CharField(max_length=20, default='', db_index=True)
-    id_number = models.CharField(max_length=18, default='', db_index=True)
+    real_name = models.CharField(max_length=20, default='')
+    id_number = models.CharField(max_length=18, default='')
     id_card = models.CharField(max_length=100, default='')
 
     is_role_verified = models.BooleanField(default=False, db_index=True)
-    role = models.CharField(max_length=20, default='', db_index=True)
+    role = models.CharField(max_length=20, default='')
     other_number = models.CharField(max_length=20, default='')
     other_card = models.CharField(max_length=100, default='')
     # 学校或公司
@@ -113,7 +113,7 @@ class UserExperience(models.Model):
 
     user = models.ForeignKey('User', models.CASCADE, 'experiences')
     # education, work or fieldwork
-    type = models.CharField(max_length=20, db_index=True)
+    type = models.CharField(max_length=20)
     # 学校或公司
     unit = models.CharField(max_length=20, default='')
     # 职位或专业
@@ -157,7 +157,7 @@ class UserFriendRequest(models.Model):
     # send from other_user
     user = models.ForeignKey('User', models.CASCADE, 'friend_requests')
     other_user = models.ForeignKey('User', models.CASCADE, '+')
-    description = models.CharField(max_length=100, db_index=True)
+    description = models.CharField(max_length=100)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:

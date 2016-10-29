@@ -40,7 +40,7 @@ DATABASES = {
 }
 
 # Internationalization
-LANGUAGE_CODE = 'zh-hans'
+LANGUAGE_CODE = 'zh-cn'
 TIME_ZONE = 'Asia/Shanghai'
 USE_I18N = False
 USE_L10N = False
