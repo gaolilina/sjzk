@@ -30,7 +30,8 @@ DATABASES = {
 '''
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+#       'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'mysql.connector.django',
         'NAME': 'ChuangYi',  # 数据库名称
         'USER': 'root',      # 数据库用户名
         'PASSWORD': 'root',  # 数据库密码
