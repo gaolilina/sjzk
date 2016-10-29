@@ -12,4 +12,3 @@ from .team import *
 from .forum import *
 from .activity import *
 from .competition import *
-from .group import *
