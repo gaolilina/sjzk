@@ -1672,7 +1672,7 @@ class InternalTaskList(View):
         try:
             executor = User.enabled.get(id=executor_id)
         except ObjectDoesNotExist:
-            abort(403)
+            abort(401)
 
         if not team.members.filter(user=executor).exists():
             abort(404)
