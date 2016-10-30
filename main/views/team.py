@@ -1953,7 +1953,8 @@ class ExternalTaskList(View):
 
         if not team.members.filter(user=executor.owner).exists():
             abort(404)
-        t = team.outsource_external_tasks.create(status=0, executor=executor)
+        t = team.outsource_external_tasks.create(
+            status=0, executor=executor, deadline=kwargs['deadline'])
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
