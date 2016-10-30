@@ -869,7 +869,7 @@ class NeedList(View):
             abort(500)
 
     @validate_args({
-        'deadline': forms.DateTimeField(),
+        'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
@@ -899,7 +899,7 @@ class NeedList(View):
         abort(200)
 
     @validate_args({
-        'deadline': forms.DateTimeField(),
+        'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
@@ -932,7 +932,7 @@ class NeedList(View):
         abort(200)
 
     @validate_args({
-        'deadline': forms.DateTimeField(),
+        'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
@@ -1655,7 +1655,7 @@ class InternalTaskList(View):
         'executor_id': forms.IntegerField(),
         'title': forms.CharField(max_length=20),
         'content': forms.CharField(max_length=200),
-        'deadline': forms.DateTimeField(),
+        'deadline': forms.DateField(),
     })
     def post(self, request, team, **kwargs):
         """发布内部任务
@@ -1740,7 +1740,7 @@ class InternalTasks(View):
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
         'content': forms.CharField(required=False, max_length=200),
-        'deadline': forms.DateTimeField(required=False),
+        'deadline': forms.DateField(required=False),
     })
     def post(self, request, task, **kwargs):
         """再派任务状态下的任务修改
@@ -1931,7 +1931,7 @@ class ExternalTaskList(View):
         'executor_id': forms.IntegerField(),
         'title': forms.CharField(max_length=20),
         'content': forms.CharField(max_length=200),
-        'deadline': forms.DateTimeField(),
+        'deadline': forms.DateField(),
     })
     def post(self, request, team, **kwargs):
         """发布外包任务
@@ -1969,7 +1969,7 @@ class ExternalTasks(View):
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
         'content': forms.CharField(required=False, max_length=200),
-        'deadline': forms.DateTimeField(required=False),
+        'deadline': forms.DateField(required=False),
     })
     def post(self, request, task, **kwargs):
         """再派任务状态下的任务修改
