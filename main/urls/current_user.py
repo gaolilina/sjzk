@@ -68,4 +68,6 @@ urls = [
     # 论坛版块
     url(r'^forum_boards/$', BoardList.as_view(),
         name='forum_boards', kwargs={'owned_only': True}),
+    # 意见反馈
+    url(r'^feedback/$', Feedback.as_view(), name='feedback'),
 ]

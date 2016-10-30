@@ -10,7 +10,7 @@ from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
 
 __all__ = ['User', 'UserAction', 'UserComment', 'UserExperience',
            'UserFollower', 'UserFriend', 'UserFriendRequest', 'UserLiker',
-           'UserTag', 'UserValidationCode', 'UserVisitor']
+           'UserTag', 'UserValidationCode', 'UserVisitor', 'UserFeedback']
 
 
 class User(models.Model):
@@ -238,3 +238,14 @@ class UserVisitor(Visitor):
 
     class Meta:
         db_table = 'user_visitor'
+
+
+class UserFeedback(models.Model):
+    """用户意见反馈"""
+    user = models.ForeignKey('User', models.CASCADE, 'feedback')
+    content = models.TextField(max_length=100)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'user_feedback'
+        ordering = ['-time_created']

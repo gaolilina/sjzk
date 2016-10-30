@@ -19,7 +19,7 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
            'RelatedTeamList', 'OwnedTeamList', 'InvitationList', 'Invitation',
-           'IdentityVerification']
+           'IdentityVerification', 'Feedback']
 
 
 class Username(View):
@@ -771,4 +771,22 @@ class Invitation(View):
             abort(403)
 
         invitation.delete()
+        abort(200)
+
+
+class Feedback(View):
+    @require_token
+    @validate_args({
+        'content': forms.CharField(max_length=200),
+    })
+    def post(self, request, content):
+        """用户意见反馈
+
+        :param content: 反馈内容
+        :return: 200
+        """
+        if request.user.feedback.count() == 0:
+            request.user.score += 30
+            request.user.save()
+        request.user.feedback.create(content=content)
         abort(200)
