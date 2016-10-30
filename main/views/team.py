@@ -1676,7 +1676,8 @@ class InternalTaskList(View):
 
         if not team.members.filter(user=executor).exists():
             abort(404)
-        t = team.internal_tasks.create(status=0, executor=executor)
+        t = team.internal_tasks.create(status=0, executor=executor,
+                                       deadline=kwargs['deadline'])
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
