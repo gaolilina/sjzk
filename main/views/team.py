@@ -1804,7 +1804,7 @@ class TeamInternalTask(View):
     @fetch_object(InternalTask.objects, 'task')
     @require_token
     @validate_args({
-        'status': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=7),
     })
     def post(self, request, task, status=None):
         """
@@ -2060,7 +2060,7 @@ class TeamExternalTask(View):
     @fetch_object(ExternalTask.objects, 'task')
     @require_token
     @validate_args({
-        'status': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=8),
     })
     def post(self, request, task, status=None):
         """
