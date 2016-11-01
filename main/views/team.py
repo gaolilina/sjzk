@@ -431,10 +431,10 @@ class Member(View):
         else:
             user = User.enabled.get(id=user_id)
             if user == request.user:
-                abort(403)
+                abort(403, "can not be yourself")
 
         if user == team.owner:
-            abort(403)
+            abort(403, "can not be team owner")
 
         qs = team.members.filter(user=user)
         if qs.exists():
