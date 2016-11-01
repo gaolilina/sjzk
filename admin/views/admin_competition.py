@@ -4,15 +4,15 @@ from django.template import loader, Context
 from django.views.generic import View
 
 from main.utils.decorators import validate_args
-from main.models.activity import *
-from admin.models.activity_owner import *
+from main.models.competition import *
+from admin.models.competition_owner import *
 
 from admin.utils.decorators import *
 
-class AdminActivityAdd(View):
+class AdminCompetitionAdd(View):
     @require_cookie
     def get(self, request):
-        template = loader.get_template("admin_activity/add.html")
+        template = loader.get_template("admin_competition/add.html")
         context = Context()
         return HttpResponse(template.render(context))
 
@@ -28,26 +28,26 @@ class AdminActivityAdd(View):
     })
     def post(self, request, **kwargs):
         user = request.user
-        activity = Activity()
+        competition = Competition()
         for k in kwargs:
-            setattr(activity, k, kwargs[k])
-        activity.owner.create(user=user)
-        activity.stages.create()
-        activity.save()
+            setattr(competition, k, kwargs[k])
+        competition.owner.create(user=user)
+        competition.stages.create()
+        competition.save()
 
-        template = loader.get_template("admin_activity/add.html")
+        template = loader.get_template("admin_competition/add.html")
         context = Context({'msg': '保存成功'})
         return HttpResponse(template.render(context))
 
-class AdminActivityView(View):
-    @fetch_record(Activity.enabled, 'model', 'id')
+class AdminCompetitionView(View):
+    @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
     def get(self, request):
-        template = loader.get_template("admin_activity/view.html")
+        template = loader.get_template("admin_competition/view.html")
         context = Context({'model': model})
         return HttpResponse(template.render(context))
 
-    @fetch_record(Activity.enabled, 'model', 'id')
+    @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
     @validate_args({
         'name': forms.CharField(max_length=50, required=False),
@@ -61,6 +61,8 @@ class AdminActivityView(View):
         'stage_province': forms.CharField(max_length=20, required=False),
         'stage_city': forms.CharField(max_length=20, required=False),
         'stage_school': forms.CharField(max_length=20, required=False),
+        'stage_min_member': forms.IntegerField(required=False),
+        'stage_max_member': forms.IntegerField(required=False),
         'stage_user_type': forms.IntegerField(required=False),
     })
     def post(self, request, **kwargs):
@@ -72,18 +74,18 @@ class AdminActivityView(View):
                 setattr(model, k, kwargs[k])
         model.save()
 
-        template = loader.get_template("admin_activity/view.html")
+        template = loader.get_template("admin_competition/view.html")
         context = Context({'model': model, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
 
-class AdminActivityList(View):
+class AdminCompetitionList(View):
     @require_cookie
     def get(self, request):
         try:
-            template = loader.get_template("admin_activity/list.html")
-            context = Context({'list': ActivityOwner.objects.get(user=request.user)})
+            template = loader.get_template("admin_competition/list.html")
+            context = Context({'list': CompetitionOwner.objects.get(user=request.user)})
             return HttpResponse(template.render(context))
-        except ActivityOwner.DoesNotExist:
-            template = loader.get_template("admin_activity/add.html")
+        except CompetitionOwner.DoesNotExist:
+            template = loader.get_template("admin_competition/add.html")
             context = Context()
             return HttpResponse(template.render(context))

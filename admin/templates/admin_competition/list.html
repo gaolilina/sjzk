@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<table>
+    <tr>
+        {% for item in list %}
+            <td>标题： {{ list.competition.name }}</td>
+            <td><a href="{% url 'admin:admin_competition:view' list.competition.id %}">查看</a></td>
+        {% endfor %}
+    </tr>
+</table>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='admin_competition' lb=1 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='admin_competition' lb=1 rb='view' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+{% endblock %}

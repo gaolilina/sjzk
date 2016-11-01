@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="{% url 'admin:admin_competition:add' %}" method="post">
+<table>
+    <tr>
+        <td>标题：</td>
+        <td><input name="name" type="text" value="" /></td>
+    </tr>
+    <tr>
+        <td>详细内容：</td>
+        <td><textarea name="content"></textarea></td>
+    </tr>
+    <tr>
+        <td>截至日期：</td>
+        <td><input name="deadline" type="datetime" value="" /></td>
+    </tr>
+    <tr>
+        <td>开始时间：</td>
+        <td><input name="time_started" type="datetime" value="" /></td>
+    </tr>
+    <tr>
+        <td>结束时间：</td>
+        <td><input name="time_ended" type="datetime" value="" /></td>
+    </tr>
+    <tr>
+        <td>报名类型：</td>
+        <td><input name="allow_user" type="checkbox" /> 创友 <input name="allow_team" type="checkbox" /> 团队</td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            {{ msg }}
+            <div class="buttons">
+                <input type="submit" value="保存" />
+                <input type="reset" value="取消" />
+            </div>
+        </td>
+    </tr>
+</table>
+
+</form>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='admin_competition' lb=1 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='admin_competition' lb=1 rb='add' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+{% endblock %}

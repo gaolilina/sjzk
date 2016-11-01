@@ -5,6 +5,11 @@
     <li{% if lb == 3 %} class="active"{% endif %}><a href="{% url 'admin:admin_user:identify' %}">实名认证</a></li>
 </ul>
 {% endif %}
+{% if tb == 'admin_competition' %}
+<ul>
+    <li class="active"><a href="{% url 'admin:admin_competition:list' %}">竞赛管理</a></li>
+</ul>
+{% endif %}
 {% if tb == 'admin_activity' %}
 <ul>
     <li class="active"><a href="{% url 'admin:admin_activity:list' %}">活动管理</a></li>
