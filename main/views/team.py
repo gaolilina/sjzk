@@ -1693,12 +1693,12 @@ class InternalTasks(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'sign': forms.IntegerField(required=False, min_value=0, max_value=2),
     })
-    def get(self, request, status=None, offset=0, limit=10):
+    def get(self, request, sign=None, offset=0, limit=10):
         """获取用户的内部任务列表
         :param offset: 偏移量
-        :param status: 任务状态 - 0: pending, 1: completed, 2: terminated
+        :param sign: 任务状态 - 0: pending, 1: completed, 2: terminated
         :return:
             count: 任务总数
             list: 任务列表
@@ -1714,10 +1714,10 @@ class InternalTasks(View):
                 time_created: 发布时间
         """
         qs = request.user.internal_tasks
-        if status is not None:
-            if status == 0:
+        if sign is not None:
+            if sign == 0:
                 qs = qs.filter(status__range=[0,4])
-            elif status == 1:
+            elif sign == 1:
                 qs = qs.filter(status__in=[5,6])
             else:
                 qs = qs.filter(status=7)
@@ -1816,13 +1816,15 @@ class TeamInternalTask(View):
                           ('超时结束', 6), ('终止', 7)
         """
         if request.user != task.team.owner and request.user != task.executor:
-            abort(403)
+            abort(403, 'operation limit')
 
         # 任务已经终止，不允许操作
         if task.status == 7:
             abort(404)
 
-        if status is None:
+        if status is None :
+            if request.user != task.team.owner or task.status != 3:
+                abort(403, 'operation invalid')
             task.finish_time = timezone.now()
             if task.finish_time > task.deadline:
                 task.status = 6
@@ -1830,13 +1832,32 @@ class TeamInternalTask(View):
                 task.status = 5
             task.save()
             abort(200)
-
-        # 如果任务状态为再派任务-->等待接受，则分派次数+1
-        if status == 1 and task.status == 0:
-            task.assign_num += 1
-        # 如果任务状态为再次提交-->等待验收，则提交次数+1
-        if status == 4 and task.status == 3:
-            task.submit_num += 1
+        elif status == 0:
+            if request.user != task.team.owner or task.status != 1:
+                abort(403, 'operation invalid')
+            else:
+                # 如果任务状态为再派任务-->等待接受，则分派次数+1
+                task.assign_num += 1
+        elif status == 1:
+            if request.user != task.executor or task.status != 0:
+                abort(403, 'operation invalid')
+        elif status == 2:
+            if request.user != task.executor or task.status != 0:
+                abort(403, 'operation invalid')
+        elif status == 3:
+            if request.user != task.executor or (task.status not in [2, 4]):
+                abort(403, 'operation invalid')
+            elif task.status == 4:
+                # 如果任务状态为再次提交-->等待验收，则提交次数+1
+                task.submit_num += 1
+        elif status == 4:
+            if request.user != task.team.owner or task.status != 3:
+                abort(403, 'operation invalid')
+        elif status == 7:
+            if request.user != task.team.owner or task.status != 1:
+                abort(403, 'operation invalid')
+        else:
+            abort(403, 'invalid argument status')
 
         task.status = status
         task.save()
@@ -1849,14 +1870,14 @@ class ExternalTaskList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'status': forms.IntegerField(required=False, min_value=0, max_value=1),
+        'sign': forms.IntegerField(required=False, min_value=0, max_value=1),
         'type': forms.IntegerField(required=False, min_value=0, max_value=1),
     })
-    def get(self, request, team, status=None, type=0, offset=0, limit=10):
+    def get(self, request, team, sign=None, type=0, offset=0, limit=10):
         """获取团队的外包/承接任务列表
         :param offset: 偏移量
         :param type: 任务类型 - 0: outsource, 1: undertake
-        :param status: 任务状态 - 0: pending, 1: completed
+        :param sign: 任务状态 - 0: pending, 1: completed
         :return:
             count: 任务总数
             list: 任务列表
@@ -1887,8 +1908,8 @@ class ExternalTaskList(View):
         """
         if type == 0:
             qs = team.outsource_external_tasks
-            if status is not None:
-                if status == 0:
+            if sign is not None:
+                if sign == 0:
                     qs = qs.filter(status__range=[0,8])
                 else:
                     qs = qs.filter(status__in=[9,10])
@@ -1908,8 +1929,8 @@ class ExternalTaskList(View):
             return JsonResponse({'count': c, 'list': l})
         else:
             qs = team.undertake_external_tasks
-            if status is not None:
-                if status == 0:
+            if sign is not None:
+                if sign == 0:
                     qs = qs.filter(status__range=[0,8])
                 else:
                     qs = qs.filter(status__in=[9,10])
