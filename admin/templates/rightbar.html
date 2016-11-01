@@ -15,6 +15,14 @@
         </ul>
     {% endif %}
 {% endif %}
+{% if tb == 'admin_activity' %}
+    {% if lb != 0 %}
+        <ul>
+            <li{% if rb == 'view' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">查看</a></li>
+            <li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:add' %}">新增</a></li>
+        </ul>
+    {% endif %}
+{% endif %}
 {% if tb == 'user_admin' %}
     {% if lb == 'user' %}
         <ul>

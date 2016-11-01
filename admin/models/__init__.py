@@ -7,3 +7,4 @@ class EnabledManager(models.Manager):
 
 
 from .admin_user import *
+from .activity_owner import *
