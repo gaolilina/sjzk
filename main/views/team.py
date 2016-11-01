@@ -1607,12 +1607,12 @@ class InternalTaskList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'sign': forms.IntegerField(required=False, min_value=0, max_value=2),
     })
-    def get(self, request, team, status=None, offset=0, limit=10):
+    def get(self, request, team, sign=None, offset=0, limit=10):
         """获取团队的内部任务列表
         :param offset: 偏移量
-        :param status: 任务状态 - 0: pending, 1: completed, 2: terminated
+        :param sign: 任务状态 - 0: pending, 1: completed, 2: terminated
         :return:
             count: 任务总数
             list: 任务列表
@@ -1628,10 +1628,10 @@ class InternalTaskList(View):
                 time_created: 发布时间
         """
         qs = team.internal_tasks
-        if status is not None:
-            if status == 0:
+        if sign is not None:
+            if sign == 0:
                 qs = qs.filter(status__range=[0,4])
-            elif status == 1:
+            elif sign == 1:
                 qs = qs.filter(status__in=[5,6])
             else:
                 qs = qs.filter(status=7)
