@@ -378,7 +378,7 @@ class MemberList(View):
 # noinspection PyUnusedLocal
 class Member(View):
     @fetch_object(Team.enabled, 'team')
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, team, user):
         """检查用户是否为团队成员"""
