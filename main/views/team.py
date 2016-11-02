@@ -1823,7 +1823,7 @@ class TeamInternalTask(View):
             if request.user != task.team.owner or task.status != 3:
                 abort(403, 'operation invalid')
             task.finish_time = timezone.now()
-            if task.finish_time > task.deadline:
+            if task.finish_time.date() > task.deadline:
                 task.status = 6
             else:
                 task.status = 5
@@ -2078,7 +2078,7 @@ class TeamExternalTask(View):
 
         if status is None:
             task.finish_time = timezone.now()
-            if task.finish_time > task.deadline:
+            if task.finish_time.date() > task.deadline:
                 task.status = 10
             else:
                 task.status = 9
