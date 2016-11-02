@@ -142,7 +142,7 @@ class TeamNeed(models.Model):
     number = models.IntegerField(default=None, null=True)
     field = models.CharField(default='', max_length=20)
     skill = models.CharField(default='', max_length=20)
-    deadline = models.DateTimeField(default=None, null=True, db_index=True)
+    deadline = models.DateField(default=None, null=True, db_index=True)
 
     age_min = models.IntegerField(default=0)
     age_max = models.IntegerField(default=0)
@@ -217,7 +217,7 @@ class InternalTask(models.Model):
                  ('等待完成', 2), ('等待验收', 3),
                  ('再次提交', 4), ('按时结束', 5),
                  ('超时结束', 6), ('终止', 7)))
-    deadline = models.DateTimeField(db_index=True)
+    deadline = models.DateField(db_index=True)
     assign_num = models.IntegerField(default=1)
     submit_num = models.IntegerField(default=1)
     finish_time = models.DateTimeField(
@@ -249,7 +249,7 @@ class ExternalTask(models.Model):
                  ('再次提交', 4), ('等待支付', 6),
                  ('再次支付', 7), ('等待确认', 8),
                  ('按时结束', 9),('超时结束', 10)))
-    deadline = models.DateTimeField(db_index=True)
+    deadline = models.DateField(db_index=True)
     assign_num = models.IntegerField(default=1)
     submit_num = models.IntegerField(default=1)
     pay_num = models.IntegerField(default=1)
