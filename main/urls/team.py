@@ -20,7 +20,6 @@ urls = [
         name='member_list'),
     url(r'^(?P<team_id>[0-9]+)/members/(?P<user_id>[0-9]+)/$', Member.as_view(),
         name='members'),
-    url(r'^(?P<team_id>[0-9]+)/member/$', Member.as_view(), name='member'),
     url(r'^(?P<team_id>[0-9]+)/member_requests/$',
         MemberRequestList.as_view(), name='member_requests'),
     url(r'^(?P<team_id>[0-9]+)/member_requests/(?P<user_id>[0-9]+)/$',

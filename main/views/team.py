@@ -420,19 +420,10 @@ class Member(View):
         abort(200)
 
     @fetch_object(Team.enabled, 'team')
-    @validate_args({
-        'user_id': forms.IntegerField(required=False, min_value=1),
-    })
+    @fetch_object(User.enabled, 'user')
     @require_token
-    def delete(self, request, team, user_id=None):
+    def delete(self, request, team, user):
         """退出团队(默认)/删除成员"""
-        if user_id is None:
-            user = request.user
-        else:
-            user = User.enabled.get(id=user_id)
-            if user == request.user:
-                abort(403, "can not be yourself")
-
         if user == team.owner:
             abort(403, "can not be team owner")
 
