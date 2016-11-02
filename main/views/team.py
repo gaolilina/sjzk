@@ -1422,10 +1422,10 @@ class NeedRequest(View):
         if request.user != need.team.owner:
             abort(404)
 
-        if need.cooperation_request.filter(sender=team).exists():
+        if need.cooperation_requests.filter(sender=team).exists():
             # 在事务中建立关系，并删除对应的申请合作
             with transaction.atomic():
-                need.cooperation_request.filter(sender=team).delete()
+                need.cooperation_requests.filter(sender=team).delete()
                 if need.team.members.filter(user=team.owner).exists():
                     abort(200)
                 # 保存需求的加入团队Id
