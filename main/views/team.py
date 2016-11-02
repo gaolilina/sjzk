@@ -1819,7 +1819,7 @@ class TeamInternalTask(View):
         if task.status == 7:
             abort(404)
 
-        if status is None :
+        if status is None:
             if request.user != task.team.owner or task.status != 3:
                 abort(403, 'operation invalid')
             task.finish_time = timezone.now()
@@ -1950,6 +1950,7 @@ class ExternalTaskList(View):
         'executor_id': forms.IntegerField(),
         'title': forms.CharField(max_length=20),
         'content': forms.CharField(max_length=200),
+        'expend': forms.IntegerField(required=False, min_value=1),
         'deadline': forms.DateField(),
     })
     def post(self, request, team, **kwargs):
@@ -1990,6 +1991,7 @@ class ExternalTasks(View):
         'title': forms.CharField(required=False, max_length=20),
         'content': forms.CharField(required=False, max_length=200),
         'deadline': forms.DateField(required=False),
+        'expend': forms.IntegerField(required=False, min_value=1),
     })
     def post(self, request, task, **kwargs):
         """再派任务状态下的任务修改
@@ -2069,14 +2071,13 @@ class TeamExternalTask(View):
                       ('再次支付', 7), ('等待确认', 8),
                       ('按时结束', 9),('超时结束', 10)
         """
-        if request.user != task.team.owner and request.user != task.executor:
-            abort(403)
-
-        # 任务已经终止，不允许操作
-        if task.status == 7:
-            abort(404)
+        if request.user != task.team.owner \
+                and request.user != task.executor.owner:
+            abort(403, 'operation limit')
 
         if status is None:
+            if request.user != task.executor.owner or task.status != 8:
+                abort(403, 'operation invalid')
             task.finish_time = timezone.now()
             if task.finish_time.date() > task.deadline:
                 task.status = 10
@@ -2084,16 +2085,42 @@ class TeamExternalTask(View):
                 task.status = 9
             task.save()
             abort(200)
-
-        # 如果任务状态为再派任务-->等待接受，则分派次数+1
-        if status == 1 and task.status == 0:
-            task.assign_num += 1
-        # 如果任务状态为再次提交-->等待验收，则提交次数+1
-        if status == 4 and task.status == 3:
-            task.submit_num += 1
-        # 如果任务状态为再次支付-->等待确认，则支付次数+1
-        if status == 7 and task.status == 6:
-            task.pay_num += 1
+        elif status == 0:
+            if request.user != task.team.owner or task.status != 1:
+                abort(403, 'operation invalid')
+            else:
+                # 如果任务状态为再派任务-->等待接受，则分派次数+1
+                task.assign_num += 1
+        elif status == 1:
+            if request.user != task.executor.owner or task.status != 0:
+                abort(403, 'operation invalid')
+        elif status == 2:
+            if request.user != task.executor.owner or task.status != 0:
+                abort(403, 'operation invalid')
+        elif status == 3:
+            if request.user != task.executor.owner \
+                    or (task.status not in [2, 4]):
+                abort(403, 'operation invalid')
+            elif task.status == 4:
+                # 如果任务状态为再次提交-->等待验收，则提交次数+1
+                task.submit_num += 1
+        elif status == 4:
+            if request.user != task.team.owner or task.status != 3:
+                abort(403, 'operation invalid')
+        elif status == 6:
+            if request.user != task.team.owner or task.status != 3:
+                abort(403, 'operation invalid')
+        elif status == 7:
+            if request.user != task.executor.owner or task.status != 8:
+                abort(403, 'operation invalid')
+        elif status == 8:
+            if request.user != task.team.owner or (task.status not in [6, 7]):
+                abort(403, 'operation invalid')
+            elif task.status == 7:
+                # 如果任务状态为再次支付-->等待确认，则支付次数+1
+                task.pay_num += 1
+        else:
+            abort(403, 'invalid argument status')
 
         task.status = status
         task.save()
