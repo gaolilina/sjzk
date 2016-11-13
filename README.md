@@ -1,4 +1,4 @@
-创艺项目说明
+创易项目说明
 ============
 本项目利用[Git](https://git-scm.com/)进行版本控制，基于[Python 3.4+](https://www.python.org/)、[Django 1.9](https://www.djangoproject.com)实现，此外使用到了[Pillow](https://pypi.python.org/pypi/Pillow/)进行图片处理。
 
