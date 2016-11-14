@@ -65,8 +65,8 @@ class UserRecommend(View):
         l = [{'id': u.id,
               'username': u.username,
               'name': u.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + u.icon)
-              if u.icon else '',
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + u.icon) if u.icon else '',
               'gender': u.profile.gender,
               'like_count': u.like_count,
               'fan_count': u.fan_count,
@@ -127,8 +127,8 @@ class TeamRecommend(View):
         c = len(teams)
         l = [{'id': t.id,
               'name': t.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.icon)
-              if t.icon else '',
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + t.icon) if t.icon else '',
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
@@ -205,8 +205,8 @@ class OutsourceNeedTeamRecommend(View):
         c = len(teams)
         l = [{'id': t.id,
               'name': t.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.icon)
-              if t.icon else '',
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + t.icon) if t.icon else '',
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
@@ -242,7 +242,7 @@ class UndertakeNeedTeamRecommend(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
-                user_icon: 团队头像
+                icon_url: 团队头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -283,8 +283,8 @@ class UndertakeNeedTeamRecommend(View):
         c = len(teams)
         l = [{'id': t.id,
               'name': t.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.icon)
-              if t.icon else '',
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + t.icon) if t.icon else '',
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),

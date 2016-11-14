@@ -49,6 +49,7 @@ class List(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
+                icon_url: 头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -62,6 +63,8 @@ class List(View):
         teams = Team.enabled.order_by(k)[i:j]
         l = [{'id': t.id,
               'name': t.name,
+              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.icon)
+                    if t.icon else '',
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
@@ -162,6 +165,7 @@ class Search(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
+                icon_url: 头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -175,6 +179,8 @@ class Search(View):
         c = teams.count()
         l = [{'id': t.id,
               'name': t.name,
+              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.icon)
+                    if t.icon else '',
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
@@ -195,6 +201,7 @@ class Profile(View):
         :return:
             id: 团队ID
             name: 团队名
+            icon_url: 头像
             owner_id: 创始人id
             time_created: 注册时间
             is_recruiting：是否招募新成员
@@ -216,6 +223,8 @@ class Profile(View):
         r = dict()
         r['id'] = team.id
         r['name'] = team.name
+        r['icon_url'] = HttpResponseRedirect(UPLOADED_URL + team.icon) \
+                            if team.icon else '',
         r['owner_id'] = team.owner.id
         r['time_created'] = team.time_created
         r['is_recruiting'] = team.is_recruiting
@@ -361,6 +370,7 @@ class MemberList(View):
             list: 成员列表
                 id: 用户ID
                 username: 用户名
+                icon_url: 头像
                 name: 用户昵称
                 time_created: 成为团队成员时间
         """
@@ -370,6 +380,8 @@ class MemberList(View):
         rs = team.members.order_by(k)[i:j]
         l = [{'id': r.user.id,
               'username': r.user.username,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + r.user.icon) if r.user.icon else '',
               'name': r.user.name,
               'time_created': r.time_created} for r in rs]
         return JsonResponse({'count': c, 'list': l})
@@ -477,8 +489,8 @@ class MemberRequestList(View):
             l = [{'id': r.user.id,
                   'username': r.user.username,
                   'name': r.user.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.user.icon)
-                  if r.user.icon else '',
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.user.icon) if r.user.icon else '',
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
@@ -593,6 +605,7 @@ class AllAchievementList(View):
                 id: 成果ID
                 team_id: 团队ID
                 team_name: 团队名称
+                icon_url: 团队头像
                 description: 成果描述
                 picture_url: 图片URL
                 time_created: 发布时间
@@ -603,6 +616,8 @@ class AllAchievementList(View):
         l = [{'id': a.id,
               'team_id': a.team.id,
               'team_name': a.team.name,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + a.team.icon) if a.team.icon else '',
               'description': a.description,
               'picture_url': a.picture_url,
               'time_created': a.time_created} for a in achievements]
@@ -742,6 +757,8 @@ class AllNeedList(View):
             need_dic['id'] = n.id
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
+            need_dic['icon_url'] = HttpResponseRedirect(
+                UPLOADED_URL + n.team.icon) if n.team.icon else '',
             need_dic['status'] = n.status
             need_dic['title'] = n.title
             need_dic['members'] = members
@@ -800,6 +817,8 @@ class NeedList(View):
             need_dic['id'] = n.id
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
+            need_dic['icon_url'] = HttpResponseRedirect(
+                UPLOADED_URL + n.team.icon) if n.team.icon else '',
             need_dic['status'] = n.status
             need_dic['title'] = n.title
             need_dic['members'] = members
@@ -981,6 +1000,7 @@ class Need(View):
                 description: 需求描述
                 team_id: 团队ID
                 team_name: 团队名称
+                icon_url: 团队头像
                 number: 所需人数
                 age_min: 最小年龄
                 age_max: 最大年龄
@@ -998,6 +1018,7 @@ class Need(View):
                 description: 需求描述
                 team_id: 团队ID
                 team_name: 团队名称
+                icon_url: 团队头像
                 number: 所需人数
                 age_min: 最小年龄
                 age_max: 最大年龄
@@ -1019,6 +1040,7 @@ class Need(View):
                 description: 需求描述
                 team_id: 团队ID
                 team_name: 团队名称
+                icon_url: 团队头像
                 number: 团队人数
                 field: 领域
                 skill: 技能
@@ -1055,6 +1077,8 @@ class Need(View):
                 else:
                     members[uid] = Team.enabled.get(id=uid).name
         d['members'] = members
+        d['icon_url'] = HttpResponseRedirect(
+            UPLOADED_URL + need.team.icon) if need.team.icon else '',
         return JsonResponse(d)
 
     @fetch_object(TeamNeed.objects, 'need')
@@ -1175,6 +1199,7 @@ class NeedTeamList(View):
             list: 成员列表
                 id: 团队ID
                 name: 团队昵称
+                icon_url: 团队头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -1194,6 +1219,8 @@ class NeedTeamList(View):
             rs = members.order_by(k)[i:j]
             l = [{'id': r.id,
                   'name': r.name,
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.icon) if r.icon else '',
                   'owner_id': r.owner.id,
                   'liker_count': r.likers.count(),
                   'visitor_count': r.visitors.count(),
@@ -1237,8 +1264,8 @@ class MemberNeedRequestList(View):
             l = [{'id': r.sender.id,
                   'username': r.sender.username,
                   'name': r.sender.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.sender.icon)
-                  if r.sender.icon else '',
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.sender.icon) if r.sender.icon else '',
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
@@ -1350,8 +1377,8 @@ class NeedRequestList(View):
             l = [{'id': r.sender.owner.id,
                   'team_id': r.sender.id,
                   'name': r.sender.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.sender.icon)
-                  if r.sender.icon else '',
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.sender.icon) if r.sender.icon else '',
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
         abort(404)
@@ -1641,8 +1668,8 @@ class InternalTaskList(View):
               'title': t.title,
               'executor_id': t.executor.id,
               'executor_name': t.executor.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.executor.icon)
-              if t.executor.icon else '',
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + t.executor.icon) if t.executor.icon else '',
               'time_created': t.time_created} for t in tasks]
         return JsonResponse({'count': c, 'list': l})
 
@@ -1726,8 +1753,8 @@ class InternalTasks(View):
         l = [{'id': t.id,
               'team_id': t.team.id,
               'team_name': t.team.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.team.icon)
-                    if t.team.icon else '',
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + t.team.icon) if t.team.icon else '',
               'status': t.status,
               'title': t.title,
               'time_created': t.time_created} for t in tasks]
@@ -1774,6 +1801,7 @@ class TeamInternalTask(View):
             executor_name: 执行者名称
             team_id: 团队ID
             team_name: 团队名称
+            icon_url: 团队头像
             title: 任务标题
             content: 任务内容
             status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
@@ -1790,7 +1818,9 @@ class TeamInternalTask(View):
         d = {'executor_id': task.executor.id,
              'executor_name': task.executor.name,
              'team_id': task.team.id,
-             'team_name': task.team.name}
+             'team_name': task.team.name,
+             'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + task.team.icon) if task.team.icon else ''}
 
         # noinspection PyUnboundLocalVariable
         for k in self.keys:
@@ -1939,8 +1969,8 @@ class ExternalTaskList(View):
                   'title': t.title,
                   'team_id': t.team.id,
                   'team_name': t.team.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + t.team.icon)
-                  if t.team.icon else '',
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + t.team.icon) if t.team.icon else '',
                   'time_created': t.time_created} for t in tasks]
             return JsonResponse({'count': c, 'list': l})
 
@@ -2028,6 +2058,7 @@ class TeamExternalTask(View):
             executor_name: 执行团队名称
             team_id: 团队ID
             team_name: 团队名称
+            icon_url: 团队头像
             title: 任务标题
             content: 任务内容
             status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
@@ -2048,7 +2079,9 @@ class TeamExternalTask(View):
         d = {'executor_id': task.executor.id,
              'executor_name': task.executor.name,
              'team_id': task.team.id,
-             'team_name': task.team.name}
+             'team_name': task.team.name,
+             'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + task.team.icon) if task.team.icon else ''}
 
         # noinspection PyUnboundLocalVariable
         for k in self.keys:
