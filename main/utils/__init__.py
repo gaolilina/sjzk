@@ -13,7 +13,7 @@ __all__ = ['abort', 'send_message', 'identity_verify', 'picture_verify',
 def save_uploaded_image(image, is_private=False):
     """保存上传的图片，返回其相对路径"""
     code = picture_verify(image)
-    if code != 0:
+    if code and code != 0:
         abort(403, 'unhealthy picture')
     now = timezone.now()
     dirname = now.strftime('%Y/%m/%d')

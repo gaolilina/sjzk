@@ -1,7 +1,6 @@
 import urllib.parse
 import urllib.request
 import json
-import time
 import tencentyun
 
 def send_message(data, m="GET"):
