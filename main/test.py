@@ -25,8 +25,9 @@ class ExampleTestCase(TestCase):
         logging.info('{0}: {1}'.format(title, message))
 
     def test_picture_verify(self):
-        picture_url = 'test_data/kim.png'
-        picture_verify(picture_url)
+        picture_url = 'test_data/yellow.png'
+        code = picture_verify(picture_url)
+        self.assertEqual(code, 0)
 
     '''
     def test_sendMessage(self):

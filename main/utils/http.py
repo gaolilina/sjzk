@@ -2,6 +2,8 @@ import urllib.parse
 import urllib.request
 import json
 import tencentyun
+import time
+
 
 def send_message(data, m="GET"):
     """第三方短信调用api(云信)"""
@@ -38,18 +40,22 @@ def identity_verify(id_number, m="GET"):
 def picture_verify(picture_url):
     """第三方图片审核api（万象优图）"""
     appid = "10072767"  # 项目ID
-    secret_id = "AKIDfA6xfAidaKrGURP8kFxYzDH9oGVd6G7r"  # 密钥ID
-    secret_key = "2GLE5oLgGhw1wgEftW2PZxDk8KOGwSlr"  # 密钥key
-
+    secret_id = "AKIDZBf2DdSCLNoAPXvH4kHeq2AHF1bz4b9a"  # 密钥ID
+    secret_key = "1xjPxMjx4zsfGICvyvg4MX5cHAAze9Xp"  # 密钥key
+    bucket = 'chuangyi'  # 图片空间名称
     image = tencentyun.ImageV2(appid, secret_id, secret_key)
-
-    # upload an image from local file
-    # obj = image.upload(sample_image_path);
-    # or from in-memory binary data
-    # both upload and upload_binary is ok in Python 3
     try:
         image_data = open(picture_url, "rb").read()
     except IOError:
         return None
-    obj = image.upload_binary(image_data, 'chaungyi')  # 第二个参数为空间名称
-    return obj["code"]
+    # 将图片上传到图片空间
+    obj = image.upload_binary(image_data, bucket)  # 第二个参数为空间名称
+    if obj["code"] == 0:
+        fileid = obj["data"]["fileid"]
+        download_url = obj["data"]["download_url"]
+        # 图片检测
+        imageprocess = tencentyun.ImageProcess(appid,secret_id,secret_key,bucket)
+        pornUrl = download_url
+        pornRet = imageprocess.porn_detect(pornUrl)
+        image.delete(bucket, fileid)
+        return pornRet["data"]["result"]
