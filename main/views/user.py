@@ -186,8 +186,8 @@ class Profile(View):
              'time_created': user.time_created,
              'username': user.username,
              'name': user.name,
-             'icon_url': HttpResponseRedirect(UPLOADED_URL + user.icon)
-                    if user.icon else '',
+             'icon_url': HttpResponseRedirect(
+                 UPLOADED_URL + user.icon) if user.icon else '',
              'description': user.description,
              'email': user.email,
              'gender': user.gender,

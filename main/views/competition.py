@@ -1,7 +1,8 @@
 from django import forms
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
 
+from ChuangYi.settings import UPLOADED_URL
 from ..models import Competition, Team
 from ..utils import abort
 from ..utils.decorators import *
@@ -66,7 +67,10 @@ class TeamParticipatorList(View):
         c = competition.team_participators.count()
         qs = competition.team_participators.all()[offset: offset + limit]
         l = [{'id': p.team.id,
-              'name': p.team.name} for p in qs]
+              'name': p.team.name,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + p.team.icon) if p.team.icon else ''
+              } for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Competition.enabled, 'competition')

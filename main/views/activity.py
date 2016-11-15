@@ -1,8 +1,9 @@
 from django import forms
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
 
-from ..models import Activity, Team
+from ChuangYi.settings import UPLOADED_URL
+from ..models import Activity
 from ..utils import abort
 from ..utils.decorators import *
 
@@ -67,7 +68,10 @@ class UserParticipatorList(View):
         qs = activity.user_participators.all()[offset: offset + limit]
         l = [{'id': p.user.id,
               'name': p.user.name,
-              'username': p.user.username} for p in qs]
+              'username': p.user.username,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + p.user.icon) if p.user.icon else ''
+              } for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Activity.enabled, 'activity')
