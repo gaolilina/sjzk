@@ -135,6 +135,10 @@ class PostList(View):
 
     @require_token
     @fetch_object(ForumBoard.enabled, 'board')
+    @validate_args({
+        'title': forms.CharField(max_length=20),
+        'content': forms.CharField(max_length=300),
+    })
     def post(self, request, board, title, content):
         """发主题帖"""
 
@@ -183,6 +187,10 @@ class Post(View):
 
     @require_token
     @fetch_object(ForumPost.objects, 'post')
+    @validate_args({
+        'title': forms.CharField(max_length=20),
+        'content': forms.CharField(max_length=300),
+    })
     def post(self, request, post, title, content):
         """回主题帖"""
 
