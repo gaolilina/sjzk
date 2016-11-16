@@ -134,7 +134,7 @@ class PostList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @require_token
-    @fetch_object(ForumBoard.objects, 'board')
+    @fetch_object(ForumBoard.enabled, 'board')
     def post(self, request, board, title, content):
         """发主题帖"""
 
