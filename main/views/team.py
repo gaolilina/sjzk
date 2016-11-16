@@ -1989,6 +1989,7 @@ class ExternalTaskList(View):
         :param: executor_id: 执行者ID
         :param: title: 标题
         :param: content: 内容
+        :param: expend: 预计费用
         :param；deadline: 截止时间
         """
         if request.user != team.owner:
@@ -2092,9 +2093,11 @@ class TeamExternalTask(View):
     @fetch_object(ExternalTask.objects, 'task')
     @require_token
     @validate_args({
+        'expend_actual': forms.IntegerField(required=False, min_value=0),
+        'pay_time': forms.DateField(required=False),
         'status': forms.IntegerField(required=False, min_value=0, max_value=8),
     })
-    def post(self, request, task, status=None):
+    def post(self, request, task, status=None, **kwargs):
         """
         修改外部任务的状态(默认为None, 后台确认任务是按时还是超时完成)
         :param status:
@@ -2152,6 +2155,14 @@ class TeamExternalTask(View):
             elif task.status == 7:
                 # 如果任务状态为再次支付-->等待确认，则支付次数+1
                 task.pay_num += 1
+            # 获取任务的支付信息
+            expend_actual = kwargs.pop('expend_actual', None)
+            pay_time = kwargs.pop('pay_time', None)
+            if expend_actual is None or pay_time is None:
+                abort(404, 'require argument')
+            else:
+                task.expend_actual = expend_actual
+                task.pay_time = pay_time
         else:
             abort(403, 'invalid argument status')
 
