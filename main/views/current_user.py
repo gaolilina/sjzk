@@ -8,7 +8,7 @@ from django.views.generic import View
 from ChuangYi.settings import UPLOADED_URL
 from rongcloud import RongCloud
 from ..models import User, Team
-from ..utils import abort, action, save_uploaded_image
+from ..utils import abort, action, save_uploaded_image, identity_verify
 from ..utils.decorators import *
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
     ExperienceList_, FriendList, Friend as Friend_
@@ -18,7 +18,8 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'ExperienceList', 'FollowedUserList', 'FollowedUser',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
-           'RelatedTeamList', 'OwnedTeamList', 'InvitationList', 'Invitation']
+           'RelatedTeamList', 'OwnedTeamList', 'InvitationList', 'Invitation',
+           'IdentityVerification', 'Feedback']
 
 
 class Username(View):
@@ -183,9 +184,6 @@ class Profile(Profile_):
         'city': forms.CharField(required=False, max_length=20),
         'county': forms.CharField(required=False, max_length=20),
         'tags': forms.CharField(required=False, max_length=100),
-        'real_name': forms.CharField(required=False, max_length=20),
-        'id_number': forms.CharField(
-            required=False, min_length=18, max_length=18),
         'role': forms.CharField(required=False, max_length=20),
         'unit1': forms.CharField(required=False, max_length=20),
         'unit2': forms.CharField(required=False, max_length=20),
@@ -206,8 +204,6 @@ class Profile(Profile_):
             city:
             county:
             tags: 标签，格式：'tag1|tag2|...'，最多5个
-            real_name:
-            id_number:
             role:
             other_number:
             unit1:
@@ -248,16 +244,42 @@ class Profile(Profile_):
                     request.user.tags.create(name=tag, order=order)
                     order += 1
 
-        id_keys = ('real_name', 'id_number')
-        if not request.user.is_verified:
-            for k in id_keys:
-                setattr(request.user, k, kwargs[k])
-
         role_keys = ('role', 'other_number', 'unit1', 'unit2', 'profession')
         if not request.user.is_role_verified:
             for k in role_keys:
                 setattr(request.user, k, kwargs[k])
 
+        request.user.score += 50
+        request.user.save()
+        abort(200)
+
+
+# noinspection PyClassHasNoInit
+class IdentityVerification(Profile_):
+    @require_token
+    @validate_args({
+        'real_name': forms.CharField(required=False, max_length=20),
+        'id_number': forms.CharField(
+            required=False, min_length=18, max_length=18),
+    })
+    def post(self, request, **kwargs):
+        """实名认证
+
+        :param kwargs:
+            real_name:
+            id_number:
+        """
+
+        id_keys = ('real_name', 'id_number')
+        # 调用第三方接口验证身份证的正确性
+        res = identity_verify(kwargs['id_number'])
+        error_code = res["error_code"]
+        if error_code != 0:
+            abort(404, res["reason"])
+
+        if not request.user.is_verified:
+            for k in id_keys:
+                setattr(request.user, k, kwargs[k])
         request.user.score += 50
         request.user.save()
         abort(200)
@@ -303,6 +325,7 @@ class FollowedUserList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -375,6 +398,7 @@ class FollowedTeamList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -475,7 +499,10 @@ class Friend(Friend_):
 # noinspection PyClassHasNoInit
 class FriendRequestList(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     def get(self, request, offset, limit=10):
         """按请求时间逆序获取当前用户收到的的好友请求信息，
         拉取后的请求标记为已读
@@ -579,6 +606,7 @@ class RelatedTeamList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -626,6 +654,7 @@ class OwnedTeamList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -669,7 +698,10 @@ class OwnedTeamList(View):
 # noinspection PyClassHasNoInit
 class InvitationList(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     def get(self, request, offset=0, limit=10):
         """获取当前用户的团队邀请列表
 
@@ -711,6 +743,15 @@ class Invitation(View):
             invitation.delete()
             abort(200)
 
+        # 调用融云接口将用户添加进团队群聊
+        rcloud = RongCloud()
+        r = rcloud.Group.join(
+            userId=request.user.id,
+            groupId=invitation.team.id,
+            groupName=invitation.team.name)
+        if r.result['code'] != 200:
+            abort(404, 'add member to group chat failed')
+
         # 在事务中建立关系，并删除对应的加团队邀请
         with transaction.atomic():
             invitation.team.members.create(user=request.user)
@@ -730,4 +771,22 @@ class Invitation(View):
             abort(403)
 
         invitation.delete()
+        abort(200)
+
+
+class Feedback(View):
+    @require_token
+    @validate_args({
+        'content': forms.CharField(max_length=200),
+    })
+    def post(self, request, content):
+        """用户意见反馈
+
+        :param content: 反馈内容
+        :return: 200
+        """
+        if request.user.feedback.count() == 0:
+            request.user.score += 30
+            request.user.save()
+        request.user.feedback.create(content=content)
         abort(200)

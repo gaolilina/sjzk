@@ -27,7 +27,7 @@ def require_token(function):
                 return function(self, request, *args, **kwargs)
             abort(403)
         except User.DoesNotExist:
-            abort(401)
+            abort(404)
     return decorator
 
 

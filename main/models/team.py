@@ -14,14 +14,15 @@ class Team(models.Model):
     """团队模型"""
 
     owner = models.ForeignKey('User', models.CASCADE, 'owned_teams')
-    name = models.CharField(max_length=20, db_index=True)
+    name = models.CharField(max_length=20)
+    icon = models.CharField(max_length=100, default='')
     description = models.CharField(max_length=100, default='')
     url = models.CharField(max_length=100)
     field1 = models.CharField(max_length=10, db_index=True, default='')
     field2 = models.CharField(max_length=10, db_index=True, default='')
-    province = models.CharField(max_length=20, default='', db_index=True)
-    city = models.CharField(max_length=20, default='', db_index=True)
-    county = models.CharField(max_length=20, default='', db_index=True)
+    province = models.CharField(max_length=20, default='')
+    city = models.CharField(max_length=20, default='')
+    county = models.CharField(max_length=20, default='')
     is_recruiting = models.BooleanField(default=True, db_index=True)
     is_enabled = models.BooleanField(default=True, db_index=True)
 
@@ -141,7 +142,7 @@ class TeamNeed(models.Model):
     number = models.IntegerField(default=None, null=True)
     field = models.CharField(default='', max_length=20)
     skill = models.CharField(default='', max_length=20)
-    deadline = models.DateTimeField(default=None, null=True, db_index=True)
+    deadline = models.DateField(default=None, null=True, db_index=True)
 
     age_min = models.IntegerField(default=0)
     age_max = models.IntegerField(default=0)
@@ -154,7 +155,8 @@ class TeamNeed(models.Model):
     cost_unit = models.CharField(default='', max_length=1)
     time_started = models.DateField(default=None, null=True)
     time_ended = models.DateField(default=None, null=True)
-
+    # 成员或团队Id
+    members = models.CharField(default='', max_length=100)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
@@ -207,15 +209,15 @@ class InternalTask(models.Model):
     team = models.ForeignKey('Team', models.CASCADE, 'internal_tasks')
     executor = models.ForeignKey('User', models.CASCADE, 'internal_tasks')
 
-    title = models.CharField(max_length=20, db_index=True)
-    content = models.TextField(max_length=100, db_index=True)
+    title = models.CharField(max_length=20)
+    content = models.TextField(max_length=100)
     status = models.IntegerField(
         default=0, db_index=True,
         choices=(('等待接受', 0), ('再派任务', 1),
                  ('等待完成', 2), ('等待验收', 3),
                  ('再次提交', 4), ('按时结束', 5),
                  ('超时结束', 6), ('终止', 7)))
-    deadline = models.DateTimeField(db_index=True)
+    deadline = models.DateField(db_index=True)
     assign_num = models.IntegerField(default=1)
     submit_num = models.IntegerField(default=1)
     finish_time = models.DateTimeField(
@@ -236,8 +238,8 @@ class ExternalTask(models.Model):
     executor = models.ForeignKey(
         'Team', models.CASCADE, 'undertake_external_tasks')
 
-    title = models.CharField(max_length=20, db_index=True)
-    content = models.TextField(default='', max_length=100, db_index=True)
+    title = models.CharField(max_length=20)
+    content = models.TextField(default='', max_length=100)
     expend = models.IntegerField(default=-1, db_index=True)
     expend_actual = models.IntegerField(default=-1, db_index=True)
     status = models.IntegerField(
@@ -247,7 +249,7 @@ class ExternalTask(models.Model):
                  ('再次提交', 4), ('等待支付', 6),
                  ('再次支付', 7), ('等待确认', 8),
                  ('按时结束', 9),('超时结束', 10)))
-    deadline = models.DateTimeField(db_index=True)
+    deadline = models.DateField(db_index=True)
     assign_num = models.IntegerField(default=1)
     submit_num = models.IntegerField(default=1)
     pay_num = models.IntegerField(default=1)

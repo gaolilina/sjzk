@@ -1,7 +1,8 @@
 from django import forms
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
 
+from ChuangYi.settings import UPLOADED_URL
 from ..models import Competition, Team
 from ..utils import abort
 from ..utils.decorators import *
@@ -12,7 +13,10 @@ __all__ = ['List', 'Detail', 'TeamParticipatorList']
 
 class List(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     def get(self, request, offset=0, limit=10):
         """获取活动列表"""
 
@@ -53,14 +57,20 @@ class Detail(View):
 class TeamParticipatorList(View):
     @fetch_object(Competition.enabled, 'competition')
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     def get(self, request, competition, offset=0, limit=10):
         """获取报名团队列表"""
 
         c = competition.team_participators.count()
         qs = competition.team_participators.all()[offset: offset + limit]
         l = [{'id': p.team.id,
-              'name': p.team.name} for p in qs]
+              'name': p.team.name,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + p.team.icon) if p.team.icon else ''
+              } for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Competition.enabled, 'competition')

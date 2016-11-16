@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.views.generic import View
+from rongcloud import RongCloud
 import json
 
 from ChuangYi.settings import UPLOADED_URL
@@ -20,7 +21,7 @@ __all__ = ('List', 'Search', 'Profile', 'Icon', 'MemberList', 'Member',
            'MemberNeedRequest', 'NeedRequestList', 'NeedRequest',
            'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
            'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
-           'ExternalTasks', 'TeamExternalTask')
+           'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList')
 
 
 class List(View):
@@ -30,6 +31,7 @@ class List(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -47,6 +49,7 @@ class List(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
+                icon_url: 头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -60,6 +63,8 @@ class List(View):
         teams = Team.enabled.order_by(k)[i:j]
         l = [{'id': t.id,
               'name': t.name,
+              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.icon)
+                    if t.icon else '',
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
@@ -81,7 +86,7 @@ class List(View):
         'tags': forms.CharField(required=False, max_length=100),
     })
     def post(self, request, **kwargs):
-        """新建团队
+        """新建团队，同时调用融云接口为该团队创建一个对应的群聊
 
         :param kwargs:
             name: 团队名称
@@ -99,10 +104,18 @@ class List(View):
         tags = kwargs.pop('tags', None)
 
         team = Team(owner=request.user, name=name)
+        team.save()
+        # 调用融云接口创建团队群聊
+        rcloud = RongCloud()
+        r = rcloud.Group.create(
+            userId=str(request.user.id),
+            groupId=str(team.id),
+            groupName=name)
+        if r.result['code'] != 200:
+            abort(404, 'create group chat failed')
 
         for k in kwargs:
             setattr(team, k, kwargs[k])
-
         fields = fields.split('|')[:2] if fields is not None else ('', '')
         team.field1, team.field2 = fields[0].strip(), fields[1].strip()
         team.save()
@@ -131,6 +144,7 @@ class Search(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
         'name': forms.CharField(max_length=20),
     })
@@ -151,6 +165,7 @@ class Search(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
+                icon_url: 头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -164,6 +179,8 @@ class Search(View):
         c = teams.count()
         l = [{'id': t.id,
               'name': t.name,
+              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.icon)
+                    if t.icon else '',
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
@@ -184,6 +201,7 @@ class Profile(View):
         :return:
             id: 团队ID
             name: 团队名
+            icon_url: 头像
             owner_id: 创始人id
             time_created: 注册时间
             is_recruiting：是否招募新成员
@@ -205,6 +223,8 @@ class Profile(View):
         r = dict()
         r['id'] = team.id
         r['name'] = team.name
+        r['icon_url'] = HttpResponseRedirect(UPLOADED_URL + team.icon) \
+                            if team.icon else '',
         r['owner_id'] = team.owner.id
         r['time_created'] = team.time_created
         r['is_recruiting'] = team.is_recruiting
@@ -258,6 +278,12 @@ class Profile(View):
 
         for k in kwargs:
             setattr(team, k, kwargs[k])
+            if k == "name":
+                rcloud = RongCloud()
+                r = rcloud.Group.refresh(
+                    groupId=str(team.id), groupName=kwargs['name'])
+                if r.result['code'] != 200:
+                    abort(404, 'refresh group chat failed')
 
         if fields:
             fields = fields.split('|')[:2]
@@ -327,8 +353,8 @@ class MemberList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-
     })
     def get(self, request, team, offset=0, limit=10, order=1):
         """获取团队的成员列表
@@ -344,6 +370,7 @@ class MemberList(View):
             list: 成员列表
                 id: 用户ID
                 username: 用户名
+                icon_url: 头像
                 name: 用户昵称
                 time_created: 成为团队成员时间
         """
@@ -353,6 +380,8 @@ class MemberList(View):
         rs = team.members.order_by(k)[i:j]
         l = [{'id': r.user.id,
               'username': r.user.username,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + r.user.icon) if r.user.icon else '',
               'name': r.user.name,
               'time_created': r.time_created} for r in rs]
         return JsonResponse({'count': c, 'list': l})
@@ -361,7 +390,7 @@ class MemberList(View):
 # noinspection PyUnusedLocal
 class Member(View):
     @fetch_object(Team.enabled, 'team')
-    @fetch_object(User, 'user')
+    @fetch_object(User.enabled, 'user')
     @require_token
     def get(self, request, team, user):
         """检查用户是否为团队成员"""
@@ -386,6 +415,15 @@ class Member(View):
         if team.members.filter(user=user).exists():
             abort(200)
 
+        # 调用融云接口将用户添加进团队群聊
+        rcloud = RongCloud()
+        r = rcloud.Group.join(
+            userId=str(user.id),
+            groupId=str(team.id),
+            groupName=team.name)
+        if r.result['code'] != 200:
+            abort(404, 'add member to group chat failed')
+
         # 在事务中建立关系，并删除对应的加团队申请
         with transaction.atomic():
             team.member_requests.filter(user=user).delete()
@@ -398,14 +436,19 @@ class Member(View):
     @require_token
     def delete(self, request, team, user):
         """退出团队(默认)/删除成员"""
-        if request.user != team.owner:
-            abort(403)
-
-        if user != request.user or user == team.owner:
-            abort(403)
+        if user == team.owner:
+            abort(403, "can not be team owner")
 
         qs = team.members.filter(user=user)
         if qs.exists():
+            # 调用融云接口从团队群聊中删除该用户
+            rcloud = RongCloud()
+            r = rcloud.Group.quit(
+                userId=str(user.id),
+                groupId=str(team.id))
+            if r.result['code'] != 200:
+                abort(404, 'remove member from group chat failed')
+
             qs.delete()
             abort(200)
         abort(404)
@@ -413,7 +456,10 @@ class Member(View):
 
 class MemberRequestList(View):
     @fetch_object(Team.enabled, 'team')
-    @validate_args({'offset': forms.IntegerField(required=False)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     @require_token
     def get(self, request, team, offset=0, limit=10):
         """获取团队的加入申请列表
@@ -443,8 +489,8 @@ class MemberRequestList(View):
             l = [{'id': r.user.id,
                   'username': r.user.username,
                   'name': r.user.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.user.icon)
-                  if r.user.icon else '',
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.user.icon) if r.user.icon else '',
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
@@ -542,6 +588,7 @@ class AllAchievementList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
@@ -558,6 +605,7 @@ class AllAchievementList(View):
                 id: 成果ID
                 team_id: 团队ID
                 team_name: 团队名称
+                icon_url: 团队头像
                 description: 成果描述
                 picture_url: 图片URL
                 time_created: 发布时间
@@ -568,6 +616,8 @@ class AllAchievementList(View):
         l = [{'id': a.id,
               'team_id': a.team.id,
               'team_name': a.team.name,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + a.team.icon) if a.team.icon else '',
               'description': a.description,
               'picture_url': a.picture_url,
               'time_created': a.time_created} for a in achievements]
@@ -595,6 +645,7 @@ class AchievementList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, team, offset=0, limit=10, order=1):
@@ -661,8 +712,11 @@ class AllNeedList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'type': forms.IntegerField(required=False, min_value=0, max_value=2)
     })
-    def get(self, request, type=None, offset=0, limit=10):
+    def get(self, request, type=None, status=None, offset=0, limit=10):
         """
         获取发布中的需求列表
 
@@ -676,18 +730,40 @@ class AllNeedList(View):
                 icon_url: 团队头像
                 status: 需求状态
                 title: 需求标题
+                members: 需求的加入者
                 time_created: 发布时间
         """
-        qs = TeamNeed.objects.filter(status=0) if type is None \
-            else TeamNeed.objects.filter(status=0, type=type)
+        qs = TeamNeed.objects
+        if type is not None:
+            qs = qs.filter(type=type)
+        if status:
+            qs = qs.filter(status=status)
+        else:
+            qs = qs.filter(status=0)
         c = qs.count()
         needs = qs[offset:offset + limit]
-        l = [{'id': n.id,
-              'team_id': n.team.id,
-              'team_name': n.team.name,
-              'status': n.status,
-              'title': n.title,
-              'time_created': n.time_created} for n in needs]
+        l = list()
+        for n in needs:
+            need_dic = dict()
+            members = dict()
+            if n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
+            need_dic['id'] = n.id
+            need_dic['team_id'] = n.team.id
+            need_dic['team_name'] = n.team.name
+            need_dic['icon_url'] = HttpResponseRedirect(
+                UPLOADED_URL + n.team.icon) if n.team.icon else '',
+            need_dic['status'] = n.status
+            need_dic['title'] = n.title
+            need_dic['members'] = members
+            need_dic['time_created'] = n.time_created
+            l.append(need_dic)
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -726,12 +802,28 @@ class NeedList(View):
             qs = qs.filter(status=0)
         c = qs.count()
         needs = qs[offset:offset + limit]
-        l = [{'id': n.id,
-              'team_id': n.team.id,
-              'team_name': n.team.name,
-              'status': n.status,
-              'title': n.title,
-              'time_created': n.time_created} for n in needs]
+        l = list()
+        for n in needs:
+            need_dic = dict()
+            members = dict()
+            if n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
+            need_dic['id'] = n.id
+            need_dic['team_id'] = n.team.id
+            need_dic['team_name'] = n.team.name
+            need_dic['icon_url'] = HttpResponseRedirect(
+                UPLOADED_URL + n.team.icon) if n.team.icon else '',
+            need_dic['status'] = n.status
+            need_dic['title'] = n.title
+            need_dic['members'] = members
+            need_dic['time_created'] = n.time_created
+            l.append(need_dic)
         return JsonResponse({'count': c, 'list': l})
 
     # noinspection PyShadowingBuiltins
@@ -793,7 +885,7 @@ class NeedList(View):
             abort(500)
 
     @validate_args({
-        'deadline': forms.DateTimeField(),
+        'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
@@ -823,7 +915,7 @@ class NeedList(View):
         abort(200)
 
     @validate_args({
-        'deadline': forms.DateTimeField(),
+        'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
@@ -856,7 +948,7 @@ class NeedList(View):
         abort(200)
 
     @validate_args({
-        'deadline': forms.DateTimeField(),
+        'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
@@ -908,6 +1000,7 @@ class Need(View):
                 description: 需求描述
                 team_id: 团队ID
                 team_name: 团队名称
+                icon_url: 团队头像
                 number: 所需人数
                 age_min: 最小年龄
                 age_max: 最大年龄
@@ -916,6 +1009,7 @@ class Need(View):
                 skill: 技能
                 degree: 学历
                 major: 专业
+                members: 已加入成员
                 time_graduated: 毕业时间
                 deadline: 截止时间
             if type==1(外包需求):
@@ -924,6 +1018,7 @@ class Need(View):
                 description: 需求描述
                 team_id: 团队ID
                 team_name: 团队名称
+                icon_url: 团队头像
                 number: 所需人数
                 age_min: 最小年龄
                 age_max: 最大年龄
@@ -934,6 +1029,7 @@ class Need(View):
                 major: 专业
                 cost: 费用
                 cost_unit: 费用单位
+                members: 已加入团队
                 time_started: 任务开始时间
                 time_ended: 任务结束时间
                 deadline: 截止时间
@@ -944,6 +1040,7 @@ class Need(View):
                 description: 需求描述
                 team_id: 团队ID
                 team_name: 团队名称
+                icon_url: 团队头像
                 number: 团队人数
                 field: 领域
                 skill: 技能
@@ -951,6 +1048,7 @@ class Need(View):
                 major: 专业
                 cost: 费用
                 cost_unit: 费用单位
+                members: 已加入团队
                 time_started: 任务开始时间
                 time_ended: 任务结束时间
         """
@@ -969,6 +1067,18 @@ class Need(View):
         for k in keys:
             d[k] = getattr(need, k)
 
+        members = dict()
+        if need.members:
+            ids = need.members.split("|")
+            for uid in ids:
+                uid = int(uid)
+                if need.type == 0:
+                    members[uid] = User.enabled.get(id=uid).name
+                else:
+                    members[uid] = Team.enabled.get(id=uid).name
+        d['members'] = members
+        d['icon_url'] = HttpResponseRedirect(
+            UPLOADED_URL + need.team.icon) if need.team.icon else '',
         return JsonResponse(d)
 
     @fetch_object(TeamNeed.objects, 'need')
@@ -996,11 +1106,140 @@ class Need(View):
         abort(200)
 
 
+class NeedUserList(View):
+    ORDERS = (
+        'time_created',
+        '-time_created',
+        'name',
+        '-name',
+    )
+
+    @fetch_object(TeamNeed.objects, 'need')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, need, offset=0, limit=10, order=1):
+        """获取需求的成员列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 成为成员时间升序
+            1: 成为成员时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 成员总数
+            list: 成员列表
+                id: 用户ID
+                username:用户名
+                name: 用户昵称
+                icon_url: 用户头像
+                tags: 标签
+                gender: 性别
+                liker_count: 点赞数
+                follower_count: 粉丝数
+                visitor_count: 访问数
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        uids = []
+        if need.members:
+            ids = need.members.split("|")
+            for uid in ids:
+                uids.append(int(uid))
+            members = User.enabled.filter(id__in=uids)
+            c = members.count()
+            rs = members.order_by(k)[i:j]
+            l = [{'id': r.id,
+                  'username': r.username,
+                  'name': r.name,
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.icon) if r.icon else '',
+                  'tags': [tag.name for tag in r.tags.all()],
+                  'gender': r.gender,
+                  'liker_count': r.likers.count(),
+                  'follower_count': r.followers.count(),
+                  'visitor_count': r.visitors.count(),
+                  'time_created': r.time_created} for r in rs]
+        else:
+            c = 0
+            l = []
+        return JsonResponse({'count': c, 'list': l})
+
+
+class NeedTeamList(View):
+    ORDERS = (
+        'time_created',
+        '-time_created',
+        'name',
+        '-name',
+    )
+
+    @fetch_object(TeamNeed.objects, 'need')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, need, offset=0, limit=10, order=1):
+        """获取需求的成员列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 成为成员时间升序
+            1: 成为成员时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 成员总数
+            list: 成员列表
+                id: 团队ID
+                name: 团队昵称
+                icon_url: 团队头像
+                owner_id: 创建者ID
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                member_count: 团队成员人数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        tids = []
+        if need.members:
+            ids = need.members.split("|")
+            for tid in ids:
+                tids.append(int(tid))
+            members = Team.enabled.filter(id__in=tids)
+            c = members.count()
+            rs = members.order_by(k)[i:j]
+            l = [{'id': r.id,
+                  'name': r.name,
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.icon) if r.icon else '',
+                  'owner_id': r.owner.id,
+                  'liker_count': r.likers.count(),
+                  'visitor_count': r.visitors.count(),
+                  'member_count': r.members.count(),
+                  'fields': [r.field1, r.field2],
+                  'tags':[tag.name for tag in r.tags.all()],
+                  'time_created': r.time_created} for r in rs]
+        else:
+            c = 0
+            l = []
+        return JsonResponse({'count': c, 'list': l})
+
+
 class MemberNeedRequestList(View):
     @fetch_object(TeamNeed.objects, 'need')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, need, offset=0, limit=10):
         """获取人员需求的加入申请列表
@@ -1025,8 +1264,8 @@ class MemberNeedRequestList(View):
             l = [{'id': r.sender.id,
                   'username': r.sender.username,
                   'name': r.sender.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.sender.icon)
-                  if r.sender.icon else '',
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.sender.icon) if r.sender.icon else '',
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
@@ -1080,6 +1319,12 @@ class MemberNeedRequest(View):
         # 在事务中建立关系，并删除对应的加团队申请
         with transaction.atomic():
             need.member_requests.filter(sender=user).delete()
+            # 保存需求的加入成员Id
+            if len(need.members) > 0:
+                need.members = need.members + "|" + str(user.id)
+            else:
+                need.members = str(user.id)
+            need.save()
             need.team.members.create(user=user)
             action.join_team(user, need.team)
             request.user.score += 10
@@ -1108,6 +1353,7 @@ class NeedRequestList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, need, team, offset=0, limit=10):
         """获取需求的合作申请列表
@@ -1131,8 +1377,8 @@ class NeedRequestList(View):
             l = [{'id': r.sender.owner.id,
                   'team_id': r.sender.id,
                   'name': r.sender.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + r.sender.icon)
-                  if r.sender.icon else '',
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + r.sender.icon) if r.sender.icon else '',
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
         abort(404)
@@ -1161,6 +1407,7 @@ class NeedRequest(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, team, offset=0, limit=10):
         """获取团队发出的的合作申请列表
@@ -1202,12 +1449,19 @@ class NeedRequest(View):
         if request.user != need.team.owner:
             abort(404)
 
-        if need.cooperation_request.filter(sender=team).exists():
+        if need.cooperation_requests.filter(sender=team).exists():
             # 在事务中建立关系，并删除对应的申请合作
             with transaction.atomic():
-                need.cooperation_request.filter(sender=team).delete()
+                need.cooperation_requests.filter(sender=team).delete()
                 if need.team.members.filter(user=team.owner).exists():
                     abort(200)
+                # 保存需求的加入团队Id
+                if len(need.members) > 0:
+                    need.members = need.members + "|" + str(team.id)
+                else:
+                    need.members = str(team.id)
+                need.save()
+
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
                 request.user.score += 10
@@ -1239,6 +1493,7 @@ class NeedInvitationList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, need, team, offset=0, limit=10):
         """获取需求的合作邀请列表
@@ -1291,6 +1546,7 @@ class NeedInvitation(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, team, offset=0, limit=10):
         """获取当前团队的需求合作邀请列表
@@ -1338,6 +1594,12 @@ class NeedInvitation(View):
                 need.cooperation_invitations.filter(invitee=team).delete()
                 if need.team.members.filter(user=team.owner).exists():
                     abort(200)
+                # 保存需求的加入团队Id
+                if len(need.members) > 0:
+                    need.members = need.members + "|" + str(team.id)
+                else:
+                    need.members = str(team.id)
+                need.save()
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
                 request.user.score += 10
@@ -1369,12 +1631,12 @@ class InternalTaskList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'sign': forms.IntegerField(required=False, min_value=0, max_value=2),
     })
-    def get(self, request, team, status=None, offset=0, limit=10):
+    def get(self, request, team, sign=None, offset=0, limit=10):
         """获取团队的内部任务列表
         :param offset: 偏移量
-        :param status: 任务状态 - 0: pending, 1: completed, 2: terminated
+        :param sign: 任务状态 - 0: pending, 1: completed, 2: terminated
         :return:
             count: 任务总数
             list: 任务列表
@@ -1390,10 +1652,10 @@ class InternalTaskList(View):
                 time_created: 发布时间
         """
         qs = team.internal_tasks
-        if status is not None:
-            if status == 0:
+        if sign is not None:
+            if sign == 0:
                 qs = qs.filter(status__range=[0,4])
-            elif status == 1:
+            elif sign == 1:
                 qs = qs.filter(status__in=[5,6])
             else:
                 qs = qs.filter(status=7)
@@ -1406,8 +1668,8 @@ class InternalTaskList(View):
               'title': t.title,
               'executor_id': t.executor.id,
               'executor_name': t.executor.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.executor.icon)
-              if t.executor.icon else '',
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + t.executor.icon) if t.executor.icon else '',
               'time_created': t.time_created} for t in tasks]
         return JsonResponse({'count': c, 'list': l})
 
@@ -1417,7 +1679,7 @@ class InternalTaskList(View):
         'executor_id': forms.IntegerField(),
         'title': forms.CharField(max_length=20),
         'content': forms.CharField(max_length=200),
-        'deadline': forms.DateTimeField(),
+        'deadline': forms.DateField(),
     })
     def post(self, request, team, **kwargs):
         """发布内部任务
@@ -1434,11 +1696,12 @@ class InternalTaskList(View):
         try:
             executor = User.enabled.get(id=executor_id)
         except ObjectDoesNotExist:
-            abort(403)
+            abort(401)
 
         if not team.members.filter(user=executor).exists():
             abort(404)
-        t = team.internal_tasks.create(status=0, executor=executor)
+        t = team.internal_tasks.create(status=0, executor=executor,
+                                       deadline=kwargs['deadline'])
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
@@ -1454,12 +1717,12 @@ class InternalTasks(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'sign': forms.IntegerField(required=False, min_value=0, max_value=2),
     })
-    def get(self, request, status=None, offset=0, limit=10):
+    def get(self, request, sign=None, offset=0, limit=10):
         """获取用户的内部任务列表
         :param offset: 偏移量
-        :param status: 任务状态 - 0: pending, 1: completed, 2: terminated
+        :param sign: 任务状态 - 0: pending, 1: completed, 2: terminated
         :return:
             count: 任务总数
             list: 任务列表
@@ -1475,10 +1738,10 @@ class InternalTasks(View):
                 time_created: 发布时间
         """
         qs = request.user.internal_tasks
-        if status is not None:
-            if status == 0:
+        if sign is not None:
+            if sign == 0:
                 qs = qs.filter(status__range=[0,4])
-            elif status == 1:
+            elif sign == 1:
                 qs = qs.filter(status__in=[5,6])
             else:
                 qs = qs.filter(status=7)
@@ -1490,8 +1753,8 @@ class InternalTasks(View):
         l = [{'id': t.id,
               'team_id': t.team.id,
               'team_name': t.team.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + t.team.icon)
-                    if t.team.icon else '',
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + t.team.icon) if t.team.icon else '',
               'status': t.status,
               'title': t.title,
               'time_created': t.time_created} for t in tasks]
@@ -1502,7 +1765,7 @@ class InternalTasks(View):
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
         'content': forms.CharField(required=False, max_length=200),
-        'deadline': forms.DateTimeField(required=False),
+        'deadline': forms.DateField(required=False),
     })
     def post(self, request, task, **kwargs):
         """再派任务状态下的任务修改
@@ -1538,6 +1801,7 @@ class TeamInternalTask(View):
             executor_name: 执行者名称
             team_id: 团队ID
             team_name: 团队名称
+            icon_url: 团队头像
             title: 任务标题
             content: 任务内容
             status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
@@ -1554,7 +1818,9 @@ class TeamInternalTask(View):
         d = {'executor_id': task.executor.id,
              'executor_name': task.executor.name,
              'team_id': task.team.id,
-             'team_name': task.team.name}
+             'team_name': task.team.name,
+             'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + task.team.icon) if task.team.icon else ''}
 
         # noinspection PyUnboundLocalVariable
         for k in self.keys:
@@ -1565,7 +1831,7 @@ class TeamInternalTask(View):
     @fetch_object(InternalTask.objects, 'task')
     @require_token
     @validate_args({
-        'status': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=7),
     })
     def post(self, request, task, status=None):
         """
@@ -1577,27 +1843,48 @@ class TeamInternalTask(View):
                           ('超时结束', 6), ('终止', 7)
         """
         if request.user != task.team.owner and request.user != task.executor:
-            abort(403)
+            abort(403, 'operation limit')
 
         # 任务已经终止，不允许操作
         if task.status == 7:
             abort(404)
 
         if status is None:
+            if request.user != task.team.owner or task.status != 3:
+                abort(403, 'operation invalid')
             task.finish_time = timezone.now()
-            if task.finish_time > task.deadline:
+            if task.finish_time.date() > task.deadline:
                 task.status = 6
             else:
                 task.status = 5
             task.save()
             abort(200)
-
-        # 如果任务状态为再派任务-->等待接受，则分派次数+1
-        if status == 1 and task.status == 0:
-            task.assign_num += 1
-        # 如果任务状态为再次提交-->等待验收，则提交次数+1
-        if status == 4 and task.status == 3:
-            task.submit_num += 1
+        elif status == 0:
+            if request.user != task.team.owner or task.status != 1:
+                abort(403, 'operation invalid')
+            else:
+                # 如果任务状态为再派任务-->等待接受，则分派次数+1
+                task.assign_num += 1
+        elif status == 1:
+            if request.user != task.executor or task.status != 0:
+                abort(403, 'operation invalid')
+        elif status == 2:
+            if request.user != task.executor or task.status != 0:
+                abort(403, 'operation invalid')
+        elif status == 3:
+            if request.user != task.executor or (task.status not in [2, 4]):
+                abort(403, 'operation invalid')
+            elif task.status == 4:
+                # 如果任务状态为再次提交-->等待验收，则提交次数+1
+                task.submit_num += 1
+        elif status == 4:
+            if request.user != task.team.owner or task.status != 3:
+                abort(403, 'operation invalid')
+        elif status == 7:
+            if request.user != task.team.owner or task.status != 1:
+                abort(403, 'operation invalid')
+        else:
+            abort(403, 'invalid argument status')
 
         task.status = status
         task.save()
@@ -1610,14 +1897,14 @@ class ExternalTaskList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'status': forms.IntegerField(required=False, min_value=0, max_value=1),
+        'sign': forms.IntegerField(required=False, min_value=0, max_value=1),
         'type': forms.IntegerField(required=False, min_value=0, max_value=1),
     })
-    def get(self, request, team, status=None, type=0, offset=0, limit=10):
+    def get(self, request, team, sign=None, type=0, offset=0, limit=10):
         """获取团队的外包/承接任务列表
         :param offset: 偏移量
         :param type: 任务类型 - 0: outsource, 1: undertake
-        :param status: 任务状态 - 0: pending, 1: completed
+        :param sign: 任务状态 - 0: pending, 1: completed
         :return:
             count: 任务总数
             list: 任务列表
@@ -1648,8 +1935,8 @@ class ExternalTaskList(View):
         """
         if type == 0:
             qs = team.outsource_external_tasks
-            if status is not None:
-                if status == 0:
+            if sign is not None:
+                if sign == 0:
                     qs = qs.filter(status__range=[0,8])
                 else:
                     qs = qs.filter(status__in=[9,10])
@@ -1669,8 +1956,8 @@ class ExternalTaskList(View):
             return JsonResponse({'count': c, 'list': l})
         else:
             qs = team.undertake_external_tasks
-            if status is not None:
-                if status == 0:
+            if sign is not None:
+                if sign == 0:
                     qs = qs.filter(status__range=[0,8])
                 else:
                     qs = qs.filter(status__in=[9,10])
@@ -1682,8 +1969,8 @@ class ExternalTaskList(View):
                   'title': t.title,
                   'team_id': t.team.id,
                   'team_name': t.team.name,
-                  'icon_url': HttpResponseRedirect(UPLOADED_URL + t.team.icon)
-                  if t.team.icon else '',
+                  'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + t.team.icon) if t.team.icon else '',
                   'time_created': t.time_created} for t in tasks]
             return JsonResponse({'count': c, 'list': l})
 
@@ -1693,7 +1980,8 @@ class ExternalTaskList(View):
         'executor_id': forms.IntegerField(),
         'title': forms.CharField(max_length=20),
         'content': forms.CharField(max_length=200),
-        'deadline': forms.DateTimeField(),
+        'expend': forms.IntegerField(required=False, min_value=1),
+        'deadline': forms.DateField(),
     })
     def post(self, request, team, **kwargs):
         """发布外包任务
@@ -1714,7 +2002,8 @@ class ExternalTaskList(View):
 
         if not team.members.filter(user=executor.owner).exists():
             abort(404)
-        t = team.outsource_external_tasks.create(status=0, executor=executor)
+        t = team.outsource_external_tasks.create(
+            status=0, executor=executor, deadline=kwargs['deadline'])
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
@@ -1731,7 +2020,8 @@ class ExternalTasks(View):
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
         'content': forms.CharField(required=False, max_length=200),
-        'deadline': forms.DateTimeField(required=False),
+        'deadline': forms.DateField(required=False),
+        'expend': forms.IntegerField(required=False, min_value=1),
     })
     def post(self, request, task, **kwargs):
         """再派任务状态下的任务修改
@@ -1768,6 +2058,7 @@ class TeamExternalTask(View):
             executor_name: 执行团队名称
             team_id: 团队ID
             team_name: 团队名称
+            icon_url: 团队头像
             title: 任务标题
             content: 任务内容
             status: 任务状态 - ('等待接受', 0), ('再派任务', 1),
@@ -1788,7 +2079,9 @@ class TeamExternalTask(View):
         d = {'executor_id': task.executor.id,
              'executor_name': task.executor.name,
              'team_id': task.team.id,
-             'team_name': task.team.name}
+             'team_name': task.team.name,
+             'icon_url': HttpResponseRedirect(
+                      UPLOADED_URL + task.team.icon) if task.team.icon else ''}
 
         # noinspection PyUnboundLocalVariable
         for k in self.keys:
@@ -1799,7 +2092,7 @@ class TeamExternalTask(View):
     @fetch_object(ExternalTask.objects, 'task')
     @require_token
     @validate_args({
-        'status': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=8),
     })
     def post(self, request, task, status=None):
         """
@@ -1811,31 +2104,56 @@ class TeamExternalTask(View):
                       ('再次支付', 7), ('等待确认', 8),
                       ('按时结束', 9),('超时结束', 10)
         """
-        if request.user != task.team.owner and request.user != task.executor:
-            abort(403)
-
-        # 任务已经终止，不允许操作
-        if task.status == 7:
-            abort(404)
+        if request.user != task.team.owner \
+                and request.user != task.executor.owner:
+            abort(403, 'operation limit')
 
         if status is None:
+            if request.user != task.executor.owner or task.status != 8:
+                abort(403, 'operation invalid')
             task.finish_time = timezone.now()
-            if task.finish_time > task.deadline:
+            if task.finish_time.date() > task.deadline:
                 task.status = 10
             else:
                 task.status = 9
             task.save()
             abort(200)
-
-        # 如果任务状态为再派任务-->等待接受，则分派次数+1
-        if status == 1 and task.status == 0:
-            task.assign_num += 1
-        # 如果任务状态为再次提交-->等待验收，则提交次数+1
-        if status == 4 and task.status == 3:
-            task.submit_num += 1
-        # 如果任务状态为再次支付-->等待确认，则支付次数+1
-        if status == 7 and task.status == 6:
-            task.pay_num += 1
+        elif status == 0:
+            if request.user != task.team.owner or task.status != 1:
+                abort(403, 'operation invalid')
+            else:
+                # 如果任务状态为再派任务-->等待接受，则分派次数+1
+                task.assign_num += 1
+        elif status == 1:
+            if request.user != task.executor.owner or task.status != 0:
+                abort(403, 'operation invalid')
+        elif status == 2:
+            if request.user != task.executor.owner or task.status != 0:
+                abort(403, 'operation invalid')
+        elif status == 3:
+            if request.user != task.executor.owner \
+                    or (task.status not in [2, 4]):
+                abort(403, 'operation invalid')
+            elif task.status == 4:
+                # 如果任务状态为再次提交-->等待验收，则提交次数+1
+                task.submit_num += 1
+        elif status == 4:
+            if request.user != task.team.owner or task.status != 3:
+                abort(403, 'operation invalid')
+        elif status == 6:
+            if request.user != task.team.owner or task.status != 3:
+                abort(403, 'operation invalid')
+        elif status == 7:
+            if request.user != task.executor.owner or task.status != 8:
+                abort(403, 'operation invalid')
+        elif status == 8:
+            if request.user != task.team.owner or (task.status not in [6, 7]):
+                abort(403, 'operation invalid')
+            elif task.status == 7:
+                # 如果任务状态为再次支付-->等待确认，则支付次数+1
+                task.pay_num += 1
+        else:
+            abort(403, 'invalid argument status')
 
         task.status = status
         task.save()

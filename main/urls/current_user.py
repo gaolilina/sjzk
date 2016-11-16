@@ -13,6 +13,8 @@ urls = [
     url(r'^id_card/$', IDCard.as_view(), name='id_card'),
     url(r'^other_card/$', OtherCard.as_view(), name='other_card'),
     url(r'^profile/$', Profile.as_view(), name='profile'),
+    url(r'^identity_verification/$',
+        IdentityVerification.as_view(), name='identity_verification'),
     # 动态
     url(r'actions/$', UserActionList.as_view(), name='actions'),
     # 评论
@@ -66,4 +68,6 @@ urls = [
     # 论坛版块
     url(r'^forum_boards/$', BoardList.as_view(),
         name='forum_boards', kwargs={'owned_only': True}),
+    # 意见反馈
+    url(r'^feedback/$', Feedback.as_view(), name='feedback'),
 ]

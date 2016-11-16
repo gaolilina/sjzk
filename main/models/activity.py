@@ -11,7 +11,7 @@ __all__ = ['Activity', 'ActivityStage','ActivityUserParticipator',
 class Activity(models.Model):
     """活动基本信息"""
 
-    name = models.CharField(max_length=50, db_index=True)
+    name = models.CharField(max_length=50)
     content = models.CharField(max_length=1000)
     deadline = models.DateTimeField(db_index=True)
     time_started = models.DateTimeField(db_index=True)
@@ -35,8 +35,8 @@ class ActivityStage(models.Model):
     activity = models.ForeignKey('Activity', models.CASCADE, 'stages')
     # 0:前期宣传, 1:报名, 2:结束
     status = models.IntegerField(default=0, db_index=True)
-    province = models.CharField(max_length=20, default='', db_index=True)
-    city = models.CharField(max_length=20, default='', db_index=True)
+    province = models.CharField(max_length=20, default='')
+    city = models.CharField(max_length=20, default='')
     school = models.CharField(max_length=20, default='')
     # 0:不限, 1:学生, 2:教师, 3:社会人员
     user_type = models.IntegerField(default=0, db_index=True)

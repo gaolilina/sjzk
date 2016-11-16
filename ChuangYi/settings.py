@@ -38,15 +38,27 @@ TEMPLATES = [
 
 
 # Database
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'test.db'),
     },
 }
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ChuangYi',   # 数据库名称
+        'USER': 'root',       # 数据库用户名
+        'PASSWORD': 'root',   # 数据库密码
+        'HOST': 'localhost',  # 数据库主机，留空默认为localhost
+        'PORT': '3306',       # 数据库端口
+    }
+}
 
 # Internationalization
-LANGUAGE_CODE = 'zh-hans'
+LANGUAGE_CODE = 'zh-cn'
 TIME_ZONE = 'Asia/Shanghai'
 USE_I18N = False
 USE_L10N = False

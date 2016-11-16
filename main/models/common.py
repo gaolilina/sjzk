@@ -28,7 +28,7 @@ class Comment(models.Model):
 
     entity = None
     author = models.ForeignKey('User', models.CASCADE, '+')
-    content = models.CharField(max_length=100, db_index=True)
+    content = models.CharField(max_length=100)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
@@ -64,7 +64,7 @@ class Tag(models.Model):
     """标签记录"""
 
     entity = None
-    name = models.CharField(max_length=20, db_index=True)
+    name = models.CharField(max_length=20)
     order = models.IntegerField(db_index=True)
 
     class Meta:

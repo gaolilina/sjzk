@@ -1,8 +1,9 @@
 from django import forms
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
 
+from ChuangYi.settings import UPLOADED_URL
 from ..models import ForumBoard, ForumPost
 from ..utils import abort
 from ..utils.decorators import *
@@ -17,6 +18,7 @@ class BoardList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1, owned_only=False):
@@ -38,6 +40,7 @@ class BoardList(View):
                 description: 版块描述
                 owner_id: 版主
                 owner_name: 版主昵称
+                icon_url: 版主头像
                 is_system_board；是否是系统板块
                 time_created: 创建时间
         """
@@ -52,6 +55,8 @@ class BoardList(View):
               'description': b.description,
               'owner_id': b.owner.id,
               'owner_name': b.owner.name,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + b.owner.icon) if b.owner.icon else '',
               'is_system_board': b.is_system_board,
               'time_created': b.time_created} for b in boards]
         return JsonResponse({'count': c, 'list': l})
@@ -94,7 +99,10 @@ class Board(View):
 
 class PostList(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     @fetch_object(ForumBoard.enabled, 'board')
     def get(self, request, board, offset=0, limit=10):
         """获取主题帖列表
@@ -108,6 +116,7 @@ class PostList(View):
                 content: 内容
                 author_id: 作者ID
                 author_name: 作者昵称
+                icon_url: 作者头像
                 time_created: 创建时间
         """
         i, j = offset, offset + limit
@@ -119,11 +128,13 @@ class PostList(View):
               'content': p.content,
               'author_id': p.author.id,
               'author_name': p.author.name,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + p.author.icon) if p.author.icon else '',
               'time_created': p.time_created} for p in posts]
         return JsonResponse({'count': c, 'list': l})
 
     @require_token
-    @fetch_object(ForumPost.objects, 'board')
+    @fetch_object(ForumBoard.objects, 'board')
     def post(self, request, board, title, content):
         """发主题帖"""
 
@@ -133,7 +144,10 @@ class PostList(View):
 
 class Post(View):
     @require_token
-    @validate_args({'offset': forms.IntegerField(required=False, min_value=0)})
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
     @fetch_object(ForumPost.objects, 'post')
     def get(self, request, post, offset=0, limit=10):
         """获取主题帖的回帖列表
@@ -147,6 +161,7 @@ class Post(View):
                 content: 内容
                 author_id: 作者ID
                 author_name: 作者昵称
+                icon_url: 作者头像
                 time_created: 创建时间
         """
         if post.main_post is not None:
@@ -161,6 +176,8 @@ class Post(View):
               'content': p.content,
               'author_id': p.author.id,
               'author_name': p.author.name,
+              'icon_url': HttpResponseRedirect(
+                  UPLOADED_URL + p.author.icon) if p.author.icon else '',
               'time_created': p.time_created} for p in posts]
         return JsonResponse({'count': c, 'list': l})
 

@@ -3,9 +3,12 @@
 import json
 import logging
 
+from django.core.urlresolvers import reverse
+from django.test import Client, TestCase
+from .models import User, Team
 from django.test import TestCase
 from rongcloud import RongCloud
-from .utils import send_message
+from .utils import send_message, identity_verify, picture_verify
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.INFO)
@@ -17,7 +20,16 @@ class ExampleTestCase(TestCase):
         # app_secret = os.environ['APP_SECRET']
         # self.rcloud = RongCloud(app_key, app_secret)
         self.rcloud = RongCloud()
+        
+    def log(self, title, message):
+        logging.info('{0}: {1}'.format(title, message))
 
+    def test_picture_verify(self):
+        picture_url = 'test_data/yellow.png'
+        code = picture_verify(picture_url)
+        self.assertEqual(code, 0)
+
+    '''
     def test_sendMessage(self):
         # phone_number = '18811611286'
         phone_number = '13051391335'
@@ -26,9 +38,23 @@ class ExampleTestCase(TestCase):
             "您本次的验证码为：" + code + "，如非本人操作，请忽略！【创易】"}
         send_message(data)
 
-    def log(self, title, message):
-        logging.info('{0}: {1}'.format(title, message))
-'''
+    def test_identityVerify(self):
+        id_number = '430723199212023303'
+        res = identity_verify(id_number)
+        print(res)
+        error_code = res['error_code']
+        print(error_code)
+        if error_code == 203801:
+            print('请输入正确的15或18位身份证')
+        elif error_code == 203802:
+            print('错误的身份证或无结果')
+        elif error_code == 203803:
+            print('身份证校验位不正确')
+        elif error_code == 203804:
+            print('查询失败')
+        else:
+            print('验证成功')
+
     def test_getToken(self):
         r = self.rcloud.User.getToken(
             userId='userId1',
@@ -217,12 +243,37 @@ class ExampleTestCase(TestCase):
 
     def test_create(self):
         r = self.rcloud.Group.create(
-            userId='{"userId1","userid2","userId3"}',
-            groupId='groupId1',
-            groupName='groupName1')
+            # userId='{"userId1","userid2","userId3"}',
+            userId='userId10',
+            groupId='groupId10',
+            groupName='groupName10')
         self.log('create', r)
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
+
+    def test_refresh1(self):
+        r = self.rcloud.Group.refresh(
+            groupId='groupId10', groupName='newGroupName10')
+        self.log('refresh', r)
+        self.assertTrue('code' in r.result)
+        self.assertEqual(r.result['code'], 200)
+
+    def test_join(self):
+        r = self.rcloud.Group.join(
+            userId='9',
+            groupId='groupId10',
+            groupName='newGroupName10')
+        self.log('join', r)
+        self.assertTrue('code' in r.result)
+        self.assertEqual(r.result['code'], 200)
+
+    def test_quit(self):
+        r = self.rcloud.Group.quit(
+            userId='{"userId2","userid3","userId4"}', groupId='groupId10')
+        self.log('quit', r)
+        self.assertTrue('code' in r.result)
+        self.assertEqual(r.result['code'], 200)
+
 
     def test_sync(self):
         groupInfo = [("groupId1", "groupName1"), ("groupId2", "groupName2"),
@@ -232,7 +283,7 @@ class ExampleTestCase(TestCase):
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
 
-    def test_refresh(self):
+    def test_refresh1(self):
         r = self.rcloud.Group.refresh(
             groupId='groupId1', groupName='newGroupName')
         self.log('refresh', r)
@@ -287,7 +338,7 @@ class ExampleTestCase(TestCase):
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
 
-    def test_create(self):
+    def test_create1(self):
         chatRoomInfo = [("chatroomId1", "chatroomName1"),
                         ("chatroomId2", "chatroomName2"),
                         ("chatroomId3", "chatroomName3")]
@@ -296,7 +347,7 @@ class ExampleTestCase(TestCase):
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
 
-    def test_join(self):
+    def test_join1(self):
         r = self.rcloud.Chatroom.join(
             userId='{"userId2","userid3","userId4"}', chatroomId='chatroomId1')
         self.log('join', r)
@@ -310,7 +361,7 @@ class ExampleTestCase(TestCase):
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
 
-    def test_queryUser(self):
+    def test_queryUser1(self):
         r = self.rcloud.Chatroom.queryUser(
             chatroomId='chatroomId1', count='500', order='2')
         self.log('queryUser', r)
@@ -331,7 +382,7 @@ class ExampleTestCase(TestCase):
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
 
-    def test_addGagUser(self):
+    def test_addGagUser1(self):
         r = self.rcloud.Chatroom.addGagUser(
             userId='userId1', chatroomId='chatroomId1', minute='1')
         self.log('addGagUser', r)
@@ -424,4 +475,4 @@ class ExampleTestCase(TestCase):
         self.log('verifyCode', r)
         self.assertTrue('code' in r.result)
         self.assertEqual(r.result['code'], 200)
-'''
+    '''
