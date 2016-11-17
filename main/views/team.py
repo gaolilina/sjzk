@@ -2097,9 +2097,12 @@ class TeamExternalTask(View):
         'pay_time': forms.DateField(required=False),
         'status': forms.IntegerField(required=False, min_value=0, max_value=8),
     })
-    def post(self, request, task, status=None, **kwargs):
+    def post(self, request, task, expend_actual=None, pay_time=None,
+             status=None):
         """
         修改外部任务的状态(默认为None, 后台确认任务是按时还是超时完成)
+        :param expend_actual: 实际支付金额(确认支付时传)
+        :param pay_time: 支付时间(确认支付时传)
         :param status:
             任务状态 - ('等待接受', 0), ('再派任务', 1),
                       ('等待完成', 2), ('等待验收', 3),
@@ -2156,8 +2159,6 @@ class TeamExternalTask(View):
                 # 如果任务状态为再次支付-->等待确认，则支付次数+1
                 task.pay_num += 1
             # 获取任务的支付信息
-            expend_actual = kwargs.pop('expend_actual', None)
-            pay_time = kwargs.pop('pay_time', None)
             if expend_actual is None or pay_time is None:
                 abort(404, 'require argument')
             else:
