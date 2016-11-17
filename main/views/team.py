@@ -223,8 +223,8 @@ class Profile(View):
         r = dict()
         r['id'] = team.id
         r['name'] = team.name
-        r['icon_url'] = HttpResponseRedirect(UPLOADED_URL + team.icon) \
-                            if team.icon else '',
+        r['icon_url'] = HttpResponseRedirect(
+            UPLOADED_URL + team.icon) if team.icon else '',
         r['owner_id'] = team.owner.id
         r['time_created'] = team.time_created
         r['is_recruiting'] = team.is_recruiting
