@@ -224,7 +224,7 @@ class Profile(View):
         r['id'] = team.id
         r['name'] = team.name
         r['icon_url'] = HttpResponseRedirect(
-            UPLOADED_URL + team.icon) if team.icon else '',
+            UPLOADED_URL + team.icon) if team.icon else ''
         r['owner_id'] = team.owner.id
         r['time_created'] = team.time_created
         r['is_recruiting'] = team.is_recruiting
@@ -758,7 +758,7 @@ class AllNeedList(View):
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
             need_dic['icon_url'] = HttpResponseRedirect(
-                UPLOADED_URL + n.team.icon) if n.team.icon else '',
+                UPLOADED_URL + n.team.icon) if n.team.icon else ''
             need_dic['status'] = n.status
             need_dic['title'] = n.title
             need_dic['members'] = members
@@ -818,7 +818,7 @@ class NeedList(View):
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
             need_dic['icon_url'] = HttpResponseRedirect(
-                UPLOADED_URL + n.team.icon) if n.team.icon else '',
+                UPLOADED_URL + n.team.icon) if n.team.icon else ''
             need_dic['status'] = n.status
             need_dic['title'] = n.title
             need_dic['members'] = members
@@ -1078,7 +1078,7 @@ class Need(View):
                     members[uid] = Team.enabled.get(id=uid).name
         d['members'] = members
         d['icon_url'] = HttpResponseRedirect(
-            UPLOADED_URL + need.team.icon) if need.team.icon else '',
+            UPLOADED_URL + need.team.icon) if need.team.icon else ''
         return JsonResponse(d)
 
     @fetch_object(TeamNeed.objects, 'need')
