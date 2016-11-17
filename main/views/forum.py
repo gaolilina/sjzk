@@ -143,6 +143,8 @@ class PostList(View):
         """发主题帖"""
 
         p = board.posts.create(author=request.user, title=title, content=content)
+        p.main_post = p
+        p.save()
         return JsonResponse({'post_id': p.id})
 
 
@@ -194,8 +196,8 @@ class Post(View):
     def post(self, request, post, title, content):
         """回主题帖"""
 
-        p = post.posts.create(board=post.board, author=request.user,
-                              title=title, content=content)
+        p = post.posts.create(main_post=post, board=post.board,
+                              author=request.user, title=title, content=content)
         return JsonResponse({'post_id': p.id})
 
     @require_token
