@@ -47,18 +47,17 @@ def picture_verify(picture):
     image = tencentyun.ImageV2(appid, secret_id, secret_key)
     try:
         # image_data = open(picture_url, "rb").read()
-        with Image.open(picture) as image_data:
-            # 将图片上传到图片空间
-            obj = image.upload_binary(image_data, bucket)  # 第二个参数为空间名称
-            if obj["code"] == 0:
-                fileid = obj["data"]["fileid"]
-                download_url = obj["data"]["download_url"]
-                # 图片检测
-                imageprocess = tencentyun.ImageProcess(
-                    appid,secret_id,secret_key,bucket)
-                pornUrl = download_url
-                pornRet = imageprocess.porn_detect(pornUrl)
-                image.delete(bucket, fileid)
-                return pornRet["data"]["result"]
+        # 将图片上传到图片空间
+        obj = image.upload_binary(picture, bucket)  # 第二个参数为空间名称
+        if obj["code"] == 0:
+            fileid = obj["data"]["fileid"]
+            download_url = obj["data"]["download_url"]
+            # 图片检测
+            imageprocess = tencentyun.ImageProcess(
+                appid,secret_id,secret_key,bucket)
+            pornUrl = download_url
+            pornRet = imageprocess.porn_detect(pornUrl)
+            image.delete(bucket, fileid)
+            return pornRet["data"]["result"]
     except IOError:
         return None
