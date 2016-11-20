@@ -69,9 +69,7 @@ class UserParticipatorList(View):
         l = [{'id': p.user.id,
               'name': p.user.name,
               'username': p.user.username,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + p.user.icon) if p.user.icon else ''
-              } for p in qs]
+              'icon_url': p.user.icon} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Activity.enabled, 'activity')

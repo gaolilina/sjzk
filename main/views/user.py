@@ -55,7 +55,7 @@ class List(View):
               'time_created': u.time_created,
               'username': u.username,
               'name': u.name,
-              'icon_url': UPLOADED_ROOT + u.icon if u.icon else '',
+              'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
               'gender': u.gender,
               'liker_count': u.likers.count(),
@@ -185,8 +185,7 @@ class Profile(View):
              'time_created': user.time_created,
              'username': user.username,
              'name': user.name,
-             'icon_url': HttpResponseRedirect(
-                 UPLOADED_URL + user.icon) if user.icon else '',
+             'icon_url': user.icon,
              'description': user.description,
              'email': user.email,
              'gender': user.gender,
@@ -314,8 +313,7 @@ class FriendList(View):
         l = [{'id': r.friend.id,
               'username': r.friend.username,
               'name': r.friend.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + r.icon)
-                    if r.icon else '',
+              'icon_url': r.icon,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -407,8 +405,7 @@ class Search(View):
               'like_count': u.like_count,
               'fan_count': u.fan_count,
               'visitor_count': u.visitor_count,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + u.icon)
-                    if u.icon else '',
+              'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
               'time_created': u.time_created} for u in users.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})

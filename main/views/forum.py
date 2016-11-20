@@ -55,8 +55,7 @@ class BoardList(View):
               'description': b.description,
               'owner_id': b.owner.id,
               'owner_name': b.owner.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + b.owner.icon) if b.owner.icon else '',
+              'icon_url': b.owner.icon,
               'is_system_board': b.is_system_board,
               'time_created': b.time_created} for b in boards]
         return JsonResponse({'count': c, 'list': l})
@@ -128,8 +127,7 @@ class PostList(View):
               'content': p.content,
               'author_id': p.author.id,
               'author_name': p.author.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + p.author.icon) if p.author.icon else '',
+              'icon_url': p.author.icon,
               'time_created': p.time_created} for p in posts]
         return JsonResponse({'count': c, 'list': l})
 
@@ -180,8 +178,7 @@ class Post(View):
               'content': p.content,
               'author_id': p.author.id,
               'author_name': p.author.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + p.author.icon) if p.author.icon else '',
+              'icon_url': p.author.icon,
               'time_created': p.time_created} for p in posts]
         return JsonResponse({'count': c, 'list': l})
 
