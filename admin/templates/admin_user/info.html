@@ -4,7 +4,7 @@
 <form role="form" action="{% url 'admin:admin_user:info' %}" method="post">
 <table>
     <tr>
-        <td rowspan="5"><img src="{% static 'img/user.png' %}" /></td>
+        <td rowspan="5">{% ifequal u.icon '' %}<img src="{% static 'img/user.png' %}" />{% else %}<img src="{{ u.icon }}" />{% endifequal %}</td>
         <td>昵　　称：</td>
         <td><input name="name" type="text" value="{{ u.name }}" /></td>
     </tr>
@@ -36,6 +36,19 @@
 </table>
 
 </form>
+
+<form id="f2" role="form" action="{% url 'admin:admin_user:icon' %}" method="post" style="display:none;">
+<input type="file" onchange="javascript:upload()" />
+</form>
+
+<script>
+document.querySelector('form img').onclick = function() {
+    document.querySelector('#f2 input[type=file]').click();
+}
+function upload() {
+    document.querySelector('#f2').submit();
+}
+</script>
 {% endblock %}
 
 {% block topbar %}{% include 'topbar.html' with tb=1 %}{% endblock %}

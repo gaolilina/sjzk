@@ -1,5 +1,5 @@
 <ul>
-    <li{% if tb == 1 %} class="active"{% endif %}><a href="#">用户</a></li>
+    <li{% if tb == 1 %} class="active"{% endif %}><a href="{% url 'admin:admin_user:info' %}">个人信息</a></li>
     <li{% if tb == 'admin_competition' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:list' %}">竞赛</a></li>
     <li{% if tb == 'admin_activity' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">活动</a></li>
     <!--<li{% if tb == 'user_admin' %} class="active"{% endif %}><a href="#">用户管理</a></li>
