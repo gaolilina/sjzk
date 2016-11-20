@@ -172,7 +172,7 @@ class Post(View):
             abort(400)
 
         i, j = offset, offset + limit
-        qs = post.posts
+        qs = post.posts.all()
         c = qs.count()
         posts = qs[i:j]
         l = [{'id': p.id,
