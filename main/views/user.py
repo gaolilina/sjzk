@@ -6,7 +6,7 @@ from django.db import transaction
 from django.views.generic import View
 from rongcloud import RongCloud
 
-from ChuangYi.settings import UPLOADED_URL
+from ChuangYi.settings import UPLOADED_URL, UPLOADED_ROOT
 from ..utils import abort, send_message
 from ..utils.decorators import *
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
