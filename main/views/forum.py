@@ -120,7 +120,7 @@ class PostList(View):
                 time_created: 创建时间
         """
         i, j = offset, offset + limit
-        qs = board.posts.filter(~Q(main_post=None))
+        qs = board.posts.filter(Q(main_post=None))
         c = qs.count()
         posts = qs[i:j]
         l = [{'id': p.id,
@@ -143,8 +143,6 @@ class PostList(View):
         """发主题帖"""
 
         p = board.posts.create(author=request.user, title=title, content=content)
-        p.main_post = p
-        p.save()
         return JsonResponse({'post_id': p.id})
 
 
