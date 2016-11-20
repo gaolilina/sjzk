@@ -13,7 +13,7 @@
     </tr>
     <tr>
         <td>截至日期：</td>
-        <td><input name="deadline" type="datetime" value="{{ model.datetime }}" /></td>
+        <td><input name="deadline" type="datetime" value="{{ model.deadline }}" /></td>
     </tr>
     <tr>
         <td>开始时间：</td>
@@ -25,58 +25,58 @@
     </tr>
     <tr>
         <td>报名类型：</td>
-        <td><input name="allow_user" type="checkbox" {% if model.allow_user %}checked="checked" {% endifequal %}/> 创友 <input name="allow_team" type="checkbox" {% if model.allow_team %}checked="checked" {% endifequal %}/> 团队</td>
+        <td><input name="allow_user" type="checkbox" {% if model.allow_user %}checked="checked" {% endif %}/> 创友 <input name="allow_team" type="checkbox" {% if model.allow_team %}checked="checked" {% endif %}/> 团队</td>
     </tr>
     <tr>
         <td>活动阶段：</td>
         <td>
-            <select name="stage_status" value="{% model.stages.status %}">
-                <option value="0">前期宣传</option>
-                <option value="1">报名</option>
-                <option value="2">预赛</option>
-                <option value="3">周赛</option>
-                <option value="4">月赛</option>
-                <option value="5">中间赛</option>
-                <option value="6">结束</option>
+            <select name="stage_status">
+                <option value="0"{% if model.stages.get.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
+                <option value="1"{% if model.stages.get.status == 1 %} selected="selected"{% endif %}>报名</option>
+                <option value="2"{% if model.stages.get.status == 2 %} selected="selected"{% endif %}>预赛</option>
+                <option value="3"{% if model.stages.get.status == 3 %} selected="selected"{% endif %}>周赛</option>
+                <option value="4"{% if model.stages.get.status == 4 %} selected="selected"{% endif %}>月赛</option>
+                <option value="5"{% if model.stages.get.status == 5 %} selected="selected"{% endif %}>中间赛</option>
+                <option value="6"{% if model.stages.get.status == 6 %} selected="selected"{% endif %}>结束</option>
             </select>
         </td>
     </tr>
     <tr>
         <td>省：</td>
-        <td><input name="stage_province" type="text" value="{% model.stages.province %}" /></td>
+        <td><input name="stage_province" type="text" value="{{ model.stages.get.province }}" /></td>
     </tr>
     <tr>
         <td>市：</td>
-        <td><input name="stage_city" type="text" value="{% model.stages.city %}" /></td>
+        <td><input name="stage_city" type="text" value="{{ model.stages.get.city }}" /></td>
     </tr>
     <tr>
         <td>学校：</td>
-        <td><input name="stage_school" type="text" value="{% model.stages.school %}" /></td>
+        <td><input name="stage_school" type="text" value="{{ model.stages.get.school }}" /></td>
     </tr>
     <tr>
         <td>最少人数：</td>
-        <td><input name="stage_min_member" type="text" value="{% model.stages.min_member %}" /></td>
+        <td><input name="stage_min_member" type="text" value="{{ model.stages.get.min_member }}" /></td>
     </tr>
     <tr>
         <td>最多人数：</td>
-        <td><input name="stage_max_member" type="text" value="{% model.stages.max_member %}" /></td>
+        <td><input name="stage_max_member" type="text" value="{{ model.stages.get.max_member }}" /></td>
     </tr>
     <tr>
         <td>参与者类型：</td>
         <td>
-            <select name="stage_user_type" value="{% model.stages.user_type %}">
-                <option value="0">不限</option>
-                <option value="1">学生</option>
-                <option value="2">教师</option>
-                <option value="3">社会人员</option>
+            <select name="stage_user_type">
+                <option value="0"{% if model.stages.get.user_type == 0 %} selected="selected"{% endif %}>不限</option>
+                <option value="1"{% if model.stages.get.user_type == 1 %} selected="selected"{% endif %}>学生</option>
+                <option value="2"{% if model.stages.get.user_type == 2 %} selected="selected"{% endif %}>教师</option>
+                <option value="3"{% if model.stages.get.user_type == 3 %} selected="selected"{% endif %}>社会人员</option>
             </select>
         </td>
     </tr>
     <tr>
         <td>报名者：</td>
         <td>
-            {% for team in model.team_participators %}
-                <div>{% team.name %}</div>
+            {% for team in model.team_participators.all %}
+                <div>{{ team.name }}</div>
             {% endfor %}
         </td>
     </tr>

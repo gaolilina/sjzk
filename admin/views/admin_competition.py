@@ -17,23 +17,26 @@ class AdminCompetitionAdd(View):
         return HttpResponse(template.render(context))
 
     @require_cookie
-    @validate_args({
+    @validate_args2({
         'name': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
         'deadline': forms.DateTimeField(),
         'time_started': forms.DateTimeField(),
         'time_ended': forms.DateTimeField(),
-        'allow_user': forms.BooleanField(),
-        'allow_team': forms.BooleanField(),
+        'allow_user': forms.BooleanField(required=False),
+        'allow_team': forms.BooleanField(required=False),
     })
     def post(self, request, **kwargs):
         user = request.user
         competition = Competition()
         for k in kwargs:
             setattr(competition, k, kwargs[k])
-        competition.owner.create(user=user)
-        competition.stages.create()
         competition.save()
+
+        comp_user = CompetitionOwner.objects.create(competition=competition, user=user)
+        comp_user.save()
+
+        competition.stages.create()
 
         template = loader.get_template("admin_competition/add.html")
         context = Context({'msg': '保存成功'})
@@ -42,14 +45,14 @@ class AdminCompetitionAdd(View):
 class AdminCompetitionView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
-    def get(self, request):
+    def get(self, request, model):
         template = loader.get_template("admin_competition/view.html")
         context = Context({'model': model})
         return HttpResponse(template.render(context))
 
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
-    @validate_args({
+    @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
         'deadline': forms.DateTimeField(required=False),
@@ -67,11 +70,14 @@ class AdminCompetitionView(View):
     })
     def post(self, request, **kwargs):
         user = request.user
+        model = kwargs["model"]
+        stage = model.stages.get()
         for k in kwargs:
             if k.startswith("stage_"):
-                setattr(model.stages, k[6:len(k)], kwargs[k])
-            else:
+                setattr(stage, k[6:len(k)], kwargs[k])
+            elif k != "model":
                 setattr(model, k, kwargs[k])
+        stage.save()
         model.save()
 
         template = loader.get_template("admin_competition/view.html")
@@ -83,7 +89,7 @@ class AdminCompetitionList(View):
     def get(self, request):
         try:
             template = loader.get_template("admin_competition/list.html")
-            context = Context({'list': CompetitionOwner.objects.get(user=request.user)})
+            context = Context({'list': CompetitionOwner.objects.filter(user=request.user)})
             return HttpResponse(template.render(context))
         except CompetitionOwner.DoesNotExist:
             template = loader.get_template("admin_competition/add.html")
