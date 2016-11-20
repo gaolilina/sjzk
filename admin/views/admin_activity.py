@@ -17,23 +17,27 @@ class AdminActivityAdd(View):
         return HttpResponse(template.render(context))
 
     @require_cookie
-    @validate_args({
+    @validate_args2({
         'name': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
         'deadline': forms.DateTimeField(),
         'time_started': forms.DateTimeField(),
         'time_ended': forms.DateTimeField(),
-        'allow_user': forms.BooleanField(),
-        'allow_team': forms.BooleanField(),
+        'allow_user': forms.BooleanField(required=False),
+        'allow_team': forms.BooleanField(required=False),
     })
     def post(self, request, **kwargs):
         user = request.user
         activity = Activity()
+        
         for k in kwargs:
             setattr(activity, k, kwargs[k])
-        activity.owner.create(user=user)
-        activity.stages.create()
         activity.save()
+
+        actv_user = ActivityOwner.objects.create(activity=activity, user=user)
+        actv_user.save()
+        
+        activity.stages.create()
 
         template = loader.get_template("admin_activity/add.html")
         context = Context({'msg': '保存成功'})
@@ -42,14 +46,14 @@ class AdminActivityAdd(View):
 class AdminActivityView(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
-    def get(self, request):
+    def get(self, request, model):
         template = loader.get_template("admin_activity/view.html")
         context = Context({'model': model})
         return HttpResponse(template.render(context))
 
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
-    @validate_args({
+    @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
         'deadline': forms.DateTimeField(required=False),
@@ -65,11 +69,14 @@ class AdminActivityView(View):
     })
     def post(self, request, **kwargs):
         user = request.user
+        model = kwargs["model"]
+        stage = model.stages.get()
         for k in kwargs:
             if k.startswith("stage_"):
-                setattr(model.stages, k[6:len(k)], kwargs[k])
-            else:
+                setattr(stage, k[6:len(k)], kwargs[k])
+            elif k != "model":
                 setattr(model, k, kwargs[k])
+        stage.save()
         model.save()
 
         template = loader.get_template("admin_activity/view.html")
@@ -81,7 +88,7 @@ class AdminActivityList(View):
     def get(self, request):
         try:
             template = loader.get_template("admin_activity/list.html")
-            context = Context({'list': ActivityOwner.objects.get(user=request.user)})
+            context = Context({'list': ActivityOwner.objects.filter(user=request.user)})
             return HttpResponse(template.render(context))
         except ActivityOwner.DoesNotExist:
             template = loader.get_template("admin_activity/add.html")

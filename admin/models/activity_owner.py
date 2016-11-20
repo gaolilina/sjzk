@@ -4,7 +4,7 @@ __all__ = ['ActivityOwner']
 
 
 class ActivityOwner(models.Model):
-    """活动管理者"""
+    """活动创建者"""
 
     activity = models.ForeignKey('main.Activity', models.CASCADE, 'owner')
     user = models.ForeignKey('AdminUser', models.CASCADE, '+')
