@@ -55,8 +55,7 @@ class List(View):
               'time_created': u.time_created,
               'username': u.username,
               'name': u.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + u.icon)
-                    if u.icon else '',
+              'icon_url': UPLOADED_ROOT + u.icon if u.icon else '',
               'tags': [tag.name for tag in u.tags.all()],
               'gender': u.gender,
               'liker_count': u.likers.count(),
