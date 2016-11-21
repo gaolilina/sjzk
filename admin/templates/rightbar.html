@@ -76,6 +76,11 @@
         </ul>
     {% endif %}
     {% if lb == 'competition' %}
-        
+        <ul>
+            <li{% if rb == 'competition' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_list' %}">竞赛信息</a></li>
+            <li{% if rb == 'competition_stage' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_stage_list' %}">竞赛阶段</a></li>
+            <li{% if rb == 'competition_team_participator' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_team_participator_list' %}">竞赛参与者</a></li>
+            <li{% if rb == 'competition_comment' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_comment_list' %}">竞赛评论</a></li>
+        </ul>
     {% endif %}
 {% endif %}

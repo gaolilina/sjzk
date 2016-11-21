@@ -24,6 +24,6 @@
 {% if tb == 'activity_admin' %}
 <ul>
     <li{% if lb == 'activity' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动</a></li>
-    <!--<li{% if lb == 'competition' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">竞赛</a></li>
---></ul>
+    <li{% if lb == 'competition' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_list' %}">竞赛</a></li>
+</ul>
 {% endif %}
