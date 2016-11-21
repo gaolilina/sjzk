@@ -26,11 +26,10 @@ from django.template import loader, Context
 from django.views.generic import View
 
 from main.models.user import *
-from main.utils.decorators import validate_args
 
-from admin.utils.decorators import require_cookie, fetch_record
+from admin.utils.decorators import *
 """
-view_class_text = """class {{cls_name}}(View):
+view_class_text = """class {{cls_name}}View(View):
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
@@ -40,7 +39,7 @@ view_class_text = """class {{cls_name}}(View):
 
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @validate_args({
+    @validate_args2({
         {{args}}
     })
     def post(self, request, mod, **kwargs):
@@ -52,21 +51,30 @@ view_class_text = """class {{cls_name}}(View):
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
 
-class {{cls_name}}Search(View):
+class {{cls_name}}List(View):
     @require_cookie
-    @validate_args({
-        'username': forms.CharField(required=False, max_length=20),
+    @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
-    def get(self, request, username='', page=0):
-        list = []
-        if username == '':
-            uid = 0
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = {{cls_name}}.objects.filter(user_id=kwargs["id"])
+            template = loader.get_template("user/{{tbl_name}}_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:{{tbl_name}}'})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("username") is not None:
+            username = request.GET.get("username")
+            template = loader.get_template("user/index.html")
+            if {{cls_name}} == User:
+                redir = 'admin:user:user'
+            else:
+                redir = 'admin:user:{{tbl_name}}_list'
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': '{{tbl_name}}'})
+            return HttpResponse(template.render(context))
         else:
-            uid = User.objects.get(username=username).id
-        template = loader.get_template("user/search.html")
-        context = Context({'page': page, 'username': username, 'list': list})
-        return HttpResponse(template.render(context))
+            template = loader.get_template("user/index.html")
+            context = Context({'rb': '{{tbl_name}}'})
+            return HttpResponse(template.render(context))
 """
 
 for mod_name, mod_class in inspect.getmembers(users):
@@ -145,7 +153,7 @@ for mod_name, mod_class in inspect.getmembers(users):
 
         tbl_name = mod_class._meta.db_table
         
-        url_text += "url(r'^" + tbl_name + "/$', " + mod_name  + "Search.as_view(), name='" + tbl_name + "_search'),url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + ".as_view(), name='" + tbl_name + "'),"
+        url_text += "url(r'^" + tbl_name + "/list/(?P<id>\w+)?$', " + mod_name  + "List.as_view(), name='" + tbl_name + "_list'),url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + "View.as_view(), name='" + tbl_name + "'),"
 
         args_text = ""
         content_text = ""
@@ -155,30 +163,58 @@ for mod_name, mod_class in inspect.getmembers(users):
                     continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if fld.max_length > 0 else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
                 if fld.name == 'gender':
-                    content_text += '<tr><td>' + fld.help_text + '：</td><td>{% include "parts/gender.html" %}</td></tr>'
+                    content_text += '<tr><td>' + fld.name + '：</td><td>{% include "parts/gender.html" %}</td></tr>'
                 elif fld.name == 'description':
-                    content_text += '<tr><td>' + fld.help_text + '：</td><td><textarea name=' + fld.name + '>{{ mod.' + fld.name + ' }}</textarea></td></tr>'
+                    content_text += '<tr><td>' + fld.name + '：</td><td><textarea name=' + fld.name + '>{{ mod.' + fld.name + ' }}</textarea></td></tr>'
                 else:
-                    content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'text')
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text')
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
-                content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'datetime')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'date')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date')
             elif isinstance(fld, models.IntegerField):
                 args_text += "'" + fld.name + "': forms.IntegerField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.help_text).replace('{{name}}', fld.name).replace('{{type}}', 'text')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text')
             elif isinstance(fld, models.ForeignKey):
-                content_text += '<tr><td>' + fld.help_text + '：</td><td><a href="{% url "admin:user:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
+                content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:user:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         
         view_text += view_class_text.replace('{{cls_name}}', mod_name).replace('{{tbl_name}}', tbl_name).replace('{{args}}', args_text)
         template_file = codecs.open("./admin/templates/user/" + tbl_name + ".html", "w", "utf-8")
         template_file.write(template_text.replace('{{content}}', content_text).replace('{{tbl_name}}', tbl_name))
         template_file.close()
+
+        template2_text = """
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<table style="margin:30px">
+    <tr>
+        {% for item in list %}
+            <td>用户名： </td>
+            <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.user.name }}</td>
+            <td><a href="{% url 'admin:user:{{tbl_name}}' item.user.id %}">查看</a></td>
+        {% endfor %}
+    </tr>
+</table>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='user_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='user_admin' lb='user' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='user' rb='{{tbl_name}}' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+{% endblock %}
+"""
+        template2_file = codecs.open("./admin/templates/user/" + tbl_name + "_list.html", "w", "utf-8")
+        template2_file.write(template2_text.replace('{{tbl_name}}', tbl_name))
+        template2_file.close()
+
 
 
 url_text += "]"

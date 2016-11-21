@@ -10,5 +10,5 @@ urlpatterns = [
     url(r'^admin_users/', include(admin_users.urls, namespace="admin_user")),
     url(r'^admin_activity/', include(admin_activity.urls, namespace="admin_activity")),
     url(r'^admin_competition/', include(admin_competition.urls, namespace="admin_competition")),
-    url(r'^user/', include(user.urls, namespace="user")),
+    url(r'^user_admin/', include(user.urls, namespace="user")),
 ]

@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="{% url 'admin:user:user_search' %}" method="get" style="text-align:center">
-    <input type="hidden" name="page" value="{{page}}" />
+<form role="form" action="" method="get" style="text-align:center">
     用户名：<input type="text" name="username" value="{{username}}" />
     <input type="submit" value="搜索" />
 </form>
+{% if list %}
 <table style="width:300px;margin:0 auto;">
     <thead>
         <tr>
@@ -13,24 +13,21 @@
             <td>用户名</td>
             <td>操作</td>
         </tr>
-    </thead>
-    <tbody>
-        <tr><td>1</td><td>1</td><td><a href="#">修改</a></td>
-        </tr>
-    </tbody>
-    <tfoot>
+        {% for item in list.all %}
         <tr>
-            <td colspan="3" style="text-align:right">
-                {% if prev %}<a href="#">上一页</a>{% endif %} {% if next %}<a href="#">下一页</a>{% endif %}
-            </td>
+            <td>{{ item.id }}</td>
+            <td>{{ item.username }}</td>
+            <td><a href="{% url redir item.id %}">查看</a></td>
         </tr>
-    </tfoot>
+        {% endfor %}
+    </thead>
 </table>
+{% endif %}
 {% endblock %}
 
-{% block topbar %}{% include 'topbar.html' with tb='user' %}{% endblock %}
-{% block leftbar %}{% include 'leftbar.html' with tb='user' lb='user' %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb='user' lb='user' rb='user' %}{% endblock %}
+{% block topbar %}{% include 'topbar.html' with tb='user_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='user_admin' lb='user' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='user' rb=rb %}{% endblock %}
 
 {% block css %}
 <style>
