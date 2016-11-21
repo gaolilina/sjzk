@@ -3,8 +3,8 @@
     <li{% if tb == 'admin_competition' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:list' %}">竞赛</a></li>
     <li{% if tb == 'admin_activity' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">活动</a></li>
     <li{% if tb == 'user_admin' %} class="active"{% endif %}><a href="{% url 'admin:user:user_list' %}">用户管理</a></li>
-    <!--<li{% if tb == 5 %} class="active"{% endif %}><a href="#">热点管理</a></li>
-    <li{% if tb == 6 %} class="active"{% endif %}><a href="#">社区管理</a></li>
+    <li{% if tb == 'activity_admin' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动管理</a></li>
+    <!--<li{% if tb == 6 %} class="active"{% endif %}><a href="#">社区管理</a></li>
     <li{% if tb == 7 %} class="active"{% endif %}><a href="#">系统参数设定</a></li>
     <li{% if tb == 8 %} class="active"{% endif %}><a href="#">意见反馈</a></li>-->
 </ul>

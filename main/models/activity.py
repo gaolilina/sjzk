@@ -22,6 +22,7 @@ class Activity(models.Model):
 
     is_enabled = models.BooleanField(default=True)
 
+    objects = models.Manager()
     enabled = EnabledManager()
 
     class Meta:

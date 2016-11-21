@@ -66,3 +66,16 @@
         </ul>
     {% endif %}
 {% endif %}
+{% if tb == 'activity_admin' %}
+    {% if lb == 'activity' %}
+        <ul>
+            <li{% if rb == 'activity' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动信息</a></li>
+            <li{% if rb == 'activity_stage' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_stage_list' %}">活动阶段</a></li>
+            <li{% if rb == 'activity_user_participator' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_user_participator_list' %}">活动参与者</a></li>
+            <li{% if rb == 'activity_comment' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_comment_list' %}">活动评论</a></li>
+        </ul>
+    {% endif %}
+    {% if lb == 'competition' %}
+        
+    {% endif %}
+{% endif %}
