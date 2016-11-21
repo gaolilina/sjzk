@@ -84,3 +84,11 @@
         </ul>
     {% endif %}
 {% endif %}
+{% if tb == 'forum_admin' %}
+    {% if lb == 'forum' %}
+        <ul>
+            <li{% if rb == 'forum_board' %} class="active"{% endif %}><a href="{% url 'admin:forum:forum_board_list' %}">板块信息</a></li>
+            <li{% if rb == 'forum_post' %} class="active"{% endif %}><a href="{% url 'admin:forum:forum_post_list' %}">帖子信息</a></li>
+        </ul>
+    {% endif %}
+{% endif %}

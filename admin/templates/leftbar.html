@@ -27,3 +27,8 @@
     <li{% if lb == 'competition' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_list' %}">竞赛</a></li>
 </ul>
 {% endif %}
+{% if tb == 'forum_admin' %}
+<ul>
+    <li{% if lb == 'forum' %} class="active"{% endif %}><a href="{% url 'admin:forum:forum_board_list' %}">论坛</a></li>
+</ul>
+{% endif %}

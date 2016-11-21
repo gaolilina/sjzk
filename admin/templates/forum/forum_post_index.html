@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="" method="get" style="text-align:center">
+    帖子名：<input type="text" name="name" value="{{name}}" />
+    <input type="submit" value="搜索" />
+</form>
+{% if list %}
+<table style="margin:30px">
+    <tr>
+        {% for item in list %}
+            <td>帖子名： </td>
+            <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.title }}</td>
+            <td><a href="{% url 'admin:forum:forum_post' item.id %}">查看</a></td>
+        {% endfor %}
+    </tr>
+</table>
+{% endif %}
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='forum_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='forum_admin' lb='forum' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='forum_admin' lb='forum' rb='forum_post' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+{% endblock %}

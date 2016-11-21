@@ -18,6 +18,7 @@ class ForumBoard(models.Model):
     is_system_board = models.BooleanField(default=False)
     is_enabled = models.BooleanField(default=True)
 
+    objects = models.Manager()
     enabled = EnabledManager()
 
     class Meta:
