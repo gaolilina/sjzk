@@ -115,8 +115,7 @@ class Token(View):
                 abort(401)
             # user.update_token()
             if not user.icon:
-                portraitUri = HttpResponseRedirect(
-                    UPLOADED_URL + user.icon)
+                portraitUri = "http://123.206.24.226:8000/" + user.icon
             else:
                 portraitUri = 'http://www.rongcloud.cn/images/logo.png'
             rcloud = RongCloud()
