@@ -47,6 +47,8 @@ view_class_text = """class {{cls_name}}View(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("{{tbl_name}}", mod.id, 1, request.user)
+
         template = loader.get_template("user/{{tbl_name}}.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -266,6 +268,8 @@ view_class_text = """class {{cls_name}}View(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("{{tbl_name}}", mod.id, 1, request.user)
+
         template = loader.get_template("team/{{tbl_name}}.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -483,6 +487,8 @@ view_class_text = """class {{cls_name}}View(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("{{tbl_name}}", mod.id, 1, request.user)
 
         template = loader.get_template("activity/{{tbl_name}}.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -702,6 +708,8 @@ view_class_text = """class {{cls_name}}View(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("{{tbl_name}}", mod.id, 1, request.user)
+
         template = loader.get_template("competition/{{tbl_name}}.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -919,6 +927,8 @@ view_class_text = """class {{cls_name}}View(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("{{tbl_name}}", mod.id, 1, request.user)
 
         template = loader.get_template("forum/{{tbl_name}}.html")
         context = Context({'mod': mod, 'msg': '保存成功'})

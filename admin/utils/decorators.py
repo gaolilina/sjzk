@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from main.utils import abort
 from admin.models.admin_user import AdminUser
-
+from admin.models.operation_log import OperationLog
 
 __all__ = ['require_cookie', 'fetch_record', 'validate_args2']
 
@@ -69,3 +69,7 @@ def validate_args2(d):
             return function(self, request, *args, **kwargs)
         return inner
     return decorator
+
+def admin_log(table, id, type, user):
+    log = OperationLog(user=user, table=table, id=id, type=type)
+    log.save()
