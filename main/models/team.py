@@ -31,6 +31,7 @@ class Team(models.Model):
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
+    objects = models.Manager()
     enabled = EnabledManager()
 
     class Meta:

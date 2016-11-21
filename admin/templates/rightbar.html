@@ -47,4 +47,22 @@
             <li{% if rb == 'user_visitor' %} class="active"{% endif %}><a href="{% url 'admin:user:user_visitor_list' %}">用户访客</a></li>
         </ul>
     {% endif %}
+    {% if lb == 'team' %}
+        <ul>
+            <li{% if rb == 'team' %} class="active"{% endif %}><a href="{% url 'admin:team:team_list' %}">团队信息</a></li>
+            <li{% if rb == 'team_action' %} class="active"{% endif %}><a href="{% url 'admin:team:team_action_list' %}">团队动态</a></li>
+            <li{% if rb == 'team_achievement' %} class="active"{% endif %}><a href="{% url 'admin:team:team_achievement_list' %}">团队成果</a></li>
+            <li{% if rb == 'team_comment' %} class="active"{% endif %}><a href="{% url 'admin:team:team_comment_list' %}">团队评论</a></li>
+            <li{% if rb == 'team_follower' %} class="active"{% endif %}><a href="{% url 'admin:team:team_follower_list' %}">团队关注</a></li>
+            <li{% if rb == 'team_invitation' %} class="active"{% endif %}><a href="{% url 'admin:team:team_invitation_list' %}">团队邀请</a></li>
+            <li{% if rb == 'team_liker' %} class="active"{% endif %}><a href="{% url 'admin:team:team_liker_list' %}">团队点赞</a></li>
+            <li{% if rb == 'team_member' %} class="active"{% endif %}><a href="{% url 'admin:team:team_member_list' %}">团队成员</a></li>
+            <li{% if rb == 'team_member_request' %} class="active"{% endif %}><a href="{% url 'admin:team:team_member_request_list' %}">团队申请</a></li>
+            <li{% if rb == 'team_need' %} class="active"{% endif %}><a href="{% url 'admin:team:team_need_list' %}">团队需求</a></li>
+            <li{% if rb == 'team_tag' %} class="active"{% endif %}><a href="{% url 'admin:team:team_tag_list' %}">团队标签</a></li>
+            <li{% if rb == 'team_visitor' %} class="active"{% endif %}><a href="{% url 'admin:team:team_visitor_list' %}">团队访客</a></li>
+            <li{% if rb == 'internal_task' %} class="active"{% endif %}><a href="{% url 'admin:team:internal_task_list' %}">内部任务</a></li>
+            <li{% if rb == 'external_task' %} class="active"{% endif %}><a href="{% url 'admin:team:external_task_list' %}">外部任务</a></li>
+        </ul>
+    {% endif %}
 {% endif %}

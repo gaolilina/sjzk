@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 
-from . import admin_users, admin_activity, admin_competition, user
+from . import admin_users, admin_activity, admin_competition, user, team
 
 from admin.views.main import Login, Register
 
@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^admin_activity/', include(admin_activity.urls, namespace="admin_activity")),
     url(r'^admin_competition/', include(admin_competition.urls, namespace="admin_competition")),
     url(r'^user_admin/', include(user.urls, namespace="user")),
+    url(r'^team_admin/', include(team.urls, namespace="team")),
 ]

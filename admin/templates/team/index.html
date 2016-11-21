@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="" method="get" style="text-align:center">
+    团队名：<input type="text" name="name" value="{{name}}" />
+    <input type="submit" value="搜索" />
+</form>
+{% if list %}
+<table style="width:300px;margin:0 auto;">
+    <thead>
+        <tr>
+            <td>ID</td>
+            <td>团队名</td>
+            <td>操作</td>
+        </tr>
+        {% for item in list.all %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td><a href="{% url redir item.id %}">查看</a></td>
+        </tr>
+        {% endfor %}
+    </thead>
+</table>
+{% endif %}
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='user_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='user_admin' lb='team' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='team' rb=rb %}{% endblock %}
+
+{% block css %}
+<style>
+    form {
+        padding: 30px;
+    }
+    form img {
+        width: 100px;
+        height: 100px;
+    }
+    td {
+        padding: 5px 8px;
+        vertical-align: top;
+    }
+
+    input[type=text], input[type=email], input[type=date], textarea {
+        border: 2px solid #C5DBAD;
+    }
+
+    input[type=radio] {
+        margin-right: 5px;
+    }
+
+    input[type=radio] ~ input {
+        margin-left: 15px;
+    }
+
+    .buttons {
+        float: right;
+    }
+
+    input[type=submit], input[type=reset] {
+        border: 0 none;
+        border-radius: 3px;
+        padding: 2px 5px;
+        background: #85A365;
+        color: white;
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    input.tiny {
+        width: 60px;
+    }
+</style>
+{% endblock %}
