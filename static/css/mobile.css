@@ -1,0 +1,52 @@
+.mobile {
+    display: block;
+}
+
+body {
+    background-color: #BED5A7;
+}
+
+.top {
+    background-color: white;
+}
+
+.top .topbar {
+    display: none;
+}
+
+.top img {
+    vertical-align: bottom;
+}
+
+.top .mobile {
+    font-size: 26px;
+    color: #EC8F27;
+    display: inline-block;
+    margin-left: 20px;
+    height: 44.5px;
+    line-height: 44.5px;
+}
+
+.left {
+    display: none;
+}
+
+.right {
+    left: 0px;
+}
+
+.rightbar {
+    margin-top: 0px;
+}
+
+.content {
+    position: absolute;
+    left: 20px;
+    top: 90px;
+    bottom: 0;
+    background-color: #F4F5F7;
+}
+
+.right table {
+    background-color: white;
+}

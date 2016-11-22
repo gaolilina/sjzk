@@ -4,14 +4,27 @@
 
 <head>
     <title>{% block title %}创易{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="{% static 'css/global.css' %}" />
     {% block css %}{% endblock %}
+    <script>
+        if (navigator.userAgent.indexOf('Mobile') >= 0) {
+            var link = document.createElement('link');
+            link.setAttribute('href', '{% static 'css/mobile.css' %}');
+            link.setAttribute('rel', 'stylesheet');
+            document.head.appendChild(link);
+            var script = document.createElement('script');
+            script.setAttribute('href', '{% static 'js/mobile.js' %}');
+            document.head.appendChild(script);
+        }
+    </script>
 </head>
 
 <body>
     <div class="top">
         <img src="{% static 'img/logo.png' %}" />
         <div class="topbar">{% block topbar %}{% include 'topbar.html' %}{% endblock %}</div>
+        <div class="mobile">后台管理</div>
     </div>
     <div class="left">
         <div class="leftbar">{% block leftbar %}{% include 'leftbar.html' %}{% endblock %}</div>
