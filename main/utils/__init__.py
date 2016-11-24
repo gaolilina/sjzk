@@ -16,7 +16,7 @@ def save_uploaded_image(image, is_private=False):
     if code and code != 0:
         abort(403, 'unhealthy picture')
     now = timezone.now()
-    dirname = now.strftime('%Y/%m/%d')
+    dirname = "uploaded/" + now.strftime('%Y/%m/%d')
     if is_private:
         dirname = 'private/' + dirname
     os.makedirs(dirname, exist_ok=True)

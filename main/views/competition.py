@@ -68,9 +68,7 @@ class TeamParticipatorList(View):
         qs = competition.team_participators.all()[offset: offset + limit]
         l = [{'id': p.team.id,
               'name': p.team.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + p.team.icon) if p.team.icon else ''
-              } for p in qs]
+              'icon_url': p.team.icon} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Competition.enabled, 'competition')

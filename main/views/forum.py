@@ -55,8 +55,7 @@ class BoardList(View):
               'description': b.description,
               'owner_id': b.owner.id,
               'owner_name': b.owner.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + b.owner.icon) if b.owner.icon else '',
+              'icon_url': b.owner.icon,
               'is_system_board': b.is_system_board,
               'time_created': b.time_created} for b in boards]
         return JsonResponse({'count': c, 'list': l})
@@ -120,7 +119,7 @@ class PostList(View):
                 time_created: 创建时间
         """
         i, j = offset, offset + limit
-        qs = board.posts.filter(~Q(main_post=None))
+        qs = board.posts.filter(Q(main_post=None))
         c = qs.count()
         posts = qs[i:j]
         l = [{'id': p.id,
@@ -128,13 +127,16 @@ class PostList(View):
               'content': p.content,
               'author_id': p.author.id,
               'author_name': p.author.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + p.author.icon) if p.author.icon else '',
+              'icon_url': p.author.icon,
               'time_created': p.time_created} for p in posts]
         return JsonResponse({'count': c, 'list': l})
 
     @require_token
-    @fetch_object(ForumBoard.objects, 'board')
+    @fetch_object(ForumBoard.enabled, 'board')
+    @validate_args({
+        'title': forms.CharField(max_length=20),
+        'content': forms.CharField(max_length=300),
+    })
     def post(self, request, board, title, content):
         """发主题帖"""
 
@@ -168,7 +170,7 @@ class Post(View):
             abort(400)
 
         i, j = offset, offset + limit
-        qs = post.posts
+        qs = post.posts.all()
         c = qs.count()
         posts = qs[i:j]
         l = [{'id': p.id,
@@ -176,18 +178,21 @@ class Post(View):
               'content': p.content,
               'author_id': p.author.id,
               'author_name': p.author.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + p.author.icon) if p.author.icon else '',
+              'icon_url': p.author.icon,
               'time_created': p.time_created} for p in posts]
         return JsonResponse({'count': c, 'list': l})
 
     @require_token
     @fetch_object(ForumPost.objects, 'post')
+    @validate_args({
+        'title': forms.CharField(max_length=20),
+        'content': forms.CharField(max_length=300),
+    })
     def post(self, request, post, title, content):
         """回主题帖"""
 
-        p = post.posts.create(board=post.board, author=request.user,
-                              title=title, content=content)
+        p = post.posts.create(main_post=post, board=post.board,
+                              author=request.user, title=title, content=content)
         return JsonResponse({'post_id': p.id})
 
     @require_token

@@ -6,7 +6,7 @@ from django.db import transaction
 from django.views.generic import View
 from rongcloud import RongCloud
 
-from ChuangYi.settings import UPLOADED_URL
+from ChuangYi.settings import UPLOADED_URL, UPLOADED_ROOT
 from ..utils import abort, send_message
 from ..utils.decorators import *
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
@@ -55,8 +55,7 @@ class List(View):
               'time_created': u.time_created,
               'username': u.username,
               'name': u.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + u.icon)
-                    if u.icon else '',
+              'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
               'gender': u.gender,
               'liker_count': u.likers.count(),
@@ -116,8 +115,7 @@ class Token(View):
                 abort(401)
             # user.update_token()
             if not user.icon:
-                portraitUri = HttpResponseRedirect(
-                    UPLOADED_URL + user.icon)
+                portraitUri = "http://123.206.24.226:8000/" + user.icon
             else:
                 portraitUri = 'http://www.rongcloud.cn/images/logo.png'
             rcloud = RongCloud()
@@ -186,8 +184,7 @@ class Profile(View):
              'time_created': user.time_created,
              'username': user.username,
              'name': user.name,
-             'icon_url': HttpResponseRedirect(
-                 UPLOADED_URL + user.icon) if user.icon else '',
+             'icon_url': user.icon,
              'description': user.description,
              'email': user.email,
              'gender': user.gender,
@@ -315,8 +312,7 @@ class FriendList(View):
         l = [{'id': r.friend.id,
               'username': r.friend.username,
               'name': r.friend.name,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + r.icon)
-                    if r.icon else '',
+              'icon_url': r.icon,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -408,8 +404,7 @@ class Search(View):
               'like_count': u.like_count,
               'fan_count': u.fan_count,
               'visitor_count': u.visitor_count,
-              'icon_url': HttpResponseRedirect(UPLOADED_URL + u.icon)
-                    if u.icon else '',
+              'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
               'time_created': u.time_created} for u in users.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})

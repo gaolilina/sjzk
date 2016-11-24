@@ -36,6 +36,7 @@ class ActionList(View):
                 action: 相关动作
                 object_type: 相关对象的类型
                 object_id: 相关对象的ID
+                icon_url: 头像
                 related_object_type: 额外相关对象的类型
                 related_object_id: 额外相关对象的ID
         """
@@ -45,6 +46,7 @@ class ActionList(View):
               'object_type': i.object_type,
               'object_id': i.object_id,
               'object_name': i.object.name,
+              'icon_url': i.object.icon,
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
               'related_object_name': i.related_object.name,
@@ -92,6 +94,7 @@ class CommentList(View):
         l = [{'id': r.id,
               'author_id': r.author.id,
               'author_name': r.author.name,
+              'icon_url': r.author.icon,
               'content': r.content,
               'time_created': r.time_created
               } for r in qs.all()[offset:offset + limit]]
@@ -135,6 +138,7 @@ class TeamCommentList(CommentList):
                 id: 评论ID
                 author_id: 评论者ID
                 author_name: 评论者昵称
+                icon_url: 头像
                 content: 内容
                 time_created: 发布时间
         """
@@ -161,6 +165,7 @@ class ActivityCommentList(CommentList):
                 id: 评论ID
                 author_id: 评论者ID
                 author_name: 评论者昵称
+                icon_url: 头像
                 content: 内容
                 time_created: 发布时间
         """
@@ -187,6 +192,7 @@ class CompetitionCommentList(CommentList):
                 id: 评论ID
                 author_id: 评论者ID
                 author_name: 评论者昵称
+                icon_url: 头像
                 content: 内容
                 time_created: 发布时间
         """
@@ -273,6 +279,7 @@ class FollowerList(View):
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
+                icon_url: 头像
                 time_created: 关注时间
         """
         c = obj.followers.count()
@@ -280,6 +287,7 @@ class FollowerList(View):
         l = [{'id': r.follower.id,
               'username': r.follower.username,
               'name': r.follower.name,
+              'icon_url': r.follower.icon,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -363,6 +371,7 @@ class LikerList(View):
         l = [{'id': r.liker.id,
               'username': r.liker.username,
               'name': r.liker.name,
+              'icon_url': r.liker.icon,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -426,6 +435,7 @@ class VisitorList(View):
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
+                icon_url: 头像
                 time_updated: 来访时间
         """
         c = entity.visitors.count()
@@ -433,6 +443,7 @@ class VisitorList(View):
         l = [{'id': i.visitor.id,
               'username': i.visitor.username,
               'name': i.visitor.name,
+              'icon_url': i.visitor.icon,
               'update_time': i.time_updated} for i in qs]
         return JsonResponse({'count': c, 'list': l})
 

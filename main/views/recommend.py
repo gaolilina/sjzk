@@ -65,8 +65,7 @@ class UserRecommend(View):
         l = [{'id': u.id,
               'username': u.username,
               'name': u.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + u.icon) if u.icon else '',
+              'icon_url': u.icon,
               'gender': u.profile.gender,
               'like_count': u.like_count,
               'fan_count': u.fan_count,
@@ -127,8 +126,7 @@ class TeamRecommend(View):
         c = len(teams)
         l = [{'id': t.id,
               'name': t.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + t.icon) if t.icon else '',
+              'icon_url': t.icon,
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
@@ -205,8 +203,7 @@ class OutsourceNeedTeamRecommend(View):
         c = len(teams)
         l = [{'id': t.id,
               'name': t.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + t.icon) if t.icon else '',
+              'icon_url': t.icon,
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
@@ -283,8 +280,7 @@ class UndertakeNeedTeamRecommend(View):
         c = len(teams)
         l = [{'id': t.id,
               'name': t.name,
-              'icon_url': HttpResponseRedirect(
-                  UPLOADED_URL + t.icon) if t.icon else '',
+              'icon_url': t.icon,
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),

@@ -254,6 +254,8 @@ class ExternalTask(models.Model):
     assign_num = models.IntegerField(default=1)
     submit_num = models.IntegerField(default=1)
     pay_num = models.IntegerField(default=1)
+    pay_time = models.DateTimeField(
+        default=None, blank=True, null=True, db_index=True)
     finish_time = models.DateTimeField(
         default=None, blank=True, null=True, db_index=True)
 

@@ -99,13 +99,13 @@ class Icon(Icon_):
             request.user.icon = filename
             request.user.save()
             # 用户头像更换后调用融云接口更改融云上的用户头像
-            portraitUri = HttpResponseRedirect(UPLOADED_URL + request.user.icon)
+            portraitUri = "http://123.206.24.226:8000/" + request.user.icon
             rcloud = RongCloud()
             rcloud.User.refresh(
                 userId=request.user.id,
                 name=request.user.name,
                 portraitUri=portraitUri)
-            abort(200)
+            return JsonResponse({'icon_url': request.user.icon})
         abort(400)
 
 
@@ -218,8 +218,7 @@ class Profile(Profile_):
             request.user.name = name
             # 用户昵称更换后调用融云接口更改融云上的用户头像
             if request.user.icon:
-                portraitUri = HttpResponseRedirect(
-                    UPLOADED_URL + request.user.icon)
+                portraitUri = "http://123.206.24.226:8000/" + request.user.icon
             else:
                 portraitUri = "http://www.rongcloud.cn/images/logo.png"
             rcloud = RongCloud()
