@@ -1,0 +1,22 @@
+
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<table style="margin:30px">
+    <tr>
+        {% for item in list %}
+            <td>团队名： </td>
+            <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.team.name }}</td>
+            <td><a href="{% url 'admin:team:team_member' item.team.id %}">查看</a></td>
+        {% endfor %}
+    </tr>
+</table>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='user_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='user_admin' lb='team' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='team' rb='team_member' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+{% endblock %}

@@ -1,0 +1,69 @@
+
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="{% url 'admin:team:internal_task' mod.id %}" method="post">
+<table>
+    <tr><td>team：</td><td><a href="{% url "admin:team:team" mod.team.id %}">{{ mod.team.id }}</a></td></tr><tr><td>executor：</td><td><a href="{% url "admin:team:user" mod.executor.id %}">{{ mod.executor.id }}</a></td></tr><tr><td>title：</td><td><input name="title" type="text" value="{{ mod.title }}" /></td></tr><tr><td>status：</td><td><input name="status" type="text" value="{{ mod.status }}" /></td></tr><tr><td>deadline：</td><td><input name="deadline" type="date" value="{{ mod.deadline }}" /></td></tr><tr><td>assign_num：</td><td><input name="assign_num" type="text" value="{{ mod.assign_num }}" /></td></tr><tr><td>submit_num：</td><td><input name="submit_num" type="text" value="{{ mod.submit_num }}" /></td></tr><tr><td>finish_time：</td><td><input name="finish_time" type="datetime" value="{{ mod.finish_time }}" /></td></tr><tr><td>time_created：</td><td><input name="time_created" type="datetime" value="{{ mod.time_created }}" /></td></tr>
+    <tr>
+        <td>{{ msg }}</td>
+        <td>
+            <div class="buttons">
+                <input type="submit" value="保存" />
+                <input type="reset" value="取消" />
+            </div>
+        </td>
+    </tr>
+</table>
+</form>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='user_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='user_admin' lb='team' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='team' rb='internal_task' %}{% endblock %}
+
+{% block css %}
+<style>
+    form {
+        padding: 30px;
+    }
+    form img {
+        width: 100px;
+        height: 100px;
+    }
+    td {
+        padding: 5px 8px;
+        vertical-align: top;
+    }
+
+    input[type=text], input[type=email], input[type=date], textarea {
+        border: 2px solid #C5DBAD;
+    }
+
+    input[type=radio] {
+        margin-right: 5px;
+    }
+
+    input[type=radio] ~ input {
+        margin-left: 15px;
+    }
+
+    .buttons {
+        float: right;
+    }
+
+    input[type=submit], input[type=reset] {
+        border: 0 none;
+        border-radius: 3px;
+        padding: 2px 5px;
+        background: #85A365;
+        color: white;
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    input.tiny {
+        width: 60px;
+    }
+</style>
+{% endblock %}
