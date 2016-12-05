@@ -17,8 +17,6 @@ class Competition(models.Model):
     time_started = models.DateTimeField(db_index=True)
     time_ended = models.DateTimeField(db_index=True)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
-    allow_user = models.BooleanField(default=True)
-    allow_team = models.BooleanField(default=True)
 
     is_enabled = models.BooleanField(default=True)
 

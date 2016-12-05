@@ -27,7 +27,6 @@ class List(View):
               'time_started': a.time_started,
               'time_ended': a.time_ended,
               'deadline': a.deadline,
-              'user_participator_count': a.user_participators.count(),
               'team_participator_count': a.team_participators.count(),
               'time_created': a.time_created} for a in qs]
         return JsonResponse({'count': c, 'list': l})
@@ -48,7 +47,6 @@ class Detail(View):
             'deadline': competition.deadline,
             'allow_user': competition.allow_user,
             'allow_team': competition.allow_team,
-            'user_participator_count': competition.user_participators.count(),
             'team_participator_count': competition.team_participators.count(),
             'time_created': competition.time_created,
         })
