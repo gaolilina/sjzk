@@ -25,6 +25,8 @@ class ForumBoardView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("forum_board", mod.id, 1, request.user)
+
         template = loader.get_template("forum/forum_board.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -65,6 +67,8 @@ class ForumPostView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("forum_post", mod.id, 1, request.user)
 
         template = loader.get_template("forum/forum_post.html")
         context = Context({'mod': mod, 'msg': '保存成功'})

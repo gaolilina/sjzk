@@ -25,6 +25,8 @@ class UserView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("user", mod.id, 1, request.user)
+
         template = loader.get_template("user/user.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -70,6 +72,8 @@ class UserActionView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("user_action", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_action.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -117,6 +121,8 @@ class UserCommentView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("user_comment", mod.id, 1, request.user)
+
         template = loader.get_template("user/user_comment.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -162,6 +168,8 @@ class UserExperienceView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("user_experience", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_experience.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -209,6 +217,8 @@ class UserFeedbackView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("user_feedback", mod.id, 1, request.user)
+
         template = loader.get_template("user/user_feedback.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -254,6 +264,8 @@ class UserFollowerView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("user_follower", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_follower.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -301,6 +313,8 @@ class UserFriendView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("user_friend", mod.id, 1, request.user)
+
         template = loader.get_template("user/user_friend.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -346,6 +360,8 @@ class UserFriendRequestView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("user_friend_request", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_friend_request.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -393,6 +409,8 @@ class UserLikerView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("user_liker", mod.id, 1, request.user)
+
         template = loader.get_template("user/user_liker.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -438,6 +456,8 @@ class UserTagView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("user_tag", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_tag.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -485,6 +505,8 @@ class UserValidationCodeView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("user_validation_code", mod.id, 1, request.user)
+
         template = loader.get_template("user/user_validation_code.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -530,6 +552,8 @@ class UserVisitorView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("user_visitor", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_visitor.html")
         context = Context({'mod': mod, 'msg': '保存成功'})

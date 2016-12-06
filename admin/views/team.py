@@ -18,12 +18,14 @@ class ExternalTaskView(View):
     @fetch_record(ExternalTask.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'title': forms.CharField(max_length=20,),'expend': forms.IntegerField(required=False,),'expend_actual': forms.IntegerField(required=False,),'status': forms.IntegerField(required=False,),'deadline': forms.DateField(required=False,),'assign_num': forms.IntegerField(required=False,),'submit_num': forms.IntegerField(required=False,),'pay_num': forms.IntegerField(required=False,),'finish_time': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
+        'title': forms.CharField(max_length=20,),'expend': forms.IntegerField(required=False,),'expend_actual': forms.IntegerField(required=False,),'status': forms.IntegerField(required=False,),'deadline': forms.DateField(required=False,),'assign_num': forms.IntegerField(required=False,),'submit_num': forms.IntegerField(required=False,),'pay_num': forms.IntegerField(required=False,),'pay_time': forms.DateTimeField(required=False,),'finish_time': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("external_task", mod.id, 1, request.user)
 
         template = loader.get_template("team/external_task.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -71,6 +73,8 @@ class InternalTaskView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("internal_task", mod.id, 1, request.user)
+
         template = loader.get_template("team/internal_task.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -116,6 +120,8 @@ class TeamView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("team", mod.id, 1, request.user)
 
         template = loader.get_template("team/team.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -163,6 +169,8 @@ class TeamAchievementView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("team_achievement", mod.id, 1, request.user)
+
         template = loader.get_template("team/team_achievement.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -208,6 +216,8 @@ class TeamActionView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("team_action", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_action.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -255,6 +265,8 @@ class TeamCommentView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("team_comment", mod.id, 1, request.user)
+
         template = loader.get_template("team/team_comment.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -300,6 +312,8 @@ class TeamFollowerView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("team_follower", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_follower.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -347,6 +361,8 @@ class TeamInvitationView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("team_invitation", mod.id, 1, request.user)
+
         template = loader.get_template("team/team_invitation.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -392,6 +408,8 @@ class TeamLikerView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("team_liker", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_liker.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -439,6 +457,8 @@ class TeamMemberView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("team_member", mod.id, 1, request.user)
+
         template = loader.get_template("team/team_member.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -484,6 +504,8 @@ class TeamMemberRequestView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("team_member_request", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_member_request.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -531,6 +553,8 @@ class TeamNeedView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("team_need", mod.id, 1, request.user)
+
         template = loader.get_template("team/team_need.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -577,6 +601,8 @@ class TeamTagView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("team_tag", mod.id, 1, request.user)
+
         template = loader.get_template("team/team_tag.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -622,6 +648,8 @@ class TeamVisitorView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("team_visitor", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_visitor.html")
         context = Context({'mod': mod, 'msg': '保存成功'})

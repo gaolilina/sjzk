@@ -18,12 +18,14 @@ class CompetitionView(View):
     @fetch_record(Competition.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'name': forms.CharField(max_length=50,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_user': forms.BooleanField(required=False),'allow_team': forms.BooleanField(required=False),'is_enabled': forms.BooleanField(required=False),
+        'name': forms.CharField(max_length=50,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_team': forms.BooleanField(required=False),'is_enabled': forms.BooleanField(required=False),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("competition", mod.id, 1, request.user)
 
         template = loader.get_template("competition/competition.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
@@ -71,6 +73,8 @@ class CompetitionCommentView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("competition_comment", mod.id, 1, request.user)
+
         template = loader.get_template("competition/competition_comment.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -117,6 +121,8 @@ class CompetitionStageView(View):
             setattr(mod, k, kwargs[k])
         mod.save()
 
+        admin_log("competition_stage", mod.id, 1, request.user)
+
         template = loader.get_template("competition/competition_stage.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
         return HttpResponse(template.render(context))
@@ -162,6 +168,8 @@ class CompetitionTeamParticipatorView(View):
         for k in kwargs:
             setattr(mod, k, kwargs[k])
         mod.save()
+
+        admin_log("competition_team_participator", mod.id, 1, request.user)
 
         template = loader.get_template("competition/competition_team_participator.html")
         context = Context({'mod': mod, 'msg': '保存成功'})
