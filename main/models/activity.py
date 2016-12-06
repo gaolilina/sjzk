@@ -17,6 +17,7 @@ class Activity(models.Model):
     time_started = models.DateTimeField(db_index=True)
     time_ended = models.DateTimeField(db_index=True)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
+    allow_user = models.BooleanField(default=True)
 
     is_enabled = models.BooleanField(default=True)
 
@@ -47,7 +48,8 @@ class ActivityStage(models.Model):
 class ActivityUserParticipator(models.Model):
     """活动参与者（用户）"""
 
-    activity = models.ForeignKey('Activity', models.CASCADE, 'user_participators')
+    activity = models.ForeignKey(
+        'Activity', models.CASCADE, 'user_participators')
     user = models.ForeignKey('User', models.CASCADE, '+')
 
     class Meta:

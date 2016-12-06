@@ -46,7 +46,6 @@ class Detail(View):
             'time_ended': activity.time_ended,
             'deadline': activity.deadline,
             'allow_user': activity.allow_user,
-            'allow_team': activity.allow_team,
             'user_participator_count': activity.user_participators.count(),
             'time_created': activity.time_created,
         })

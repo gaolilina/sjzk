@@ -45,7 +45,6 @@ class Detail(View):
             'time_started': competition.time_started,
             'time_ended': competition.time_ended,
             'deadline': competition.deadline,
-            'allow_user': competition.allow_user,
             'allow_team': competition.allow_team,
             'team_participator_count': competition.team_participators.count(),
             'time_created': competition.time_created,

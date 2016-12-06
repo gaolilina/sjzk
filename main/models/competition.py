@@ -17,6 +17,7 @@ class Competition(models.Model):
     time_started = models.DateTimeField(db_index=True)
     time_ended = models.DateTimeField(db_index=True)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
+    allow_team = models.BooleanField(default=True)
 
     is_enabled = models.BooleanField(default=True)
 
@@ -49,7 +50,8 @@ class CompetitionStage(models.Model):
 class CompetitionTeamParticipator(models.Model):
     """竞赛参与者（团队）"""
 
-    competition = models.ForeignKey('Competition', models.CASCADE, 'team_participators')
+    competition = models.ForeignKey(
+        'Competition', models.CASCADE, 'team_participators')
     team = models.ForeignKey('Team', models.CASCADE, '+')
 
     class Meta:
