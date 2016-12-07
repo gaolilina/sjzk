@@ -65,6 +65,7 @@ class AdminUsersIndentify(View):
         'id_number': forms.CharField(max_length=18, required=False),
     })
     def post(self, request, **kwargs):
+        id_keys = ('real_name', 'id_number')
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'])
         error_code = res["error_code"]
