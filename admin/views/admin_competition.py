@@ -38,7 +38,7 @@ class AdminCompetitionAdd(View):
         competition.stages.create()
 
         template = loader.get_template("admin_competition/add.html")
-        context = Context({'msg': '保存成功'})
+        context = Context({'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class AdminCompetitionView(View):
@@ -46,7 +46,7 @@ class AdminCompetitionView(View):
     @require_cookie
     def get(self, request, model):
         template = loader.get_template("admin_competition/view.html")
-        context = Context({'model': model})
+        context = Context({'model': model, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(Competition.enabled, 'model', 'id')
@@ -79,7 +79,7 @@ class AdminCompetitionView(View):
         model.save()
 
         template = loader.get_template("admin_competition/view.html")
-        context = Context({'model': model, 'msg': '保存成功'})
+        context = Context({'model': model, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class AdminCompetitionList(View):
@@ -87,7 +87,7 @@ class AdminCompetitionList(View):
     def get(self, request):
         try:
             template = loader.get_template("admin_competition/list.html")
-            context = Context({'list': CompetitionOwner.objects.filter(user=request.user)})
+            context = Context({'list': CompetitionOwner.objects.filter(user=request.user), 'user': request.user})
             return HttpResponse(template.render(context))
         except CompetitionOwner.DoesNotExist:
             template = loader.get_template("admin_competition/add.html")

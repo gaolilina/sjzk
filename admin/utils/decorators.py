@@ -2,6 +2,8 @@ from functools import wraps
 
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
 from main.utils import abort
 from admin.models.admin_user import AdminUser
@@ -11,22 +13,30 @@ __all__ = ['require_cookie', 'fetch_record', 'validate_args2']
 
 
 def require_cookie(function):
+    """验证cookie，对非登陆用户跳转到登陆页面
+    """
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
         username = request.COOKIES.get('usr')
+        password = request.COOKIES.get('pwd')
         if not username:
-            abort(401)
+            return HttpResponseRedirect(reverse("admin:login"))
         try:
             user = AdminUser.objects.get(username=username)
             if user.is_enabled:
-                request.user = user
-                return function(self, request, *args, **kwargs)
-            abort(403)
+                if user.password[:6] == password:
+                    request.user = user
+                    return function(self, request, *args, **kwargs)
+                else:
+                    return HttpResponseRedirect(reverse("admin:login"))
+            return HttpResponseRedirect(reverse("admin:login"))
         except AdminUser.DoesNotExist:
-            abort(401)
+            return HttpResponseRedirect(reverse("admin:login"))
     return decorator
 
 def fetch_record(model, object_name, col):
+    """根据url中的id抓取数据模型
+    """
     def decorator(function):
         @wraps(function)
         def inner(*args, **kwargs):
@@ -46,6 +56,7 @@ def fetch_record(model, object_name, col):
 def validate_args2(d):
     """对被装饰的方法利用 "参数名/表单模型" 字典进行输入数据验证，验证后的数据
     作为关键字参数传入view函数中，若部分数据非法则直接返回400 Bad Request
+    同main.util.decorator.vlidate_args，针对checkbox提交有修正
     """
     def decorator(function):
         @wraps(function)
@@ -71,5 +82,7 @@ def validate_args2(d):
     return decorator
 
 def admin_log(table, id, type, user):
+    """记录操作日志
+    """
     log = OperationLog(user=user, table=table, id=id, type=type)
     log.save()

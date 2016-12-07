@@ -39,7 +39,7 @@ class AdminActivityAdd(View):
         activity.stages.create()
 
         template = loader.get_template("admin_activity/add.html")
-        context = Context({'msg': '保存成功'})
+        context = Context({'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class AdminActivityView(View):
@@ -47,7 +47,7 @@ class AdminActivityView(View):
     @require_cookie
     def get(self, request, model):
         template = loader.get_template("admin_activity/view.html")
-        context = Context({'model': model})
+        context = Context({'model': model, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(Activity.enabled, 'model', 'id')
@@ -78,7 +78,7 @@ class AdminActivityView(View):
         model.save()
 
         template = loader.get_template("admin_activity/view.html")
-        context = Context({'model': model, 'msg': '保存成功'})
+        context = Context({'model': model, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class AdminActivityList(View):
@@ -86,7 +86,7 @@ class AdminActivityList(View):
     def get(self, request):
         try:
             template = loader.get_template("admin_activity/list.html")
-            context = Context({'list': ActivityOwner.objects.filter(user=request.user)})
+            context = Context({'list': ActivityOwner.objects.filter(user=request.user), 'user': request.user})
             return HttpResponse(template.render(context))
         except ActivityOwner.DoesNotExist:
             template = loader.get_template("admin_activity/add.html")
