@@ -12,7 +12,7 @@ class AdminUsersInfo(View):
     @require_cookie
     def get(self, request):
         template = loader.get_template("admin_user/info.html")
-        context = Context({'u': request.user})
+        context = Context({'u': request.user, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
@@ -30,7 +30,7 @@ class AdminUsersInfo(View):
         user.save()
 
         template = loader.get_template("admin_user/info.html")
-        context = Context({'u': user, 'msg': '保存成功'})
+        context = Context({'u': user, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class AdminUsersIcon(View):
@@ -48,7 +48,7 @@ class AdminUsersIcon(View):
             request.user.save()
 
             template = loader.get_template("admin_user/info.html")
-            context = Context({'u': request.user, 'msg': '上传成功'})
+            context = Context({'u': request.user, 'msg': '上传成功', 'user': request.user})
             return HttpResponse(template.render(context))
         HttpResponseForbidden()
 
@@ -56,7 +56,7 @@ class AdminUsersIndentify(View):
     @require_cookie
     def get(self, request):
         template = loader.get_template("admin_user/identify.html")
-        context = Context({'u': request.user})
+        context = Context({'u': request.user, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
@@ -78,5 +78,5 @@ class AdminUsersIndentify(View):
             user.save()
 
         template = loader.get_template("admin_user/identify.html")
-        context = Context({'u': user, 'msg': '保存成功'})
+        context = Context({'u': user, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))

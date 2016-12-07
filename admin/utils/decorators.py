@@ -13,6 +13,8 @@ __all__ = ['require_cookie', 'fetch_record', 'validate_args2']
 
 
 def require_cookie(function):
+    """验证cookie，对非登陆用户跳转到登陆页面
+    """
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
         username = request.COOKIES.get('usr')
@@ -33,6 +35,8 @@ def require_cookie(function):
     return decorator
 
 def fetch_record(model, object_name, col):
+    """根据url中的id抓取数据模型
+    """
     def decorator(function):
         @wraps(function)
         def inner(*args, **kwargs):
@@ -52,6 +56,7 @@ def fetch_record(model, object_name, col):
 def validate_args2(d):
     """对被装饰的方法利用 "参数名/表单模型" 字典进行输入数据验证，验证后的数据
     作为关键字参数传入view函数中，若部分数据非法则直接返回400 Bad Request
+    同main.util.decorator.vlidate_args，针对checkbox提交有修正
     """
     def decorator(function):
         @wraps(function)
@@ -77,5 +82,7 @@ def validate_args2(d):
     return decorator
 
 def admin_log(table, id, type, user):
+    """记录操作日志
+    """
     log = OperationLog(user=user, table=table, id=id, type=type)
     log.save()

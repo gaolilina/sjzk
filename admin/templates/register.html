@@ -10,7 +10,13 @@
 </form>
 {% endblock %}
 
-{% block topbar %}{% include 'topbar.html' with tb=1 %}{% endblock %}
+{% block topbar %}
+<ul>
+    <li class="active"><a href="#">个人信息</a></li>
+    <li><a href="#">竞赛</a></li>
+    <li><a href="#">活动</a></li>
+</ul>
+{% endblock %}
 {% block leftbar %}{% include 'leftbar.html' with tb=1 lb=1 %}{% endblock %}
 {% block rightbar %}{% include 'rightbar.html' with tb=1 lb=1 rb=1 %}{% endblock %}
 
