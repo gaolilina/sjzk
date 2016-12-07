@@ -185,6 +185,7 @@ class Profile(Profile_):
         'county': forms.CharField(required=False, max_length=20),
         'tags': forms.CharField(required=False, max_length=100),
         'role': forms.CharField(required=False, max_length=20),
+        'other_number': forms.CharField(required=False, max_length=20),
         'unit1': forms.CharField(required=False, max_length=20),
         'unit2': forms.CharField(required=False, max_length=20),
         'profession': forms.CharField(required=False, max_length=20),
