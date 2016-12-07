@@ -234,14 +234,14 @@ class Profile(Profile_):
         tags = kwargs.pop('tags', None)
         if tags:
             tags = tags.split('|')[:5]
-        with transaction.atomic():
-            request.user.tags.all().delete()
-            order = 0
-            for tag in tags:
-                tag = tag.strip()
-                if tag:
-                    request.user.tags.create(name=tag, order=order)
-                    order += 1
+            with transaction.atomic():
+                request.user.tags.all().delete()
+                order = 0
+                for tag in tags:
+                    tag = tag.strip()
+                    if tag:
+                        request.user.tags.create(name=tag, order=order)
+                        order += 1
 
         role_keys = ('role', 'other_number', 'unit1', 'unit2', 'profession')
         if not request.user.is_role_verified:
