@@ -2,8 +2,9 @@ from functools import wraps
 
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
-from main.utils import abort
 from admin.models.admin_user import AdminUser
 from admin.models.operation_log import OperationLog
 
@@ -14,16 +15,20 @@ def require_cookie(function):
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
         username = request.COOKIES.get('usr')
+        password = request.COOKIES.get('pwd')
         if not username:
-            abort(401)
+            return HttpResponseRedirect(reverse("admin:login"))
         try:
             user = AdminUser.objects.get(username=username)
             if user.is_enabled:
-                request.user = user
-                return function(self, request, *args, **kwargs)
-            abort(403)
+                if user.password[:6] == password:
+                    request.user = user
+                    return function(self, request, *args, **kwargs)
+                else:
+                    return HttpResponseRedirect(reverse("admin:login"))
+            return HttpResponseRedirect(reverse("admin:login"))
         except AdminUser.DoesNotExist:
-            abort(401)
+            return HttpResponseRedirect(reverse("admin:login"))
     return decorator
 
 def fetch_record(model, object_name, col):
