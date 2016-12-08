@@ -251,7 +251,7 @@ class Profile(Profile_):
 
         request.user.score += 50
         request.user.save()
-        abort(200)
+        return JsonResponse({'icon_url': request.user.icon})
 
 
 # noinspection PyClassHasNoInit
