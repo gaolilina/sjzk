@@ -295,7 +295,7 @@ class Profile(View):
         if tags:
             tags = tags.split('|')[:5]
         with transaction.atomic():
-            request.user.tags.delete()
+            request.user.tags.all().delete()
             order = 0
             for tag in tags:
                 tag = tag.strip()
