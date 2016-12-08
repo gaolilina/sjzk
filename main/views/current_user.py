@@ -343,6 +343,7 @@ class FollowedUserList(View):
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
+                icon_url: 用户头像
                 time_created: 关注时间
         """
         c = request.user.followed_users.count()
@@ -351,6 +352,7 @@ class FollowedUserList(View):
         l = [{'id': r.followed.id,
               'username': r.followed.username,
               'name': r.followed.name,
+              'icon_url': r.followed.icon,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -415,6 +417,7 @@ class FollowedTeamList(View):
             list: 关注的用户列表
                 id: 团队ID
                 name: 团队昵称
+                icon_url: 团队头像
                 time_created: 关注时间
         """
         c = request.user.followed_teams.count()
@@ -422,6 +425,7 @@ class FollowedTeamList(View):
             self.ORDERS[order])[offset:offset + limit]
         l = [{'id': r.followed.id,
               'name': r.followed.name,
+              'icon_url': r.followed.icon,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -513,6 +517,7 @@ class FriendRequestList(View):
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
+                icon_url: 用户头像
                 description: 附带消息
                 time_created: 请求发出的时间
         """
@@ -523,6 +528,7 @@ class FriendRequestList(View):
         l = [{'id': r.sender.id,
               'username': r.other_user.username,
               'name': r.other_user.name,
+              'icon_url': r.other_user.icon,
               'description': r.description,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
@@ -624,6 +630,7 @@ class RelatedTeamList(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
+                icon_url: 团队头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -637,6 +644,7 @@ class RelatedTeamList(View):
         teams = request.user.teams.order_by(k)[i:j]
         l = [{'id': t.team.id,
               'name': t.team.name,
+              'icon_url': t.team.icon,
               'owner_id': t.team.owner.id,
               'liker_count': t.team.likers.count(),
               'visitor_count': t.team.visitors.count(),
@@ -672,6 +680,7 @@ class OwnedTeamList(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
+                icon_url: 团队头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -685,6 +694,7 @@ class OwnedTeamList(View):
         teams = request.user.owned_teams.order_by(k)[i:j]
         l = [{'id': t.id,
               'name': t.name,
+              'icon_url': t.icon,
               'owner_id': t.owner.id,
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
@@ -711,6 +721,7 @@ class InvitationList(View):
             list:
                 id: 团队ID
                 name: 团队名称
+                icon_url: 团队头像
                 description: 附带消息
                 time_created: 邀请发出的时间
         """
@@ -722,6 +733,7 @@ class InvitationList(View):
 
         l = [{'id': r.team.id,
               'name': r.team.name,
+              'icon_url': r.team.icon,
               'description': r.description,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})

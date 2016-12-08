@@ -303,6 +303,7 @@ class FriendList(View):
                 id: 用户ID
                 username: 用户名
                 name: 用户昵称
+                icon_url: 用户头像
                 time_created: 成为好友时间
         """
         user = user or request.user
@@ -436,6 +437,7 @@ class TeamOwnedList(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
+                icon_url: 团队头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -449,6 +451,7 @@ class TeamOwnedList(View):
         c = teams.count()
         l = [{'id': t.team.id,
               'name': t.team.name,
+              'icon_url': t.team.icon,
               'owner_id': t.team.owner.id,
               'liker_count': t.team.likers.count(),
               'visitor_count': t.team.visitors.count(),
@@ -486,6 +489,7 @@ class TeamJoinedList(View):
             list: 团队列表
                 id: 团队ID
                 name: 团队名
+                icon_url: 团队头像
                 owner_id: 创建者ID
                 liker_count: 点赞数
                 visitor_count: 最近7天访问数
@@ -499,6 +503,7 @@ class TeamJoinedList(View):
         teams = user.teams.order_by(k)[i:j]
         l = [{'id': t.team.id,
               'name': t.team.name,
+              'icon_url': t.team.icon,
               'owner_id': t.team.owner.id,
               'liker_count': t.team.likers.count(),
               'visitor_count': t.team.visitors.count(),
