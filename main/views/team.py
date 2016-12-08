@@ -333,7 +333,7 @@ class Icon(View):
         if filename:
             team.icon = filename
             team.save()
-            return JsonResponse({'': team.icon})
+            return JsonResponse({'icon_url': team.icon})
         abort(400)
 
 
