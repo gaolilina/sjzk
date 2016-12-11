@@ -727,8 +727,8 @@ class InvitationList(View):
         """
         from ..models import TeamInvitation
         # 拉取来自团队的邀请信息
-        c = TeamInvitation.enabled.filter(user=request.user).count()
-        qs = TeamInvitation.enabled.filter(
+        c = TeamInvitation.objects.filter(user=request.user).count()
+        qs = TeamInvitation.objects.filter(
             user=request.user)[offset:offset + limit]
 
         l = [{'id': r.team.id,
