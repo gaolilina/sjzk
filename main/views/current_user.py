@@ -732,6 +732,7 @@ class InvitationList(View):
             user=request.user)[offset:offset + limit]
 
         l = [{'id': r.team.id,
+              'invitation_id': r.id,
               'name': r.team.name,
               'icon_url': r.team.icon,
               'description': r.description,
