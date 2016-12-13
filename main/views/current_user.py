@@ -480,6 +480,7 @@ class Friend(Friend_):
 
         request.user.friends.create(other_user=other_user)
         other_user.friends.create(other_user=request.user)
+        request.user.friend_requests.filter(other_user=other_user).delete()
         request.user.score += 10
         request.user.save()
         abort(200)
