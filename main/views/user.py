@@ -310,10 +310,10 @@ class FriendList(View):
 
         c = user.friends.count()
         qs = user.friends.order_by(self.ORDERS[order])[offset:offset + limit]
-        l = [{'id': r.friend.id,
-              'username': r.friend.username,
-              'name': r.friend.name,
-              'icon_url': r.icon,
+        l = [{'id': r.other_user.id,
+              'username': r.other_user.username,
+              'name': r.other_user.name,
+              'icon_url': r.other_user.icon,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
 
