@@ -516,6 +516,7 @@ class FriendRequestList(View):
             list: 好友请求信息列表
                 id: 用户ID
                 username: 用户名
+                request_id: 申请ID
                 name: 用户昵称
                 icon_url: 用户头像
                 description: 附带消息
@@ -525,7 +526,7 @@ class FriendRequestList(View):
         c = request.user.friend_requests.count()
         qs = request.user.friend_requests.all()[offset:offset + limit]
 
-        l = [{'id': r.sender.id,
+        l = [{'id': r.user.id,
               'request_id': r.id,
               'username': r.other_user.username,
               'name': r.other_user.name,
