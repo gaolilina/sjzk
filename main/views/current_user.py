@@ -507,7 +507,7 @@ class FriendRequestList(View):
         'offset': forms.IntegerField(required=False),
         'limit': forms.IntegerField(required=False, min_value=0),
     })
-    def get(self, request, offset, limit=10):
+    def get(self, request, offset=0, limit=10):
         """按请求时间逆序获取当前用户收到的的好友请求信息，
         拉取后的请求标记为已读
 
@@ -526,6 +526,7 @@ class FriendRequestList(View):
         qs = request.user.friend_requests.all()[offset:offset + limit]
 
         l = [{'id': r.sender.id,
+              'request_id': r.id,
               'username': r.other_user.username,
               'name': r.other_user.name,
               'icon_url': r.other_user.icon,
