@@ -475,7 +475,7 @@ class Friend(Friend_):
                                            .exists():
             abort(403)
 
-        if request.user.firends.filter(other_user=other_user).exists():
+        if request.user.friends.filter(other_user=other_user).exists():
             abort(403)
 
         request.user.friends.create(other_user=other_user)
