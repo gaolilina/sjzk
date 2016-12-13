@@ -526,7 +526,7 @@ class FriendRequestList(View):
         c = request.user.friend_requests.count()
         qs = request.user.friend_requests.all()[offset:offset + limit]
 
-        l = [{'id': r.user.id,
+        l = [{'id': r.other_user.id,
               'request_id': r.id,
               'username': r.other_user.username,
               'name': r.other_user.name,
