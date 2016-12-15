@@ -48,8 +48,7 @@ class Username(View):
             request.user.save()
             # 更改融云上的用户信息
             if not request.user.icon:
-                portraitUri = HttpResponseRedirect(
-                    UPLOADED_URL + request.user.icon)
+                portraitUri = "http://123.206.24.226:8000/" + request.user.icon
             else:
                 portraitUri = 'http://www.rongcloud.cn/images/logo.png'
             rcloud = RongCloud()

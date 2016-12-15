@@ -1,12 +1,13 @@
 import json
 from django import forms
 from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db import transaction
 from django.views.generic import View
 from rongcloud import RongCloud
 
-from ChuangYi.settings import UPLOADED_URL, UPLOADED_ROOT
+from ChuangYi.settings import UPLOADED_URL
 from ..utils import abort, send_message
 from ..utils.decorators import *
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
@@ -14,7 +15,7 @@ from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
 
 __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
            'FriendList', 'Friend', 'FriendRequestList', 'Search',
-           'TeamOwnedList', 'TeamJoinedList', 'ValidationCode']
+           'TeamOwnedList', 'TeamJoinedList', 'ValidationCode', 'PasswordForgotten']
 
 
 class List(View):
@@ -531,3 +532,25 @@ class ValidationCode(View):
         return JsonResponse({
             'validation_code': code,
         })
+
+
+class PasswordForgotten(View):
+    @validate_args({
+        'phone_number': forms.CharField(min_length=11, max_length=11),
+        'password': forms.CharField(min_length=6, max_length=32),
+        'validation_code': forms.CharField(min_length=6, max_length=6),
+    })
+    def post(self, request, phone_number, password, validation_code):
+        """忘记密码，若成功返回用户令牌"""
+
+        if not UserValidationCode.verify(phone_number, validation_code):
+            abort(400)
+
+        with transaction.atomic():
+            try:
+                user = User.enabled.get(phone_number=phone_number)
+                user.set_password(password)
+                user.save()
+                return JsonResponse({'token': user.token})
+            except IntegrityError:
+                abort(403)
