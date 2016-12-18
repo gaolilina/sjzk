@@ -397,7 +397,7 @@ class Search(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        users = User.enabled.filter(username__icontain=kwargs['username'])
+        users = User.enabled.filter(username__contains=kwargs['username'])
         c = users.count()
         l = [{'id': u.id,
               'username': u.username,

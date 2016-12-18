@@ -174,7 +174,7 @@ class Search(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        teams = Team.enabled.filter(name__icontain=kwargs['name'])
+        teams = Team.enabled.filter(name__contains=kwargs['name'])
         c = teams.count()
         l = [{'id': t.id,
               'name': t.name,
