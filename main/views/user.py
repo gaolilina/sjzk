@@ -366,7 +366,7 @@ class Search(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-        'username': forms.CharField(max_length=20),
+        'name': forms.CharField(max_length=20),
     })
     def get(self, request, offset=0, limit=10, order=1, **kwargs):
         """
@@ -397,7 +397,7 @@ class Search(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        users = User.enabled.filter(username__contains=kwargs['username'])
+        users = User.enabled.filter(name__contains=kwargs['name'])
         c = users.count()
         l = [{'id': u.id,
               'username': u.username,
