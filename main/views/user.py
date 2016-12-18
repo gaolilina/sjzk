@@ -402,7 +402,7 @@ class Search(View):
         l = [{'id': u.id,
               'username': u.username,
               'name': u.name,
-              'gender': u.profile.gender,
+              'gender': u.gender,
               'like_count': u.like_count,
               'fan_count': u.fan_count,
               'visitor_count': u.visitor_count,
