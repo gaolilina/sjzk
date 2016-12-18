@@ -391,7 +391,8 @@ class Search(View):
                 icon_url: 用户头像
                 gender: 性别
                 like_count: 点赞数
-                fan_count: 粉丝数
+                follower_count: 粉丝数
+                followed_count: 关注的实体数
                 visitor_count: 访问数
                 tags: 标签
                 time_created: 注册时间
@@ -403,9 +404,10 @@ class Search(View):
               'username': u.username,
               'name': u.name,
               'gender': u.gender,
-              'like_count': u.like_count,
-              'fan_count': u.fan_count,
-              'visitor_count': u.visitor_count,
+              'like_count': u.likers.count(),
+              'follower_count': u.followers.count(),
+              'followed_count': u.followed_users.count() + u.followed_teams.count(),
+              'visitor_count': u.visitors.count(),
               'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
               'time_created': u.time_created} for u in users.order_by(k)[i:j]]
