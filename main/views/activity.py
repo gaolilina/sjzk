@@ -74,8 +74,9 @@ class UserParticipatorList(View):
     def post(self, request, activity):
         """报名"""
 
-        if not activity.allow_user:
-            abort(403)
+        c = activity.user_participators.count()
+        if activity.allow_user != 0 and c >= activity.allow_user:
+            abort(403, 'participators are enough')
 
         if not activity.user_participators.filter(user=request.user).exists():
             activity.user_participators.create(user=request.user)

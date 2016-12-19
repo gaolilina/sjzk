@@ -74,8 +74,9 @@ class TeamParticipatorList(View):
     def post(self, request, competition, team_id):
         """报名"""
 
-        if not competition.allow_team:
-            abort(403)
+        c = competition.team_participators.count()
+        if competition.allow_team != 0 and c >= competition.allow_team:
+            abort(403, 'participators are enough')
 
         try:
             team = Team.enabled.get(id=team_id)
