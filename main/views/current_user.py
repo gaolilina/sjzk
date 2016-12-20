@@ -121,7 +121,8 @@ class IDCardPositive(View):
     def post(self, request):
         """上传身份证照片"""
 
-        if request.user.is_verified != 0:
+        # 等待审核或者已通过审核不能上传照片
+        if request.user.is_verified in [1, 2]:
             abort(403)
 
         id_card_positive = request.FILES.get('image')
@@ -151,7 +152,8 @@ class IDCardNegative(View):
     def post(self, request):
         """上传身份证照片反面"""
 
-        if request.user.is_verified != 0:
+        # 等待审核或者已通过审核不能上传照片
+        if request.user.is_verified in [1, 2]:
             abort(403)
 
         id_card_negative = request.FILES.get('image')
