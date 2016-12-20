@@ -14,12 +14,12 @@ from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
     ExperienceList_, FriendList, Friend as Friend_
 
 
-__all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
-           'ExperienceList', 'FollowedUserList', 'FollowedUser',
-           'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
-           'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
-           'RelatedTeamList', 'OwnedTeamList', 'InvitationList', 'Invitation',
-           'IdentityVerification', 'Feedback']
+__all__ = ['Username', 'Password', 'Icon', 'IDCardPositive', 'IDCardNegative',
+           'OtherCard', 'Profile', 'ExperienceList', 'FollowedUserList',
+           'FollowedUser', 'FollowedTeamList', 'FollowedTeam', 'FriendList',
+           'Friend', 'FriendRequestList', 'FriendRequest', 'LikedUser',
+           'LikedTeam', 'RelatedTeamList', 'OwnedTeamList', 'InvitationList',
+           'Invitation', 'IdentityVerification', 'Feedback']
 
 
 class Username(View):
@@ -108,12 +108,12 @@ class Icon(Icon_):
         abort(400)
 
 
-class IDCard(View):
+class IDCardPositive(View):
     @require_token
     def get(self, request):
         """检查是否已上传身份证照片"""
 
-        if request.user.id_card:
+        if request.user.id_card_positive:
             abort(200)
         abort(404)
 
@@ -121,18 +121,48 @@ class IDCard(View):
     def post(self, request):
         """上传身份证照片"""
 
-        if request.user.is_verified:
+        if request.user.is_verified != 0:
             abort(403)
 
-        id_card = request.FILES.get('image')
-        if not id_card:
+        id_card_positive = request.FILES.get('image')
+        if not id_card_positive:
             abort(400)
 
-        filename = save_uploaded_image(id_card, is_private=True)
+        filename = save_uploaded_image(id_card_positive, is_private=True)
         if filename:
-            if not request.user.id_card:
-                request.user.score += 200
-            request.user.id_card = filename
+            if not request.user.id_card_positive:
+                request.user.score += 100
+            request.user.id_card_positive = filename
+            request.user.save()
+            abort(200)
+        abort(400)
+
+
+class IDCardNegative(View):
+    @require_token
+    def get(self, request):
+        """检查是否已上传身份证照片反面"""
+
+        if request.user.id_card_negative:
+            abort(200)
+        abort(404)
+
+    @require_token
+    def post(self, request):
+        """上传身份证照片反面"""
+
+        if request.user.is_verified != 0:
+            abort(403)
+
+        id_card_negative = request.FILES.get('image')
+        if not id_card_negative:
+            abort(400)
+
+        filename = save_uploaded_image(id_card_negative, is_private=True)
+        if filename:
+            if not request.user.id_card_negative:
+                request.user.score += 100
+            request.user.id_card_negative = filename
             request.user.save()
             abort(200)
         abort(400)
@@ -269,6 +299,9 @@ class IdentityVerification(Profile_):
             id_number:
         """
 
+        if not (request.user.id_card_positive and
+                request.user.id_card_negative):
+            abort(403, 'Please upload the positive and negative of ID card')
         id_keys = ('real_name', 'id_number')
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'])
@@ -280,6 +313,7 @@ class IdentityVerification(Profile_):
             for k in id_keys:
                 setattr(request.user, k, kwargs[k])
         request.user.score += 50
+        request.user.is_verified = 1
         request.user.save()
         abort(200)
 

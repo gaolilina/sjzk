@@ -36,10 +36,12 @@ class User(models.Model):
     city = models.CharField(max_length=20, default='')
     county = models.CharField(max_length=20, default='')
 
-    is_verified = models.BooleanField(default=False, db_index=True)
+    # 是否通过身份验证，0：未提交，1：待审核，2：审核通过，3：审核未通过，请重新提交
+    is_verified = models.IntegerField(default=0, db_index=True)
     real_name = models.CharField(max_length=20, default='')
     id_number = models.CharField(max_length=18, default='')
-    id_card = models.CharField(max_length=100, default='')
+    id_card_positive = models.CharField(max_length=100, default='')
+    id_card_negative = models.CharField(max_length=100, default='')
 
     is_role_verified = models.BooleanField(default=False, db_index=True)
     role = models.CharField(max_length=20, default='')
