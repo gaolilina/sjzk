@@ -40,8 +40,7 @@ class User(models.Model):
     is_verified = models.IntegerField(default=0, db_index=True)
     real_name = models.CharField(max_length=20, default='')
     id_number = models.CharField(max_length=18, default='')
-    id_card_positive = models.CharField(max_length=100, default='')
-    id_card_negative = models.CharField(max_length=100, default='')
+    id_card = models.CharField(max_length=100, default='')
 
     is_role_verified = models.BooleanField(default=False, db_index=True)
     role = models.CharField(max_length=20, default='')
