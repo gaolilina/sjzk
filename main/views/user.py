@@ -49,6 +49,7 @@ class List(View):
                 liker_count: 点赞数
                 follower_count: 粉丝数
                 visitor_count: 访问数
+                is_verified: 是否通过实名认证
         """
         c = User.enabled.count()
         users = User.enabled.order_by(self.ORDERS[order])[offset:offset + limit]
@@ -61,7 +62,8 @@ class List(View):
               'gender': u.gender,
               'liker_count': u.likers.count(),
               'follower_count': u.followers.count(),
-              'visitor_count': u.visitors.count()} for u in users]
+              'visitor_count': u.visitors.count(),
+              'is_verified': u.is_verified} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
     @validate_args({
