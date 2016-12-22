@@ -133,7 +133,7 @@ class IDCard(View):
         if filename:
             if not request.user.id_card:
                 request.user.score += 200
-            request.user.id_card_positive = filename
+            request.user.id_card = filename
             request.user.save()
             abort(200)
         abort(400)
