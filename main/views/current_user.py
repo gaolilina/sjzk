@@ -448,7 +448,7 @@ class FollowedTeam(View):
     def post(self, request, team):
         """令当前用户关注team"""
 
-        if request.user.followed_teams.filter(follower=team).exists():
+        if request.user.followed_teams.filter(followed=team).exists():
             abort(403)
         request.user.followed_teams.create(followed=team)
         request.user.score += 10
