@@ -366,7 +366,7 @@ class FollowedUser(View):
     def get(self, request, user):
         """判断当前用户是否关注了user"""
 
-        if request.user.followed_users.filter(follower=user).exists():
+        if request.user.followed_users.filter(followed=user).exists():
             abort(200)
         abort(404)
 
@@ -375,7 +375,7 @@ class FollowedUser(View):
     def post(self, request, user):
         """令当前用户关注user"""
 
-        if request.user.followed_users.filter(follower=user).exists():
+        if request.user.followed_users.filter(followed=user).exists():
             abort(403)
         request.user.followed_users.create(followed=user)
         request.user.score += 10
