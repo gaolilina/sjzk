@@ -53,11 +53,11 @@ class ActionList(View):
         l = [{'action': i.action,
               'object_type': i.object_type,
               'object_id': i.object_id,
-              'object_name': i.object.name,
+              'object_name': i.get_object_name(),
               'icon_url': i.object.icon,
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
-              'related_object_name': i.related_object.name,
+              'related_object_name': i.get_related_object_name(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 

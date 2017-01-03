@@ -902,6 +902,9 @@ class NeedList(View):
         for k in kwargs:
             setattr(n, k, kwargs[k])
         n.save()
+        # 发布动态
+        action.send_member_need(team, n)
+        # 增加积分
         request.user.score += 10
         request.user.save()
         abort(200)
@@ -935,6 +938,9 @@ class NeedList(View):
         for k in kwargs:
             setattr(n, k, kwargs[k])
         n.save()
+        # 发布动态
+        action.send_member_need(team, n)
+        # 增加积分
         request.user.score += 10
         request.user.save()
         abort(200)
@@ -963,6 +969,9 @@ class NeedList(View):
         for k in kwargs:
             setattr(n, k, kwargs[k])
         n.save()
+        # 发布动态
+        action.send_member_need(team, n)
+        # 增加积分
         request.user.score += 10
         request.user.save()
         abort(200)
