@@ -6,7 +6,7 @@ from ..models import User, Team, UserComment as UserCommentModel, \
     TeamComment as TeamCommentModel, \
     Activity, ActivityComment as ActivityCommentModel, \
     Competition, CompetitionComment as CompetitionCommentModel, Action
-from ..utils import abort
+from ..utils import abort, action
 from ..utils.decorators import *
 
 
@@ -53,11 +53,11 @@ class ActionList(View):
         l = [{'action': i.action,
               'object_type': i.object_type,
               'object_id': i.object_id,
-              'object_name': i.get_object_name(),
+              'object_name': action.get_object_name(i),
               'icon_url': i.object.icon,
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
-              'related_object_name': i.get_related_object_name(),
+              'related_object_name': action.get_related_object_name(i),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 

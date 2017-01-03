@@ -1,6 +1,46 @@
 # todo 完善事件记录辅助函数与其他相关说明
 from django.db import transaction
 
+from main.models import User, Team, TeamNeed
+
+
+@transaction.atomic
+def get_object_name(action):
+    """ 获取对象的名称（或者标题）"""
+
+    if action.object_type == "user":
+        name = User.enabled.get(id=action.object_id).name
+    elif action.object_type == "team":
+        name = Team.enabled.get(id=action.object_id).name
+    elif action.object_type == "member_need":
+        name = TeamNeed.enabled.get(id=action.object_id).title
+    elif action.object_type == "outsource_need":
+        name = TeamNeed.enabled.get(id=action.object_id).title
+    elif action.object_type == "undertake_need":
+        name = TeamNeed.enabled.get(id=action.object_id).title
+    else:
+        name = ""
+    return name
+
+
+@transaction.atomic
+def get_related_object_name(action):
+    """ 获取相关对象的名称（或者标题）"""
+
+    if action.related_object_type == "user":
+        name = User.enabled.get(id=action.related_object_id).name
+    elif action.related_object_type == "team":
+        name = Team.enabled.get(id=action.related_object_id).name
+    elif action.related_object_type == "member_need":
+        name = TeamNeed.enabled.get(id=action.related_object_id).title
+    elif action.related_object_type == "outsource_need":
+        name = TeamNeed.enabled.get(id=action.related_object_id).title
+    elif action.related_object_type == "undertake_need":
+        name = TeamNeed.enabled.get(id=action.related_object_id).title
+    else:
+        name = ""
+    return name
+
 
 @transaction.atomic
 def create_team(user, team):
