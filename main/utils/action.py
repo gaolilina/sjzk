@@ -43,6 +43,19 @@ def get_related_object_name(action):
 
 
 @transaction.atomic
+def get_object_icon(action):
+    """ 获取对象的头像"""
+
+    if action.object_type == "user":
+        icon = Team.enabled.get(id=action.object_id).icon
+    elif action.object_type == "team":
+        icon = Team.enabled.get(id=action.object_id).icon
+    else:
+        icon = ""
+    return icon
+
+
+@transaction.atomic
 def create_team(user, team):
     """记录创建团队事件"""
 
