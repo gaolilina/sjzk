@@ -5,12 +5,12 @@ from django.views.generic import View
 from ..models import User, Team, UserComment as UserCommentModel, \
     TeamComment as TeamCommentModel, \
     Activity, ActivityComment as ActivityCommentModel, \
-    Competition, CompetitionComment as CompetitionCommentModel
+    Competition, CompetitionComment as CompetitionCommentModel, Action
 from ..utils import abort
 from ..utils.decorators import *
 
 
-__all__ = ['UserActionList', 'TeamActionList', 'UserCommentList',
+__all__ = ['UserActionList', 'TeamActionList', 'ActionsList', 'UserCommentList',
            'TeamCommentList', 'UserComment', 'TeamComment', 'UserFollowerList',
            'TeamFollowerList', 'UserFollower', 'TeamFollower',
            'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker',
@@ -24,7 +24,7 @@ class ActionList(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
     })
-    def get(self, request, entity, offset=0, limit=10):
+    def get(self, request, entity=None, offset=0, limit=10):
         """获取对象的动态列表
 
         :param offset: 偏移量
@@ -36,12 +36,20 @@ class ActionList(View):
                 action: 相关动作
                 object_type: 相关对象的类型
                 object_id: 相关对象的ID
+                object_name: 相关对象名称
                 icon_url: 头像
                 related_object_type: 额外相关对象的类型
                 related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
         """
-        c = entity.actions.count()
-        records = (i for i in entity.actions.all()[offset:offset + limit])
+        if not entity:
+            # 获取全部动态
+            c = Action.objects.count()
+            records = (i for i in Action.objects.all()[offset:offset + limit])
+        else:
+            # 获取与对象相关的动态
+            c = entity.actions.count()
+            records = (i for i in entity.actions.all()[offset:offset + limit])
         l = [{'action': i.action,
               'object_type': i.object_type,
               'object_id': i.object_id,
@@ -69,6 +77,13 @@ class TeamActionList(ActionList):
     @require_token
     def get(self, request, team):
         return super(TeamActionList, self).get(request, team)
+
+
+# noinspection PyMethodOverriding
+class ActionsList(ActionList):
+    @require_token
+    def get(self, request):
+        return super(ActionsList, self).get(request)
 
 
 class CommentList(View):

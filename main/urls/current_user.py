@@ -1,8 +1,8 @@
 from django.conf.urls import url
 
 from ..views.current_user import *
-from ..views.common import UserActionList, UserCommentList, UserFollowerList, \
-    UserLikerList, UserLiker, UserVisitorList
+from ..views.common import ActionsList, UserActionList, UserCommentList, \
+    UserFollowerList, UserLikerList, UserLiker, UserVisitorList
 from ..views.forum import BoardList
 
 urls = [
@@ -16,7 +16,8 @@ urls = [
     url(r'^identity_verification/$',
         IdentityVerification.as_view(), name='identity_verification'),
     # 动态
-    url(r'actions/$', UserActionList.as_view(), name='actions'),
+    url(r'actions/$', ActionsList.as_view(), name='actions'),
+    url(r'owned_actions/$', UserActionList.as_view(), name='owned_actions'),
     # 评论
     url(r'comments/$', UserCommentList.as_view(), name='comments'),
     # 经历
