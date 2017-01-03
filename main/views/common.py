@@ -5,7 +5,9 @@ from django.views.generic import View
 from ..models import User, Team, UserComment as UserCommentModel, \
     TeamComment as TeamCommentModel, \
     Activity, ActivityComment as ActivityCommentModel, \
-    Competition, CompetitionComment as CompetitionCommentModel, Action
+    Competition, CompetitionComment as CompetitionCommentModel, \
+    UserAction, TeamAction
+
 from ..utils import abort, action
 from ..utils.decorators import *
 
@@ -44,8 +46,9 @@ class ActionList(View):
         """
         if not entity:
             # 获取全部动态
-            c = Action.objects.all().count()
-            records = (i for i in Action.objects.all()[offset:offset + limit])
+            result = UserAction.objects.all() + TeamAction.objects.all()
+            c = result.count()
+            records = (i for i in result[offset:offset + limit])
         else:
             # 获取与对象相关的动态
             c = entity.actions.count()
