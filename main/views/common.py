@@ -12,7 +12,8 @@ from ..utils import abort, action
 from ..utils.decorators import *
 
 
-__all__ = ['UserActionList', 'TeamActionList', 'ActionsList', 'UserCommentList',
+__all__ = ['UserActionList', 'TeamActionList', 'ActionsList',
+           'UserActionsList', 'TeamActionsList', 'UserCommentList',
            'TeamCommentList', 'UserComment', 'TeamComment', 'UserFollowerList',
            'TeamFollowerList', 'UserFollower', 'TeamFollower',
            'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker',
@@ -44,15 +45,88 @@ class ActionList(View):
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
         """
-        if not entity:
-            # 获取全部动态
-            result = UserAction.objects.all() + TeamAction.objects.all()
-            c = result.count()
-            records = (i for i in result[offset:offset + limit])
-        else:
-            # 获取与对象相关的动态
-            c = entity.actions.count()
-            records = (i for i in entity.actions.all()[offset:offset + limit])
+
+        # 获取与对象相关的动态
+        c = entity.actions.count()
+        records = (i for i in entity.actions.all()[offset:offset + limit])
+        l = [{'action': i.action,
+              'object_type': i.object_type,
+              'object_id': i.object_id,
+              'object_name': action.get_object_name(i),
+              'icon_url': i.object.icon,
+              'related_object_type': i.related_object_type,
+              'related_object_id': i.related_object_id,
+              'related_object_name': action.get_related_object_name(i),
+              } for i in records]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class UserActionsList(View):
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, entity=None, offset=0, limit=10):
+        """获取对象的动态列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :return:
+            count: 动态总数（包括标记为disabled的内容）
+            last_time_created: 最近更新时间
+            list: 动态列表
+                action: 相关动作
+                object_type: 相关对象的类型
+                object_id: 相关对象的ID
+                object_name: 相关对象名称
+                icon_url: 头像
+                related_object_type: 额外相关对象的类型
+                related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
+        """
+
+        # 获取主语是用户的动态
+        c = UserAction.objects.count()
+        records = (i for i in UserAction.objects.all()[offset:offset + limit])
+        l = [{'action': i.action,
+              'object_type': i.object_type,
+              'object_id': i.object_id,
+              'object_name': action.get_object_name(i),
+              'icon_url': i.object.icon,
+              'related_object_type': i.related_object_type,
+              'related_object_id': i.related_object_id,
+              'related_object_name': action.get_related_object_name(i),
+              } for i in records]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class TeamActionsList(View):
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, entity=None, offset=0, limit=10):
+        """获取对象的动态列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :return:
+            count: 动态总数（包括标记为disabled的内容）
+            last_time_created: 最近更新时间
+            list: 动态列表
+                action: 相关动作
+                object_type: 相关对象的类型
+                object_id: 相关对象的ID
+                object_name: 相关对象名称
+                icon_url: 头像
+                related_object_type: 额外相关对象的类型
+                related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
+        """
+
+        # 获取主语是团队的动态
+        c = TeamAction.objects.count()
+        records = (i for i in TeamAction.objects.all()[offset:offset + limit])
         l = [{'action': i.action,
               'object_type': i.object_type,
               'object_id': i.object_id,
