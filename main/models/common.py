@@ -20,6 +20,8 @@ class Action(models.Model):
     related_object_id = models.IntegerField(
         default=None, null=True, db_index=True)
 
+    objects = models.Manager()
+
     class Meta:
         abstract = True
         ordering = ['-time_created']
