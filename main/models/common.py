@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 
-from main.models import Team, User, TeamNeed
 
 __all__ = ['Action', 'Comment', 'Follower', 'Liker', 'Tag', 'Visitor']
 
@@ -24,40 +23,6 @@ class Action(models.Model):
     class Meta:
         abstract = True
         ordering = ['-time_created']
-
-    def get_object_name(self):
-        """ 获取对象的名称（或者标题）"""
-
-        if self.object_type == "user":
-            name = User.enabled.get(id=self.object_id).name
-        elif self.object_type == "team":
-            name = Team.enabled.get(id=self.object_id).name
-        elif self.object_type == "member_need":
-            name = TeamNeed.enabled.get(id=self.object_id).title
-        elif self.object_type == "outsource_need":
-            name = TeamNeed.enabled.get(id=self.object_id).title
-        elif self.object_type == "undertake_need":
-            name = TeamNeed.enabled.get(id=self.object_id).title
-        else:
-            name = ""
-        return name
-
-    def get_related_object_name(self):
-        """ 获取相关对象的名称（或者标题）"""
-
-        if self.related_object_type == "user":
-            name = User.enabled.get(id=self.related_object_id).name
-        elif self.related_object_type == "team":
-            name = Team.enabled.get(id=self.related_object_id).name
-        elif self.related_object_type == "member_need":
-            name = TeamNeed.enabled.get(id=self.related_object_id).title
-        elif self.related_object_type == "outsource_need":
-            name = TeamNeed.enabled.get(id=self.related_object_id).title
-        elif self.related_object_type == "undertake_need":
-            name = TeamNeed.enabled.get(id=self.related_object_id).title
-        else:
-            name = ""
-        return name
 
 
 class Comment(models.Model):
