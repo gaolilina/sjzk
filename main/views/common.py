@@ -44,7 +44,7 @@ class ActionList(View):
         """
         if not entity:
             # 获取全部动态
-            c = Action.objects.count()
+            c = Action.objects.all().count()
             records = (i for i in Action.objects.all()[offset:offset + limit])
         else:
             # 获取与对象相关的动态
