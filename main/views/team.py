@@ -602,7 +602,7 @@ class AllAchievementList(View):
                 team_name: 团队名称
                 icon_url: 团队头像
                 description: 成果描述
-                picture_url: 图片URL
+                picture: 图片
                 time_created: 发布时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
@@ -613,7 +613,7 @@ class AllAchievementList(View):
               'team_name': a.team.name,
               'icon_url': a.team.icon,
               'description': a.description,
-              'picture_url': a.picture_url,
+              'picture': a.picture,
               'time_created': a.time_created} for a in achievements]
         return JsonResponse({'count': c, 'list': l})
 
@@ -655,7 +655,7 @@ class AchievementList(View):
             list: 成果列表
                 id: 成果ID
                 description: 成果描述
-                picture_url: 图片URL
+                picture: 图片
                 time_created: 发布时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
@@ -663,7 +663,7 @@ class AchievementList(View):
         achievements = team.achievements.order_by(k)[i:j]
         l = [{'id': a.id,
               'description': a.description,
-              'picture_url': a.picture_url,
+              'picture': a.picture,
               'time_created': a.time_created} for a in achievements]
         return JsonResponse({'count': c, 'list': l})
 
@@ -691,6 +691,8 @@ class AchievementList(View):
             filename = save_uploaded_image(picture)
             if filename:
                 achievement.picture = filename
+        else:
+            abort(400)
         achievement.save()
 
         request.user.score += 10
