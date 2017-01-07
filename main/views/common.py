@@ -36,6 +36,9 @@ class ActionList(View):
             count: 动态总数（包括标记为disabled的内容）
             last_time_created: 最近更新时间
             list: 动态列表
+                id: 主语的id
+                name: 主语的名称
+                icon: 主语的头像
                 action: 相关动作
                 object_type: 相关对象的类型
                 object_id: 相关对象的ID
@@ -49,7 +52,10 @@ class ActionList(View):
         # 获取与对象相关的动态
         c = entity.actions.count()
         records = (i for i in entity.actions.all()[offset:offset + limit])
-        l = [{'action': i.action,
+        l = [{'id': i.entity.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
               'object_type': i.object_type,
               'object_id': i.object_id,
               'object_name': action.get_object_name(i),
@@ -75,6 +81,9 @@ class UserActionsList(View):
             count: 动态总数（包括标记为disabled的内容）
             last_time_created: 最近更新时间
             list: 动态列表
+                id: 主语的id
+                name: 主语的名称
+                icon: 主语的头像
                 action: 相关动作
                 object_type: 相关对象的类型
                 object_id: 相关对象的ID
@@ -88,7 +97,10 @@ class UserActionsList(View):
         # 获取主语是用户的动态
         c = UserAction.objects.count()
         records = (i for i in UserAction.objects.all()[offset:offset + limit])
-        l = [{'action': i.action,
+        l = [{'id': i.entity.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
               'object_type': i.object_type,
               'object_id': i.object_id,
               'object_name': action.get_object_name(i),
@@ -114,6 +126,9 @@ class TeamActionsList(View):
             count: 动态总数（包括标记为disabled的内容）
             last_time_created: 最近更新时间
             list: 动态列表
+                id: 主语的id
+                name: 主语的名称
+                icon: 主语的头像
                 action: 相关动作
                 object_type: 相关对象的类型
                 object_id: 相关对象的ID
@@ -127,7 +142,10 @@ class TeamActionsList(View):
         # 获取主语是团队的动态
         c = TeamAction.objects.count()
         records = (i for i in TeamAction.objects.all()[offset:offset + limit])
-        l = [{'action': i.action,
+        l = [{'id': i.entity.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
               'object_type': i.object_type,
               'object_id': i.object_id,
               'object_name': action.get_object_name(i),
