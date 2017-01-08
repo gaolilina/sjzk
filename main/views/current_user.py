@@ -2,10 +2,10 @@ import re
 from django import forms
 from django.db import IntegrityError
 from django.db import transaction
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.views.generic import View
 
-from ChuangYi.settings import UPLOADED_URL
+from ChuangYi.settings import SERVER_URL
 from rongcloud import RongCloud
 from ..models import User, Team
 from ..utils import abort, action, save_uploaded_image, identity_verify
@@ -48,7 +48,7 @@ class Username(View):
             request.user.save()
             # 更改融云上的用户信息
             if not request.user.icon:
-                portraitUri = "http://123.206.24.226:8000/" + request.user.icon
+                portraitUri = SERVER_URL + request.user.icon
             else:
                 portraitUri = 'http://www.rongcloud.cn/images/logo.png'
             rcloud = RongCloud()
@@ -98,7 +98,7 @@ class Icon(Icon_):
             request.user.icon = filename
             request.user.save()
             # 用户头像更换后调用融云接口更改融云上的用户头像
-            portraitUri = "http://123.206.24.226:8000/" + request.user.icon
+            portraitUri = SERVER_URL + request.user.icon
             rcloud = RongCloud()
             rcloud.User.refresh(
                 userId=request.user.id,
@@ -219,7 +219,7 @@ class Profile(Profile_):
             request.user.name = name
             # 用户昵称更换后调用融云接口更改融云上的用户头像
             if request.user.icon:
-                portraitUri = "http://123.206.24.226:8000/" + request.user.icon
+                portraitUri = SERVER_URL + request.user.icon
             else:
                 portraitUri = "http://www.rongcloud.cn/images/logo.png"
             rcloud = RongCloud()

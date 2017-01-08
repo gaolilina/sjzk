@@ -1,9 +1,8 @@
 from django import forms
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.utils import timezone
 from django.views.generic import View
 
-from ChuangYi.settings import UPLOADED_URL
 from main.models import Team, User, TeamNeed
 from ..utils import abort
 from main.utils.decorators import *

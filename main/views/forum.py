@@ -1,9 +1,8 @@
 from django import forms
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.views.generic import View
 
-from ChuangYi.settings import UPLOADED_URL
 from ..models import ForumBoard, ForumPost
 from ..utils import abort
 from ..utils.decorators import *
