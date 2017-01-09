@@ -3,7 +3,7 @@ from django.conf.urls import url
 from ..views.team import *
 from ..views.common import TeamActionList, TeamCommentList, TeamComment, \
     TeamFollowerList, TeamFollower, TeamLikerList, TeamLiker, \
-    TeamVisitorList
+    TeamVisitorList, FollowedTeamActionList
 from ..views.recommend import TeamRecommend, OutsourceNeedTeamRecommend, \
     UndertakeNeedTeamRecommend
 
@@ -29,6 +29,8 @@ urls = [
     # 动态
     url(r'^(?P<team_id>[0-9]+)/actions/$', TeamActionList.as_view(),
         name='actions'),
+    url(r'^(?P<team_id>[0-9]+)/followed/actions/$',
+        FollowedTeamActionList.as_view(), name='followers'),
     # 成果
     url(r'^achievements/$', AllAchievementList.as_view(),
         name='all_achievements'),
