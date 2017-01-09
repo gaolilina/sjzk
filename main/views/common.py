@@ -184,7 +184,7 @@ class FollowedUserActionList(View):
                 related_object_name: 额外相关对象的名称
         """
 
-        r = UserAction.objects.filter(actions__followed=request.user)
+        r = UserAction.objects.filter(entity__actions__followed=request.user)
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
