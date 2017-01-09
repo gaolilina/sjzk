@@ -158,6 +158,7 @@ class TeamActionsList(View):
 
 
 class FollowedUserActionList(View):
+    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -203,12 +204,12 @@ class FollowedUserActionList(View):
 
 
 class FollowedTeamActionList(View):
-    @fetch_object(Team.enabled, 'team')
+    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
     })
-    def get(self, request, team, offset=0, limit=10):
+    def get(self, request, offset=0, limit=10):
         """获取当前用户所关注的团队的动态列表
 
         :param offset: 偏移量
@@ -230,7 +231,7 @@ class FollowedTeamActionList(View):
                 related_object_name: 额外相关对象的名称
         """
 
-        r = TeamAction.objects.filter(actions__followed=team)
+        r = TeamAction.objects.filter(entity__actions__followed=request.user)
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
