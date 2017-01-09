@@ -187,7 +187,7 @@ class FollowedUserActionList(View):
         """
 
         r = UserAction.objects.filter(Q(
-            entity__followers__followed=request.user))
+            entity__followers__follower=request.user))
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
@@ -234,7 +234,7 @@ class FollowedTeamActionList(View):
         """
 
         r = TeamAction.objects.filter(
-            Q(entity__followers__followed=request.user))
+            Q(entity__followers__follower=request.user))
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
