@@ -117,7 +117,7 @@ urls = [
         OutsourceNeedTeamRecommend.as_view(), name='outsource_recommend'),
     url(r'^(?P<need_id>[0-9]+)/undertake/recommend/',
         UndertakeNeedTeamRecommend.as_view(), name='undertake_recommend'),
-    # 活动
+    # 竞赛
     url(r'^(?P<team_id>[0-9]+)/competition/$',
         CompetitionList.as_view(), name='competition'),
 ]
