@@ -72,4 +72,6 @@ urls = [
         name='forum_boards', kwargs={'owned_only': True}),
     # 意见反馈
     url(r'^feedback/$', Feedback.as_view(), name='feedback'),
+    # 活动
+    url(r'^activity/$', ActivityList.as_view(), name='activity'),
 ]

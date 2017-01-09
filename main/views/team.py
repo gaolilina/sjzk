@@ -10,7 +10,7 @@ import json
 
 from ChuangYi.settings import UPLOADED_URL
 from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
-    ExternalTask
+    ExternalTask, CompetitionTeamParticipator
 from main.utils import abort, action, save_uploaded_image
 from main.utils.decorators import *
 
@@ -21,7 +21,8 @@ __all__ = ('List', 'Search', 'Profile', 'Icon', 'MemberList', 'Member',
            'MemberNeedRequest', 'NeedRequestList', 'NeedRequest',
            'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
            'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
-           'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList')
+           'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList',
+           'CompetitionList')
 
 
 class List(View):
@@ -2155,3 +2156,27 @@ class TeamExternalTask(View):
         task.status = status
         task.save()
         abort(200)
+
+
+class CompetitionList(View):
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, team, offset=0, limit=10):
+        """获取团队的竞赛列表"""
+
+        r = CompetitionTeamParticipator.objects.filter(team=team)
+        c = r.count()
+        qs = r[offset: offset + limit]
+        l = [{'id': a.competition.id,
+              'name': a.competition.name,
+              'time_started': a.competition.time_started,
+              'time_ended': a.competition.time_ended,
+              'deadline': a.competition.deadline,
+              'team_participator_count':
+                  a.competition.team_participators.count(),
+              'time_created': a.competition.time_created} for a in qs]
+        return JsonResponse({'count': c, 'list': l})

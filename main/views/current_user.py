@@ -7,7 +7,7 @@ from django.views.generic import View
 
 from ChuangYi.settings import SERVER_URL
 from rongcloud import RongCloud
-from ..models import User, Team
+from ..models import User, Team, ActivityUserParticipator
 from ..utils import abort, action, save_uploaded_image, identity_verify
 from ..utils.decorators import *
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
@@ -19,7 +19,7 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
            'RelatedTeamList', 'OwnedTeamList', 'InvitationList',
-           'Invitation', 'IdentityVerification', 'Feedback']
+           'Invitation', 'IdentityVerification', 'ActivityList','Feedback']
 
 
 class Username(View):
@@ -791,6 +791,28 @@ class Invitation(View):
 
         invitation.delete()
         abort(200)
+
+
+class ActivityList(View):
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, offset=0, limit=10):
+        """获取用户参加的活动列表"""
+
+        r = ActivityUserParticipator.objects.filter(user=request.user)
+        c = r.count()
+        qs = r[offset: offset + limit]
+        l = [{'id': a.activity.id,
+              'name': a.activity.name,
+              'time_started': a.activity.time_started,
+              'time_ended': a.activity.time_ended,
+              'deadline': a.activity.deadline,
+              'user_participator_count': a.activity.user_participators.count(),
+              'time_created': a.activity.time_created} for a in qs]
+        return JsonResponse({'count': c, 'list': l})
 
 
 class Feedback(View):

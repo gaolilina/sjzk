@@ -17,7 +17,7 @@ class Competition(models.Model):
     time_started = models.DateTimeField(db_index=True)
     time_ended = models.DateTimeField(db_index=True)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
-    # 竞赛允许的团队上线，0：不限
+    # 竞赛允许的团队上限，0：不限
     allow_team = models.IntegerField(default=0, db_index=True)
 
     is_enabled = models.BooleanField(default=True)

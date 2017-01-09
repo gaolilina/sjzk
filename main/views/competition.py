@@ -18,7 +18,7 @@ class List(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, offset=0, limit=10):
-        """获取活动列表"""
+        """获取竞赛列表"""
 
         c = Competition.enabled.count()
         qs = Competition.enabled.all()[offset: offset + limit]
@@ -36,7 +36,7 @@ class Detail(View):
     @fetch_object(Competition.enabled, 'competition')
     @require_token
     def get(self, request, competition):
-        """获取活动详情"""
+        """获取竞赛详情"""
 
         return JsonResponse({
             'id': competition.id,
