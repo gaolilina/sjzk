@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic import View
 
@@ -185,7 +186,7 @@ class FollowedUserActionList(View):
                 related_object_name: 额外相关对象的名称
         """
 
-        r = UserAction.objects.filter(entity__actions__followed=request.user)
+        r = UserAction.objects.filter(Q(entity__actions__followed=request.user))
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
@@ -231,7 +232,7 @@ class FollowedTeamActionList(View):
                 related_object_name: 额外相关对象的名称
         """
 
-        r = TeamAction.objects.filter(entity__actions__followed=request.user)
+        r = TeamAction.objects.filter(Q(entity__actions__followed=request.user))
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
