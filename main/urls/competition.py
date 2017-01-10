@@ -13,4 +13,6 @@ urls = [
         CompetitionCommentList.as_view(), name='comments'),
     url(r'^comments/(?P<comment_id>[0-9]+)/$',
         CompetitionComment.as_view(), name='comment'),
+    # 搜索
+    url(r'search/$', Search.as_view(), name='search'),
 ]
