@@ -69,14 +69,17 @@ class User(models.Model):
 
         # hasher = PBKDF2PasswordHasher()
         # self.password = hasher.encode(password, hasher.salt())
-        self.password = make_password(password, None, 'MD5')
+        hasher = hashlib.md5(password)
+        self.password = hasher.hexdigest()
 
     def check_password(self, password):
         """检查密码"""
 
         # hasher = PBKDF2PasswordHasher()
         # return hasher.verify(password, self.password)
-        return check_password(password, self.password)
+        hasher = hashlib.md5(password)
+        password1 = hasher.hexdigest()
+        return password1 == self.password
 
     def update_token(self):
         """更新用户令牌"""
