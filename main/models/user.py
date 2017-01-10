@@ -69,7 +69,7 @@ class User(models.Model):
 
         # hasher = PBKDF2PasswordHasher()
         # self.password = hasher.encode(password, hasher.salt())
-        hasher = hashlib.md5(password)
+        hasher = hashlib.md5(password.encode(encoding='utf-8'))
         self.password = hasher.hexdigest()
 
     def check_password(self, password):
@@ -77,7 +77,7 @@ class User(models.Model):
 
         # hasher = PBKDF2PasswordHasher()
         # return hasher.verify(password, self.password)
-        hasher = hashlib.md5(password)
+        hasher = hashlib.md5(password.encode(encoding='utf-8'))
         password1 = hasher.hexdigest()
         return password1 == self.password
 
