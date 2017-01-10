@@ -69,7 +69,7 @@ class User(models.Model):
 
         # hasher = PBKDF2PasswordHasher()
         # self.password = hasher.encode(password, hasher.salt())
-        self.password = make_password(password, None, 'md5')
+        self.password = make_password(password, None, 'MD5')
 
     def check_password(self, password):
         """检查密码"""
