@@ -5,7 +5,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
-from ChuangYi.settings import SERVER_URL
+from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
 from ..models import User, Team, ActivityUserParticipator
 from ..utils import abort, action, save_uploaded_image, identity_verify
@@ -50,7 +50,7 @@ class Username(View):
             if not request.user.icon:
                 portraitUri = SERVER_URL + request.user.icon
             else:
-                portraitUri = 'http://www.rongcloud.cn/images/logo.png'
+                portraitUri = DEFAULT_ICON_URL
             rcloud = RongCloud()
             rcloud.User.refresh(
                 userId=request.user.id,
@@ -221,7 +221,7 @@ class Profile(Profile_):
             if request.user.icon:
                 portraitUri = SERVER_URL + request.user.icon
             else:
-                portraitUri = "http://www.rongcloud.cn/images/logo.png"
+                portraitUri = DEFAULT_ICON_URL
             rcloud = RongCloud()
             rcloud.User.refresh(
                 userId=request.user.id,

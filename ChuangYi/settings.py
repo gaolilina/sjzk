@@ -83,3 +83,4 @@ UPLOADED_ROOT = os.path.join(BASE_DIR, 'uploaded')
 
 # Server info
 SERVER_URL = 'http://123.206.24.226:8000/'
+DEFAULT_ICON_URL = 'http://123.206.24.226:8000/uploaded/default_icon.jpg'

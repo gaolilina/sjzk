@@ -1,7 +1,5 @@
 import hashlib
 
-from django.contrib.auth.hashers import PBKDF2PasswordHasher,\
-    make_password, check_password
 from django.db import models
 from django.utils import timezone
 
@@ -69,6 +67,7 @@ class User(models.Model):
 
         # hasher = PBKDF2PasswordHasher()
         # self.password = hasher.encode(password, hasher.salt())
+        # 加密方式改为MD5
         hasher = hashlib.md5(password.encode(encoding='utf-8'))
         self.password = hasher.hexdigest()
 
@@ -77,6 +76,7 @@ class User(models.Model):
 
         # hasher = PBKDF2PasswordHasher()
         # return hasher.verify(password, self.password)
+        # 验证方式也改为MD5
         hasher = hashlib.md5(password.encode(encoding='utf-8'))
         password1 = hasher.hexdigest()
         return password1 == self.password

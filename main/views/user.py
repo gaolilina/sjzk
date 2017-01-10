@@ -7,7 +7,7 @@ from django.db import transaction
 from django.views.generic import View
 from rongcloud import RongCloud
 
-from ChuangYi.settings import UPLOADED_URL, SERVER_URL
+from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
 from ..utils import abort, send_message
 from ..utils.decorators import *
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
@@ -87,7 +87,7 @@ class List(View):
                 rcloud = RongCloud()
                 r = rcloud.User.getToken(
                     userId=user.id, name=user.name,
-                    portraitUri='http://www.rongcloud.cn/images/logo.png')
+                    portraitUri=DEFAULT_ICON_URL)
                 token = r.result['token']
                 user.token = token
                 user.save()
@@ -120,7 +120,7 @@ class Token(View):
             if not user.icon:
                 portraitUri = SERVER_URL + user.icon
             else:
-                portraitUri = 'http://www.rongcloud.cn/images/logo.png'
+                portraitUri = DEFAULT_ICON_URL
             rcloud = RongCloud()
             r = rcloud.User.getToken(
                 userId=user.id, name=user.name,
