@@ -1,6 +1,7 @@
 import hashlib
 
-from django.contrib.auth.hashers import PBKDF2PasswordHasher
+from django.contrib.auth.hashers import PBKDF2PasswordHasher,\
+    make_password, check_password
 from django.db import models
 from django.utils import timezone
 
@@ -66,14 +67,16 @@ class User(models.Model):
     def set_password(self, password):
         """设置密码"""
 
-        hasher = PBKDF2PasswordHasher()
-        self.password = hasher.encode(password, hasher.salt())
+        # hasher = PBKDF2PasswordHasher()
+        # self.password = hasher.encode(password, hasher.salt())
+        self.password = make_password(password, None, 'unsalted_md5')
 
     def check_password(self, password):
         """检查密码"""
 
-        hasher = PBKDF2PasswordHasher()
-        return hasher.verify(password, self.password)
+        # hasher = PBKDF2PasswordHasher()
+        # return hasher.verify(password, self.password)
+        return check_password(password, self.password)
 
     def update_token(self):
         """更新用户令牌"""
