@@ -70,8 +70,11 @@ class List(View):
         'phone_number': forms.CharField(min_length=11, max_length=11),
         'password': forms.CharField(min_length=6, max_length=32),
         'validation_code': forms.CharField(min_length=6, max_length=6),
+        'invitation_code': forms.CharField(
+            min_length=8, max_length=8, required=False),
     })
-    def post(self, request, phone_number, password, validation_code):
+    def post(self, request, phone_number, password, validation_code,
+             invitation_code=None):
         """注册，若成功返回用户令牌"""
 
         if not UserValidationCode.verify(phone_number, validation_code):
@@ -83,6 +86,7 @@ class List(View):
                 user.set_password(password)
                 # user.update_token()
                 user.save_and_generate_name()
+                user.create_invitation_code()
                 # 注册成功后给融云服务器发送请求获取Token
                 rcloud = RongCloud()
                 r = rcloud.User.getToken(
@@ -90,6 +94,8 @@ class List(View):
                     portraitUri=DEFAULT_ICON_URL)
                 token = r.result['token']
                 user.token = token
+                if invitation_code:
+                    user.invitation_code = invitation_code
                 user.save()
                 return JsonResponse({'token': user.token})
             except IntegrityError:

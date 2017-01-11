@@ -107,7 +107,7 @@ class User(models.Model):
         id = self.id
         id_length = id.length()
         invitation_code = self.phone_number[length-9+id_length:] + str(id)
-        return invitation_code
+        self.invitation_code = invitation_code
 
 
 
