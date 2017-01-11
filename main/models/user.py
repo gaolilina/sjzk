@@ -55,6 +55,10 @@ class User(models.Model):
     # 用户积分
     score = models.IntegerField(default=50, db_index=True)
 
+    # 邀请码
+    invitation_code = models.CharField(max_length=6)
+    used_invitation_code = models.CharField(max_length=6, default='')
+
     objects = models.Manager()
     enabled = EnabledManager()
 
@@ -95,6 +99,10 @@ class User(models.Model):
         self.save()
         self.name = '创易用户 #{}'.format(self.id)
         self.save()
+
+    def create_invitation_code(self):
+        """生成邀请码"""
+        pass
 
 
 class UserAction(Action):
