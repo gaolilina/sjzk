@@ -56,8 +56,8 @@ class User(models.Model):
     score = models.IntegerField(default=50, db_index=True)
 
     # 邀请码
-    invitation_code = models.CharField(max_length=6)
-    used_invitation_code = models.CharField(max_length=6, default='')
+    invitation_code = models.CharField(max_length=8)
+    used_invitation_code = models.CharField(max_length=8, default='')
 
     objects = models.Manager()
     enabled = EnabledManager()
@@ -102,7 +102,13 @@ class User(models.Model):
 
     def create_invitation_code(self):
         """生成邀请码"""
-        pass
+
+        length = self.phone_number.length()
+        id = self.id
+        id_length = id.length()
+        invitation_code = self.phone_number[length-9+id_length:] + str(id)
+        return invitation_code
+
 
 
 class UserAction(Action):
