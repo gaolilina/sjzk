@@ -103,12 +103,16 @@ class User(models.Model):
     def create_invitation_code(self):
         """生成邀请码"""
 
-        length = self.phone_number.length()
-        id = self.id
-        id_length = id.length()
-        invitation_code = self.phone_number[length-9+id_length:] + str(id)
-        self.invitation_code = invitation_code
-
+        code = ''
+        while True:
+            random_content = self.phone_number + timezone.now().isoformat()
+            hasher = hashlib.md5()
+            hasher.update(random_content.encode())
+            code = hasher.hexdigest()[:8]
+            c = User.objects.filter(invitation_code=code).count()
+            if c == 0:
+                break
+        self.invitation_code = code
 
 
 class UserAction(Action):
