@@ -79,4 +79,7 @@ urls = [
     url(r'^feedback/$', Feedback.as_view(), name='feedback'),
     # 活动
     url(r'^activity/$', ActivityList.as_view(), name='activity'),
+    # 邀请码
+    url(r'^invitation_code/$', InvitationCode.as_view(),
+        name='invitation_code'),
 ]

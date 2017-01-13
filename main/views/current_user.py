@@ -19,7 +19,8 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
            'RelatedTeamList', 'OwnedTeamList', 'InvitationList',
-           'Invitation', 'IdentityVerification', 'ActivityList','Feedback']
+           'Invitation', 'IdentityVerification', 'ActivityList',
+           'Feedback', 'InvitationCode']
 
 
 class Username(View):
@@ -831,3 +832,14 @@ class Feedback(View):
             request.user.save()
         request.user.feedback.create(content=content)
         abort(200)
+
+
+class InvitationCode(View):
+    @require_token
+    def get(self, request):
+        """获取用户自己的邀请码
+
+        :return: invitation_code: 邀请码
+        """
+        invitation_code = request.user.invitation_code
+        return JsonResponse({'invitation_code': invitation_code})
