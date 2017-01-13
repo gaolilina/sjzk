@@ -7,7 +7,7 @@ from django.views.generic import View
 
 from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
-from ..models import User, Team, ActivityUserParticipator
+from ..models import User, Team, ActivityUserParticipator, UserValidationCode
 from ..utils import abort, action, save_uploaded_image, identity_verify
 from ..utils.decorators import *
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
@@ -20,7 +20,7 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
            'RelatedTeamList', 'OwnedTeamList', 'InvitationList',
            'Invitation', 'IdentityVerification', 'ActivityList',
-           'Feedback', 'InvitationCode']
+           'Feedback', 'InvitationCode', 'BindPhoneNumber']
 
 
 class Username(View):
@@ -843,3 +843,25 @@ class InvitationCode(View):
         """
         invitation_code = request.user.invitation_code
         return JsonResponse({'invitation_code': invitation_code})
+
+
+class BindPhoneNumber(View):
+    @require_token
+    @validate_args({
+        'phone_number': forms.CharField(min_length=11, max_length=11),
+        'password': forms.CharField(min_length=6, max_length=32),
+        'validation_code': forms.CharField(min_length=6, max_length=6),
+    })
+    def post(self, request, phone_number, password, validation_code):
+        """绑定手机号，若成功返回200"""
+
+        if not UserValidationCode.verify(
+                request.user.phone_number, validation_code):
+            abort(400)
+
+        if not request.user.check_password(password):
+            abort(401)
+
+        request.user.phone_number = phone_number
+        request.user.save()
+        abort(200)

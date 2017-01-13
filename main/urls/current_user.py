@@ -82,4 +82,7 @@ urls = [
     # 邀请码
     url(r'^invitation_code/$', InvitationCode.as_view(),
         name='invitation_code'),
+    # 绑定手机号
+    url(r'^bind_phone_number/$', BindPhoneNumber.as_view(),
+        name='bind_phone_number'),
 ]
