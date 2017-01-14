@@ -146,9 +146,10 @@ class Search(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'by_tag': forms.IntegerField(required=False),
         'name': forms.CharField(max_length=20),
     })
-    def get(self, request, offset=0, limit=10, order=1, **kwargs):
+    def get(self, request, name, offset=0, limit=10, order=1, by_tag=0):
         """搜索团队
         :param offset: 偏移量
         :param limit: 数量上限
@@ -157,8 +158,8 @@ class Search(View):
             1: 注册时间降序（默认值）
             2: 昵称升序
             3: 昵称降序
-        :param kwargs: 搜索条件
-            name: 团队名包含字段
+        :param name: 团队名包含字段
+        :param by_tag: 是否按标签检索
 
         :return:
             count: 团队总数
@@ -175,7 +176,12 @@ class Search(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        teams = Team.enabled.filter(name__contains=kwargs['name'])
+        if by_tag == 0:
+            # 按团队名称段检索
+            teams = Team.enabled.filter(name__contains=name)
+        else:
+            # 按标签检索
+            teams = Team.enabled.filter(tags__name=name)
         c = teams.count()
         l = [{'id': t.id,
               'name': t.name,

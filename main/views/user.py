@@ -374,9 +374,10 @@ class Search(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'by_tag': forms.IntegerField(required=False),
         'name': forms.CharField(max_length=20),
     })
-    def get(self, request, offset=0, limit=10, order=1, **kwargs):
+    def get(self, request, name, offset=0, limit=10, order=1, by_tag=0):
         """
         搜索用户
 
@@ -387,8 +388,8 @@ class Search(View):
             1: 注册时间降序（默认值）
             2: 昵称升序
             3: 昵称降序
-        :param kwargs: 搜索条件
-            username: 用户名包含字段
+        :param name: 用户名包含字段
+        :param by_tag: 是否按标签检索
 
         :return:
             count: 用户总数
@@ -406,7 +407,12 @@ class Search(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        users = User.enabled.filter(name__contains=kwargs['name'])
+        if by_tag == 0:
+            # 按用户昵称段检索
+            users = User.enabled.filter(name__contains=name)
+        else:
+            # 按标签检索
+            users = User.enabled.filter(tags__name=name)
         c = users.count()
         l = [{'id': u.id,
               'username': u.username,
