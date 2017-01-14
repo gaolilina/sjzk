@@ -285,3 +285,13 @@ class TeamVisitor(Visitor):
 
     class Meta:
         db_table = 'team_visitor'
+
+
+class TeamFeature(models.Model):
+    """团队特征模型"""
+
+    team = models.OneToOneField('Team', models.CASCADE, 'model')
+    data = models.TextField(default="{}")
+
+    class Meta:
+        db_table = 'team_feature'

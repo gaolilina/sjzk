@@ -9,7 +9,8 @@ from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
 
 __all__ = ['User', 'UserAction', 'UserComment', 'UserExperience',
            'UserFollower', 'UserFriend', 'UserFriendRequest', 'UserLiker',
-           'UserTag', 'UserValidationCode', 'UserVisitor', 'UserFeedback']
+           'UserTag', 'UserValidationCode', 'UserVisitor', 'UserFeedback',
+           'UserFeature', 'UserBehavior']
 
 
 class User(models.Model):
@@ -273,4 +274,30 @@ class UserFeedback(models.Model):
 
     class Meta:
         db_table = 'user_feedback'
+        ordering = ['-time_created']
+
+
+class UserFeature(models.Model):
+    """用户特征模型"""
+
+    user = models.OneToOneField('User', models.CASCADE, 'model')
+    data = models.TextField(default="{}")
+
+    class Meta:
+        db_table = 'user_feature'
+
+
+class UserBehavior(models.Model):
+    """用户行为记录"""
+
+    user = models.ForeignKey('User', models.CASCADE, 'behaviors')
+    # like, view
+    behavior = models.CharField(max_length=10)
+    # user, team, action
+    object_type = models.CharField(max_length=20)
+    object_id = models.IntegerField()
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'user_behavior'
         ordering = ['-time_created']
