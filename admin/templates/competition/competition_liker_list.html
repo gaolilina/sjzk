@@ -7,7 +7,7 @@
         {% for item in list %}
             <td>竞赛名： </td>
             <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.competition.name }}</td>
-            <td><a href="{% url 'admin:competition:competition_comment' item.competition.id %}">查看</a></td>
+            <td><a href="{% url 'admin:competition:competition_liker' item.competition.id %}">查看</a></td>
         {% endfor %}
     </tr>
 </table>
@@ -15,7 +15,7 @@
 
 {% block topbar %}{% include 'topbar.html' with tb='activity_admin' %}{% endblock %}
 {% block leftbar %}{% include 'leftbar.html' with tb='activity_admin' lb='competition' %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='competition' rb='competition_comment' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='competition' rb='competition_liker' %}{% endblock %}
 
 {% block css %}
 {% include 'parts/input_style.html' %}

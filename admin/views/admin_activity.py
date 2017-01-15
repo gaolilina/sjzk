@@ -23,7 +23,7 @@ class AdminActivityAdd(View):
         'deadline': forms.DateTimeField(),
         'time_started': forms.DateTimeField(),
         'time_ended': forms.DateTimeField(),
-        'allow_user': forms.BooleanField(required=False),
+        'allow_user': forms.IntegerField(),
     })
     def post(self, request, **kwargs):
         user = request.user
@@ -58,7 +58,7 @@ class AdminActivityView(View):
         'deadline': forms.DateTimeField(required=False),
         'time_started': forms.DateTimeField(required=False),
         'time_ended': forms.DateTimeField(required=False),
-        'allow_user': forms.BooleanField(required=False),
+        'allow_user': forms.IntegerField(),
         'stage_status': forms.IntegerField(required=False),
         'stage_province': forms.CharField(max_length=20, required=False),
         'stage_city': forms.CharField(max_length=20, required=False),

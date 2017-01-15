@@ -5,11 +5,11 @@
 <table>
     <tr>
         <td>标题：</td>
-        <td><input name="name" type="text" value="" /></td>
+        <td><input name="name" type="text" value="" maxlength="50" /></td>
     </tr>
     <tr>
         <td>详细内容：</td>
-        <td><textarea name="content"></textarea></td>
+        <td><textarea name="content" maxlength="1000"></textarea></td>
     </tr>
     <tr>
         <td>截至日期：</td>
@@ -24,8 +24,8 @@
         <td><input name="time_ended" type="datetime" value="" /></td>
     </tr>
     <tr>
-        <td>报名类型：</td>
-        <td><input name="allow_user" type="checkbox" /> 创友</td>
+        <td>人数上限：</td>
+        <td><input name="allow_user" type="number" value="0" /> (0为不限)</td>
     </tr>
     <tr>
         <td colspan="2">

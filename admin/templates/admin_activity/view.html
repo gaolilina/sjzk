@@ -5,11 +5,11 @@
 <table>
     <tr>
         <td>标题：</td>
-        <td><input name="name" type="text" value="{{ model.name }}" /></td>
+        <td><input name="name" type="text" value="{{ model.name }}" maxlength="50" /></td>
     </tr>
     <tr>
         <td>详细内容：</td>
-        <td><textarea name="content">{{ model.content }}</textarea></td>
+        <td><textarea name="content" maxlength="1000">{{ model.content }}</textarea></td>
     </tr>
     <tr>
         <td>截至日期：</td>
@@ -24,8 +24,8 @@
         <td><input name="time_ended" type="datetime" value="{{ model.time_ended }}" /></td>
     </tr>
     <tr>
-        <td>报名类型：</td>
-        <td><input name="allow_user" type="checkbox" {% if model.allow_user %}checked="checked" {% endif %}/> 创友</td>
+        <td>人数上限：</td>
+        <td><input name="allow_user" type="number" value="{{ model.allow_user }}" /> (0为不限)</td>
     </tr>
     <tr>
         <td>活动阶段：</td>
@@ -39,15 +39,15 @@
     </tr>
     <tr>
         <td>省：</td>
-        <td><input name="stage_province" type="text" value="{{ model.stages.get.province }}" /></td>
+        <td><input name="stage_province" type="text" value="{{ model.stages.get.province }}" maxlength="20" /></td>
     </tr>
     <tr>
         <td>市：</td>
-        <td><input name="stage_city" type="text" value="{{ model.stages.get.city }}" /></td>
+        <td><input name="stage_city" type="text" value="{{ model.stages.get.city }}" maxlength="20" /></td>
     </tr>
     <tr>
         <td>学校：</td>
-        <td><input name="stage_school" type="text" value="{{ model.stages.get.school }}" /></td>
+        <td><input name="stage_school" type="text" value="{{ model.stages.get.school }}" maxlength="20" /></td>
     </tr>
     <tr>
         <td>参与者类型：</td>

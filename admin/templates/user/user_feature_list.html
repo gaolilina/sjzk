@@ -7,7 +7,7 @@
         <tr>
             <td>用户名： </td>
             <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.user.name }}</td>
-            <td><a href="{% url 'admin:user:user_liker' item.user.id %}">查看</a></td>
+            <td><a href="{% url 'admin:user:user_feature' item.user.id %}">查看</a></td>
         </tr>
     {% endfor %}
 </table>
@@ -15,7 +15,7 @@
 
 {% block topbar %}{% include 'topbar.html' with tb='user_admin' %}{% endblock %}
 {% block leftbar %}{% include 'leftbar.html' with tb='user_admin' lb='user' %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='user' rb='user_liker' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='user' rb='user_feature' %}{% endblock %}
 
 {% block css %}
 {% include 'parts/input_style.html' %}

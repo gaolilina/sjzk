@@ -15,6 +15,11 @@
     <li class="active"><a href="{% url 'admin:admin_activity:list' %}">活动管理</a></li>
 </ul>
 {% endif %}
+{% if tb == 'system_admin' %}
+<ul>
+    <li class="active"><a href="{% url 'admin:system' %}">系统参数</a></li>
+</ul>
+{% endif %}
 {% if tb == 'user_admin' %}
 <ul>
     <li{% if lb == 'user' %} class="active"{% endif %}><a href="{% url 'admin:user:user_list' %}">创友</a></li>

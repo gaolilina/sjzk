@@ -2,9 +2,9 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="{% url 'admin:activity:activity_comment' mod.id %}" method="post">
+<form role="form" action="{% url 'admin:user:user_behavior' mod.id %}" method="post">
 <table>
-    <tr><td>author：</td><td><a href="{% url "admin:activity:user" mod.author.id %}">{{ mod.author.id }}</a></td></tr><tr><td>content：</td><td><input name="content" type="text" value="{{ mod.content }}"  maxlength="100" /></td></tr><tr><td>time_created：</td><td><input name="time_created" type="datetime" value="{{ mod.time_created }}" /></td></tr><tr><td>entity：</td><td><a href="{% url "admin:activity:activity" mod.entity.id %}">{{ mod.entity.id }}</a></td></tr>
+    <tr><td>user：</td><td><a href="{% url "admin:user:user" mod.user.id %}">{{ mod.user.id }}</a></td></tr><tr><td>behavior：</td><td><input name="behavior" type="text" value="{{ mod.behavior }}"  maxlength="10" /></td></tr><tr><td>object_type：</td><td><input name="object_type" type="text" value="{{ mod.object_type }}"  maxlength="20" /></td></tr><tr><td>object_id：</td><td><input name="object_id" type="number" value="{{ mod.object_id }}" /></td></tr><tr><td>time_created：</td><td><input name="time_created" type="datetime" value="{{ mod.time_created }}" /></td></tr>
     <tr>
         <td>{{ msg }}</td>
         <td>
@@ -18,9 +18,9 @@
 </form>
 {% endblock %}
 
-{% block topbar %}{% include 'topbar.html' with tb='activity_admin' %}{% endblock %}
-{% block leftbar %}{% include 'leftbar.html' with tb='activity_admin' lb='activity' %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='activity' rb='activity_comment' %}{% endblock %}
+{% block topbar %}{% include 'topbar.html' with tb='user_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='user_admin' lb='user' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='user' rb='user_behavior' %}{% endblock %}
 
 {% block css %}
 <style>

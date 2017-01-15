@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:user:user_validation_code' mod.id %}" method="post">
 <table>
-    <tr><td>phone_number：</td><td><input name="phone_number" type="text" value="{{ mod.phone_number }}" /></td></tr><tr><td>code：</td><td><input name="code" type="text" value="{{ mod.code }}" /></td></tr><tr><td>time_expired：</td><td><input name="time_expired" type="datetime" value="{{ mod.time_expired }}" /></td></tr>
+    <tr><td>phone_number：</td><td><input name="phone_number" type="text" value="{{ mod.phone_number }}"  maxlength="11" /></td></tr><tr><td>code：</td><td><input name="code" type="text" value="{{ mod.code }}"  maxlength="6" /></td></tr><tr><td>time_expired：</td><td><input name="time_expired" type="datetime" value="{{ mod.time_expired }}" /></td></tr>
     <tr>
         <td>{{ msg }}</td>
         <td>

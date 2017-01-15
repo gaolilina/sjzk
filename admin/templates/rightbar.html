@@ -15,6 +15,7 @@
         </ul>
     {% endif %}
 {% endif %}
+
 {% if tb == 'admin_competition' %}
     {% if lb != 0 %}
         <ul>
@@ -23,6 +24,7 @@
         </ul>
     {% endif %}
 {% endif %}
+
 {% if tb == 'admin_activity' %}
     {% if lb != 0 %}
         <ul>
@@ -31,6 +33,13 @@
         </ul>
     {% endif %}
 {% endif %}
+
+{% if tb == 'system_admin' %}
+<ul>
+    <li class="active"><a href="{% url 'admin:system' %}">系统参数</a></li>
+</ul>
+{% endif %}
+
 {% if tb == 'user_admin' %}
     {% if lb == 'user' %}
         <ul>
@@ -45,6 +54,9 @@
             <li{% if rb == 'user_tag' %} class="active"{% endif %}><a href="{% url 'admin:user:user_tag_list' %}">用户标签</a></li>
             <li{% if rb == 'user_validation_code' %} class="active"{% endif %}><a href="{% url 'admin:user:user_validation_code_list' %}">验证码</a></li>
             <li{% if rb == 'user_visitor' %} class="active"{% endif %}><a href="{% url 'admin:user:user_visitor_list' %}">用户访客</a></li>
+            <li{% if rb == 'user_feedback' %} class="active"{% endif %}><a href="{% url 'admin:user:user_feedback_list' %}">用户意见反馈</a></li>
+            <li{% if rb == 'user_feature' %} class="active"{% endif %}><a href="{% url 'admin:user:user_feature_list' %}">用户特征模型</a></li>
+            <li{% if rb == 'user_behavior' %} class="active"{% endif %}><a href="{% url 'admin:user:user_behavior_list' %}">用户行为记录</a></li>
         </ul>
     {% endif %}
     {% if lb == 'team' %}
@@ -61,11 +73,13 @@
             <li{% if rb == 'team_need' %} class="active"{% endif %}><a href="{% url 'admin:team:team_need_list' %}">团队需求</a></li>
             <li{% if rb == 'team_tag' %} class="active"{% endif %}><a href="{% url 'admin:team:team_tag_list' %}">团队标签</a></li>
             <li{% if rb == 'team_visitor' %} class="active"{% endif %}><a href="{% url 'admin:team:team_visitor_list' %}">团队访客</a></li>
+            <li{% if rb == 'team_feature' %} class="active"{% endif %}><a href="{% url 'admin:team:team_feature_list' %}">团队特征模型</a></li>
             <li{% if rb == 'internal_task' %} class="active"{% endif %}><a href="{% url 'admin:team:internal_task_list' %}">内部任务</a></li>
             <li{% if rb == 'external_task' %} class="active"{% endif %}><a href="{% url 'admin:team:external_task_list' %}">外部任务</a></li>
         </ul>
     {% endif %}
 {% endif %}
+
 {% if tb == 'activity_admin' %}
     {% if lb == 'activity' %}
         <ul>
@@ -73,6 +87,7 @@
             <li{% if rb == 'activity_stage' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_stage_list' %}">活动阶段</a></li>
             <li{% if rb == 'activity_user_participator' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_user_participator_list' %}">活动参与者</a></li>
             <li{% if rb == 'activity_comment' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_comment_list' %}">活动评论</a></li>
+            <li{% if rb == 'activity_liker' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_liker_list' %}">活动点赞记录</a></li>
         </ul>
     {% endif %}
     {% if lb == 'competition' %}
@@ -81,9 +96,11 @@
             <li{% if rb == 'competition_stage' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_stage_list' %}">竞赛阶段</a></li>
             <li{% if rb == 'competition_team_participator' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_team_participator_list' %}">竞赛参与者</a></li>
             <li{% if rb == 'competition_comment' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_comment_list' %}">竞赛评论</a></li>
+            <li{% if rb == 'competition_liker' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_liker_list' %}">竞赛点赞记录</a></li>
         </ul>
     {% endif %}
 {% endif %}
+
 {% if tb == 'forum_admin' %}
     {% if lb == 'forum' %}
         <ul>

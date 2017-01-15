@@ -18,7 +18,7 @@ class UserView(View):
     @fetch_record(User.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'is_enabled': forms.BooleanField(required=False),'username': forms.CharField(max_length=20,required=False,),'phone_number': forms.CharField(max_length=11,),'token': forms.CharField(max_length=256,),'time_created': forms.DateTimeField(required=False,),'name': forms.CharField(max_length=15,),'description': forms.CharField(max_length=100,required=False,),'icon': forms.CharField(max_length=100,required=False,),'gender': forms.CharField(max_length=1,required=False,),'qq': forms.CharField(max_length=20,required=False,),'wechat': forms.CharField(max_length=20,required=False,),'email': forms.CharField(max_length=254,required=False,),'birthday': forms.DateField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'county': forms.CharField(max_length=20,required=False,),'is_verified': forms.BooleanField(required=False),'real_name': forms.CharField(max_length=20,required=False,),'id_number': forms.CharField(max_length=18,required=False,),'id_card': forms.CharField(max_length=100,required=False,),'is_role_verified': forms.BooleanField(required=False),'role': forms.CharField(max_length=20,required=False,),'other_number': forms.CharField(max_length=20,required=False,),'other_card': forms.CharField(max_length=100,required=False,),'unit1': forms.CharField(max_length=20,required=False,),'unit2': forms.CharField(max_length=20,required=False,),'profession': forms.CharField(max_length=20,required=False,),'score': forms.IntegerField(required=False,),
+        'is_enabled': forms.BooleanField(required=False),'username': forms.CharField(max_length=20,required=False,),'phone_number': forms.CharField(max_length=11,),'token': forms.CharField(max_length=256,),'time_created': forms.DateTimeField(required=False,),'name': forms.CharField(max_length=15,),'description': forms.CharField(max_length=100,required=False,),'icon': forms.CharField(max_length=100,required=False,),'gender': forms.CharField(max_length=1,required=False,),'qq': forms.CharField(max_length=20,required=False,),'wechat': forms.CharField(max_length=20,required=False,),'email': forms.CharField(max_length=254,required=False,),'birthday': forms.DateField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'county': forms.CharField(max_length=20,required=False,),'is_verified': forms.IntegerField(required=False,),'real_name': forms.CharField(max_length=20,required=False,),'id_number': forms.CharField(max_length=18,required=False,),'id_card': forms.CharField(max_length=100,required=False,),'is_role_verified': forms.BooleanField(required=False),'role': forms.CharField(max_length=20,required=False,),'other_number': forms.CharField(max_length=20,required=False,),'other_card': forms.CharField(max_length=100,required=False,),'unit1': forms.CharField(max_length=20,required=False,),'unit2': forms.CharField(max_length=20,required=False,),'profession': forms.CharField(max_length=20,required=False,),'score': forms.IntegerField(required=False,),'invitation_code': forms.CharField(max_length=8,),'used_invitation_code': forms.CharField(max_length=8,required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -102,6 +102,54 @@ class UserActionList(View):
         else:
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_action'})
+            return HttpResponse(template.render(context))
+class UserBehaviorView(View):
+    @fetch_record(UserBehavior.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("user/user_behavior.html")
+        context = Context({'mod': mod})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(UserBehavior.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'behavior': forms.CharField(max_length=10,),'object_type': forms.CharField(max_length=20,),'object_id': forms.IntegerField(required=False,),'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("user_behavior", mod.id, 1, request.user)
+
+        template = loader.get_template("user/user_behavior.html")
+        context = Context({'mod': mod, 'msg': '保存成功'})
+        return HttpResponse(template.render(context))
+
+class UserBehaviorList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = UserBehavior.objects.filter(user_id=kwargs["id"])
+            template = loader.get_template("user/user_behavior_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_behavior'})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("username") is not None:
+            username = request.GET.get("username")
+            template = loader.get_template("user/index.html")
+            if UserBehavior == User:
+                redir = 'admin:user:user'
+            else:
+                redir = 'admin:user:user_behavior_list'
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_behavior'})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("user/index.html")
+            context = Context({'rb': 'user_behavior'})
             return HttpResponse(template.render(context))
 class UserCommentView(View):
     @fetch_record(UserComment.objects, 'mod', 'id')
@@ -199,6 +247,54 @@ class UserExperienceList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_experience'})
             return HttpResponse(template.render(context))
+class UserFeatureView(View):
+    @fetch_record(UserFeature.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("user/user_feature.html")
+        context = Context({'mod': mod})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(UserFeature.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'data': forms.CharField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("user_feature", mod.id, 1, request.user)
+
+        template = loader.get_template("user/user_feature.html")
+        context = Context({'mod': mod, 'msg': '保存成功'})
+        return HttpResponse(template.render(context))
+
+class UserFeatureList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = UserFeature.objects.filter(user_id=kwargs["id"])
+            template = loader.get_template("user/user_feature_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_feature'})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("username") is not None:
+            username = request.GET.get("username")
+            template = loader.get_template("user/index.html")
+            if UserFeature == User:
+                redir = 'admin:user:user'
+            else:
+                redir = 'admin:user:user_feature_list'
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_feature'})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("user/index.html")
+            context = Context({'rb': 'user_feature'})
+            return HttpResponse(template.render(context))
 class UserFeedbackView(View):
     @fetch_record(UserFeedback.objects, 'mod', 'id')
     @require_cookie
@@ -210,7 +306,7 @@ class UserFeedbackView(View):
     @fetch_record(UserFeedback.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'time_created': forms.DateTimeField(required=False,),
+        'content': forms.CharField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
