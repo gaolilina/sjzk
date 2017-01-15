@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils import timezone
 
-from . import EnabledManager, Comment
+from . import EnabledManager, Comment, Liker
 
 
 __all__ = ['Activity', 'ActivityStage','ActivityUserParticipator',
-           'ActivityComment']
+           'ActivityComment', 'ActivityLiker']
 
 
 class Activity(models.Model):
@@ -64,3 +64,13 @@ class ActivityComment(Comment):
 
     class Meta:
         db_table = 'activity_comment'
+
+
+class ActivityLiker(Liker):
+    """活动点赞记录"""
+
+    liked = models.ForeignKey('Activity', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_activities')
+
+    class Meta:
+        db_table = 'activity_liker'

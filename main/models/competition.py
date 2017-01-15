@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils import timezone
 
-from . import EnabledManager, Comment
+from . import EnabledManager, Comment, Liker
 
 
 __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
-           'CompetitionComment']
+           'CompetitionComment', 'CompetitionLiker']
 
 
 class Competition(models.Model):
@@ -66,3 +66,13 @@ class CompetitionComment(Comment):
 
     class Meta:
         db_table = 'competition_comment'
+
+
+class CompetitionLiker(Liker):
+    """竞赛点赞记录"""
+
+    liked = models.ForeignKey('Competition', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_competitions')
+
+    class Meta:
+        db_table = 'competition_liker'

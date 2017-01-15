@@ -13,3 +13,4 @@ from .forum import *
 from .activity import *
 from .competition import *
 from .system import *
+from .report import *

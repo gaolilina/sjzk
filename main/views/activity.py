@@ -1,8 +1,7 @@
 from django import forms
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.views.generic import View
 
-from ChuangYi.settings import UPLOADED_URL
 from ..models import Activity
 from ..utils import abort
 from ..utils.decorators import *
@@ -18,12 +17,34 @@ class List(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, offset=0, limit=10):
-        """获取活动列表"""
+        """获取活动列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+
+        :return:
+            count: 活动总数
+            list: 活动列表
+                id: 活动ID
+                name: 活动名
+                liker_count: 点赞数
+                time_started: 开始时间
+                time_ended: 结束时间
+                deadline: 截止时间
+                user_participator_count: 已报名人数
+                time_created: 创建时间
+        """
 
         c = Activity.enabled.count()
         qs = Activity.enabled.all()[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
+              'liker_count': a.likers.count(),
               'time_started': a.time_started,
               'time_ended': a.time_ended,
               'deadline': a.deadline,
@@ -41,6 +62,7 @@ class Detail(View):
         return JsonResponse({
             'id': activity.id,
             'name': activity.name,
+            'liker_count': activity.likers.count(),
             'content': activity.content,
             'time_started': activity.time_started,
             'time_ended': activity.time_ended,
@@ -105,13 +127,14 @@ class Search(View):
             2: 昵称升序
             3: 昵称降序
         :param kwargs: 搜索条件
-            username: 活动名包含字段
+            name: 活动名包含字段
 
         :return:
             count: 活动总数
             list: 活动列表
                 id: 活动ID
                 name: 活动名
+                liker_count: 点赞数
                 time_started: 开始时间
                 time_ended: 结束时间
                 deadline: 截止时间
@@ -123,6 +146,7 @@ class Search(View):
         c = qs.count()
         l = [{'id': a.id,
               'name': a.name,
+              'liker_count': a.likers.count(),
               'time_started': a.time_started,
               'time_ended': a.time_ended,
               'deadline': a.deadline,

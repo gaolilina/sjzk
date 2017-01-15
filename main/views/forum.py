@@ -8,7 +8,8 @@ from ..utils import abort
 from ..utils.decorators import *
 
 
-__all__ = ['BoardList', 'Board', 'PostList', 'Post']
+__all__ = [
+    'BoardList', 'Board', 'PostList', 'Post', 'SearchBoard', 'SearchPost']
 
 
 class BoardList(View):
@@ -203,3 +204,86 @@ class Post(View):
             abort(403)
         post.delete()
         abort(200)
+
+
+class SearchBoard(View):
+    available_orders = ('time_created', '-time_created', 'name', '-name')
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'name': forms.CharField(max_length=20),
+    })
+    def get(self, request, board, offset=0, limit=10, order=1, **kwargs):
+        """根据名称搜索板块
+
+        :param offset: 偏移量
+        :return:
+            count: 帖子总数
+            list: 帖子列表
+                id: 帖子ID
+                title: 标题
+                content: 内容
+                author_id: 作者ID
+                author_name: 作者昵称
+                icon_url: 作者头像
+                time_created: 创建时间
+        """
+        i, j, k = offset, offset + limit, self.available_orders[order]
+
+        qs = request.user.forum_boards.filter(
+            Q(enabled=True) & Q(name__contains=kwargs['name']))
+        c = qs.count()
+        boards = qs.order_by(k)[i:j]
+        l = [{'id': b.id,
+              'name': b.name,
+              'description': b.description,
+              'owner_id': b.owner.id,
+              'owner_name': b.owner.name,
+              'icon_url': b.owner.icon,
+              'is_system_board': b.is_system_board,
+              'time_created': b.time_created} for b in boards]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class SearchPost(View):
+    available_orders = ('time_created', '-time_created', 'title', '-title')
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'title': forms.CharField(max_length=20),
+
+    })
+    @fetch_object(ForumBoard.enabled, 'board')
+    def get(self, request, board, offset=0, limit=10, order=1, **kwargs):
+        """根据标题搜索主题帖
+
+        :param offset: 偏移量
+        :return:
+            count: 帖子总数
+            list: 帖子列表
+                id: 帖子ID
+                title: 标题
+                content: 内容
+                author_id: 作者ID
+                author_name: 作者昵称
+                icon_url: 作者头像
+                time_created: 创建时间
+        """
+        i, j, k = offset, offset + limit, self.available_orders[order]
+        qs = board.posts.filter(Q(main_post=None) & Q(title__contains=kwargs['title']))
+        c = qs.count()
+        posts = qs.order_by(k)[i:j]
+        l = [{'id': p.id,
+              'title': p.title,
+              'content': p.content,
+              'author_id': p.author.id,
+              'author_name': p.author.name,
+              'icon_url': p.author.icon,
+              'time_created': p.time_created} for p in posts]
+        return JsonResponse({'count': c, 'list': l})

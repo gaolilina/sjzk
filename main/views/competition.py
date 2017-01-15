@@ -1,8 +1,7 @@
 from django import forms
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.views.generic import View
 
-from ChuangYi.settings import UPLOADED_URL
 from ..models import Competition, Team
 from ..utils import abort
 from ..utils.decorators import *
@@ -18,12 +17,34 @@ class List(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, offset=0, limit=10):
-        """获取竞赛列表"""
+        """获取竞赛列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+
+        :return:
+            count: 竞赛总数
+            list: 竞赛列表
+                id: 竞赛ID
+                name: 竞赛名
+                liker_count: 点赞数
+                time_started: 开始时间
+                time_ended: 结束时间
+                deadline: 截止时间
+                team_participator_count: 已报名人数
+                time_created: 创建时间
+        """
 
         c = Competition.enabled.count()
         qs = Competition.enabled.all()[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
+              'liker_count': a.likers.count(),
               'time_started': a.time_started,
               'time_ended': a.time_ended,
               'deadline': a.deadline,
@@ -110,13 +131,14 @@ class Search(View):
             2: 昵称升序
             3: 昵称降序
         :param kwargs: 搜索条件
-            username: 活动名包含字段
+            name: 活动名包含字段
 
         :return:
             count: 竞赛总数
             list: 竞赛列表
                 id: 竞赛ID
                 name: 竞赛名
+                liker_count: 点赞数
                 time_started: 开始时间
                 time_ended: 结束时间
                 deadline: 截止时间
@@ -128,6 +150,7 @@ class Search(View):
         c = qs.count()
         l = [{'id': a.id,
               'name': a.name,
+              'liker_count': a.likers.count(),
               'time_started': a.time_started,
               'time_ended': a.time_ended,
               'deadline': a.deadline,
