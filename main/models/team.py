@@ -290,7 +290,8 @@ class TeamVisitor(Visitor):
 class TeamFeature(models.Model):
     """团队特征模型"""
 
-    team = models.OneToOneField('Team', models.CASCADE, 'feature_model')
+    team = models.OneToOneField('Team', models.CASCADE,
+                                related_name='feature_model')
     data = models.TextField(default="{}")
 
     class Meta:
