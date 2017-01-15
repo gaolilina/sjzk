@@ -85,3 +85,16 @@ UPLOADED_ROOT = os.path.join(BASE_DIR, 'uploaded')
 # Server info
 SERVER_URL = 'http://chuangyh.com:8000/'
 DEFAULT_ICON_URL = 'http://chuangyh.com:8000/uploaded/default_icon.jpg'
+
+# Recommender arguments
+USER_TAG_SCORE = 100                # 用户标签的特征模型贡献度
+USER_TEAM_TAG_SCORE = 10            # 用户所在团队标签的特征模型贡献度
+USER_FOLLOWED_TAG_SCORE = 2         # 用户关注对象标签的特征模型贡献度
+
+USER_VIEW_SCORE = 1                 # 用户浏览对象标签的特征模型贡献度
+USER_LIKE_SCORE = 5                 # 用户点赞对象标签的特征模型贡献度
+
+USER_BEHAVIOR_ANALYSIS_CIRCLE = 7   # 用户模型可变部分行为分析周期（天）
+
+TEAM_TAG_SCORE = 100                # 团队标签的特征模型贡献度
+TEAM_MEMBER_TAG_SCORE = 2           # 团队成员标签的特征模型贡献度

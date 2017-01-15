@@ -1,6 +1,6 @@
 # 用户行为记录相关函数
 
-from ...models import UserBehavior
+from main.models import UserBehavior
 
 
 def record_view_user(current_user, user):
