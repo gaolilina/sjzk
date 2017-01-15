@@ -5,8 +5,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.views.generic import View
+
+from main.utils.recommender import calculate_ranking_score
 from rongcloud import RongCloud
-import json
 
 from ChuangYi.settings import UPLOADED_URL
 from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
@@ -153,9 +154,9 @@ class Search(View):
         """搜索团队
         :param offset: 偏移量
         :param limit: 数量上限
-        :param order: 排序方式
+        :param order: 排序方式（若无则进行个性化排序）
             0: 注册时间升序
-            1: 注册时间降序（默认值）
+            1: 注册时间降序
             2: 昵称升序
             3: 昵称降序
         :param name: 团队名包含字段
@@ -175,7 +176,7 @@ class Search(View):
                 tags: 标签，格式：['tag1', 'tag2', ...]
                 time_created: 注册时间
         """
-        i, j, k = offset, offset + limit, self.ORDERS[order]
+        i, j = offset, offset + limit
         if by_tag == 0:
             # 按团队名称段检索
             teams = Team.enabled.filter(name__contains=name)
@@ -183,6 +184,15 @@ class Search(View):
             # 按标签检索
             teams = Team.enabled.filter(tags__name=name)
         c = teams.count()
+        if order is not None:
+            teams = teams.order_by(self.ORDERS[order])[i:j]
+        else:
+            # 将结果进行个性化排序
+            team_list = list()
+            for t in teams:
+                team_list.append((t, calculate_ranking_score(request.user, t)))
+            team_list = sorted(team_list, key=lambda x: x[1], reverse=True)
+            teams = (t[0] for t in team_list[i:j])
         l = [{'id': t.id,
               'name': t.name,
               'icon_url': t.icon,
@@ -192,7 +202,7 @@ class Search(View):
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
               'tags': [tag.name for tag in t.tags.all()],
-              'time_created': t.time_created} for t in teams.order_by(k)[i:j]]
+              'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
 

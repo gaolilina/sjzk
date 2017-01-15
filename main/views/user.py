@@ -1,15 +1,14 @@
-import json
 from django import forms
 from django.db import IntegrityError
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db import transaction
 from django.views.generic import View
 from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
-from ..utils import abort, send_message
+from ..utils import abort
 from ..utils.decorators import *
+from ..utils.recommender import calculate_ranking_score
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
 
 
@@ -377,15 +376,15 @@ class Search(View):
         'by_tag': forms.IntegerField(required=False),
         'name': forms.CharField(max_length=20),
     })
-    def get(self, request, name, offset=0, limit=10, order=1, by_tag=0):
+    def get(self, request, name, offset=0, limit=10, order=None, by_tag=0):
         """
         搜索用户
 
         :param offset: 偏移量
         :param limit: 数量上限
-        :param order: 排序方式
+        :param order: 排序方式（若无则进行个性化排序）
             0: 注册时间升序
-            1: 注册时间降序（默认值）
+            1: 注册时间降序
             2: 昵称升序
             3: 昵称降序
         :param name: 用户名包含字段
@@ -406,7 +405,7 @@ class Search(View):
                 tags: 标签
                 time_created: 注册时间
         """
-        i, j, k = offset, offset + limit, self.ORDERS[order]
+        i, j = offset, offset + limit
         if by_tag == 0:
             # 按用户昵称段检索
             users = User.enabled.filter(name__contains=name)
@@ -414,6 +413,15 @@ class Search(View):
             # 按标签检索
             users = User.enabled.filter(tags__name=name)
         c = users.count()
+        if order is not None:
+            users = users.order_by(self.ORDERS[order])[i:j]
+        else:
+            # 将结果进行个性化排序
+            user_list = list()
+            for u in users:
+                user_list.append((u, calculate_ranking_score(request.user, u)))
+            user_list = sorted(user_list, key=lambda x: x[1], reverse=True)
+            users = (u[0] for u in user_list[i:j])
         l = [{'id': u.id,
               'username': u.username,
               'name': u.name,
@@ -424,7 +432,7 @@ class Search(View):
               'visitor_count': u.visitors.count(),
               'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
-              'time_created': u.time_created} for u in users.order_by(k)[i:j]]
+              'time_created': u.time_created} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
 
