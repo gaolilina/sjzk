@@ -887,8 +887,7 @@ class BindPhoneNumber(View):
     def post(self, request, phone_number, password, validation_code):
         """绑定手机号，若成功返回200"""
 
-        if not UserValidationCode.verify(
-                request.user.phone_number, validation_code):
+        if not UserValidationCode.verify(phone_number, validation_code):
             abort(400)
 
         if not request.user.check_password(password):
