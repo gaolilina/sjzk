@@ -280,7 +280,7 @@ class UserFeedback(models.Model):
 class UserFeature(models.Model):
     """用户特征模型"""
 
-    user = models.OneToOneField('User', models.CASCADE, 'model')
+    user = models.OneToOneField('User', models.CASCADE, 'feature_model')
     data = models.TextField(default="{}")
 
     class Meta:
