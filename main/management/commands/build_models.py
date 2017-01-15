@@ -13,9 +13,9 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.time_started = datetime.now()
         self.build_user_models()
-        self.stdout.print("%s: user models updated" % datetime.now())
+        self.stdout.write("%s: user models updated" % datetime.now())
         self.build_team_models()
-        self.stdout.print("%s: team models updated" % datetime.now())
+        self.stdout.write("%s: team models updated" % datetime.now())
 
     def build_user_models(self):
         users = User.enabled.all()
