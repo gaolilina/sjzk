@@ -293,7 +293,7 @@ class UserBehavior(models.Model):
     user = models.ForeignKey('User', models.CASCADE, 'behaviors')
     # like, view
     behavior = models.CharField(max_length=10)
-    # user, team, action
+    # user, team
     object_type = models.CharField(max_length=20)
     object_id = models.IntegerField()
     time_created = models.DateTimeField(default=timezone.now, db_index=True)

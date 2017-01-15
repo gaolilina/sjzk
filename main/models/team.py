@@ -8,7 +8,7 @@ from . import EnabledManager, Action, Comment, Follower, Liker, Tag, \
 __all__ = ['Team', 'TeamAction', 'TeamAchievement', 'TeamComment',
            'TeamFollower', 'TeamInvitation', 'TeamLiker', 'TeamMember',
            'TeamMemberRequest', 'TeamNeed', 'TeamTag', 'TeamVisitor',
-           'InternalTask', 'ExternalTask']
+           'InternalTask', 'ExternalTask', 'TeamFeature']
 
 
 class Team(models.Model):
