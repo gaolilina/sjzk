@@ -10,6 +10,6 @@ urls = [
     url(r'^posts/(?P<post_id>[0-9]+)/$', Post.as_view(), name='post'),
     # 搜索
     url(r'^search_board/$', SearchBoard.as_view(), name='search_board'),
-    url(r'^(?P<post_id>[0-9]+)/search_post/$',
+    url(r'^(?P<board_id>[0-9]+)/search_post/$',
         SearchPost.as_view(), name='search_post'),
 ]
