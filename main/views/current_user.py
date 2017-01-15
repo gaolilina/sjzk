@@ -7,7 +7,8 @@ from django.views.generic import View
 
 from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
-from ..models import User, Team, ActivityUserParticipator, UserValidationCode
+from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
+    Activity, Competition
 from ..utils import abort, action, save_uploaded_image, identity_verify
 from ..utils.decorators import *
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
@@ -18,6 +19,7 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'ExperienceList', 'FollowedUserList', 'FollowedUser',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
+           'LikedActivity', 'LikedCompetition',
            'RelatedTeamList', 'OwnedTeamList', 'InvitationList',
            'Invitation', 'IdentityVerification', 'ActivityList',
            'Feedback', 'InvitationCode', 'BindPhoneNumber']
@@ -609,6 +611,36 @@ class LikedTeam(LikedEntity):
     @fetch_object(Team.enabled, 'team')
     def delete(self, request, team):
         return super().delete(request, team)
+
+
+# noinspection PyMethodOverriding
+class LikedActivity(LikedEntity):
+    @fetch_object(Activity.enabled, 'activity')
+    def get(self, request, activity):
+        return super().get(request, activity)
+
+    @fetch_object(Activity.enabled, 'activity')
+    def post(self, request, activity):
+        return super().post(request, activity)
+
+    @fetch_object(Activity.enabled, 'activity')
+    def delete(self, request, activity):
+        return super().delete(request, activity)
+
+
+# noinspection PyMethodOverriding
+class LikedCompetition(LikedEntity):
+    @fetch_object(Competition.enabled, 'competition')
+    def get(self, request, competition):
+        return super().get(request, competition)
+
+    @fetch_object(Competition.enabled, 'competition')
+    def post(self, request, competition):
+        return super().post(request, competition)
+
+    @fetch_object(Competition.enabled, 'competition')
+    def delete(self, request, competition):
+        return super().delete(request, competition)
 
 
 class RelatedTeamList(View):
