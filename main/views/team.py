@@ -743,6 +743,8 @@ class AllNeedList(View):
                 icon_url: 团队头像
                 status: 需求状态
                 title: 需求标题
+                number: 所需人数/团队人数
+                degree: 需求学历
                 members: 需求的加入者
                 time_created: 发布时间
         """
@@ -770,9 +772,11 @@ class AllNeedList(View):
             need_dic['id'] = n.id
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
+            need_dic['number'] = n.number
             need_dic['icon_url'] = n.team.icon
             need_dic['status'] = n.status
             need_dic['title'] = n.title
+            need_dic['degree'] = n.degree
             need_dic['members'] = members
             need_dic['time_created'] = n.time_created
             l.append(need_dic)
@@ -803,6 +807,8 @@ class NeedList(View):
                 icon_url: 团队头像
                 status: 需求状态
                 title: 需求标题
+                number: 所需人数/团队人数
+                degree: 需求学历
                 time_created: 发布时间
         """
         qs = team.needs
@@ -833,6 +839,8 @@ class NeedList(View):
             need_dic['status'] = n.status
             need_dic['title'] = n.title
             need_dic['members'] = members
+            need_dic['degree'] = n.degree
+            need_dic['number'] = n.number
             need_dic['time_created'] = n.time_created
             l.append(need_dic)
         return JsonResponse({'count': c, 'list': l})
