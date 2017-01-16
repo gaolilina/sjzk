@@ -894,7 +894,7 @@ class BindPhoneNumber(View):
             abort(401)
 
         if User.enabled.filter(phone_number=phone_number).count() > 0:
-            abort(404, 'phone number already set')
+            abort(404, 'phone number already existed')
 
         request.user.phone_number = phone_number
         request.user.save()
