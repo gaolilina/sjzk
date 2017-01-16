@@ -893,6 +893,9 @@ class BindPhoneNumber(View):
         if not request.user.check_password(password):
             abort(401)
 
+        if User.enabled.filter(phone_number=phone_number).count() > 0:
+            abort(404, 'phone number already set')
+
         request.user.phone_number = phone_number
         request.user.save()
         abort(200)
