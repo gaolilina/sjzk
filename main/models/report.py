@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
+__all__ = ['Report']
+
 
 class Report(models.Model):
     """举报"""

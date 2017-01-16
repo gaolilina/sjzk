@@ -5,6 +5,7 @@ from ..views.common import UserActionsList, TeamActionsList, UserActionList, \
     UserCommentList, UserFollowerList, UserLikerList, UserLiker, \
     UserVisitorList, FollowedUserActionList, FollowedTeamActionList
 from ..views.forum import BoardList
+from ..views.report import Report
 
 urls = [
     # 基本信息
@@ -89,4 +90,6 @@ urls = [
     # 绑定手机号
     url(r'^bind_phone_number/$', BindPhoneNumber.as_view(),
         name='bind_phone_number'),
+    # 举报
+    url(r'^report/$', Report.as_view(), name='report'),
 ]
