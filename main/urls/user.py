@@ -1,8 +1,9 @@
 from django.conf.urls import url
 
 from ..views.user import *
-from ..views.common import UserActionList, UserCommentList, UserComment,\
-    UserFollowerList, UserFollower, UserLikerList, UserLiker, UserVisitorList
+from ..views.common import UserActionList, SearchUserActionList, \
+    SearchTeamActionList, UserCommentList, UserComment,UserFollowerList, \
+    UserFollower, UserLikerList, UserLiker, UserVisitorList
 from ..views.recommend import UserRecommend
 
 urls = [
@@ -55,6 +56,10 @@ urls = [
         UserLiker.as_view(), name='liker'),
     # 搜索
     url(r'search/$', Search.as_view(), name='search'),
+    url(r'search/user_action/$', SearchUserActionList.as_view(),
+        name='search_user_action'),
+    url(r'search/team_action/$', SearchTeamActionList.as_view(),
+        name='search_team_action'),
     # 验证码
     url(r'validation_code/$', ValidationCode.as_view(), name='validation_code'),
     # 忘记密码
