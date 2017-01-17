@@ -8,9 +8,10 @@ from django.views.generic import View
 from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
 from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
-    Activity, Competition
+    Activity, Competition, UserAction, TeamAction
 from ..utils import abort, action, save_uploaded_image, identity_verify
 from ..utils.decorators import *
+from ..utils.recommender import record_like_user, record_like_team
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
     ExperienceList_, FriendList, Friend as Friend_
 
@@ -19,10 +20,10 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'ExperienceList', 'FollowedUserList', 'FollowedUser',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
-           'LikedActivity', 'LikedCompetition',
-           'RelatedTeamList', 'OwnedTeamList', 'InvitationList',
-           'Invitation', 'IdentityVerification', 'ActivityList',
-           'Feedback', 'InvitationCode', 'BindPhoneNumber']
+           'LikedActivity', 'LikedCompetition', 'LikedUserAction',
+           'LikedTeamAction', 'RelatedTeamList', 'OwnedTeamList',
+           'InvitationList', 'Invitation', 'IdentityVerification',
+           'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber']
 
 
 class Username(View):
@@ -217,7 +218,7 @@ class Profile(Profile_):
 
         name = kwargs.pop('name', '')
         if len(name) > 0:
-            if re.match(r'创易用户 #\w+', name):
+            if re.match(r'创易汇用户 #\w+', name):
                 request.user.score += 50
             request.user.name = name
             # 用户昵称更换后调用融云接口更改融云上的用户头像
@@ -591,6 +592,8 @@ class LikedUser(LikedEntity):
 
     @fetch_object(User.enabled, 'user')
     def post(self, request, user):
+        # 记录用户给其他用户的点赞行为作为推荐数据
+        record_like_user(request.user, user)
         return super().post(request, user)
 
     @fetch_object(User.enabled, 'user')
@@ -606,6 +609,8 @@ class LikedTeam(LikedEntity):
 
     @fetch_object(Team.enabled, 'team')
     def post(self, request, team):
+        # 记录用户给团队的点赞行为作推荐数据
+        record_like_team(request.user, team)
         return super().post(request, team)
 
     @fetch_object(Team.enabled, 'team')
@@ -641,6 +646,38 @@ class LikedCompetition(LikedEntity):
     @fetch_object(Competition.enabled, 'competition')
     def delete(self, request, competition):
         return super().delete(request, competition)
+
+
+# noinspection PyMethodOverriding
+class LikedUserAction(LikedEntity):
+    @fetch_object(UserAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(UserAction.objects, 'action')
+    def post(self, request, action):
+        record_like_user(request.user, action.entity)
+        return super().post(request, action)
+
+    @fetch_object(UserAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
+
+
+# noinspection PyMethodOverriding
+class LikedTeamAction(LikedEntity):
+    @fetch_object(TeamAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(TeamAction.objects, 'action')
+    def post(self, request, action):
+        record_like_team(request.user, action.entity)
+        return super().post(request, action)
+
+    @fetch_object(TeamAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
 
 
 class RelatedTeamList(View):

@@ -14,6 +14,7 @@ from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
     ExternalTask, CompetitionTeamParticipator
 from main.utils import abort, action, save_uploaded_image
 from main.utils.decorators import *
+from main.utils.recommender import record_view_team
 
 __all__ = ('List', 'Search', 'Profile', 'Icon', 'MemberList', 'Member',
            'MemberRequestList', 'MemberRequest', 'Invitation',
@@ -234,6 +235,7 @@ class Profile(View):
         """
         if team.owner != request.user:
             team.visitors.update_or_create(visitor=request.user)
+            record_view_team(request.user, team)
 
         r = dict()
         r['id'] = team.id

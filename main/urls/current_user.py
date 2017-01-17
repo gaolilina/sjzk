@@ -67,6 +67,10 @@ urls = [
         LikedActivity.as_view(), name='liked_activity'),
     url(r'liked/competitions/(?P<competition_id>[0-9]+)/$',
         LikedCompetition.as_view(), name='liked_competition'),
+    url(r'liked/user_actions/(?P<action_id>[0-9]+)/$',
+        LikedUserAction.as_view(), name='liked_user_action'),
+    url(r'liked/team_actions/(?P<action_id>[0-9]+)/$',
+        LikedTeamAction.as_view(), name='liked_team_action'),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view(), name='visitors'),
     # 与当前用户相关的团队

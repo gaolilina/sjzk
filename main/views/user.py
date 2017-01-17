@@ -8,7 +8,7 @@ from rongcloud import RongCloud
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
 from ..utils import abort
 from ..utils.decorators import *
-from ..utils.recommender import calculate_ranking_score
+from ..utils.recommender import calculate_ranking_score, record_view_user
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
 
 
@@ -187,6 +187,7 @@ class Profile(View):
         if user != request.user:
             UserVisitor.objects \
                 .update_or_create(visited=user, visitor=request.user)
+            record_view_user(request.user, user)
 
         r = {'id': user.id,
              'time_created': user.time_created,
@@ -544,7 +545,10 @@ class ValidationCode(View):
         'phone_number': forms.CharField(min_length=11, max_length=11),
     })
     def get(self, request, phone_number):
-        """获取验证码"""
+        """获取验证码
+        :param phone_number: 手机号
+        :return validation_code: 验证码
+        """
 
         if not phone_number.isdigit():
             abort(400)
@@ -565,7 +569,13 @@ class PasswordForgotten(View):
         'validation_code': forms.CharField(min_length=6, max_length=6),
     })
     def post(self, request, phone_number, password, validation_code):
-        """忘记密码，若成功返回用户令牌"""
+        """忘记密码，若成功返回用户令牌
+        :param phone_number: 新手机号
+        :param password: 密码
+        :param validation_code: 新手机号收到的验证码
+
+        :return token
+        """
 
         if not UserValidationCode.verify(phone_number, validation_code):
             abort(400)
