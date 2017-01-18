@@ -94,7 +94,16 @@ class List(View):
                 token = r.result['token']
                 user.token = token
                 if invitation_code:
-                    user.invitation_code = invitation_code
+                    u = User.enabled.filter(invitation_code=invitation_code)
+                    if not u:
+                        abort(404, 'error invitation code!')
+                    user.used_invitation_code = invitation_code
+                    u.score_records.create(
+                        score=100, description="邀请码被使用")
+                # 加积分
+                user.score += 50
+                user.score_records.create(
+                    score=50, description="首次手机号注册")
                 user.save()
                 return JsonResponse({'token': user.token})
             except IntegrityError:

@@ -54,7 +54,7 @@ class User(models.Model):
     profession = models.CharField(max_length=20, default='')
 
     # 用户积分
-    score = models.IntegerField(default=50, db_index=True)
+    score = models.IntegerField(default=0, db_index=True)
 
     # 邀请码
     invitation_code = models.CharField(max_length=8)
