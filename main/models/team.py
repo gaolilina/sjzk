@@ -8,7 +8,7 @@ from . import EnabledManager, Action, Comment, Follower, Liker, Tag, \
 __all__ = ['Team', 'TeamAction', 'TeamAchievement', 'TeamComment',
            'TeamFollower', 'TeamInvitation', 'TeamLiker', 'TeamMember',
            'TeamMemberRequest', 'TeamNeed', 'TeamTag', 'TeamVisitor',
-           'InternalTask', 'ExternalTask', 'TeamFeature']
+           'InternalTask', 'ExternalTask', 'TeamFeature', 'TeamScore']
 
 
 class Team(models.Model):
@@ -285,6 +285,18 @@ class TeamVisitor(Visitor):
 
     class Meta:
         db_table = 'team_visitor'
+
+
+class TeamScore(models.Model):
+    """团队积分明细"""
+
+    team = models.ForeignKey('Team', models.CASCADE, 'score_records')
+    score = models.IntegerField(db_index=True)
+    description = models.CharField(max_length=100, default='')
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'team_score_record'
 
 
 class TeamFeature(models.Model):

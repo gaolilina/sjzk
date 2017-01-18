@@ -10,7 +10,7 @@ from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
 __all__ = ['User', 'UserAction', 'UserComment', 'UserExperience',
            'UserFollower', 'UserFriend', 'UserFriendRequest', 'UserLiker',
            'UserTag', 'UserValidationCode', 'UserVisitor', 'UserFeedback',
-           'UserFeature', 'UserBehavior']
+           'UserFeature', 'UserBehavior', 'UserScore']
 
 
 class User(models.Model):
@@ -275,6 +275,18 @@ class UserFeedback(models.Model):
     class Meta:
         db_table = 'user_feedback'
         ordering = ['-time_created']
+
+
+class UserScore(models.Model):
+    """用户积分明细"""
+
+    user = models.ForeignKey('User', models.CASCADE, 'score_records')
+    score = models.IntegerField(db_index=True)
+    description = models.CharField(max_length=100, default='')
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'user_score_record'
 
 
 class UserFeature(models.Model):
