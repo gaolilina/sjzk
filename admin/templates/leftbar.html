@@ -20,6 +20,12 @@
     <li class="active"><a href="{% url 'admin:system' %}">系统参数</a></li>
 </ul>
 {% endif %}
+{% if tb == 'feedback' %}
+<ul>
+    <li{% if lb == 'feedback' %} class="active"{% endif %}><a href="{% url 'admin:feedback:feedback' %}">用户反馈</a></li>
+    <li{% if lb == 'report' %} class="active"{% endif %}><a href="{% url 'admin:feedback:report' %}">用户举报</a></li>
+</ul>
+{% endif %}
 {% if tb == 'user_admin' %}
 <ul>
     <li{% if lb == 'user' %} class="active"{% endif %}><a href="{% url 'admin:user:user_list' %}">创友</a></li>

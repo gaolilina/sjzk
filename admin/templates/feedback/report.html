@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<table style="margin:30px">
+    <tr>
+        <td>用户</td>
+        <td style="min-width: 450px">内容</td>
+        <td>举报对象</td>
+        <td>时间</td>
+    </tr>
+    {% for item in list %}
+        <tr>
+            <td>{{ item.user.name }}</td>
+            <td>{{ item.content }}</td>
+            <td>
+                {% if item.type == 'user' %}
+                    <a href="{% url 'admin:user:user' item.object_id %}">用户{{ item.object_id }}</a>
+                {% endif %}
+                {% if item.type == 'team' %}
+                    <a href="{% url 'admin:team:team' item.object_id %}">团队{{ item.object_id }}</a>
+                {% endif %}
+                {% if item.type == 'need' %}
+                    <a href="{% url 'admin:team:team_need' item.object_id %}">团队需求{{ item.object_id }}</a>
+                {% endif %}
+                {% if item.type == 'task' %}
+                    <a href="{% url 'admin:user:user' item.object_id %}">用户{{ item.object_id }}</a>
+                {% endif %}
+                {% if item.type == 'activity' %}
+                    <a href="{% url 'admin:activity:activity' item.object_id %}">活动{{ item.object_id }}</a>
+                {% endif %}
+                {% if item.type == 'competition' %}
+                    <a href="{% url 'admin:competition:competition' item.object_id %}">竞赛{{ item.object_id }}</a>
+                {% endif %}
+                {% if item.type == 'action' %}
+                    <a href="{% url 'admin:user:user' item.object_id %}">用户{{ item.object_id }}</a>
+                {% endif %}
+                {% if item.type == 'forum' %}
+                    <a href="{% url 'admin:user:user' item.object_id %}">用户{{ item.object_id }}</a>
+                {% endif %}
+            </td>
+            <td>{{ item.time_created }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='feedback' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='feedback' lb='report' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='feedback' lb='report' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+<style>
+table {
+    border-collapse: collapse;
+}
+table td {
+    border: 1px solid #999;
+}
+table tr:nth-child(1) td {
+    text-align: center;
+}
+</style>
+{% endblock %}

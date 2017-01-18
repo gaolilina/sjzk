@@ -4,6 +4,7 @@
     <li{% if tb == 'admin_activity' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">活动</a></li>
     {% if user == None or user.role == 0 %}
     <li{% if tb == 'system_admin' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">参数设定</a></li>
+    <li{% if tb == 'feedback' %} class="active"{% endif %}><a href="{% url 'admin:feedback:feedback' %}">反馈举报</a></li>
     <li{% if tb == 'user_admin' %} class="active"{% endif %}><a href="{% url 'admin:user:user_list' %}">用户管理</a></li>
     <li{% if tb == 'activity_admin' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动管理</a></li>
     <li{% if tb == 'forum_admin' %} class="active"{% endif %}><a href="{% url 'admin:forum:forum_board_list' %}">论坛管理</a></li>
