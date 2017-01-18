@@ -1,7 +1,8 @@
 import json
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.core.management import BaseCommand
+from django.utils import timezone
 
 from ...models import User, Team, UserFeature, TeamFeature
 from ChuangYi import settings
@@ -11,11 +12,11 @@ class Command(BaseCommand):
     """构建用户、团队等实体的特征模型"""
 
     def handle(self, *args, **kwargs):
-        self.time_started = datetime.now()
+        self.time_started = timezone.now()
         self.build_user_models()
-        self.stdout.write("%s: user models updated" % datetime.now())
+        self.stdout.write("%s: user models updated" % timezone.now())
         self.build_team_models()
-        self.stdout.write("%s: team models updated" % datetime.now())
+        self.stdout.write("%s: team models updated" % timezone.now())
 
     def build_user_models(self):
         users = User.enabled.all()
