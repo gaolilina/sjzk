@@ -149,3 +149,14 @@ li:hover {
 .mobile {
     display: none;
 }
+
+footer {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 5px;
+    font-size: 14px;
+}
+footer a {
+    display: inline-block;
+}
