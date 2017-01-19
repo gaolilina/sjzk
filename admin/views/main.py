@@ -25,7 +25,7 @@ class Login(View):
             if user.check_password(password):
                 response = HttpResponseRedirect(reverse("admin:admin_user:info"))
                 response.set_cookie("usr", username)
-                response.set_cookie("pwd", user.password[:6])
+                response.set_cookie("pwd", user.password[18:24])
                 return response
             else:
                 template = loader.get_template("login.html")
