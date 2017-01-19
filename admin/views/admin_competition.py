@@ -41,11 +41,11 @@ class AdminCompetitionAdd(View):
         context = Context({'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
-class AdminCompetitionView(View):
+class AdminCompetitionEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
     def get(self, request, model):
-        template = loader.get_template("admin_competition/view.html")
+        template = loader.get_template("admin_competition/edit.html")
         context = Context({'model': model, 'user': request.user})
         return HttpResponse(template.render(context))
 
@@ -78,7 +78,7 @@ class AdminCompetitionView(View):
         stage.save()
         model.save()
 
-        template = loader.get_template("admin_competition/view.html")
+        template = loader.get_template("admin_competition/edit.html")
         context = Context({'model': model, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
@@ -93,3 +93,11 @@ class AdminCompetitionList(View):
             template = loader.get_template("admin_competition/add.html")
             context = Context()
             return HttpResponse(template.render(context))
+
+class AdminCompetitionView(View):
+    @fetch_record(Competition.enabled, 'model', 'id')
+    @require_cookie
+    def get(self, request, model):
+        template = loader.get_template("admin_competition/view.html")
+        context = Context({'model': model, 'user': request.user})
+        return HttpResponse(template.render(context))

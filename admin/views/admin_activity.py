@@ -42,11 +42,11 @@ class AdminActivityAdd(View):
         context = Context({'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
-class AdminActivityView(View):
+class AdminActivityEdit(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
     def get(self, request, model):
-        template = loader.get_template("admin_activity/view.html")
+        template = loader.get_template("admin_activity/edit.html")
         context = Context({'model': model, 'user': request.user})
         return HttpResponse(template.render(context))
 
@@ -77,7 +77,7 @@ class AdminActivityView(View):
         stage.save()
         model.save()
 
-        template = loader.get_template("admin_activity/view.html")
+        template = loader.get_template("admin_activity/edit.html")
         context = Context({'model': model, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
@@ -92,3 +92,11 @@ class AdminActivityList(View):
             template = loader.get_template("admin_activity/add.html")
             context = Context()
             return HttpResponse(template.render(context))
+
+class AdminActivityView(View):
+    @fetch_record(Activity.enabled, 'model', 'id')
+    @require_cookie
+    def get(self, request, model):
+        template = loader.get_template("admin_activity/view.html")
+        context = Context({'model': model, 'user': request.user})
+        return HttpResponse(template.render(context))

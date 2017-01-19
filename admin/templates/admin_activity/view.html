@@ -1,31 +1,30 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="{% url 'admin:admin_activity:view' model.id %}" method="post">
 <table>
     <tr>
         <td>标题：</td>
-        <td><input name="name" type="text" value="{{ model.name }}" maxlength="50" /></td>
+        <td>{{ model.name }}</td>
     </tr>
     <tr>
         <td>详细内容：</td>
-        <td><textarea name="content" maxlength="1000">{{ model.content }}</textarea></td>
+        <td>{{ model.content }}</td>
     </tr>
     <tr>
         <td>截至日期：</td>
-        <td><input name="deadline" type="datetime" value="{{ model.deadline }}" /></td>
+        <td>{{ model.deadline }}</td>
     </tr>
     <tr>
         <td>开始时间：</td>
-        <td><input name="time_started" type="datetime" value="{{ model.time_started }}" /></td>
+        <td>{{ model.time_started }}</td>
     </tr>
     <tr>
         <td>结束时间：</td>
-        <td><input name="time_ended" type="datetime" value="{{ model.time_ended }}" /></td>
+        <td>{{ model.time_ended }}</td>
     </tr>
     <tr>
         <td>人数上限：</td>
-        <td><input name="allow_user" type="number" value="{{ model.allow_user }}" /> (0为不限)</td>
+        <td>{{ model.allow_user }}</td>
     </tr>
     <tr>
         <td>活动阶段：</td>
@@ -39,25 +38,23 @@
     </tr>
     <tr>
         <td>省：</td>
-        <td><input name="stage_province" type="text" value="{{ model.stages.get.province }}" maxlength="20" /></td>
+        <td>{{ model.stages.get.province }}</td>
     </tr>
     <tr>
         <td>市：</td>
-        <td><input name="stage_city" type="text" value="{{ model.stages.get.city }}" maxlength="20" /></td>
+        <td>{{ model.stages.get.city }}</td>
     </tr>
     <tr>
         <td>学校：</td>
-        <td><input name="stage_school" type="text" value="{{ model.stages.get.school }}" maxlength="20" /></td>
+        <td>{{ model.stages.get.school }}</td>
     </tr>
     <tr>
         <td>参与者类型：</td>
         <td>
-            <select name="stage_user_type">
-                <option value="0"{% if model.stages.get.user_type == 0 %} selected="selected"{% endif %}>不限</option>
-                <option value="1"{% if model.stages.get.user_type == 1 %} selected="selected"{% endif %}>学生</option>
-                <option value="2"{% if model.stages.get.user_type == 2 %} selected="selected"{% endif %}>教师</option>
-                <option value="3"{% if model.stages.get.user_type == 3 %} selected="selected"{% endif %}>社会人员</option>
-            </select>
+            {% if model.stages.get.user_type == 0 %}不限{% endif %}
+            {% if model.stages.get.user_type == 1 %}学生{% endif %}
+            {% if model.stages.get.user_type == 2 %}教师{% endif %}
+            {% if model.stages.get.user_type == 3 %}社会人员{% endif %}
         </td>
     </tr>
     <tr>
@@ -68,24 +65,22 @@
             {% endfor %}
         </td>
     </tr>
-    <tr>
-        <td colspan="2">
-            {{ msg }}
-            <div class="buttons">
-                <input type="submit" value="保存" />
-                <input type="reset" value="取消" />
-            </div>
-        </td>
-    </tr>
 </table>
-
-</form>
 {% endblock %}
 
 {% block topbar %}{% include 'topbar.html' with tb='admin_activity' %}{% endblock %}
 {% block leftbar %}{% include 'leftbar.html' with tb='admin_activity' lb=1 %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb='admin_activity' lb=1 rb='add' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='admin_activity' lb=1 rb='' %}{% endblock %}
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+<style>
+table {
+    border-collapse: collapse;
+    margin: 30px;
+}
+table td {
+    border: 1px solid #999;
+}
+</style>
 {% endblock %}
