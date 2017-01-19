@@ -9,6 +9,10 @@ from main.utils.decorators import validate_args
 
 from admin.models.admin_user import AdminUser
 
+class Main(View):
+    def get(self, request):
+        return HttpResponseRedirect(reverse("admin:admin_user:info"))
+
 class Login(View):
     def get(self, request):
         template = loader.get_template("login.html")

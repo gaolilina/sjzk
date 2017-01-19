@@ -2,10 +2,11 @@ from django.conf.urls import url, include
 
 from . import admin_users, admin_activity, admin_competition, feedback, user, team, activity, competition, forum
 
-from admin.views.main import Login, Register
+from admin.views.main import Login, Register, Main
 from admin.views.system import Setting
 
 urlpatterns = [
+    url(r'^$', Main.as_view(), name='root'),
     url(r'^login', Login.as_view(), name='login'),
     #url(r'^register', Register.as_view(), name='register'),
     url(r'^admin_users/', include(admin_users.urls, namespace="admin_user")),
