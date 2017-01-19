@@ -1,4 +1,5 @@
 import re
+
 from django import forms
 from django.db import IntegrityError
 from django.db import transaction
@@ -15,7 +16,6 @@ from ..utils.decorators import *
 from ..utils.recommender import record_like_user, record_like_team
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
     ExperienceList_, FriendList, Friend as Friend_
-
 
 __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'ExperienceList', 'FollowedUserList', 'FollowedUser',
@@ -417,10 +417,10 @@ class FollowedUser(View):
             # 积分
             request.user.score -= get_score_stage(1)
             request.user.score_records.create(
-                score=get_score_stage(1), type="活跃度", description="取消关注")
+                score=-get_score_stage(1), type="活跃度", description="取消关注")
             user.score -= get_score_stage(1)
             user.score_records.create(
-                score=get_score_stage(1), type="受欢迎度",
+                score=-get_score_stage(1), type="受欢迎度",
                 description="被关注取消")
             request.user.save()
             user.save()
@@ -506,11 +506,11 @@ class FollowedTeam(View):
             # 积分
             request.user.score -= get_score_stage(1)
             request.user.score_records.create(
-                score=get_score_stage(1), type="活跃度",
+                score=-get_score_stage(1), type="活跃度",
                 description="取消关注")
             team.score -= get_score_stage(1)
             team.score_records.create(
-                score=get_score_stage(1), type="受欢迎度",
+                score=-get_score_stage(1), type="受欢迎度",
                 description="取消关注")
             request.user.save()
             team.save()
@@ -527,7 +527,7 @@ class Friend(Friend_):
         """将目标用户添加为自己的好友（对方需发送过好友请求）"""
 
         if not request.user.friend_requests.filter(other_user=other_user) \
-                                           .exists():
+                .exists():
             abort(403)
 
         if request.user.friends.filter(other_user=other_user).exists():
@@ -542,7 +542,7 @@ class Friend(Friend_):
             score=get_score_stage(1), type="受欢迎度", description="添加一个好友")
         other_user.score += get_score_stage(1)
         other_user.score_records.create(
-            score=get_score_stage(1), type="受欢迎度",description="添加一个好友")
+            score=get_score_stage(1), type="受欢迎度", description="添加一个好友")
         request.user.save()
         other_user.save()
         abort(200)
@@ -557,16 +557,16 @@ class Friend(Friend_):
 
         from ..models import UserFriend
         UserFriend.objects.filter(user=request.user, other_user=other_user) \
-                          .delete()
+            .delete()
         UserFriend.objects.filter(user=other_user, other_user=request.user) \
-                          .delete()
+            .delete()
         # 积分相关
         request.user.score -= get_score_stage(1)
         request.user.score_records.create(
-            score=get_score_stage(1), type="受欢迎度", description="删除一个好友")
+            score=-get_score_stage(1), type="受欢迎度", description="删除一个好友")
         other_user.score -= get_score_stage(1)
         other_user.score_records.create(
-            score=get_score_stage(1), type="受欢迎度", description="删除一个好友")
+            score=-get_score_stage(1), type="受欢迎度", description="删除一个好友")
         request.user.save()
         other_user.save()
         abort(200)
@@ -639,7 +639,7 @@ class LikedEntity(View):
             # 积分
             request.user.score += get_score_stage(1)
             request.user.score_records.create(
-                score=get_score_stage(1), type="活跃度",description="给他人点赞")
+                score=get_score_stage(1), type="活跃度", description="给他人点赞")
             # 特征模型
             if isinstance(entity, User):
                 record_like_user(request.user, entity)
@@ -651,7 +651,7 @@ class LikedEntity(View):
                 record_like_user(request.user, entity.entity)
             else:
                 pass
-                
+
             request.user.save()
         abort(200)
 
@@ -662,7 +662,7 @@ class LikedEntity(View):
         # 积分
         request.user.score -= get_score_stage(1)
         request.user.score_records.create(
-            score=get_score_stage(1), type="活跃度", description="取消给他人点赞")
+            score=-get_score_stage(1), type="活跃度", description="取消给他人点赞")
         request.user.save()
         entity.likers.filter(liker=request.user).delete()
         abort(200)
@@ -688,7 +688,7 @@ class LikedUser(LikedEntity):
         # 积分
         user.score -= get_score_stage(1)
         user.score_records.create(
-            score=get_score_stage(1), type="受欢迎度", description="他人取消点赞")
+            score=-get_score_stage(1), type="受欢迎度", description="他人取消点赞")
         user.save()
         return super().delete(request, user)
 
@@ -713,7 +713,7 @@ class LikedTeam(LikedEntity):
         # 积分
         team.score -= get_score_stage(1)
         team.score_records.create(
-            score=get_score_stage(1), type="受欢迎度", description="他人取消点赞")
+            score=-get_score_stage(1), type="受欢迎度", description="他人取消点赞")
         team.save()
         return super().delete(request, team)
 
