@@ -1,7 +1,7 @@
 {% if tb == 1 %}
     {% if lb == 1 %}
         <ul>
-            <li{% if rb == 1 %} class="active"{% endif %}><a href="#">注册、登录</a></li>
+            <li{% if rb == 1 %} class="active"{% endif %}><a href="#">登录注销</a></li>
         </ul>
     {% endif %}
     {% if lb == 2 %}
@@ -9,18 +9,20 @@
             <li{% if rb == 1 %} class="active"{% endif %}><a href="#">个人信息修改</a></li>
         </ul>
     {% endif %}
-    {% if lb == 3 %}
+    <!--{% if lb == 3 %}
         <ul>
             <li{% if rb == 1 %} class="active"{% endif %}><a href="#">实名认证</a></li>
         </ul>
-    {% endif %}
+    {% endif %}-->
 {% endif %}
 
 {% if tb == 'admin_competition' %}
     {% if lb != 0 %}
         <ul>
             <li{% if rb == 'view' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:list' %}">查看</a></li>
+            {% if 'z' in user.role %}
             <li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:add' %}">新增</a></li>
+            {% endif %}
         </ul>
     {% endif %}
 {% endif %}
@@ -29,7 +31,9 @@
     {% if lb != 0 %}
         <ul>
             <li{% if rb == 'view' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">查看</a></li>
+            {% if 'z' in user.role %}
             <li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:add' %}">新增</a></li>
+            {% endif %}
         </ul>
     {% endif %}
 {% endif %}

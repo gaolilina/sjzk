@@ -17,7 +17,8 @@ class AdminUser(models.Model):
     username = models.CharField(max_length=20, unique=True, db_index=True)
     password = models.CharField(max_length=128)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
-    role = models.IntegerField(default=1)
+    # a - 竞赛, b - 活动, z - 管理
+    role = models.CharField(default='ab', max_length=26)
 
     name = models.CharField(max_length=15, default='', db_index=True)
     description = models.CharField(max_length=100, default='')
