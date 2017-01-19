@@ -640,6 +640,18 @@ class LikedEntity(View):
             request.user.score += get_score_stage(1)
             request.user.score_records.create(
                 score=get_score_stage(1), type="活跃度",description="给他人点赞")
+            # 特征模型
+            if isinstance(entity, User):
+                record_like_user(request.user, entity)
+            elif isinstance(entity, UserAction):
+                record_like_user(request.user, entity.entity)
+            elif isinstance(entity, Team):
+                record_like_team(request.user, entity)
+            elif isinstance(entity, TeamAction):
+                record_like_user(request.user, entity.entity)
+            else:
+                pass
+                
             request.user.save()
         abort(200)
 
@@ -664,8 +676,6 @@ class LikedUser(LikedEntity):
 
     @fetch_object(User.enabled, 'user')
     def post(self, request, user):
-        # 记录用户给其他用户的点赞行为作为推荐数据
-        record_like_user(request.user, user)
         # 积分
         user.score += get_score_stage(1)
         user.score_records.create(
@@ -691,8 +701,6 @@ class LikedTeam(LikedEntity):
 
     @fetch_object(Team.enabled, 'team')
     def post(self, request, team):
-        # 记录用户给团队的点赞行为作推荐数据
-        record_like_team(request.user, team)
         # 积分
         team.score += get_score_stage(1)
         team.score_records.create(
@@ -748,7 +756,6 @@ class LikedUserAction(LikedEntity):
 
     @fetch_object(UserAction.objects, 'action')
     def post(self, request, action):
-        record_like_user(request.user, action.entity)
         return super().post(request, action)
 
     @fetch_object(UserAction.objects, 'action')
@@ -764,7 +771,6 @@ class LikedTeamAction(LikedEntity):
 
     @fetch_object(TeamAction.objects, 'action')
     def post(self, request, action):
-        record_like_team(request.user, action.entity)
         return super().post(request, action)
 
     @fetch_object(TeamAction.objects, 'action')
