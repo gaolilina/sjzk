@@ -9,7 +9,8 @@ class Report(models.Model):
 
     user = models.ForeignKey('User', models.CASCADE, 'reports')
     content = models.TextField(max_length=100)
-    # 举报对象的类型:user、team、need、task、activity、competition、action、forum
+    # 举报对象的类型:user、team、need、internal_task、external_task、
+    # activity、competition、user_action、team_action、forum
     type = models.CharField(max_length=20, db_index=True)
     object_id = models.IntegerField(db_index=True)
 
