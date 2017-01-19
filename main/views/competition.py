@@ -57,7 +57,23 @@ class Detail(View):
     @fetch_object(Competition.enabled, 'competition')
     @require_token
     def get(self, request, competition):
-        """获取竞赛详情"""
+        """获取竞赛详情
+        :return:
+            id: 竞赛ID
+            name: 竞赛名
+            liker_count: 点赞数
+            time_started: 开始时间
+            time_ended: 结束时间
+            deadline: 截止时间
+            allow_team: 允许报名团队数
+            team_participator_count: 已报名数
+            status: 竞赛当前阶段
+            province: 省
+            city: 城市
+            school: 学校
+            user_type: 参与人员身份
+            time_created: 创建时间
+        """
 
         return JsonResponse({
             'id': competition.id,
@@ -69,6 +85,11 @@ class Detail(View):
             'deadline': competition.deadline,
             'allow_team': competition.allow_team,
             'team_participator_count': competition.team_participators.count(),
+            'status': competition.status,
+            'province': competition.province,
+            'city': competition.city,
+            'school': competition.school,
+            'user_type': competition.user_type,
             'time_created': competition.time_created,
         })
 
@@ -96,6 +117,8 @@ class TeamParticipatorList(View):
     def post(self, request, competition, team_id):
         """报名"""
 
+        if competition.status != 1:
+            abort(403, 'not on the stage of signing up')
         c = competition.team_participators.count()
         if competition.allow_team != 0 and c >= competition.allow_team:
             abort(403, 'participators are enough')
@@ -107,6 +130,10 @@ class TeamParticipatorList(View):
         else:
             if not competition.team_participators.filter(team=team).exists():
                 competition.team_participators.create(team=team)
+            if competition.province and competition.province != team.province:
+                abort(403, 'location limited')
+            if competition.province and competition.city != team.city:
+                abort(403, 'location limited')
             abort(200)
 
 

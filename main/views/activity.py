@@ -57,7 +57,23 @@ class Detail(View):
     @fetch_object(Activity.enabled, 'activity')
     @require_token
     def get(self, request, activity):
-        """获取活动详情"""
+        """获取活动详情
+        :return:
+            id: 活动ID
+            name: 活动名
+            liker_count: 点赞数
+            time_started: 开始时间
+            time_ended: 结束时间
+            deadline: 截止时间
+            allow_user: 允许报名人数
+            user_participator_count: 已报名人数
+            status: 活动当前阶段
+            province: 省
+            city: 城市
+            school: 学校
+            user_type: 参与人员身份
+            time_created: 创建时间
+        """
 
         return JsonResponse({
             'id': activity.id,
@@ -69,6 +85,11 @@ class Detail(View):
             'deadline': activity.deadline,
             'allow_user': activity.allow_user,
             'user_participator_count': activity.user_participators.count(),
+            'status': activity.status,
+            'province': activity.province,
+            'city': activity.city,
+            'school': activity.school,
+            'user_type': activity.user_type,
             'time_created': activity.time_created,
         })
 
@@ -96,9 +117,17 @@ class UserParticipatorList(View):
     def post(self, request, activity):
         """报名"""
 
+        if activity.status != 1:
+            abort(403, 'not on the stage of signing up')
         c = activity.user_participators.count()
         if activity.allow_user != 0 and c >= activity.allow_user:
             abort(403, 'participators are enough')
+        if activity.province and activity.province != request.user.province:
+            abort(403, 'location limited')
+        if activity.province and activity.city != request.user.city:
+            abort(403, 'location limited')
+        if activity.unit and activity.unit != request.user.unit1:
+            abort(403, 'location limited')
 
         if not activity.user_participators.filter(user=request.user).exists():
             activity.user_participators.create(user=request.user)
