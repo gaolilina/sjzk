@@ -1,14 +1,18 @@
 # 个性化推荐相关函数
 import json
 
+from django.core.exceptions import ObjectDoesNotExist
 from main.models import UserBehavior
 
 
 def calculate_ranking_score(object0, object1):
     """计算排序分数"""
 
-    m0 = json.loads(object0.feature_model.data)
-    m1 = json.loads(object1.feature_model.data)
+    try:
+        m0 = json.loads(object0.feature_model.data)
+        m1 = json.loads(object1.feature_model.data)
+    except ObjectDoesNotExist:
+        return 0
 
     score = 0
     common_tags = set(m0.keys()) & set(m1.keys())

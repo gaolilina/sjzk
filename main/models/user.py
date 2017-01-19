@@ -10,7 +10,7 @@ from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
 __all__ = ['User', 'UserAction', 'UserComment', 'UserExperience',
            'UserFollower', 'UserFriend', 'UserFriendRequest', 'UserLiker',
            'UserTag', 'UserValidationCode', 'UserVisitor', 'UserFeedback',
-           'UserFeature', 'UserBehavior']
+           'UserFeature', 'UserBehavior', 'UserScore']
 
 
 class User(models.Model):
@@ -54,7 +54,7 @@ class User(models.Model):
     profession = models.CharField(max_length=20, default='')
 
     # 用户积分
-    score = models.IntegerField(default=50, db_index=True)
+    score = models.IntegerField(default=0, db_index=True)
 
     # 邀请码
     invitation_code = models.CharField(max_length=8)
@@ -98,7 +98,7 @@ class User(models.Model):
         """保存当前实例并生成序列用户名"""
 
         self.save()
-        self.name = '创易用户 #{}'.format(self.id)
+        self.name = '创易汇用户 #{}'.format(self.id)
         self.save()
 
     def create_invitation_code(self):
@@ -275,6 +275,19 @@ class UserFeedback(models.Model):
     class Meta:
         db_table = 'user_feedback'
         ordering = ['-time_created']
+
+
+class UserScore(models.Model):
+    """用户积分明细"""
+
+    user = models.ForeignKey('User', models.CASCADE, 'score_records')
+    score = models.IntegerField(db_index=True)
+    description = models.CharField(max_length=100, default='')
+    type = models.CharField(max_length=10, default='')
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'user_score_record'
 
 
 class UserFeature(models.Model):

@@ -120,4 +120,7 @@ urls = [
     # 竞赛
     url(r'^(?P<team_id>[0-9]+)/competition/$',
         CompetitionList.as_view(), name='competition'),
+    # 积分明细
+    url(r'^(?P<team_id>[0-9]+)/score_records/$', TeamScoreRecord.as_view(),
+        name='score_records'),
 ]

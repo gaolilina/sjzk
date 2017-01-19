@@ -63,6 +63,7 @@ class Detail(View):
             'id': competition.id,
             'name': competition.name,
             'content': competition.content,
+            'liker_count': competition.likers.count(),
             'time_started': competition.time_started,
             'time_ended': competition.time_ended,
             'deadline': competition.deadline,

@@ -6,9 +6,9 @@ from django.views.generic import View
 from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
-from ..utils import abort
+from ..utils import abort, get_score_stage
 from ..utils.decorators import *
-from ..utils.recommender import calculate_ranking_score
+from ..utils.recommender import calculate_ranking_score, record_view_user
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
 
 
@@ -94,7 +94,18 @@ class List(View):
                 token = r.result['token']
                 user.token = token
                 if invitation_code:
-                    user.invitation_code = invitation_code
+                    u = User.enabled.filter(invitation_code=invitation_code)
+                    if not u:
+                        abort(404, 'error invitation code!')
+                    user.used_invitation_code = invitation_code
+                    u.score_records.create(
+                        score=get_score_stage(4), type="活跃度",
+                        description="邀请码被使用")
+                # 加积分
+                user.score += get_score_stage(3)
+                user.score_records.create(
+                    score=get_score_stage(3), type="初始数据",
+                    description="首次手机号注册")
                 user.save()
                 return JsonResponse({'token': user.token})
             except IntegrityError:
@@ -187,6 +198,7 @@ class Profile(View):
         if user != request.user:
             UserVisitor.objects \
                 .update_or_create(visited=user, visitor=request.user)
+            record_view_user(request.user, user)
 
         r = {'id': user.id,
              'time_created': user.time_created,
@@ -544,7 +556,10 @@ class ValidationCode(View):
         'phone_number': forms.CharField(min_length=11, max_length=11),
     })
     def get(self, request, phone_number):
-        """获取验证码"""
+        """获取验证码
+        :param phone_number: 手机号
+        :return validation_code: 验证码
+        """
 
         if not phone_number.isdigit():
             abort(400)
@@ -565,7 +580,13 @@ class PasswordForgotten(View):
         'validation_code': forms.CharField(min_length=6, max_length=6),
     })
     def post(self, request, phone_number, password, validation_code):
-        """忘记密码，若成功返回用户令牌"""
+        """忘记密码，若成功返回用户令牌
+        :param phone_number: 新手机号
+        :param password: 密码
+        :param validation_code: 新手机号收到的验证码
+
+        :return token
+        """
 
         if not UserValidationCode.verify(phone_number, validation_code):
             abort(400)

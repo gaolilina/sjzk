@@ -12,8 +12,9 @@ from rongcloud import RongCloud
 from ChuangYi.settings import UPLOADED_URL
 from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
     ExternalTask, CompetitionTeamParticipator
-from main.utils import abort, action, save_uploaded_image
+from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
+from main.utils.recommender import record_view_team
 
 __all__ = ('List', 'Search', 'Profile', 'Icon', 'MemberList', 'Member',
            'MemberRequestList', 'MemberRequest', 'Invitation',
@@ -23,7 +24,7 @@ __all__ = ('List', 'Search', 'Profile', 'Icon', 'MemberList', 'Member',
            'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
            'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
            'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList',
-           'CompetitionList')
+           'CompetitionList', 'TeamScoreRecord')
 
 
 class List(View):
@@ -134,7 +135,9 @@ class List(View):
                         order += 1
 
         action.create_team(request.user, team)
-        request.user.score += 30
+        request.user.score += get_score_stage(2)
+        request.user.score_records.create(
+            score=get_score_stage(2), type="能力", description="成功创建一个团队")
         request.user.save()
         return JsonResponse({'team_id': team.id})
 
@@ -234,6 +237,7 @@ class Profile(View):
         """
         if team.owner != request.user:
             team.visitors.update_or_create(visitor=request.user)
+            record_view_team(request.user, team)
 
         r = dict()
         r['id'] = team.id
@@ -700,7 +704,10 @@ class AchievementList(View):
 
         achievement_num = team.achievements.count()
         if achievement_num == 0:
-            team.score += 20
+            team.score += get_score_stage(2)
+            team.score_records.create(
+                score=get_score_stage(2), type="能力",
+                description="首次发布团队成果")
 
         achievement = TeamAchievement(team=team, description=description)
         picture = request.FILES.get('image')
@@ -712,9 +719,13 @@ class AchievementList(View):
             abort(400)
         achievement.save()
 
-        request.user.score += 10
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="能力", description="发布一个团队成果")
         request.user.save()
-        team.score += 10
+        team.score += get_score_stage(1)
+        team.score_records.create(
+            score=get_score_stage(1), type="活跃度", description="发布一个团队成果")
         team.save()
         return JsonResponse({'achievement_id': achievement.id})
 
@@ -743,6 +754,8 @@ class AllNeedList(View):
                 icon_url: 团队头像
                 status: 需求状态
                 title: 需求标题
+                number: 所需人数/团队人数
+                degree: 需求学历
                 members: 需求的加入者
                 time_created: 发布时间
         """
@@ -770,9 +783,11 @@ class AllNeedList(View):
             need_dic['id'] = n.id
             need_dic['team_id'] = n.team.id
             need_dic['team_name'] = n.team.name
+            need_dic['number'] = n.number
             need_dic['icon_url'] = n.team.icon
             need_dic['status'] = n.status
             need_dic['title'] = n.title
+            need_dic['degree'] = n.degree
             need_dic['members'] = members
             need_dic['time_created'] = n.time_created
             l.append(need_dic)
@@ -803,6 +818,8 @@ class NeedList(View):
                 icon_url: 团队头像
                 status: 需求状态
                 title: 需求标题
+                number: 所需人数/团队人数
+                degree: 需求学历
                 time_created: 发布时间
         """
         qs = team.needs
@@ -833,6 +850,8 @@ class NeedList(View):
             need_dic['status'] = n.status
             need_dic['title'] = n.title
             need_dic['members'] = members
+            need_dic['degree'] = n.degree
+            need_dic['number'] = n.number
             need_dic['time_created'] = n.time_created
             l.append(need_dic)
         return JsonResponse({'count': c, 'list': l})
@@ -914,7 +933,10 @@ class NeedList(View):
     def create_member_need(self, request, team, **kwargs):
         team_needs = TeamNeed.objects.filter(team=team, type=0)
         if team_needs.count() == 0:
-            team.score += 20
+            team.score += get_score_stage(2)
+            team.score_records.create(
+                score=get_score_stage(2), type="初始数据",
+                description="首次发布团队需求")
             team.save()
 
         n = team.needs.create(type=0)
@@ -924,8 +946,16 @@ class NeedList(View):
         # 发布动态
         action.send_member_need(team, n)
         # 增加积分
-        request.user.score += 10
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="能力",
+            description="发布一个团队需求")
+        team.score += get_score_stage(1)
+        team.score_records.create(
+            score=get_score_stage(1), type="活跃度",
+            description="发布一个团队需求")
         request.user.save()
+        team.save()
         abort(200)
 
     @validate_args({
@@ -950,7 +980,10 @@ class NeedList(View):
     def create_outsource_need(self, request, team, **kwargs):
         team_needs = TeamNeed.objects.filter(team=team, type=1)
         if team_needs.count() == 0:
-            team.score += 20
+            team.score += get_score_stage(2)
+            team.score_records.create(
+                score=get_score_stage(2), type="初始数据",
+                description="首次发布团队需求")
             team.save()
 
         n = team.needs.create(type=1)
@@ -960,8 +993,16 @@ class NeedList(View):
         # 发布动态
         action.send_member_need(team, n)
         # 增加积分
-        request.user.score += 10
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="能力",
+            description="发布一个团队需求")
+        team.score += get_score_stage(1)
+        team.score_records.create(
+            score=get_score_stage(1), type="活跃度",
+            description="发布一个团队需求")
         request.user.save()
+        team.save()
         abort(200)
 
     @validate_args({
@@ -981,7 +1022,10 @@ class NeedList(View):
     def create_undertake_need(self, request, team, **kwargs):
         team_needs = TeamNeed.objects.filter(team=team, type=2)
         if team_needs.count() == 0:
-            team.score += 20
+            team.score += get_score_stage(2)
+            team.score_records.create(
+                score=get_score_stage(2), type="初始数据",
+                description="首次发布团队需求")
             team.save()
 
         n = team.needs.create(type=2)
@@ -991,8 +1035,16 @@ class NeedList(View):
         # 发布动态
         action.send_member_need(team, n)
         # 增加积分
-        request.user.score += 10
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="能力",
+            description="发布一个团队需求")
+        team.score += get_score_stage(1)
+        team.score_records.create(
+            score=get_score_stage(1), type="活跃度",
+            description="发布一个团队需求")
         request.user.save()
+        team.save()
         abort(200)
 
 
@@ -1109,8 +1161,16 @@ class Need(View):
             abort(403)
         need.status = 1
         need.save()
-        request.user.score += 10
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="能力",
+            description="将团队需求标记为已满足")
+        need.team.score += get_score_stage(1)
+        need.team.score_records.create(
+            score=get_score_stage(1), type="能力",
+            description="将团队需求标记为已满足")
         request.user.save()
+        need.team.save()
         abort(200)
 
     @fetch_object(TeamNeed, 'need')
@@ -1343,8 +1403,16 @@ class MemberNeedRequest(View):
             need.save()
             need.team.members.create(user=user)
             action.join_team(user, need.team)
-            request.user.score += 10
+            # 积分
+            request.user.score += get_score_stage(1)
+            request.user.score_records.create(
+                score=get_score_stage(1), type="能力", description="加入团队成功")
+            need.team.score += get_score_stage(1)
+            need.team.score_records.create(
+                score=get_score_stage(1), type="能力",
+                description="成功招募一个成员")
             request.user.save()
+            need.team.save()
         abort(200)
 
     @fetch_object(TeamNeed.objects, 'need')
@@ -1411,8 +1479,6 @@ class NeedRequestList(View):
             abort(404)
         if request.user == team.owner:
             need.cooperation_requests.create(sender=team)
-            request.user.score += 10
-            request.user.save()
             abort(200)
         abort(404)
 
@@ -1477,9 +1543,15 @@ class NeedRequest(View):
 
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
-                request.user.score += 10
+                request.user.score += get_score_stage(1)
+                request.user.score_records.create(
+                    score=get_score_stage(1), type="能力",
+                    description="与其他团队合作")
+                team.score += get_score_stage(1)
+                team.score_records.create(
+                    score=get_score_stage(1), type="能力",
+                    description="与其他团队合作")
                 request.user.save()
-                team.score += 10
                 team.save()
             abort(200)
         abort(404)
@@ -1546,8 +1618,6 @@ class NeedInvitationList(View):
             abort(404)
         if request.user == team.owner:
             need.cooperation_invitations.create(invitee=team)
-            request.user.score += 10
-            request.user.save()
             abort(200)
         abort(404)
 
@@ -1611,9 +1681,15 @@ class NeedInvitation(View):
                 need.save()
                 need.team.members.create(user=team.owner)
                 action.join_team(team.owner, need.team)
-                request.user.score += 10
+                request.user.score += get_score_stage(1)
+                request.user.score_records.create(
+                    score=get_score_stage(1), type="能力",
+                    description="与其他团队合作")
+                team.score += get_score_stage(1)
+                team.score_records.create(
+                    score=get_score_stage(1), type="能力",
+                    description="与其他团队合作")
                 request.user.save()
-                team.score += 10
                 team.save()
             abort(200)
         abort(404)
@@ -1713,9 +1789,15 @@ class InternalTaskList(View):
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
-        request.user.score += 10
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="能力",
+            description="发布一个内部任务")
+        team.score += get_score_stage(1)
+        team.score_records.create(
+            score=get_score_stage(1), type="活跃度",
+            description="发布一个内部任务")
         request.user.save()
-        team.score += 10
         team.save()
         abort(200)
 
@@ -1863,6 +1945,17 @@ class TeamInternalTask(View):
                 task.status = 6
             else:
                 task.status = 5
+            # 积分
+            task.executor.score += get_score_stage(1)
+            task.executor.score_records.create(
+                score=get_score_stage(1), type="能力",
+                description="完成一个外部任务")
+            task.team.score += get_score_stage(1)
+            task.team.score_records.create(
+                score=get_score_stage(1), type="能力",
+                description="队友完成一个外部任务")
+            task.executor.save()
+            task.team.save()
             task.save()
             abort(200)
         elif status == 0:
@@ -2011,9 +2104,15 @@ class ExternalTaskList(View):
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
-        request.user.score += 10
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="能力",
+            description="发布一个外部任务")
+        team.score += get_score_stage(1)
+        team.score_records.create(
+            score=get_score_stage(1), type="能力",
+            description="发布一个外部任务")
         request.user.save()
-        team.score += 10
         team.save()
         abort(200)
 
@@ -2124,6 +2223,17 @@ class TeamExternalTask(View):
                 task.status = 10
             else:
                 task.status = 9
+            # 积分
+            task.executor.score += get_score_stage(1)
+            task.executor.score_records.create(
+                score=get_score_stage(1), type="能力",
+                description="完成一个外部任务")
+            task.team.score += get_score_stage(1)
+            task.team.score_records.create(
+                score=get_score_stage(1), type="能力",
+                description="队友完成一个外部任务")
+            task.executor.save()
+            task.team.save()
             task.save()
             abort(200)
         elif status == 0:
@@ -2195,4 +2305,35 @@ class CompetitionList(View):
               'team_participator_count':
                   a.competition.team_participators.count(),
               'time_created': a.competition.time_created} for a in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class TeamScoreRecord(View):
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, team, offset=0, limit=10):
+        """获取团队的积分明细
+
+        :param offset: 拉取的起始
+        :param limit: 拉取的数量上限
+        :return:
+            count: 明细的总条数
+            list:
+                score: 积分
+                type: 积分类型
+                description: 描述
+                time_created: 时间
+
+        """
+        r = team.score_records.all()
+        c = r.count()
+        qs = r[offset: offset + limit]
+        l = [{'description': s.description,
+              'score': s.score,
+              'type': s.type,
+              'time_created': s.time_created} for s in qs]
         return JsonResponse({'count': c, 'list': l})

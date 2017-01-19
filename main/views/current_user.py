@@ -1,4 +1,5 @@
 import re
+
 from django import forms
 from django.db import IntegrityError
 from django.db import transaction
@@ -8,28 +9,30 @@ from django.views.generic import View
 from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
 from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
-    Activity, Competition
-from ..utils import abort, action, save_uploaded_image, identity_verify
+    Activity, Competition, UserAction, TeamAction
+from ..utils import abort, action, save_uploaded_image, identity_verify, \
+    get_score_stage
 from ..utils.decorators import *
+from ..utils.recommender import record_like_user, record_like_team
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
     ExperienceList_, FriendList, Friend as Friend_
-
 
 __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'ExperienceList', 'FollowedUserList', 'FollowedUser',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
-           'LikedActivity', 'LikedCompetition',
-           'RelatedTeamList', 'OwnedTeamList', 'InvitationList',
-           'Invitation', 'IdentityVerification', 'ActivityList',
-           'Feedback', 'InvitationCode', 'BindPhoneNumber']
+           'LikedActivity', 'LikedCompetition', 'LikedUserAction',
+           'LikedTeamAction', 'RelatedTeamList', 'OwnedTeamList',
+           'InvitationList', 'Invitation', 'IdentityVerification',
+           'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
+           'UserScoreRecord']
 
 
 class Username(View):
     @require_token
     def get(self, request):
         """获取当前用户的用户名"""
-        request.user.score += 10
+
         request.user.save()
         return JsonResponse({'username': request.user.username})
 
@@ -97,7 +100,10 @@ class Icon(Icon_):
         filename = save_uploaded_image(icon)
         if filename:
             if not request.user.icon:
-                request.user.score += 50
+                request.user.score += get_score_stage(3)
+                request.user.score_records.create(
+                    score=get_score_stage(3), type="初始数据",
+                    description="首次上传头像")
             request.user.icon = filename
             request.user.save()
             # 用户头像更换后调用融云接口更改融云上的用户头像
@@ -135,7 +141,10 @@ class IDCard(View):
         filename = save_uploaded_image(id_card, is_private=True)
         if filename:
             if not request.user.id_card:
-                request.user.score += 200
+                request.user.score += get_score_stage(5)
+                request.user.score_records.create(
+                    score=get_score_stage(5), type="初始数据",
+                    description="首次实名认证")
             request.user.id_card = filename
             request.user.save()
             abort(200)
@@ -165,7 +174,10 @@ class OtherCard(View):
         filename = save_uploaded_image(other_card, is_private=True)
         if filename:
             if not request.user.other_card:
-                request.user.score += 200
+                request.user.score += get_score_stage(5)
+                request.user.score_records.create(
+                    score=get_score_stage(5), type="初始数据",
+                    description="首次学生认证")
             request.user.other_card = filename
             request.user.save()
             abort(200)
@@ -217,8 +229,11 @@ class Profile(Profile_):
 
         name = kwargs.pop('name', '')
         if len(name) > 0:
-            if re.match(r'创易用户 #\w+', name):
-                request.user.score += 50
+            if re.match(r'创易汇用户 #\w+', name):
+                request.user.score += get_score_stage(3)
+                request.user.score_records.create(
+                    score=get_score_stage(3), type="初始数据",
+                    description="首次更换用户名")
             request.user.name = name
             # 用户昵称更换后调用融云接口更改融云上的用户头像
             if request.user.icon:
@@ -252,7 +267,6 @@ class Profile(Profile_):
             for k in role_keys:
                 setattr(request.user, k, kwargs[k])
 
-        request.user.score += 50
         request.user.save()
         abort(200)
 
@@ -285,7 +299,6 @@ class IdentityVerification(Profile_):
         if not request.user.is_verified:
             for k in id_keys:
                 setattr(request.user, k, kwargs[k])
-        request.user.score += 50
         request.user.is_verified = 1
         request.user.save()
         abort(200)
@@ -310,7 +323,9 @@ class ExperienceList(ExperienceList_):
             profession=kwargs['profession'], degree=kwargs['degree'],
             time_in=kwargs['time_in'], time_out=kwargs['time_out']
         )
-        request.user.score += 50
+        request.user.score += get_score_stage(3)
+        request.user.score_records.create(
+            score=get_score_stage(3), type="活跃度", description="增加一条经历")
         request.user.save()
         abort(200)
 
@@ -381,8 +396,15 @@ class FollowedUser(View):
         if request.user.followed_users.filter(followed=user).exists():
             abort(403)
         request.user.followed_users.create(followed=user)
-        request.user.score += 10
+        # 积分
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="活跃度", description="增加关注")
+        user.score += get_score_stage(1)
+        user.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="被关注")
         request.user.save()
+        user.save()
         abort(200)
 
     @fetch_object(User.enabled, 'user')
@@ -392,6 +414,16 @@ class FollowedUser(View):
 
         qs = request.user.followed_users.filter(followed=user)
         if qs.exists():
+            # 积分
+            request.user.score -= get_score_stage(1)
+            request.user.score_records.create(
+                score=-get_score_stage(1), type="活跃度", description="取消关注")
+            user.score -= get_score_stage(1)
+            user.score_records.create(
+                score=-get_score_stage(1), type="受欢迎度",
+                description="被关注取消")
+            request.user.save()
+            user.save()
             qs.delete()
             abort(200)
         abort(403)
@@ -454,8 +486,14 @@ class FollowedTeam(View):
         if request.user.followed_teams.filter(followed=team).exists():
             abort(403)
         request.user.followed_teams.create(followed=team)
-        request.user.score += 10
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="活跃度", description="增加一个关注")
+        team.score += get_score_stage(1)
+        team.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="增加一个关注")
         request.user.save()
+        team.save()
         abort(200)
 
     @fetch_object(Team.enabled, 'team')
@@ -465,6 +503,17 @@ class FollowedTeam(View):
 
         qs = request.user.followed_users.filter(followed=team)
         if qs.exists():
+            # 积分
+            request.user.score -= get_score_stage(1)
+            request.user.score_records.create(
+                score=-get_score_stage(1), type="活跃度",
+                description="取消关注")
+            team.score -= get_score_stage(1)
+            team.score_records.create(
+                score=-get_score_stage(1), type="受欢迎度",
+                description="取消关注")
+            request.user.save()
+            team.save()
             qs.delete()
             abort(200)
         abort(403)
@@ -478,7 +527,7 @@ class Friend(Friend_):
         """将目标用户添加为自己的好友（对方需发送过好友请求）"""
 
         if not request.user.friend_requests.filter(other_user=other_user) \
-                                           .exists():
+                .exists():
             abort(403)
 
         if request.user.friends.filter(other_user=other_user).exists():
@@ -487,8 +536,15 @@ class Friend(Friend_):
         request.user.friends.create(other_user=other_user)
         other_user.friends.create(other_user=request.user)
         request.user.friend_requests.filter(other_user=other_user).delete()
-        request.user.score += 10
+        # 积分相关
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="添加一个好友")
+        other_user.score += get_score_stage(1)
+        other_user.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="添加一个好友")
         request.user.save()
+        other_user.save()
         abort(200)
 
     @fetch_object(User.enabled, 'other_user')
@@ -501,9 +557,18 @@ class Friend(Friend_):
 
         from ..models import UserFriend
         UserFriend.objects.filter(user=request.user, other_user=other_user) \
-                          .delete()
+            .delete()
         UserFriend.objects.filter(user=other_user, other_user=request.user) \
-                          .delete()
+            .delete()
+        # 积分相关
+        request.user.score -= get_score_stage(1)
+        request.user.score_records.create(
+            score=-get_score_stage(1), type="受欢迎度", description="删除一个好友")
+        other_user.score -= get_score_stage(1)
+        other_user.score_records.create(
+            score=-get_score_stage(1), type="受欢迎度", description="删除一个好友")
+        request.user.save()
+        other_user.save()
         abort(200)
 
 
@@ -571,7 +636,22 @@ class LikedEntity(View):
 
         if not entity.likers.filter(liker=request.user).exists():
             entity.likers.create(liker=request.user)
-            request.user.score += 10
+            # 积分
+            request.user.score += get_score_stage(1)
+            request.user.score_records.create(
+                score=get_score_stage(1), type="活跃度", description="给他人点赞")
+            # 特征模型
+            if isinstance(entity, User):
+                record_like_user(request.user, entity)
+            elif isinstance(entity, UserAction):
+                record_like_user(request.user, entity.entity)
+            elif isinstance(entity, Team):
+                record_like_team(request.user, entity)
+            elif isinstance(entity, TeamAction):
+                record_like_user(request.user, entity.entity)
+            else:
+                pass
+
             request.user.save()
         abort(200)
 
@@ -579,6 +659,11 @@ class LikedEntity(View):
     def delete(self, request, entity):
         """对某个对象取消点赞"""
 
+        # 积分
+        request.user.score -= get_score_stage(1)
+        request.user.score_records.create(
+            score=-get_score_stage(1), type="活跃度", description="取消给他人点赞")
+        request.user.save()
         entity.likers.filter(liker=request.user).delete()
         abort(200)
 
@@ -591,10 +676,20 @@ class LikedUser(LikedEntity):
 
     @fetch_object(User.enabled, 'user')
     def post(self, request, user):
+        # 积分
+        user.score += get_score_stage(1)
+        user.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="他人点赞")
+        user.save()
         return super().post(request, user)
 
     @fetch_object(User.enabled, 'user')
     def delete(self, request, user):
+        # 积分
+        user.score -= get_score_stage(1)
+        user.score_records.create(
+            score=-get_score_stage(1), type="受欢迎度", description="他人取消点赞")
+        user.save()
         return super().delete(request, user)
 
 
@@ -606,10 +701,20 @@ class LikedTeam(LikedEntity):
 
     @fetch_object(Team.enabled, 'team')
     def post(self, request, team):
+        # 积分
+        team.score += get_score_stage(1)
+        team.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="他人点赞")
+        team.save()
         return super().post(request, team)
 
     @fetch_object(Team.enabled, 'team')
     def delete(self, request, team):
+        # 积分
+        team.score -= get_score_stage(1)
+        team.score_records.create(
+            score=-get_score_stage(1), type="受欢迎度", description="他人取消点赞")
+        team.save()
         return super().delete(request, team)
 
 
@@ -641,6 +746,36 @@ class LikedCompetition(LikedEntity):
     @fetch_object(Competition.enabled, 'competition')
     def delete(self, request, competition):
         return super().delete(request, competition)
+
+
+# noinspection PyMethodOverriding
+class LikedUserAction(LikedEntity):
+    @fetch_object(UserAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(UserAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(UserAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
+
+
+# noinspection PyMethodOverriding
+class LikedTeamAction(LikedEntity):
+    @fetch_object(TeamAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(TeamAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(TeamAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
 
 
 class RelatedTeamList(View):
@@ -810,8 +945,16 @@ class Invitation(View):
             # 发布用户加入团队动态
             action.join_team(request.user, invitation.team)
             invitation.delete()
-            request.user.score += 10
+            request.user.score += get_score_stage(1)
+            request.user.score_records.create(
+                score=get_score_stage(1), type="能力",
+                description="成功加入一个团队")
+            invitation.team.score += get_score_stage(1)
+            invitation.team.score_records.create(
+                score=get_score_stage(1), type="能力",
+                description="成功招募队员")
             request.user.save()
+            invitation.team.save()
         abort(200)
 
     @fetch_object(TeamInvitation.objects, 'invitation')
@@ -860,7 +1003,10 @@ class Feedback(View):
         :return: 200
         """
         if request.user.feedback.count() == 0:
-            request.user.score += 30
+            request.user.score += get_score_stage(2)
+            request.user.score_records.create(
+                score=get_score_stage(2), type="活跃度",
+                description="增加一条反馈")
             request.user.save()
         request.user.feedback.create(content=content)
         abort(200)
@@ -887,13 +1033,45 @@ class BindPhoneNumber(View):
     def post(self, request, phone_number, password, validation_code):
         """绑定手机号，若成功返回200"""
 
-        if not UserValidationCode.verify(
-                request.user.phone_number, validation_code):
+        if not UserValidationCode.verify(phone_number, validation_code):
             abort(400)
 
         if not request.user.check_password(password):
             abort(401)
 
+        if User.enabled.filter(phone_number=phone_number).count() > 0:
+            abort(404, 'phone number already existed')
+
         request.user.phone_number = phone_number
         request.user.save()
         abort(200)
+
+
+class UserScoreRecord(View):
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, offset=0, limit=10):
+        """获取用户的积分明细
+
+        :param offset: 拉取的起始
+        :param limit: 拉取的数量上限
+        :return:
+            count: 明细的总条数
+            list:
+                score: 积分
+                type: 积分类别
+                description: 描述
+                time_created: 时间
+
+        """
+        r = request.user.score_records.all()
+        c = r.count()
+        qs = r[offset: offset + limit]
+        l = [{'description': s.description,
+              'score': s.score,
+              'type': s.type,
+              'time_created': s.time_created} for s in qs]
+        return JsonResponse({'count': c, 'list': l})

@@ -5,6 +5,7 @@ from ..views.common import UserActionsList, TeamActionsList, UserActionList, \
     UserCommentList, UserFollowerList, UserLikerList, UserLiker, \
     UserVisitorList, FollowedUserActionList, FollowedTeamActionList
 from ..views.forum import BoardList
+from ..views.report import Report
 
 urls = [
     # 基本信息
@@ -66,6 +67,10 @@ urls = [
         LikedActivity.as_view(), name='liked_activity'),
     url(r'liked/competitions/(?P<competition_id>[0-9]+)/$',
         LikedCompetition.as_view(), name='liked_competition'),
+    url(r'liked/user_actions/(?P<action_id>[0-9]+)/$',
+        LikedUserAction.as_view(), name='liked_user_action'),
+    url(r'liked/team_actions/(?P<action_id>[0-9]+)/$',
+        LikedTeamAction.as_view(), name='liked_team_action'),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view(), name='visitors'),
     # 与当前用户相关的团队
@@ -89,4 +94,8 @@ urls = [
     # 绑定手机号
     url(r'^bind_phone_number/$', BindPhoneNumber.as_view(),
         name='bind_phone_number'),
+    # 举报
+    url(r'^report/$', Report.as_view(), name='report'),
+    # 积分明细
+    url(r'^score_records/$', UserScoreRecord.as_view(), name='score_records'),
 ]

@@ -5,9 +5,10 @@ from django.utils import timezone
 
 from .abort import abort
 from .http import send_message, identity_verify, picture_verify
+from .system import get_score_stage
 
 __all__ = ['abort', 'send_message', 'identity_verify', 'picture_verify',
-           'save_uploaded_image']
+           'save_uploaded_image', 'get_score_stage']
 
 
 def save_uploaded_image(image, is_private=False):
