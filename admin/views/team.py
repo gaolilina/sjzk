@@ -631,6 +631,54 @@ class TeamNeedList(View):
             template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_need'})
             return HttpResponse(template.render(context))
+class TeamScoreView(View):
+    @fetch_record(TeamScore.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("team/team_score_record.html")
+        context = Context({'mod': mod})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(TeamScore.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'score': forms.IntegerField(required=False,),'description': forms.CharField(max_length=100,required=False,),'type': forms.CharField(max_length=10,required=False,),'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("team_score_record", mod.id, 1, request.user)
+
+        template = loader.get_template("team/team_score_record.html")
+        context = Context({'mod': mod, 'msg': '保存成功'})
+        return HttpResponse(template.render(context))
+
+class TeamScoreList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = TeamScore.objects.filter(team_id=kwargs["id"])
+            template = loader.get_template("team/team_score_record_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_score_record'})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("name") is not None:
+            name = request.GET.get("name")
+            template = loader.get_template("team/index.html")
+            if TeamScore == Team:
+                redir = 'admin:team:team'
+            else:
+                redir = 'admin:team:team_score_record_list'
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_score_record'})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("team/index.html")
+            context = Context({'rb': 'team_score_record'})
+            return HttpResponse(template.render(context))
 class TeamTagView(View):
     @fetch_record(TeamTag.objects, 'mod', 'id')
     @require_cookie

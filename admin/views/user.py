@@ -535,6 +535,54 @@ class UserLikerList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_liker'})
             return HttpResponse(template.render(context))
+class UserScoreView(View):
+    @fetch_record(UserScore.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("user/user_score_record.html")
+        context = Context({'mod': mod})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(UserScore.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'score': forms.IntegerField(required=False,),'description': forms.CharField(max_length=100,required=False,),'type': forms.CharField(max_length=10,required=False,),'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("user_score_record", mod.id, 1, request.user)
+
+        template = loader.get_template("user/user_score_record.html")
+        context = Context({'mod': mod, 'msg': '保存成功'})
+        return HttpResponse(template.render(context))
+
+class UserScoreList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = UserScore.objects.filter(user_id=kwargs["id"])
+            template = loader.get_template("user/user_score_record_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_score_record'})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("username") is not None:
+            username = request.GET.get("username")
+            template = loader.get_template("user/index.html")
+            if UserScore == User:
+                redir = 'admin:user:user'
+            else:
+                redir = 'admin:user:user_score_record_list'
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_score_record'})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("user/index.html")
+            context = Context({'rb': 'user_score_record'})
+            return HttpResponse(template.render(context))
 class UserTagView(View):
     @fetch_record(UserTag.objects, 'mod', 'id')
     @require_cookie
