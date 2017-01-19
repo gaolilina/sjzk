@@ -38,6 +38,7 @@ class ActionList(View):
             count: 动态总数（包括标记为disabled的内容）
             last_time_created: 最近更新时间
             list: 动态列表
+                action_id: 动态id
                 id: 主语的id
                 name: 主语的名称
                 icon: 主语的头像
@@ -55,6 +56,7 @@ class ActionList(View):
         c = entity.actions.count()
         records = (i for i in entity.actions.all()[offset:offset + limit])
         l = [{'id': i.entity.id,
+              'action_id': i.id,
               'name': i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
@@ -83,6 +85,7 @@ class UserActionsList(View):
             count: 动态总数（包括标记为disabled的内容）
             last_time_created: 最近更新时间
             list: 动态列表
+                action_id: 动态id
                 id: 主语的id
                 name: 主语的名称
                 icon: 主语的头像
@@ -100,6 +103,7 @@ class UserActionsList(View):
         c = UserAction.objects.count()
         records = (i for i in UserAction.objects.all()[offset:offset + limit])
         l = [{'id': i.entity.id,
+              'action_id': i.id,
               'name': i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
@@ -129,6 +133,7 @@ class TeamActionsList(View):
             last_time_created: 最近更新时间
             list: 动态列表
                 id: 主语的id
+                action_id: 动态id
                 name: 主语的名称
                 icon: 主语的头像
                 action: 相关动作
@@ -145,6 +150,7 @@ class TeamActionsList(View):
         c = TeamAction.objects.count()
         records = (i for i in TeamAction.objects.all()[offset:offset + limit])
         l = [{'id': i.entity.id,
+              'action_id': i.id,
               'name': i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
@@ -174,6 +180,7 @@ class FollowedUserActionList(View):
             count: 动态总数（包括标记为disabled的内容）
             last_time_created: 最近更新时间
             list: 动态列表
+                action_id: 动态id
                 id: 主语的id
                 name: 主语的名称
                 icon: 主语的头像
@@ -192,6 +199,7 @@ class FollowedUserActionList(View):
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
+              'action_id': i.id,
               'name': i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
@@ -221,6 +229,7 @@ class FollowedTeamActionList(View):
             count: 动态总数（包括标记为disabled的内容）
             last_time_created: 最近更新时间
             list: 动态列表
+                action_id: 动态id
                 id: 主语的id
                 name: 主语的名称
                 icon: 主语的头像
@@ -239,6 +248,7 @@ class FollowedTeamActionList(View):
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
+              'action_id': i.id,
               'name': i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
@@ -288,6 +298,7 @@ class SearchUserActionList(View):
             count: 动态总数（包括标记为disabled的内容）
             last_time_created: 最近更新时间
             list: 动态列表
+                action_id: 动态id
                 id: 主语的id
                 name: 主语的名称
                 icon: 主语的头像
@@ -306,6 +317,7 @@ class SearchUserActionList(View):
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
+              'action_id': i.id,
               'name': i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
@@ -338,6 +350,7 @@ class SearchTeamActionList(View):
             count: 动态总数（包括标记为disabled的内容）
             last_time_created: 最近更新时间
             list: 动态列表
+                action_id: 动态id
                 id: 主语的id
                 name: 主语的名称
                 icon: 主语的头像
@@ -356,6 +369,7 @@ class SearchTeamActionList(View):
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
+              'action_id': i.id,
               'name': i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
