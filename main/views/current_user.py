@@ -265,7 +265,8 @@ class Profile(Profile_):
         role_keys = ('role', 'other_number', 'unit1', 'unit2', 'profession')
         if not request.user.is_role_verified:
             for k in role_keys:
-                setattr(request.user, k, kwargs[k])
+                if k in kwargs:
+                    setattr(request.user, k, kwargs[k])
 
         request.user.save()
         abort(200)
