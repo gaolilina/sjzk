@@ -27,36 +27,52 @@
         <td>{{ model.allow_user }}</td>
     </tr>
     <tr>
-        <td>活动阶段：</td>
-        <td>
-            <select name="stage_status">
-                <option value="0"{% if model.stages.get.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
-                <option value="1"{% if model.stages.get.status == 1 %} selected="selected"{% endif %}>报名</option>
-                <option value="2"{% if model.stages.get.status == 2 %} selected="selected"{% endif %}>结束</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
         <td>省：</td>
-        <td>{{ model.stages.get.province }}</td>
+        <td>{{ model.province }}</td>
     </tr>
     <tr>
         <td>市：</td>
-        <td>{{ model.stages.get.city }}</td>
+        <td>{{ model.city }}</td>
     </tr>
     <tr>
         <td>学校：</td>
-        <td>{{ model.stages.get.school }}</td>
+        <td>{{ model.school }}</td>
+    </tr>
+    <tr>
+        <td>最少人数：</td>
+        <td>{{ model.min_member }}</td>
+    </tr>
+    <tr>
+        <td>最多人数：</td>
+        <td>{{ model.max_member }}</td>
     </tr>
     <tr>
         <td>参与者类型：</td>
         <td>
-            {% if model.stages.get.user_type == 0 %}不限{% endif %}
-            {% if model.stages.get.user_type == 1 %}学生{% endif %}
-            {% if model.stages.get.user_type == 2 %}教师{% endif %}
-            {% if model.stages.get.user_type == 3 %}社会人员{% endif %}
+            {% if model.user_type == 0 %}不限{% endif %}
+            {% if model.user_type == 1 %}学生{% endif %}
+            {% if model.user_type == 2 %}教师{% endif %}
+            {% if model.user_type == 3 %}社会人员{% endif %}
         </td>
     </tr>
+    <tr>
+        <td>当前活动阶段：</td>
+        <td>
+            {% if model.status == 0 %}前期宣传{% endif %}
+            {% if model.status == 1 %}报名{% endif %}
+            {% if model.status == 2 %}结束{% endif %}
+        </td>
+    </tr>
+    {% for stage in stages %}
+        <tr>
+            <td>活动阶段{{forloop.counter}}</td>
+            <td>
+                类　　型：{% if stage.status == 0 %}前期宣传{% endif %}{% if stage.status == 1 %}报名{% endif %}{% if stage.status == 2 %}结束{% endif %}<br/>
+                开始时间：{{ stage.time_started }}<br/>
+                结束时间：{{ stage.time_ended }}<br/>
+            </td>
+        </tr>
+    {% endfor %}
     <tr>
         <td>报名者：</td>
         <td>

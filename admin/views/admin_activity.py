@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
+import json
+
 from main.utils.decorators import validate_args
 from main.models.activity import *
 from admin.models.activity_owner import *
@@ -13,7 +15,7 @@ class AdminActivityAdd(View):
     @require_cookie
     def get(self, request):
         template = loader.get_template("admin_activity/add.html")
-        context = Context()
+        context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
@@ -24,19 +26,30 @@ class AdminActivityAdd(View):
         'time_started': forms.DateTimeField(),
         'time_ended': forms.DateTimeField(),
         'allow_user': forms.IntegerField(),
+        'status': forms.IntegerField(),
+        'province': forms.CharField(max_length=20, required=False),
+        'city': forms.CharField(max_length=20, required=False),
+        'unit': forms.CharField(max_length=20, required=False),
+        'min_member': forms.IntegerField(),
+        'max_member': forms.IntegerField(),
+        'user_type': forms.IntegerField(),
+        'stages': forms.CharField(),
     })
     def post(self, request, **kwargs):
         user = request.user
         activity = Activity()
         
         for k in kwargs:
-            setattr(activity, k, kwargs[k])
+            if k != "stages":
+                setattr(activity, k, kwargs[k])
         activity.save()
 
         actv_user = ActivityOwner.objects.create(activity=activity, user=user)
         actv_user.save()
         
-        activity.stages.create()
+        stages = json.loads(kwargs['stages'])
+        for st in stages:
+            activity.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
 
         template = loader.get_template("admin_activity/add.html")
         context = Context({'msg': '保存成功', 'user': request.user})
@@ -47,7 +60,7 @@ class AdminActivityEdit(View):
     @require_cookie
     def get(self, request, model):
         template = loader.get_template("admin_activity/edit.html")
-        context = Context({'model': model, 'user': request.user})
+        context = Context({'model': model, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
         return HttpResponse(template.render(context))
 
     @fetch_record(Activity.enabled, 'model', 'id')
@@ -59,26 +72,29 @@ class AdminActivityEdit(View):
         'time_started': forms.DateTimeField(required=False),
         'time_ended': forms.DateTimeField(required=False),
         'allow_user': forms.IntegerField(),
-        'stage_status': forms.IntegerField(required=False),
-        'stage_province': forms.CharField(max_length=20, required=False),
-        'stage_city': forms.CharField(max_length=20, required=False),
-        'stage_school': forms.CharField(max_length=20, required=False),
-        'stage_user_type': forms.IntegerField(required=False),
+        'status': forms.IntegerField(required=False),
+        'province': forms.CharField(max_length=20, required=False),
+        'city': forms.CharField(max_length=20, required=False),
+        'unit': forms.CharField(max_length=20, required=False),
+        'user_type': forms.IntegerField(required=False),
+        'stages': forms.CharField(),
     })
     def post(self, request, **kwargs):
         user = request.user
         model = kwargs["model"]
-        stage = model.stages.get()
         for k in kwargs:
-            if k.startswith("stage_"):
-                setattr(stage, k[6:len(k)], kwargs[k])
-            elif k != "model":
+            if k != "stages":
                 setattr(model, k, kwargs[k])
-        stage.save()
         model.save()
 
+        ActivityStage.objects.filter(activity=model).delete()
+
+        stages = json.loads(kwargs['stages'])
+        for st in stages:
+            model.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
+
         template = loader.get_template("admin_activity/edit.html")
-        context = Context({'model': model, 'msg': '保存成功', 'user': request.user})
+        context = Context({'model': model, 'msg': '保存成功', 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
         return HttpResponse(template.render(context))
 
 class AdminActivityList(View):
@@ -98,5 +114,5 @@ class AdminActivityView(View):
     @require_cookie
     def get(self, request, model):
         template = loader.get_template("admin_activity/view.html")
-        context = Context({'model': model, 'user': request.user})
+        context = Context({'model': model, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
         return HttpResponse(template.render(context))
