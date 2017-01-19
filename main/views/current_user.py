@@ -1048,12 +1048,15 @@ class BindPhoneNumber(View):
 
 
 class UserScoreRecord(View):
+    ORDERS = ('time_created', '-time_created')
+
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=1),
     })
-    def get(self, request, offset=0, limit=10):
+    def get(self, request, offset=0, limit=10, order=1):
         """获取用户的积分明细
 
         :param offset: 拉取的起始
@@ -1067,9 +1070,10 @@ class UserScoreRecord(View):
                 time_created: 时间
 
         """
+        k = self.ORDERS[order]
         r = request.user.score_records.all()
         c = r.count()
-        qs = r[offset: offset + limit]
+        qs = r.order_by(k)[offset: offset + limit]
         l = [{'description': s.description,
               'score': s.score,
               'type': s.type,

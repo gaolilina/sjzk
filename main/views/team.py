@@ -2309,13 +2309,16 @@ class CompetitionList(View):
 
 
 class TeamScoreRecord(View):
+    ORDERS = ('time_created', '-time_created')
+
     @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=1),
     })
-    def get(self, request, team, offset=0, limit=10):
+    def get(self, request, team, offset=0, limit=10, order=1):
         """获取团队的积分明细
 
         :param offset: 拉取的起始
@@ -2327,11 +2330,11 @@ class TeamScoreRecord(View):
                 type: 积分类型
                 description: 描述
                 time_created: 时间
-
         """
+        k = self.ORDERS[order]
         r = team.score_records.all()
         c = r.count()
-        qs = r[offset: offset + limit]
+        qs = r.order_by(k)[offset: offset + limit]
         l = [{'description': s.description,
               'score': s.score,
               'type': s.type,
