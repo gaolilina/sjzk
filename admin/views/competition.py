@@ -18,7 +18,7 @@ class CompetitionView(View):
     @fetch_record(Competition.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'name': forms.CharField(max_length=50,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_team': forms.BooleanField(required=False),'is_enabled': forms.BooleanField(required=False),
+        'name': forms.CharField(max_length=50,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_team': forms.IntegerField(required=False,),'is_enabled': forms.BooleanField(required=False),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -102,6 +102,54 @@ class CompetitionCommentList(View):
         else:
             template = loader.get_template("competition/index.html")
             context = Context({'rb': 'competition_comment'})
+            return HttpResponse(template.render(context))
+class CompetitionLikerView(View):
+    @fetch_record(CompetitionLiker.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("competition/competition_liker.html")
+        context = Context({'mod': mod})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(CompetitionLiker.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("competition_liker", mod.id, 1, request.user)
+
+        template = loader.get_template("competition/competition_liker.html")
+        context = Context({'mod': mod, 'msg': '保存成功'})
+        return HttpResponse(template.render(context))
+
+class CompetitionLikerList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = CompetitionLiker.objects.filter(competition_id=kwargs["id"])
+            template = loader.get_template("competition/competition_liker_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_liker'})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("name") is not None:
+            name = request.GET.get("name")
+            template = loader.get_template("competition/index.html")
+            if CompetitionLiker == Competition:
+                redir = 'admin:competition:competition'
+            else:
+                redir = 'admin:competition:competition_liker_list'
+            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_liker'})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("competition/index.html")
+            context = Context({'rb': 'competition_liker'})
             return HttpResponse(template.render(context))
 class CompetitionStageView(View):
     @fetch_record(CompetitionStage.objects, 'mod', 'id')

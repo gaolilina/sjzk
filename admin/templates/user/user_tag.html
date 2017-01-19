@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:user:user_tag' mod.id %}" method="post">
 <table>
-    <tr><td>name：</td><td><input name="name" type="text" value="{{ mod.name }}" /></td></tr><tr><td>order：</td><td><input name="order" type="text" value="{{ mod.order }}" /></td></tr><tr><td>entity：</td><td><a href="{% url "admin:user:user" mod.entity.id %}">{{ mod.entity.id }}</a></td></tr>
+    <tr><td>name：</td><td><input name="name" type="text" value="{{ mod.name }}"  maxlength="20" /></td></tr><tr><td>order：</td><td><input name="order" type="number" value="{{ mod.order }}" /></td></tr><tr><td>entity：</td><td><a href="{% url "admin:user:user" mod.entity.id %}">{{ mod.entity.id }}</a></td></tr>
     <tr>
         <td>{{ msg }}</td>
         <td>

@@ -9,6 +9,10 @@ from main.utils.decorators import validate_args
 
 from admin.models.admin_user import AdminUser
 
+class Main(View):
+    def get(self, request):
+        return HttpResponseRedirect(reverse("admin:admin_user:info"))
+
 class Login(View):
     def get(self, request):
         template = loader.get_template("login.html")
@@ -25,7 +29,7 @@ class Login(View):
             if user.check_password(password):
                 response = HttpResponseRedirect(reverse("admin:admin_user:info"))
                 response.set_cookie("usr", username)
-                response.set_cookie("pwd", user.password[:6])
+                response.set_cookie("pwd", user.password[18:24])
                 return response
             else:
                 template = loader.get_template("login.html")

@@ -24,8 +24,48 @@
         <td><input name="time_ended" type="datetime" value="" /></td>
     </tr>
     <tr>
-        <td>报名类型：</td>
-        <td><input name="allow_team" type="checkbox" /> 团队</td>
+        <td>人数上限：</td>
+        <td><input name="allow_team" type="number" value="0" /> (0为不限)</td>
+    </tr>
+    <tr>
+        <td>省：</td>
+        <td><input name="province" type="text" value="" /></td>
+    </tr>
+    <tr>
+        <td>市：</td>
+        <td><input name="city" type="text" value="" /></td>
+    </tr>
+    <tr>
+        <td>学校：</td>
+        <td><input name="unit" type="text" value="" /></td>
+    </tr>
+    <tr>
+        <td>最少人数：</td>
+        <td><input name="min_member" type="text" value="1" /></td>
+    </tr>
+    <tr>
+        <td>最多人数：</td>
+        <td><input name="max_member" type="text" value="1" /></td>
+    </tr>
+    <tr>
+        <td>参与者类型：</td>
+        <td>
+            <select name="user_type">
+                <option value="0" selected="selected">不限</option>
+                <option value="1">学生</option>
+                <option value="2">教师</option>
+                <option value="3">社会人员</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>当前活动阶段：</td>
+        <td>
+            <input name="stages" type="hidden" value="" />
+            <input name="status" type="hidden" value="" />
+            <select id="status"></select>
+            <input id="add_stage" type="button" value="新增" style="margin-top: 0px;" />
+        </td>
     </tr>
     <tr>
         <td colspan="2">
@@ -36,6 +76,7 @@
             </div>
         </td>
     </tr>
+    <script>var stage_count = 0;</script>
 </table>
 
 </form>
@@ -47,4 +88,8 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/competition.js' %}"></script>
 {% endblock %}

@@ -24,7 +24,7 @@ def require_cookie(function):
         try:
             user = AdminUser.objects.get(username=username)
             if user.is_enabled:
-                if user.password[:6] == password:
+                if user.password[18:24] == password:
                     request.user = user
                     return function(self, request, *args, **kwargs)
                 else:

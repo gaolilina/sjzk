@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:activity:activity_stage' mod.id %}" method="post">
 <table>
-    <tr><td>activity：</td><td><a href="{% url "admin:activity:activity" mod.activity.id %}">{{ mod.activity.id }}</a></td></tr><tr><td>status：</td><td><input name="status" type="text" value="{{ mod.status }}" /></td></tr><tr><td>province：</td><td><input name="province" type="text" value="{{ mod.province }}" /></td></tr><tr><td>city：</td><td><input name="city" type="text" value="{{ mod.city }}" /></td></tr><tr><td>school：</td><td><input name="school" type="text" value="{{ mod.school }}" /></td></tr><tr><td>user_type：</td><td><input name="user_type" type="text" value="{{ mod.user_type }}" /></td></tr>
+    <tr><td>activity：</td><td><a href="{% url "admin:activity:activity" mod.activity.id %}">{{ mod.activity.id }}</a></td></tr><tr><td>status：</td><td><input name="status" type="number" value="{{ mod.status }}" /></td></tr><tr><td>province：</td><td><input name="province" type="text" value="{{ mod.province }}"  maxlength="20" /></td></tr><tr><td>city：</td><td><input name="city" type="text" value="{{ mod.city }}"  maxlength="20" /></td></tr><tr><td>school：</td><td><input name="school" type="text" value="{{ mod.school }}"  maxlength="20" /></td></tr><tr><td>user_type：</td><td><input name="user_type" type="number" value="{{ mod.user_type }}" /></td></tr>
     <tr>
         <td>{{ msg }}</td>
         <td>

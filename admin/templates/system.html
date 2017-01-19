@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="{% url 'admin:system' %}" method="post">
+<table>
+    <tr>
+        <td>版本号：</td>
+        <td><input name="version_number" type="number" value="{{ m.VERSION_NUMBER }}" /></td>
+    </tr>
+    <tr>
+        <td>最近来访时间：</td>
+        <td><input name="recent_visitor_time" type="number" value="{{ m.RECENT_VISITOR_TIME }}" /></td>
+    </tr>
+    <tr>
+        <td>积分阶段分值1：</td>
+        <td><input name="score_stage_one" type="number" value="{{ m.SCORE_STAGE_ONE }}" /></td>
+    </tr>
+    <tr>
+        <td>积分阶段分值2：</td>
+        <td><input name="score_stage_two" type="number" value="{{ m.SCORE_STAGE_TWO }}" /></td>
+    </tr>
+    <tr>
+        <td>积分阶段分值3：</td>
+        <td><input name="score_stage_three" type="number" value="{{ m.SCORE_STAGE_THREE }}" /></td>
+    </tr>
+    <tr>
+        <td>积分阶段分值4：</td>
+        <td><input name="score_stage_four" type="number" value="{{ m.SCORE_STAGE_FOUR }}" /></td>
+    </tr>
+    <tr>
+        <td>积分阶段分值5：</td>
+        <td><input name="score_stage_five" type="number" value="{{ m.SCORE_STAGE_FIVE }}" /></td>
+    </tr>
+    <tr>
+        <td>{{ msg }}</td>
+        <td>
+            <div class="buttons">
+                <input type="submit" value="保存" />
+            </div>
+        </td>
+    </tr>
+</table>
+
+</form>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='system_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='system_admin' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='system_admin' %}{% endblock %}
+
+{% block css %}
+<style>
+    form {
+        padding: 30px;
+    }
+    form img {
+        width: 100px;
+        height: 100px;
+    }
+    td {
+        padding: 5px 8px;
+        vertical-align: top;
+    }
+
+    input[type=text], input[type=email], textarea {
+        border: 2px solid #C5DBAD;
+    }
+
+    input[type=radio] {
+        margin-right: 5px;
+    }
+
+    input[type=radio] ~ input {
+        margin-left: 15px;
+    }
+
+    .buttons {
+        float: right;
+    }
+
+    input[type=submit], input[type=reset] {
+        border: 0 none;
+        border-radius: 3px;
+        padding: 2px 5px;
+        background: #85A365;
+        color: white;
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}

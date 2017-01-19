@@ -1,0 +1,22 @@
+
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<table style="margin:30px">
+    <tr>
+        {% for item in list %}
+            <td>活动名： </td>
+            <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.activity.name }}</td>
+            <td><a href="{% url 'admin:activity:activity_liker' item.activity.id %}">查看</a></td>
+        {% endfor %}
+    </tr>
+</table>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='activity_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='activity_admin' lb='activity' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='activity' rb='activity_liker' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+{% endblock %}

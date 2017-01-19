@@ -18,7 +18,7 @@ class ExternalTaskView(View):
     @fetch_record(ExternalTask.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'title': forms.CharField(max_length=20,),'expend': forms.IntegerField(required=False,),'expend_actual': forms.IntegerField(required=False,),'status': forms.IntegerField(required=False,),'deadline': forms.DateField(required=False,),'assign_num': forms.IntegerField(required=False,),'submit_num': forms.IntegerField(required=False,),'pay_num': forms.IntegerField(required=False,),'pay_time': forms.DateTimeField(required=False,),'finish_time': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
+        'title': forms.CharField(max_length=20,),'content': forms.CharField(required=False,),'expend': forms.IntegerField(required=False,),'expend_actual': forms.IntegerField(required=False,),'status': forms.IntegerField(required=False,),'deadline': forms.DateField(required=False,),'assign_num': forms.IntegerField(required=False,),'submit_num': forms.IntegerField(required=False,),'pay_num': forms.IntegerField(required=False,),'pay_time': forms.DateTimeField(required=False,),'finish_time': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -66,7 +66,7 @@ class InternalTaskView(View):
     @fetch_record(InternalTask.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'title': forms.CharField(max_length=20,),'status': forms.IntegerField(required=False,),'deadline': forms.DateField(required=False,),'assign_num': forms.IntegerField(required=False,),'submit_num': forms.IntegerField(required=False,),'finish_time': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
+        'title': forms.CharField(max_length=20,),'content': forms.CharField(required=False,),'status': forms.IntegerField(required=False,),'deadline': forms.DateField(required=False,),'assign_num': forms.IntegerField(required=False,),'submit_num': forms.IntegerField(required=False,),'finish_time': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -295,6 +295,54 @@ class TeamCommentList(View):
             template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_comment'})
             return HttpResponse(template.render(context))
+class TeamFeatureView(View):
+    @fetch_record(TeamFeature.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("team/team_feature.html")
+        context = Context({'mod': mod})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(TeamFeature.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'data': forms.CharField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("team_feature", mod.id, 1, request.user)
+
+        template = loader.get_template("team/team_feature.html")
+        context = Context({'mod': mod, 'msg': '保存成功'})
+        return HttpResponse(template.render(context))
+
+class TeamFeatureList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = TeamFeature.objects.filter(team_id=kwargs["id"])
+            template = loader.get_template("team/team_feature_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_feature'})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("name") is not None:
+            name = request.GET.get("name")
+            template = loader.get_template("team/index.html")
+            if TeamFeature == Team:
+                redir = 'admin:team:team'
+            else:
+                redir = 'admin:team:team_feature_list'
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_feature'})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("team/index.html")
+            context = Context({'rb': 'team_feature'})
+            return HttpResponse(template.render(context))
 class TeamFollowerView(View):
     @fetch_record(TeamFollower.objects, 'mod', 'id')
     @require_cookie
@@ -498,7 +546,7 @@ class TeamMemberRequestView(View):
     @fetch_record(TeamMemberRequest.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'time_created': forms.DateTimeField(required=False,),
+        'description': forms.CharField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -546,7 +594,7 @@ class TeamNeedView(View):
     @fetch_record(TeamNeed.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'type': forms.IntegerField(required=False,),'description': forms.CharField(max_length=200,required=False,),'status': forms.IntegerField(required=False,),'number': forms.IntegerField(required=False,),'field': forms.CharField(max_length=20,required=False,),'skill': forms.CharField(max_length=20,required=False,),'deadline': forms.DateField(required=False,),'age_min': forms.IntegerField(required=False,),'age_max': forms.IntegerField(required=False,),'gender': forms.CharField(max_length=1,required=False,),'degree': forms.CharField(max_length=20,required=False,),'major': forms.CharField(max_length=20,required=False,),'time_graduated': forms.DateField(required=False,),'cost': forms.IntegerField(required=False,),'cost_unit': forms.CharField(max_length=1,required=False,),'time_started': forms.DateField(required=False,),'time_ended': forms.DateField(required=False,),'members': forms.CharField(max_length=100,required=False,),'time_created': forms.DateTimeField(required=False,),
+        'type': forms.IntegerField(required=False,),'title': forms.CharField(required=False,),'description': forms.CharField(max_length=200,required=False,),'status': forms.IntegerField(required=False,),'number': forms.IntegerField(required=False,),'field': forms.CharField(max_length=20,required=False,),'skill': forms.CharField(max_length=20,required=False,),'deadline': forms.DateField(required=False,),'age_min': forms.IntegerField(required=False,),'age_max': forms.IntegerField(required=False,),'gender': forms.CharField(max_length=1,required=False,),'degree': forms.CharField(max_length=20,required=False,),'major': forms.CharField(max_length=20,required=False,),'time_graduated': forms.DateField(required=False,),'cost': forms.IntegerField(required=False,),'cost_unit': forms.CharField(max_length=1,required=False,),'time_started': forms.DateField(required=False,),'time_ended': forms.DateField(required=False,),'members': forms.CharField(max_length=100,required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -582,6 +630,54 @@ class TeamNeedList(View):
         else:
             template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_need'})
+            return HttpResponse(template.render(context))
+class TeamScoreView(View):
+    @fetch_record(TeamScore.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("team/team_score_record.html")
+        context = Context({'mod': mod})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(TeamScore.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'score': forms.IntegerField(required=False,),'description': forms.CharField(max_length=100,required=False,),'type': forms.CharField(max_length=10,required=False,),'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("team_score_record", mod.id, 1, request.user)
+
+        template = loader.get_template("team/team_score_record.html")
+        context = Context({'mod': mod, 'msg': '保存成功'})
+        return HttpResponse(template.render(context))
+
+class TeamScoreList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = TeamScore.objects.filter(team_id=kwargs["id"])
+            template = loader.get_template("team/team_score_record_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_score_record'})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("name") is not None:
+            name = request.GET.get("name")
+            template = loader.get_template("team/index.html")
+            if TeamScore == Team:
+                redir = 'admin:team:team'
+            else:
+                redir = 'admin:team:team_score_record_list'
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_score_record'})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("team/index.html")
+            context = Context({'rb': 'team_score_record'})
             return HttpResponse(template.render(context))
 class TeamTagView(View):
     @fetch_record(TeamTag.objects, 'mod', 'id')

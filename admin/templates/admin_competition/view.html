@@ -1,77 +1,82 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="{% url 'admin:admin_competition:view' model.id %}" method="post">
 <table>
     <tr>
         <td>标题：</td>
-        <td><input name="name" type="text" value="{{ model.name }}" /></td>
+        <td style="max-width: 500px">{{ model.name }}</td>
     </tr>
     <tr>
         <td>详细内容：</td>
-        <td><textarea name="content">{{ model.content }}</textarea></td>
+        <td>{{ model.content }}</td>
     </tr>
     <tr>
         <td>截至日期：</td>
-        <td><input name="deadline" type="datetime" value="{{ model.deadline }}" /></td>
+        <td>{{ model.deadline }}</td>
     </tr>
     <tr>
         <td>开始时间：</td>
-        <td><input name="time_started" type="datetime" value="{{ model.time_started }}" /></td>
+        <td>{{ model.time_started }}</td>
     </tr>
     <tr>
         <td>结束时间：</td>
-        <td><input name="time_ended" type="datetime" value="{{ model.time_ended }}" /></td>
+        <td>{{ model.time_ended }}</td>
     </tr>
     <tr>
-        <td>报名类型：</td>
-        <td><input name="allow_team" type="checkbox" {% if model.allow_team %}checked="checked" {% endif %}/> 团队</td>
-    </tr>
-    <tr>
-        <td>活动阶段：</td>
-        <td>
-            <select name="stage_status">
-                <option value="0"{% if model.stages.get.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
-                <option value="1"{% if model.stages.get.status == 1 %} selected="selected"{% endif %}>报名</option>
-                <option value="2"{% if model.stages.get.status == 2 %} selected="selected"{% endif %}>预赛</option>
-                <option value="3"{% if model.stages.get.status == 3 %} selected="selected"{% endif %}>周赛</option>
-                <option value="4"{% if model.stages.get.status == 4 %} selected="selected"{% endif %}>月赛</option>
-                <option value="5"{% if model.stages.get.status == 5 %} selected="selected"{% endif %}>中间赛</option>
-                <option value="6"{% if model.stages.get.status == 6 %} selected="selected"{% endif %}>结束</option>
-            </select>
-        </td>
+        <td>人数上限：</td>
+        <td>{{ model.allow_team }}</td>
     </tr>
     <tr>
         <td>省：</td>
-        <td><input name="stage_province" type="text" value="{{ model.stages.get.province }}" /></td>
+        <td>{{ model.province }}</td>
     </tr>
     <tr>
         <td>市：</td>
-        <td><input name="stage_city" type="text" value="{{ model.stages.get.city }}" /></td>
+        <td>{{ model.city }}</td>
     </tr>
     <tr>
         <td>学校：</td>
-        <td><input name="stage_school" type="text" value="{{ model.stages.get.school }}" /></td>
+        <td>{{ model.school }}</td>
     </tr>
     <tr>
         <td>最少人数：</td>
-        <td><input name="stage_min_member" type="text" value="{{ model.stages.get.min_member }}" /></td>
+        <td>{{ model.min_member }}</td>
     </tr>
     <tr>
         <td>最多人数：</td>
-        <td><input name="stage_max_member" type="text" value="{{ model.stages.get.max_member }}" /></td>
+        <td>{{ model.max_member }}</td>
     </tr>
     <tr>
         <td>参与者类型：</td>
         <td>
-            <select name="stage_user_type">
-                <option value="0"{% if model.stages.get.user_type == 0 %} selected="selected"{% endif %}>不限</option>
-                <option value="1"{% if model.stages.get.user_type == 1 %} selected="selected"{% endif %}>学生</option>
-                <option value="2"{% if model.stages.get.user_type == 2 %} selected="selected"{% endif %}>教师</option>
-                <option value="3"{% if model.stages.get.user_type == 3 %} selected="selected"{% endif %}>社会人员</option>
-            </select>
+            {% if model.user_type == 0 %}不限{% endif %}
+            {% if model.user_type == 1 %}学生{% endif %}
+            {% if model.user_type == 2 %}教师{% endif %}
+            {% if model.user_type == 3 %}社会人员{% endif %}
         </td>
     </tr>
+    <tr>
+        <td>当前活动阶段：</td>
+        <td>
+            {% if model.status == 0 %}前期宣传{% endif %}
+            {% if model.status == 1 %}报名{% endif %}
+            {% if model.status == 2 %}预赛{% endif %}
+            {% if model.status == 3 %}周赛{% endif %}
+            {% if model.status == 4 %}月赛{% endif %}
+            {% if model.status == 5 %}中间赛{% endif %}
+            {% if model.status == 6 %}结束{% endif %}
+        </td>
+    </tr>
+    {% for stage in stages %}
+        <tr>
+            <td>活动阶段{{forloop.counter}}</td>
+            <td>
+                类　　型：{% if stage.status == 0 %}前期宣传{% endif %}{% if stage.status == 1 %}报名{% endif %}{% if stage.status == 2 %}预赛{% endif %}{% if stage.status == 3 %}周赛{% endif %}{% if stage.status == 4 %}月赛{% endif %}{% if stage.status == 5 %}中间赛{% endif %}{% if stage.status == 6 %}结束{% endif %}<br/>
+                开始时间：{{ stage.time_started }}<br/>
+                结束时间：{{ stage.time_ended }}<br/>
+            </td>
+        </tr>
+    {% endfor %}
     <tr>
         <td>报名者：</td>
         <td>
@@ -80,24 +85,22 @@
             {% endfor %}
         </td>
     </tr>
-    <tr>
-        <td colspan="2">
-            {{ msg }}
-            <div class="buttons">
-                <input type="submit" value="保存" />
-                <input type="reset" value="取消" />
-            </div>
-        </td>
-    </tr>
 </table>
-
-</form>
 {% endblock %}
 
 {% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %}
 {% block leftbar %}{% include 'leftbar.html' with tb='admin_competition' lb=1 %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb='admin_competition' lb=1 rb='add' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='admin_competition' lb=1 rb='' %}{% endblock %}
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+<style>
+table {
+    border-collapse: collapse;
+    margin: 30px;
+}
+table td {
+    border: 1px solid #999;
+}
+</style>
 {% endblock %}

@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="{% url 'admin:admin_competition:edit' model.id %}" method="post">
+<table>
+    <tr>
+        <td>标题：</td>
+        <td><input name="name" type="text" value="{{ model.name }}" /></td>
+    </tr>
+    <tr>
+        <td>详细内容：</td>
+        <td><textarea name="content">{{ model.content }}</textarea></td>
+    </tr>
+    <tr>
+        <td>截至日期：</td>
+        <td><input name="deadline" type="datetime" value="{{ model.deadline }}" /></td>
+    </tr>
+    <tr>
+        <td>开始时间：</td>
+        <td><input name="time_started" type="datetime" value="{{ model.time_started }}" /></td>
+    </tr>
+    <tr>
+        <td>结束时间：</td>
+        <td><input name="time_ended" type="datetime" value="{{ model.time_ended }}" /></td>
+    </tr>
+    <tr>
+        <td>人数上限：</td>
+        <td><input name="allow_team" type="number" value="{{ model.allow_team }}" /> (0为不限)</td>
+    </tr>
+    <tr>
+        <td>省：</td>
+        <td><input name="province" type="text" value="{{ model.province }}" /></td>
+    </tr>
+    <tr>
+        <td>市：</td>
+        <td><input name="city" type="text" value="{{ model.city }}" /></td>
+    </tr>
+    <tr>
+        <td>学校：</td>
+        <td><input name="unit" type="text" value="{{ model.school }}" /></td>
+    </tr>
+    <tr>
+        <td>最少人数：</td>
+        <td><input name="min_member" type="text" value="{{ model.min_member }}" /></td>
+    </tr>
+    <tr>
+        <td>最多人数：</td>
+        <td><input name="max_member" type="text" value="{{ model.max_member }}" /></td>
+    </tr>
+    <tr>
+        <td>参与者类型：</td>
+        <td>
+            <select name="user_type">
+                <option value="0"{% if model.user_type == 0 %} selected="selected"{% endif %}>不限</option>
+                <option value="1"{% if model.user_type == 1 %} selected="selected"{% endif %}>学生</option>
+                <option value="2"{% if model.user_type == 2 %} selected="selected"{% endif %}>教师</option>
+                <option value="3"{% if model.user_type == 3 %} selected="selected"{% endif %}>社会人员</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>当前活动阶段：</td>
+        <td>
+            <input name="stages" type="hidden" value="" />
+            <input name="status" type="hidden" value="{{ model.status }}" />
+            <select id="status">
+                {% for stage in stages %}
+                    <option value="{{ stage.status }}"{% if stage.status == model.status %} selected="selected"{% endif %}>{% if stage.status == 0 %}前期宣传{% endif %}{% if stage.status == 1 %}报名{% endif %}{% if stage.status == 2 %}预赛{% endif %}{% if stage.status == 3 %}周赛{% endif %}{% if stage.status == 4 %}月赛{% endif %}{% if stage.status == 5 %}中间赛{% endif %}{% if stage.status == 6 %}结束{% endif %}</option>
+                {% endfor %}
+            </select>
+            <input id="add_stage" type="button" value="新增" style="margin-top: 0px;" />
+        </td>
+    </tr>
+    {% for stage in stages %}
+        <tr class="stage">
+            <td>活动阶段{{forloop.counter}}</td>
+            <td>
+                类　　型：<select onchange="javascript:stage_gen()">
+                    <option value="0"{% if stage.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
+                    <option value="1"{% if stage.status == 1 %} selected="selected"{% endif %}>报名</option>
+                    <option value="2"{% if stage.status == 2 %} selected="selected"{% endif %}>预赛</option>
+                    <option value="3"{% if stage.status == 3 %} selected="selected"{% endif %}>周赛</option>
+                    <option value="4"{% if stage.status == 4 %} selected="selected"{% endif %}>月赛</option>
+                    <option value="5"{% if stage.status == 5 %} selected="selected"{% endif %}>中间赛</option>
+                    <option value="6"{% if stage.status == 6 %} selected="selected"{% endif %}>结束</option>
+                </select><input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /><br/>
+                开始时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_started }}" /><br/>
+                结束时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_ended }}" />
+            </td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td>报名者：</td>
+        <td>
+            {% for team in model.team_participators.all %}
+                <div>{{ team.name }}</div>
+            {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            {{ msg }}
+            <div class="buttons">
+                <input type="submit" value="保存" />
+                <input type="reset" value="取消" />
+            </div>
+        </td>
+    </tr>
+</table>
+<script>var stage_count = {{ stages|length }};</script>
+
+</form>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='admin_competition' lb=1 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='admin_competition' lb=1 rb='add' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/competition.js' %}"></script>
+{% endblock %}

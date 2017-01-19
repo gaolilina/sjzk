@@ -3,9 +3,9 @@
 {% block content %}
 <form role="form" action="{% url 'admin:login' %}" method="post">
     <img src="{% static 'img/user.png' %}" /><br/>
-    <input placeholder="用户名" name="username" type="text" autofocus><br/>
-    <input placeholder="密码" name="password" type="password" value=""><br/>
-    <div><a href="{% url 'admin:register' %}">没有账号？现在注册！</a>　　　　　　　　</div>
+    <input placeholder="用户名" name="username" type="text" maxlength="20" autofocus><br/>
+    <input placeholder="密码" name="password" type="password" value="" minlength="6" maxlength="20"><br/>
+    <!--<div><a href="% url 'admin:register' %}">没有账号？现在注册！</a>　　　　　　　　</div>-->
     {{ msg }}<br/>
     <input type="submit" value="登录" />
 </form>
@@ -13,9 +13,6 @@
 
 {% block topbar %}
 <ul>
-    <li class="active"><a href="#">个人信息</a></li>
-    <li><a href="#">竞赛</a></li>
-    <li><a href="#">活动</a></li>
 </ul>
 {% endblock %}
 {% block leftbar %}{% include 'leftbar.html' with tb=1 lb=1 %}{% endblock %}

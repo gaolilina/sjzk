@@ -3,8 +3,8 @@
 {% block content %}
 <form role="form" action="{% url 'admin:register' %}" method="post">
     <img src="{% static 'img/user.png' %}" /><br/>
-    <input placeholder="用户名" name="username" type="text" autofocus><br/>
-    <input placeholder="密码" name="password" type="password" value=""><br/>
+    <input placeholder="用户名" name="username" type="text" maxlength="20" autofocus><br/>
+    <input placeholder="密码" name="password" type="password" value="" minlength="6" maxlength="20"><br/>
     {{ msg }}<br/>
     <input type="submit" value="注册" />
 </form>
@@ -12,9 +12,6 @@
 
 {% block topbar %}
 <ul>
-    <li class="active"><a href="#">个人信息</a></li>
-    <li><a href="#">竞赛</a></li>
-    <li><a href="#">活动</a></li>
 </ul>
 {% endblock %}
 {% block leftbar %}{% include 'leftbar.html' with tb=1 lb=1 %}{% endblock %}
