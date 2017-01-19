@@ -283,6 +283,7 @@ class UserScore(models.Model):
     user = models.ForeignKey('User', models.CASCADE, 'score_records')
     score = models.IntegerField(db_index=True)
     description = models.CharField(max_length=100, default='')
+    type = models.CharField(max_length=10, default='')
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:

@@ -96,4 +96,6 @@ urls = [
         name='bind_phone_number'),
     # 举报
     url(r'^report/$', Report.as_view(), name='report'),
+    # 积分明细
+    url(r'^score_records/$', UserScoreRecord.as_view(), name='score_records'),
 ]

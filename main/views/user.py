@@ -6,7 +6,7 @@ from django.views.generic import View
 from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
-from ..utils import abort
+from ..utils import abort, get_score_stage
 from ..utils.decorators import *
 from ..utils.recommender import calculate_ranking_score, record_view_user
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
@@ -99,11 +99,13 @@ class List(View):
                         abort(404, 'error invitation code!')
                     user.used_invitation_code = invitation_code
                     u.score_records.create(
-                        score=100, description="邀请码被使用")
+                        score=get_score_stage(4), type="活跃度",
+                        description="邀请码被使用")
                 # 加积分
-                user.score += 50
+                user.score += get_score_stage(3)
                 user.score_records.create(
-                    score=50, description="首次手机号注册")
+                    score=get_score_stage(3), type="初始数据",
+                    description="首次手机号注册")
                 user.save()
                 return JsonResponse({'token': user.token})
             except IntegrityError:
