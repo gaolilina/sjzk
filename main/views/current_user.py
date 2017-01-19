@@ -276,6 +276,7 @@ class Profile(Profile_):
 class IdentityVerification(Profile_):
     @require_token
     @validate_args({
+        'role': forms.CharField(required=False, max_length=20),
         'real_name': forms.CharField(required=False, max_length=20),
         'id_number': forms.CharField(
             required=False, min_length=18, max_length=18),
@@ -290,7 +291,7 @@ class IdentityVerification(Profile_):
 
         if not request.user.id_card:
             abort(403, 'Please upload the positive and negative of ID card')
-        id_keys = ('real_name', 'id_number')
+        id_keys = ('role', 'real_name', 'id_number')
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'])
         error_code = res["error_code"]
@@ -299,7 +300,8 @@ class IdentityVerification(Profile_):
 
         if not request.user.is_verified:
             for k in id_keys:
-                setattr(request.user, k, kwargs[k])
+                if k in kwargs:
+                    setattr(request.user, k, kwargs[k])
         request.user.is_verified = 1
         request.user.save()
         abort(200)
