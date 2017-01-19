@@ -12,7 +12,7 @@ class UserView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(User.objects, 'mod', 'id')
@@ -28,7 +28,7 @@ class UserView(View):
         admin_log("user", mod.id, 1, request.user)
 
         template = loader.get_template("user/user.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserList(View):
@@ -40,7 +40,7 @@ class UserList(View):
         if kwargs["id"] is not None:
             list = User.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -49,18 +49,18 @@ class UserList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user'})
+            context = Context({'rb': 'user', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserActionView(View):
     @fetch_record(UserAction.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_action.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserAction.objects, 'mod', 'id')
@@ -76,7 +76,7 @@ class UserActionView(View):
         admin_log("user_action", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_action.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserActionList(View):
@@ -88,7 +88,7 @@ class UserActionList(View):
         if kwargs["id"] is not None:
             list = UserAction.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_action_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_action'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_action', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -97,18 +97,18 @@ class UserActionList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_action_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_action'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_action', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_action'})
+            context = Context({'rb': 'user_action', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserBehaviorView(View):
     @fetch_record(UserBehavior.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_behavior.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserBehavior.objects, 'mod', 'id')
@@ -124,7 +124,7 @@ class UserBehaviorView(View):
         admin_log("user_behavior", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_behavior.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserBehaviorList(View):
@@ -136,7 +136,7 @@ class UserBehaviorList(View):
         if kwargs["id"] is not None:
             list = UserBehavior.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_behavior_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_behavior'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_behavior', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -145,18 +145,18 @@ class UserBehaviorList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_behavior_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_behavior'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_behavior', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_behavior'})
+            context = Context({'rb': 'user_behavior', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserCommentView(View):
     @fetch_record(UserComment.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_comment.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserComment.objects, 'mod', 'id')
@@ -172,7 +172,7 @@ class UserCommentView(View):
         admin_log("user_comment", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_comment.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserCommentList(View):
@@ -184,7 +184,7 @@ class UserCommentList(View):
         if kwargs["id"] is not None:
             list = UserComment.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_comment_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_comment'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -193,18 +193,18 @@ class UserCommentList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_comment_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_comment'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_comment'})
+            context = Context({'rb': 'user_comment', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserExperienceView(View):
     @fetch_record(UserExperience.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_experience.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserExperience.objects, 'mod', 'id')
@@ -220,7 +220,7 @@ class UserExperienceView(View):
         admin_log("user_experience", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_experience.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserExperienceList(View):
@@ -232,7 +232,7 @@ class UserExperienceList(View):
         if kwargs["id"] is not None:
             list = UserExperience.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_experience_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_experience'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_experience', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -241,18 +241,18 @@ class UserExperienceList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_experience_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_experience'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_experience', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_experience'})
+            context = Context({'rb': 'user_experience', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserFeatureView(View):
     @fetch_record(UserFeature.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_feature.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFeature.objects, 'mod', 'id')
@@ -268,7 +268,7 @@ class UserFeatureView(View):
         admin_log("user_feature", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_feature.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFeatureList(View):
@@ -280,7 +280,7 @@ class UserFeatureList(View):
         if kwargs["id"] is not None:
             list = UserFeature.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_feature_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_feature'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_feature', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -289,18 +289,18 @@ class UserFeatureList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_feature_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_feature'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_feature', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_feature'})
+            context = Context({'rb': 'user_feature', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserFeedbackView(View):
     @fetch_record(UserFeedback.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_feedback.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFeedback.objects, 'mod', 'id')
@@ -316,7 +316,7 @@ class UserFeedbackView(View):
         admin_log("user_feedback", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_feedback.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFeedbackList(View):
@@ -328,7 +328,7 @@ class UserFeedbackList(View):
         if kwargs["id"] is not None:
             list = UserFeedback.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_feedback_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_feedback'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_feedback', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -337,18 +337,18 @@ class UserFeedbackList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_feedback_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_feedback'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_feedback', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_feedback'})
+            context = Context({'rb': 'user_feedback', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserFollowerView(View):
     @fetch_record(UserFollower.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_follower.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFollower.objects, 'mod', 'id')
@@ -364,7 +364,7 @@ class UserFollowerView(View):
         admin_log("user_follower", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_follower.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFollowerList(View):
@@ -376,7 +376,7 @@ class UserFollowerList(View):
         if kwargs["id"] is not None:
             list = UserFollower.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_follower_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_follower'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_follower', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -385,18 +385,18 @@ class UserFollowerList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_follower_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_follower'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_follower', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_follower'})
+            context = Context({'rb': 'user_follower', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserFriendView(View):
     @fetch_record(UserFriend.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_friend.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFriend.objects, 'mod', 'id')
@@ -412,7 +412,7 @@ class UserFriendView(View):
         admin_log("user_friend", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_friend.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFriendList(View):
@@ -424,7 +424,7 @@ class UserFriendList(View):
         if kwargs["id"] is not None:
             list = UserFriend.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_friend_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_friend'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_friend', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -433,18 +433,18 @@ class UserFriendList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_friend_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_friend'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_friend', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_friend'})
+            context = Context({'rb': 'user_friend', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserFriendRequestView(View):
     @fetch_record(UserFriendRequest.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_friend_request.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFriendRequest.objects, 'mod', 'id')
@@ -460,7 +460,7 @@ class UserFriendRequestView(View):
         admin_log("user_friend_request", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_friend_request.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFriendRequestList(View):
@@ -472,7 +472,7 @@ class UserFriendRequestList(View):
         if kwargs["id"] is not None:
             list = UserFriendRequest.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_friend_request_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_friend_request'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_friend_request', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -481,18 +481,18 @@ class UserFriendRequestList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_friend_request_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_friend_request'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_friend_request', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_friend_request'})
+            context = Context({'rb': 'user_friend_request', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserLikerView(View):
     @fetch_record(UserLiker.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_liker.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserLiker.objects, 'mod', 'id')
@@ -508,7 +508,7 @@ class UserLikerView(View):
         admin_log("user_liker", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_liker.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserLikerList(View):
@@ -520,7 +520,7 @@ class UserLikerList(View):
         if kwargs["id"] is not None:
             list = UserLiker.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_liker_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_liker'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -529,18 +529,18 @@ class UserLikerList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_liker_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_liker'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_liker'})
+            context = Context({'rb': 'user_liker', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserScoreView(View):
     @fetch_record(UserScore.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_score_record.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserScore.objects, 'mod', 'id')
@@ -556,7 +556,7 @@ class UserScoreView(View):
         admin_log("user_score_record", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_score_record.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserScoreList(View):
@@ -568,7 +568,7 @@ class UserScoreList(View):
         if kwargs["id"] is not None:
             list = UserScore.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_score_record_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_score_record'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -577,18 +577,18 @@ class UserScoreList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_score_record_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_score_record'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_score_record'})
+            context = Context({'rb': 'user_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserTagView(View):
     @fetch_record(UserTag.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_tag.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserTag.objects, 'mod', 'id')
@@ -604,7 +604,7 @@ class UserTagView(View):
         admin_log("user_tag", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_tag.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserTagList(View):
@@ -616,7 +616,7 @@ class UserTagList(View):
         if kwargs["id"] is not None:
             list = UserTag.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_tag_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_tag'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_tag', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -625,18 +625,18 @@ class UserTagList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_tag_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_tag'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_tag', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_tag'})
+            context = Context({'rb': 'user_tag', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserValidationCodeView(View):
     @fetch_record(UserValidationCode.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_validation_code.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserValidationCode.objects, 'mod', 'id')
@@ -652,7 +652,7 @@ class UserValidationCodeView(View):
         admin_log("user_validation_code", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_validation_code.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserValidationCodeList(View):
@@ -664,7 +664,7 @@ class UserValidationCodeList(View):
         if kwargs["id"] is not None:
             list = UserValidationCode.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_validation_code_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_validation_code'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_validation_code', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -673,18 +673,18 @@ class UserValidationCodeList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_validation_code_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_validation_code'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_validation_code', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_validation_code'})
+            context = Context({'rb': 'user_validation_code', 'user': request.user})
             return HttpResponse(template.render(context))
 class UserVisitorView(View):
     @fetch_record(UserVisitor.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("user/user_visitor.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(UserVisitor.objects, 'mod', 'id')
@@ -700,7 +700,7 @@ class UserVisitorView(View):
         admin_log("user_visitor", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_visitor.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserVisitorList(View):
@@ -712,7 +712,7 @@ class UserVisitorList(View):
         if kwargs["id"] is not None:
             list = UserVisitor.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_visitor_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_visitor'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_visitor', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("username") is not None:
             username = request.GET.get("username")
@@ -721,9 +721,9 @@ class UserVisitorList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_visitor_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_visitor'})
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_visitor', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
-            context = Context({'rb': 'user_visitor'})
+            context = Context({'rb': 'user_visitor', 'user': request.user})
             return HttpResponse(template.render(context))

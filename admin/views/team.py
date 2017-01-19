@@ -12,7 +12,7 @@ class ExternalTaskView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/external_task.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(ExternalTask.objects, 'mod', 'id')
@@ -28,7 +28,7 @@ class ExternalTaskView(View):
         admin_log("external_task", mod.id, 1, request.user)
 
         template = loader.get_template("team/external_task.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class ExternalTaskList(View):
@@ -40,7 +40,7 @@ class ExternalTaskList(View):
         if kwargs["id"] is not None:
             list = ExternalTask.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/external_task_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:external_task'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:external_task', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -49,7 +49,7 @@ class ExternalTaskList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:external_task_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'external_task'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'external_task', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -60,7 +60,7 @@ class InternalTaskView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/internal_task.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(InternalTask.objects, 'mod', 'id')
@@ -76,7 +76,7 @@ class InternalTaskView(View):
         admin_log("internal_task", mod.id, 1, request.user)
 
         template = loader.get_template("team/internal_task.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class InternalTaskList(View):
@@ -88,7 +88,7 @@ class InternalTaskList(View):
         if kwargs["id"] is not None:
             list = InternalTask.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/internal_task_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:internal_task'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:internal_task', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -97,7 +97,7 @@ class InternalTaskList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:internal_task_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'internal_task'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'internal_task', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -108,7 +108,7 @@ class TeamView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(Team.objects, 'mod', 'id')
@@ -124,7 +124,7 @@ class TeamView(View):
         admin_log("team", mod.id, 1, request.user)
 
         template = loader.get_template("team/team.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamList(View):
@@ -136,7 +136,7 @@ class TeamList(View):
         if kwargs["id"] is not None:
             list = Team.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -145,7 +145,7 @@ class TeamList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -156,7 +156,7 @@ class TeamAchievementView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_achievement.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamAchievement.objects, 'mod', 'id')
@@ -172,7 +172,7 @@ class TeamAchievementView(View):
         admin_log("team_achievement", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_achievement.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamAchievementList(View):
@@ -184,7 +184,7 @@ class TeamAchievementList(View):
         if kwargs["id"] is not None:
             list = TeamAchievement.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_achievement_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_achievement'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_achievement', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -193,7 +193,7 @@ class TeamAchievementList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_achievement_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_achievement'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_achievement', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -204,7 +204,7 @@ class TeamActionView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_action.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamAction.objects, 'mod', 'id')
@@ -220,7 +220,7 @@ class TeamActionView(View):
         admin_log("team_action", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_action.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamActionList(View):
@@ -232,7 +232,7 @@ class TeamActionList(View):
         if kwargs["id"] is not None:
             list = TeamAction.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_action_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_action'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_action', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -241,7 +241,7 @@ class TeamActionList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_action_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_action'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_action', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -252,7 +252,7 @@ class TeamCommentView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_comment.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamComment.objects, 'mod', 'id')
@@ -268,7 +268,7 @@ class TeamCommentView(View):
         admin_log("team_comment", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_comment.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamCommentList(View):
@@ -280,7 +280,7 @@ class TeamCommentList(View):
         if kwargs["id"] is not None:
             list = TeamComment.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_comment_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_comment'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -289,7 +289,7 @@ class TeamCommentList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_comment_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_comment'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -300,7 +300,7 @@ class TeamFeatureView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_feature.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamFeature.objects, 'mod', 'id')
@@ -316,7 +316,7 @@ class TeamFeatureView(View):
         admin_log("team_feature", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_feature.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamFeatureList(View):
@@ -328,7 +328,7 @@ class TeamFeatureList(View):
         if kwargs["id"] is not None:
             list = TeamFeature.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_feature_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_feature'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_feature', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -337,7 +337,7 @@ class TeamFeatureList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_feature_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_feature'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_feature', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -348,7 +348,7 @@ class TeamFollowerView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_follower.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamFollower.objects, 'mod', 'id')
@@ -364,7 +364,7 @@ class TeamFollowerView(View):
         admin_log("team_follower", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_follower.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamFollowerList(View):
@@ -376,7 +376,7 @@ class TeamFollowerList(View):
         if kwargs["id"] is not None:
             list = TeamFollower.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_follower_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_follower'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_follower', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -385,7 +385,7 @@ class TeamFollowerList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_follower_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_follower'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_follower', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -396,7 +396,7 @@ class TeamInvitationView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_invitation.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamInvitation.objects, 'mod', 'id')
@@ -412,7 +412,7 @@ class TeamInvitationView(View):
         admin_log("team_invitation", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_invitation.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamInvitationList(View):
@@ -424,7 +424,7 @@ class TeamInvitationList(View):
         if kwargs["id"] is not None:
             list = TeamInvitation.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_invitation_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_invitation'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_invitation', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -433,7 +433,7 @@ class TeamInvitationList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_invitation_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_invitation'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_invitation', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -444,7 +444,7 @@ class TeamLikerView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_liker.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamLiker.objects, 'mod', 'id')
@@ -460,7 +460,7 @@ class TeamLikerView(View):
         admin_log("team_liker", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_liker.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamLikerList(View):
@@ -472,7 +472,7 @@ class TeamLikerList(View):
         if kwargs["id"] is not None:
             list = TeamLiker.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_liker_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_liker'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -481,7 +481,7 @@ class TeamLikerList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_liker_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_liker'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -492,7 +492,7 @@ class TeamMemberView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_member.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamMember.objects, 'mod', 'id')
@@ -508,7 +508,7 @@ class TeamMemberView(View):
         admin_log("team_member", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_member.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamMemberList(View):
@@ -520,7 +520,7 @@ class TeamMemberList(View):
         if kwargs["id"] is not None:
             list = TeamMember.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_member_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_member'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_member', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -529,7 +529,7 @@ class TeamMemberList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_member_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_member'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_member', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -540,7 +540,7 @@ class TeamMemberRequestView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_member_request.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamMemberRequest.objects, 'mod', 'id')
@@ -556,7 +556,7 @@ class TeamMemberRequestView(View):
         admin_log("team_member_request", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_member_request.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamMemberRequestList(View):
@@ -568,7 +568,7 @@ class TeamMemberRequestList(View):
         if kwargs["id"] is not None:
             list = TeamMemberRequest.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_member_request_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_member_request'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_member_request', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -577,7 +577,7 @@ class TeamMemberRequestList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_member_request_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_member_request'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_member_request', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -588,7 +588,7 @@ class TeamNeedView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_need.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamNeed.objects, 'mod', 'id')
@@ -604,7 +604,7 @@ class TeamNeedView(View):
         admin_log("team_need", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_need.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamNeedList(View):
@@ -616,7 +616,7 @@ class TeamNeedList(View):
         if kwargs["id"] is not None:
             list = TeamNeed.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_need_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_need'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_need', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -625,7 +625,7 @@ class TeamNeedList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_need_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_need'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_need', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -636,7 +636,7 @@ class TeamScoreView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_score_record.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamScore.objects, 'mod', 'id')
@@ -652,7 +652,7 @@ class TeamScoreView(View):
         admin_log("team_score_record", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_score_record.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamScoreList(View):
@@ -664,7 +664,7 @@ class TeamScoreList(View):
         if kwargs["id"] is not None:
             list = TeamScore.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_score_record_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_score_record'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -673,7 +673,7 @@ class TeamScoreList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_score_record_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_score_record'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -684,7 +684,7 @@ class TeamTagView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_tag.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamTag.objects, 'mod', 'id')
@@ -700,7 +700,7 @@ class TeamTagView(View):
         admin_log("team_tag", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_tag.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamTagList(View):
@@ -712,7 +712,7 @@ class TeamTagList(View):
         if kwargs["id"] is not None:
             list = TeamTag.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_tag_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_tag'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_tag', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -721,7 +721,7 @@ class TeamTagList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_tag_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_tag'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_tag', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -732,7 +732,7 @@ class TeamVisitorView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("team/team_visitor.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamVisitor.objects, 'mod', 'id')
@@ -748,7 +748,7 @@ class TeamVisitorView(View):
         admin_log("team_visitor", mod.id, 1, request.user)
 
         template = loader.get_template("team/team_visitor.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class TeamVisitorList(View):
@@ -760,7 +760,7 @@ class TeamVisitorList(View):
         if kwargs["id"] is not None:
             list = TeamVisitor.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_visitor_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_visitor'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_visitor', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -769,7 +769,7 @@ class TeamVisitorList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_visitor_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_visitor'})
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_visitor', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")

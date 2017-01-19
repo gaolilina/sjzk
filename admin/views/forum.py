@@ -12,7 +12,7 @@ class ForumBoardView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("forum/forum_board.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(ForumBoard.objects, 'mod', 'id')
@@ -28,7 +28,7 @@ class ForumBoardView(View):
         admin_log("forum_board", mod.id, 1, request.user)
 
         template = loader.get_template("forum/forum_board.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class ForumBoardList(View):
@@ -44,18 +44,18 @@ class ForumBoardList(View):
                 list = ForumPost.objects.filter(title=name)
             else:
                 list = ForumBoard.objects.filter(name=name)
-            context = Context({'name': name, 'list': list})
+            context = Context({'name': name, 'list': list, 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("forum/forum_board_index.html")
-            context = Context()
+            context = Context({'user': request.user})
             return HttpResponse(template.render(context))
 class ForumPostView(View):
     @fetch_record(ForumPost.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("forum/forum_post.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(ForumPost.objects, 'mod', 'id')
@@ -71,7 +71,7 @@ class ForumPostView(View):
         admin_log("forum_post", mod.id, 1, request.user)
 
         template = loader.get_template("forum/forum_post.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class ForumPostList(View):
@@ -87,9 +87,9 @@ class ForumPostList(View):
                 list = ForumPost.objects.filter(title=name)
             else:
                 list = ForumPost.objects.filter(name=name)
-            context = Context({'name': name, 'list': list})
+            context = Context({'name': name, 'list': list, 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("forum/forum_post_index.html")
-            context = Context()
+            context = Context({'user': request.user})
             return HttpResponse(template.render(context))

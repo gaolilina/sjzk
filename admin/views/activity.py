@@ -12,13 +12,13 @@ class ActivityView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("activity/activity.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(Activity.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'name': forms.CharField(max_length=50,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_user': forms.IntegerField(required=False,),'is_enabled': forms.BooleanField(required=False),
+        'name': forms.CharField(max_length=50,),'status': forms.IntegerField(required=False,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_user': forms.IntegerField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'unit': forms.CharField(max_length=20,required=False,),'user_type': forms.IntegerField(required=False,),'is_enabled': forms.BooleanField(required=False),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -28,7 +28,7 @@ class ActivityView(View):
         admin_log("activity", mod.id, 1, request.user)
 
         template = loader.get_template("activity/activity.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class ActivityList(View):
@@ -40,7 +40,7 @@ class ActivityList(View):
         if kwargs["id"] is not None:
             list = Activity.objects.filter(activity_id=kwargs["id"])
             template = loader.get_template("activity/activity_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -49,18 +49,18 @@ class ActivityList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity'})
+            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
-            context = Context({'rb': 'activity'})
+            context = Context({'rb': 'activity', 'user': request.user})
             return HttpResponse(template.render(context))
 class ActivityCommentView(View):
     @fetch_record(ActivityComment.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("activity/activity_comment.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(ActivityComment.objects, 'mod', 'id')
@@ -76,7 +76,7 @@ class ActivityCommentView(View):
         admin_log("activity_comment", mod.id, 1, request.user)
 
         template = loader.get_template("activity/activity_comment.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class ActivityCommentList(View):
@@ -88,7 +88,7 @@ class ActivityCommentList(View):
         if kwargs["id"] is not None:
             list = ActivityComment.objects.filter(activity_id=kwargs["id"])
             template = loader.get_template("activity/activity_comment_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_comment'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -97,18 +97,18 @@ class ActivityCommentList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_comment_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_comment'})
+            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
-            context = Context({'rb': 'activity_comment'})
+            context = Context({'rb': 'activity_comment', 'user': request.user})
             return HttpResponse(template.render(context))
 class ActivityLikerView(View):
     @fetch_record(ActivityLiker.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("activity/activity_liker.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(ActivityLiker.objects, 'mod', 'id')
@@ -124,7 +124,7 @@ class ActivityLikerView(View):
         admin_log("activity_liker", mod.id, 1, request.user)
 
         template = loader.get_template("activity/activity_liker.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class ActivityLikerList(View):
@@ -136,7 +136,7 @@ class ActivityLikerList(View):
         if kwargs["id"] is not None:
             list = ActivityLiker.objects.filter(activity_id=kwargs["id"])
             template = loader.get_template("activity/activity_liker_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_liker'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -145,24 +145,24 @@ class ActivityLikerList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_liker_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_liker'})
+            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
-            context = Context({'rb': 'activity_liker'})
+            context = Context({'rb': 'activity_liker', 'user': request.user})
             return HttpResponse(template.render(context))
 class ActivityStageView(View):
     @fetch_record(ActivityStage.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("activity/activity_stage.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(ActivityStage.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'status': forms.IntegerField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'school': forms.CharField(max_length=20,required=False,),'user_type': forms.IntegerField(required=False,),
+        'status': forms.IntegerField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -172,7 +172,7 @@ class ActivityStageView(View):
         admin_log("activity_stage", mod.id, 1, request.user)
 
         template = loader.get_template("activity/activity_stage.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class ActivityStageList(View):
@@ -184,7 +184,7 @@ class ActivityStageList(View):
         if kwargs["id"] is not None:
             list = ActivityStage.objects.filter(activity_id=kwargs["id"])
             template = loader.get_template("activity/activity_stage_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_stage'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_stage', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -193,18 +193,18 @@ class ActivityStageList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_stage_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_stage'})
+            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_stage', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
-            context = Context({'rb': 'activity_stage'})
+            context = Context({'rb': 'activity_stage', 'user': request.user})
             return HttpResponse(template.render(context))
 class ActivityUserParticipatorView(View):
     @fetch_record(ActivityUserParticipator.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("activity/activity_user_participator.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(ActivityUserParticipator.objects, 'mod', 'id')
@@ -220,7 +220,7 @@ class ActivityUserParticipatorView(View):
         admin_log("activity_user_participator", mod.id, 1, request.user)
 
         template = loader.get_template("activity/activity_user_participator.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class ActivityUserParticipatorList(View):
@@ -232,7 +232,7 @@ class ActivityUserParticipatorList(View):
         if kwargs["id"] is not None:
             list = ActivityUserParticipator.objects.filter(activity_id=kwargs["id"])
             template = loader.get_template("activity/activity_user_participator_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_user_participator'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_user_participator', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -241,9 +241,9 @@ class ActivityUserParticipatorList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_user_participator_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_user_participator'})
+            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_user_participator', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
-            context = Context({'rb': 'activity_user_participator'})
+            context = Context({'rb': 'activity_user_participator', 'user': request.user})
             return HttpResponse(template.render(context))

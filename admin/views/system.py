@@ -13,7 +13,7 @@ class Setting(View):
     @require_cookie
     def get(self, request):
         template = loader.get_template("system.html")
-        context = Context({'m': SystemModel.objects.get(id=1)})
+        context = Context({'m': SystemModel.objects.get(id=1), 'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
@@ -32,5 +32,5 @@ class Setting(View):
             setattr(model, k.upper(), kwargs[k])
         model.save()
         template = loader.get_template("system.html")
-        context = Context({'m': model, 'msg': '保存成功'})
+        context = Context({'m': model, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
