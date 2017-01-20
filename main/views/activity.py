@@ -7,16 +7,19 @@ from ..utils import abort
 from ..utils.decorators import *
 
 
-__all__ = ['List', 'Detail', 'UserParticipatorList', 'Search']
+__all__ = ['List', 'Detail', 'ActivityStage','UserParticipatorList', 'Search']
 
 
 class List(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
+
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
-    def get(self, request, offset=0, limit=10):
+    def get(self, request, offset=0, limit=10, order=1):
         """获取活动列表
 
         :param offset: 偏移量
@@ -40,8 +43,9 @@ class List(View):
                 time_created: 创建时间
         """
 
+        k = self.ORDERS[order]
         c = Activity.enabled.count()
-        qs = Activity.enabled.all()[offset: offset + limit]
+        qs = Activity.enabled.all().order_by(k)[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
               'liker_count': a.likers.count(),
@@ -94,7 +98,7 @@ class Detail(View):
         })
 
 
-class UserParticipatorList(View):
+class ActivityStage(View):
     @fetch_object(Activity.enabled, 'activity')
     @require_token
     @validate_args({
@@ -102,10 +106,52 @@ class UserParticipatorList(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, activity, offset=0, limit=10):
+        """获取活动的阶段列表
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+
+        :return:
+            count: 阶段总数
+            list: 阶段列表
+                id: 阶段ID
+                stage: 阶段名称:0:前期宣传, 1:报名, 2:结束
+                time_started: 开始时间
+                time_ended: 结束时间
+                time_created: 创建时间
+        """
+
+        c = activity.stages.count()
+        qs = activity.stages.all().order_by("status")[offset: offset + limit]
+        l = [{'id': p.id,
+              'status': p.status,
+              'time_started': p.time_started,
+              'time_ended': p.time_ended,
+              'time_created': p.time_created} for p in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class UserParticipatorList(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
+
+    @fetch_object(Activity.enabled, 'activity')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, activity, offset=0, limit=10, order=1):
         """获取报名用户列表"""
 
+        k = self.ORDERS[order]
         c = activity.user_participators.count()
-        qs = activity.user_participators.all()[offset: offset + limit]
+        qs = activity.user_participators.all().order_by(
+            k)[offset: offset + limit]
         l = [{'id': p.user.id,
               'name': p.user.name,
               'username': p.user.username,
