@@ -15,4 +15,6 @@ urls = [
         ActivityComment.as_view(), name='comment'),
     # 搜索
     url(r'search/$', Search.as_view(), name='search'),
+    # 活动的阶段
+    url(r'stage/$', ActivityStage.as_view(), name='stage'),
 ]
