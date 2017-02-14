@@ -7,10 +7,10 @@ from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
     Visitor
 
 
-__all__ = ['User', 'UserAction', 'UserComment', 'UserExperience',
-           'UserFollower', 'UserFriend', 'UserFriendRequest', 'UserLiker',
-           'UserTag', 'UserValidationCode', 'UserVisitor', 'UserFeedback',
-           'UserFeature', 'UserBehavior', 'UserScore']
+__all__ = ['User', 'UserAction', 'UserActionLiker', 'UserComment',
+           'UserExperience', 'UserFollower', 'UserFriend', 'UserFriendRequest',
+           'UserLiker', 'UserTag', 'UserValidationCode', 'UserVisitor',
+           'UserFeedback', 'UserFeature', 'UserBehavior', 'UserScore']
 
 
 class User(models.Model):
@@ -123,6 +123,16 @@ class UserAction(Action):
 
     class Meta:
         db_table = 'user_action'
+
+
+class UserActionLiker(Liker):
+    """用户动态点赞记录"""
+
+    liked = models.ForeignKey('UserAction', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
+
+    class Meta:
+        db_table = 'user_action_liker'
 
 
 class UserComment(Comment):
