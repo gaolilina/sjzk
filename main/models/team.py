@@ -54,7 +54,7 @@ class TeamActionLiker(Liker):
     """团队动态点赞记录"""
 
     liked = models.ForeignKey('TeamAction', models.CASCADE, 'likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_team_actions')
 
     class Meta:
         db_table = 'team_action_liker'

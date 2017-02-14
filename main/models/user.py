@@ -129,7 +129,7 @@ class UserActionLiker(Liker):
     """用户动态点赞记录"""
 
     liked = models.ForeignKey('UserAction', models.CASCADE, 'likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_user_actions')
 
     class Meta:
         db_table = 'user_action_liker'
