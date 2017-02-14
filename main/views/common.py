@@ -50,6 +50,7 @@ class ActionList(View):
                 related_object_type: 额外相关对象的类型
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
         """
 
         # 获取与对象相关的动态
@@ -67,6 +68,7 @@ class ActionList(View):
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -77,7 +79,7 @@ class UserActionsList(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, entity=None, offset=0, limit=10):
-        """获取对象的动态列表
+        """获取用户的动态列表
 
         :param offset: 偏移量
         :param limit: 数量上限
@@ -97,6 +99,7 @@ class UserActionsList(View):
                 related_object_type: 额外相关对象的类型
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
         """
 
         # 获取主语是用户的动态
@@ -114,6 +117,7 @@ class UserActionsList(View):
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -124,7 +128,7 @@ class TeamActionsList(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, entity=None, offset=0, limit=10):
-        """获取对象的动态列表
+        """获取团队的动态列表
 
         :param offset: 偏移量
         :param limit: 数量上限
@@ -144,6 +148,7 @@ class TeamActionsList(View):
                 related_object_type: 额外相关对象的类型
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
         """
 
         # 获取主语是团队的动态
@@ -161,6 +166,7 @@ class TeamActionsList(View):
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -192,6 +198,7 @@ class FollowedUserActionList(View):
                 related_object_type: 额外相关对象的类型
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
         """
 
         r = UserAction.objects.filter(Q(
@@ -210,6 +217,7 @@ class FollowedUserActionList(View):
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -241,6 +249,7 @@ class FollowedTeamActionList(View):
                 related_object_type: 额外相关对象的类型
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
         """
 
         r = TeamAction.objects.filter(
@@ -259,6 +268,7 @@ class FollowedTeamActionList(View):
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -310,6 +320,7 @@ class SearchUserActionList(View):
                 related_object_type: 额外相关对象的类型
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
         """
 
         r = UserAction.objects.filter(Q(entity__name__contains=kwargs['name']) |
@@ -328,6 +339,7 @@ class SearchUserActionList(View):
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -362,6 +374,7 @@ class SearchTeamActionList(View):
                 related_object_type: 额外相关对象的类型
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
         """
 
         r = TeamAction.objects.filter(Q(entity__name__contains=kwargs['name']) |
@@ -380,6 +393,7 @@ class SearchTeamActionList(View):
               'related_object_type': i.related_object_type,
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
