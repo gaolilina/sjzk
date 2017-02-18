@@ -12,12 +12,12 @@ class Feedback(View):
     @require_cookie
     def get(self, request):
         template = loader.get_template("feedback/feedback.html")
-        context = Context({'list': UserFeedback.objects.all()})
+        context = Context({'list': UserFeedback.objects.all(), 'user': request.user})
         return HttpResponse(template.render(context))
 
 class Report(View):
     @require_cookie
     def get(self, request):
         template = loader.get_template("feedback/report.html")
-        context = Context({'list': ReportModel.objects.all()})
+        context = Context({'list': ReportModel.objects.all(), 'user': request.user})
         return HttpResponse(template.render(context))

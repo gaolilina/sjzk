@@ -12,13 +12,13 @@ class CompetitionView(View):
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("competition/competition.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(Competition.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'name': forms.CharField(max_length=50,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_team': forms.IntegerField(required=False,),'is_enabled': forms.BooleanField(required=False),
+        'name': forms.CharField(max_length=50,),'status': forms.IntegerField(required=False,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_team': forms.IntegerField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'min_member': forms.IntegerField(required=False,),'max_member': forms.IntegerField(required=False,),'unit': forms.CharField(max_length=20,required=False,),'user_type': forms.IntegerField(required=False,),'is_enabled': forms.BooleanField(required=False),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -28,7 +28,7 @@ class CompetitionView(View):
         admin_log("competition", mod.id, 1, request.user)
 
         template = loader.get_template("competition/competition.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class CompetitionList(View):
@@ -40,7 +40,7 @@ class CompetitionList(View):
         if kwargs["id"] is not None:
             list = Competition.objects.filter(competition_id=kwargs["id"])
             template = loader.get_template("competition/competition_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -49,18 +49,18 @@ class CompetitionList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition'})
+            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
-            context = Context({'rb': 'competition'})
+            context = Context({'rb': 'competition', 'user': request.user})
             return HttpResponse(template.render(context))
 class CompetitionCommentView(View):
     @fetch_record(CompetitionComment.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("competition/competition_comment.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(CompetitionComment.objects, 'mod', 'id')
@@ -76,7 +76,7 @@ class CompetitionCommentView(View):
         admin_log("competition_comment", mod.id, 1, request.user)
 
         template = loader.get_template("competition/competition_comment.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class CompetitionCommentList(View):
@@ -88,7 +88,7 @@ class CompetitionCommentList(View):
         if kwargs["id"] is not None:
             list = CompetitionComment.objects.filter(competition_id=kwargs["id"])
             template = loader.get_template("competition/competition_comment_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_comment'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -97,18 +97,18 @@ class CompetitionCommentList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_comment_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_comment'})
+            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
-            context = Context({'rb': 'competition_comment'})
+            context = Context({'rb': 'competition_comment', 'user': request.user})
             return HttpResponse(template.render(context))
 class CompetitionLikerView(View):
     @fetch_record(CompetitionLiker.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("competition/competition_liker.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(CompetitionLiker.objects, 'mod', 'id')
@@ -124,7 +124,7 @@ class CompetitionLikerView(View):
         admin_log("competition_liker", mod.id, 1, request.user)
 
         template = loader.get_template("competition/competition_liker.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class CompetitionLikerList(View):
@@ -136,7 +136,7 @@ class CompetitionLikerList(View):
         if kwargs["id"] is not None:
             list = CompetitionLiker.objects.filter(competition_id=kwargs["id"])
             template = loader.get_template("competition/competition_liker_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_liker'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -145,24 +145,24 @@ class CompetitionLikerList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_liker_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_liker'})
+            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
-            context = Context({'rb': 'competition_liker'})
+            context = Context({'rb': 'competition_liker', 'user': request.user})
             return HttpResponse(template.render(context))
 class CompetitionStageView(View):
     @fetch_record(CompetitionStage.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("competition/competition_stage.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(CompetitionStage.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        'status': forms.IntegerField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'min_member': forms.IntegerField(required=False,),'max_member': forms.IntegerField(required=False,),'school': forms.CharField(max_length=20,required=False,),'user_type': forms.IntegerField(required=False,),
+        'status': forms.IntegerField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -172,7 +172,7 @@ class CompetitionStageView(View):
         admin_log("competition_stage", mod.id, 1, request.user)
 
         template = loader.get_template("competition/competition_stage.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class CompetitionStageList(View):
@@ -184,7 +184,7 @@ class CompetitionStageList(View):
         if kwargs["id"] is not None:
             list = CompetitionStage.objects.filter(competition_id=kwargs["id"])
             template = loader.get_template("competition/competition_stage_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_stage'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_stage', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -193,18 +193,18 @@ class CompetitionStageList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_stage_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_stage'})
+            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_stage', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
-            context = Context({'rb': 'competition_stage'})
+            context = Context({'rb': 'competition_stage', 'user': request.user})
             return HttpResponse(template.render(context))
 class CompetitionTeamParticipatorView(View):
     @fetch_record(CompetitionTeamParticipator.objects, 'mod', 'id')
     @require_cookie
     def get(self, request, mod):
         template = loader.get_template("competition/competition_team_participator.html")
-        context = Context({'mod': mod})
+        context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(CompetitionTeamParticipator.objects, 'mod', 'id')
@@ -220,7 +220,7 @@ class CompetitionTeamParticipatorView(View):
         admin_log("competition_team_participator", mod.id, 1, request.user)
 
         template = loader.get_template("competition/competition_team_participator.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class CompetitionTeamParticipatorList(View):
@@ -232,7 +232,7 @@ class CompetitionTeamParticipatorList(View):
         if kwargs["id"] is not None:
             list = CompetitionTeamParticipator.objects.filter(competition_id=kwargs["id"])
             template = loader.get_template("competition/competition_team_participator_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_team_participator'})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_team_participator', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -241,9 +241,9 @@ class CompetitionTeamParticipatorList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_team_participator_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_team_participator'})
+            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_team_participator', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
-            context = Context({'rb': 'competition_team_participator'})
+            context = Context({'rb': 'competition_team_participator', 'user': request.user})
             return HttpResponse(template.render(context))
