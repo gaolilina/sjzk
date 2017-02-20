@@ -50,7 +50,7 @@ view_class_text = """class {{cls_name}}View(View):
         admin_log("{{tbl_name}}", mod.id, 1, request.user)
 
         template = loader.get_template("user/{{tbl_name}}.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class {{cls_name}}List(View):
@@ -979,7 +979,7 @@ class {{cls_name}}List(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("forum/{{tbl_name}}_index.html")
-            context = Context()
+            context = Context({'user': request.user})
             return HttpResponse(template.render(context))
 """
 

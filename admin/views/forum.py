@@ -48,7 +48,7 @@ class ForumBoardList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("forum/forum_board_index.html")
-            context = Context()
+            context = Context({'user': request.user})
             return HttpResponse(template.render(context))
 class ForumPostView(View):
     @fetch_record(ForumPost.objects, 'mod', 'id')
@@ -91,5 +91,5 @@ class ForumPostList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("forum/forum_post_index.html")
-            context = Context()
+            context = Context({'user': request.user})
             return HttpResponse(template.render(context))

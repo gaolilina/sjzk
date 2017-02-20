@@ -28,7 +28,7 @@ class UserView(View):
         admin_log("user", mod.id, 1, request.user)
 
         template = loader.get_template("user/user.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserList(View):
@@ -76,7 +76,7 @@ class UserActionView(View):
         admin_log("user_action", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_action.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserActionList(View):
@@ -124,7 +124,7 @@ class UserBehaviorView(View):
         admin_log("user_behavior", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_behavior.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserBehaviorList(View):
@@ -172,7 +172,7 @@ class UserCommentView(View):
         admin_log("user_comment", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_comment.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserCommentList(View):
@@ -220,7 +220,7 @@ class UserExperienceView(View):
         admin_log("user_experience", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_experience.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserExperienceList(View):
@@ -268,7 +268,7 @@ class UserFeatureView(View):
         admin_log("user_feature", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_feature.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFeatureList(View):
@@ -316,7 +316,7 @@ class UserFeedbackView(View):
         admin_log("user_feedback", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_feedback.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFeedbackList(View):
@@ -364,7 +364,7 @@ class UserFollowerView(View):
         admin_log("user_follower", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_follower.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFollowerList(View):
@@ -412,7 +412,7 @@ class UserFriendView(View):
         admin_log("user_friend", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_friend.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFriendList(View):
@@ -460,7 +460,7 @@ class UserFriendRequestView(View):
         admin_log("user_friend_request", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_friend_request.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserFriendRequestList(View):
@@ -508,7 +508,7 @@ class UserLikerView(View):
         admin_log("user_liker", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_liker.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserLikerList(View):
@@ -556,7 +556,7 @@ class UserScoreView(View):
         admin_log("user_score_record", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_score_record.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserScoreList(View):
@@ -604,7 +604,7 @@ class UserTagView(View):
         admin_log("user_tag", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_tag.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserTagList(View):
@@ -652,7 +652,7 @@ class UserValidationCodeView(View):
         admin_log("user_validation_code", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_validation_code.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserValidationCodeList(View):
@@ -700,7 +700,7 @@ class UserVisitorView(View):
         admin_log("user_visitor", mod.id, 1, request.user)
 
         template = loader.get_template("user/user_visitor.html")
-        context = Context({'mod': mod, 'msg': '保存成功'})
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
 class UserVisitorList(View):
