@@ -40,8 +40,10 @@ def save_uploaded_file(file, object_id, status, other_id):
 
     filename = dirname + "/" + file.name
     try:
-        with open(filename, 'wb+') as i:
-            i.write(file.file)
+        destination = open(filename, 'wb+')
+        for chunk in file.chunks():
+            destination.write(chunk)
+        destination.close()
     except IOError:
         return None
     else:
