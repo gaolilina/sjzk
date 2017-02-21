@@ -181,6 +181,9 @@ class TeamParticipatorList(View):
                 abort(403, 'location limited')
             if competition.province and competition.city != team.city:
                 abort(403, 'location limited')
+            for m in team.member:
+                if m.user.is_verified != 2:
+                    abort(403, 'team member must verified')
             abort(200)
 
 
