@@ -106,45 +106,8 @@ for mod_name, mod_class in inspect.getmembers(users):
 {% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='user' rb='{{tbl_name}}' %}{% endblock %}
 
 {% block css %}
+{% include 'parts/input_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
     input.tiny {
         width: 60px;
     }
@@ -176,10 +139,10 @@ for mod_name, mod_class in inspect.getmembers(users):
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
@@ -334,45 +297,8 @@ for mod_name, mod_class in inspect.getmembers(teams):
 {% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='team' rb='{{tbl_name}}' %}{% endblock %}
 
 {% block css %}
+{% include 'parts/input_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
     input.tiny {
         width: 60px;
     }
@@ -404,10 +330,10 @@ for mod_name, mod_class in inspect.getmembers(teams):
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
@@ -561,45 +487,8 @@ for mod_name, mod_class in inspect.getmembers(activities):
 {% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='activity' rb='{{tbl_name}}' %}{% endblock %}
 
 {% block css %}
+{% include 'parts/input_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
     input.tiny {
         width: 60px;
     }
@@ -631,10 +520,10 @@ for mod_name, mod_class in inspect.getmembers(activities):
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
@@ -788,45 +677,8 @@ for mod_name, mod_class in inspect.getmembers(competitions):
 {% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='competition' rb='{{tbl_name}}' %}{% endblock %}
 
 {% block css %}
+{% include 'parts/input_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
     input.tiny {
         width: 60px;
     }
@@ -858,10 +710,10 @@ for mod_name, mod_class in inspect.getmembers(competitions):
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
@@ -1010,45 +862,8 @@ for mod_name, mod_class in inspect.getmembers(forums):
 {% block rightbar %}{% include 'rightbar.html' with tb='forum_admin' lb='forum' rb='{{tbl_name}}' %}{% endblock %}
 
 {% block css %}
+{% include 'parts/input_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
     input.tiny {
         width: 60px;
     }
@@ -1080,10 +895,10 @@ for mod_name, mod_class in inspect.getmembers(forums):
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))

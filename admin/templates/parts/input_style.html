@@ -11,8 +11,9 @@
         vertical-align: top;
     }
 
-    input[type=text], input[type=email], textarea {
+    input[type=text], input[type=email], input[type=datetime], input[type=date], input[type=number], textarea {
         border: 2px solid #C5DBAD;
+        width: 200px;
     }
 
     input[type=radio] {
@@ -35,5 +36,16 @@
         color: white;
         margin-left: 10px;
         margin-top: 10px;
+    }
+
+    input[type=submit], input[type=reset] {
+        padding: 4px 10px;
+        font-size: 1.05em;
+    }
+
+    @media (max-width: 361px) {
+        input[type=text], input[type=email], input[type=datetime], input[type=date], input[type=number], textarea {
+            width: 145px;
+        }
     }
 </style>

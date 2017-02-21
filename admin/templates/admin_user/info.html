@@ -94,5 +94,19 @@ function upload() {
         margin-left: 10px;
         margin-top: 10px;
     }
+    
+    input[type=text], input[type=email], input[type=datetime], input[type=date], input[type=number], textarea {
+        width: 200px;
+    }
+
+    @media (max-width: 361px) {
+        form img {
+            width: 80px;
+            height: 80px;
+        }
+        input[type=text], input[type=email], input[type=datetime], input[type=date], input[type=number], textarea {
+            width: 145px;
+        }
+    }
 </style>
 {% endblock %}

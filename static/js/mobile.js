@@ -27,9 +27,6 @@ $(document).ready(function() {
     }).join("");
     $('#mobilebar li.active').append("<ul id='mobilebar2'>"+str2+"</ul>");
 
-    // 隐藏内容条
-    $('.rightbar li:not(.active)').hide();
-
     var width = $('#mobilebar').width();
     $('#mobilebar').css('left', '-'+width+'px');
     var mobilebarshow = false;

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>创易汇</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        form {
+            margin: 20px;
+            padding-bottom: 40px;
+        }
+
+        button[type=submit] {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <div class="form-group">
+            <label for="name">name</label>
+            <input type="text" class="form-control" id="name" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="birthday">birthday</label>
+            <input type="text" class="form-control" id="birthday" placeholder="0000-00-00"/>
+        </div>
+        <div class="form-group">
+            <label for="real_name">real_name</label>
+            <input type="text" class="form-control" id="real_name" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="gender">gender</label>
+            <input type="text" class="form-control" id="gender" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="description">description</label>
+            <input type="text" class="form-control" id="description" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="qq">qq</label>
+            <input type="text" class="form-control" id="qq" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="wechat">wechat</label>
+            <input type="text" class="form-control" id="wechat" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="email">email</label>
+            <input type="text" class="form-control" id="email" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="province">province</label>
+            <input type="text" class="form-control" id="province" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="city">city</label>
+            <input type="text" class="form-control" id="city" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="county">county</label>
+            <input type="text" class="form-control" id="county" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="role">role</label>
+            <input type="text" class="form-control" id="role" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="other_number">other_number</label>
+            <input type="text" class="form-control" id="other_number" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="unit1">unit1</label>
+            <input type="text" class="form-control" id="unit1" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="unit2">unit2</label>
+            <input type="text" class="form-control" id="unit2" placeholder=""/>
+        </div>
+        <div class="form-group">
+            <label for="profession">profession</label>
+            <input type="text" class="form-control" id="profession" placeholder=""/>
+        </div>
+        <button type="submit" class="btn btn-primary">更新</button>
+    </form>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/lib.js"></script>
+    <script>
+        if (readToken() == null || readToken() == "") {
+            location.href = "register.html";
+        }
+
+        $(function() {
+            $("form").submit(function(e) {
+                e.preventDefault();
+
+                post('/users/current/profile/', {
+                    name: $('#name').val(),
+                    birthday: $('#birthday').val(),
+                    real_name: $('#real_name').val(),
+                    gender: $('#gender').val(),
+                    description: $('#description').val(),
+                    qq: $('#qq').val(),
+                    wechat: $('#wechat').val(),
+                    email: $('#email').val(),
+                    province: $('#province').val(),
+                    city: $('#city').val(),
+                    county: $('#county').val(),
+                    role: $('#role').val(),
+                    other_number: $('#other_number').val(),
+                    unit1: $('#unit1').val(),
+                    unit2: $('#unit2').val(),
+                    profession: $('#profession').val()
+                }).then(function(data) {
+                    location.href = 'main.html';
+                }).fail(function(msg) {
+                    switch (code) {
+                        case 400:
+                            alert('400');
+                            break;
+                        case 403:
+                            alert('403');
+                            break;
+                        default:
+                            alert(msg);
+                            break;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
