@@ -173,7 +173,16 @@ class UserParticipatorList(View):
         if activity.province and activity.city != request.user.city:
             abort(403, 'location limited')
         if activity.unit and activity.unit != request.user.unit1:
-            abort(403, 'location limited')
+            abort(403, 'unit limited')
+        if request.user.is_verified != 2:
+            abort(403, 'user must verified')
+        if activity.user_type != 0:
+            if activity.user_type == 1 and request.user.role != "学生":
+                abort(403, 'user role limited')
+            elif activity.user_type == 2 and request.user.role != "教师":
+                abort(403, 'user role limited')
+            elif activity.user_type == 3 and request.user.role != "社会人员":
+                abort(403, 'user role limited')
 
         if not activity.user_participators.filter(user=request.user).exists():
             activity.user_participators.create(user=request.user)

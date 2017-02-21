@@ -17,4 +17,8 @@ urls = [
     url(r'search/$', Search.as_view(), name='search'),
     # 竞赛的阶段
     url(r'stage/$', CompetitionStage.as_view(), name='stage'),
+    # 竞赛文件上传
+    url(r'(?P<team_id>[0-9]+)/files/$', CompetitionFile.as_view(), name='files'),
+    url(r'(?P<team_id>[0-9]+)/file/(?P<competition_id>[0-9]+)/$',
+        CompetitionFile.as_view(), name='file'),
 ]

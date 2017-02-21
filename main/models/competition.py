@@ -5,7 +5,7 @@ from . import EnabledManager, Comment, Liker
 
 
 __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
-           'CompetitionComment', 'CompetitionLiker']
+           'CompetitionComment', 'CompetitionLiker', 'CompetitionFile']
 
 
 class Competition(models.Model):
@@ -53,12 +53,26 @@ class CompetitionStage(models.Model):
         db_table = 'competition_stage'
 
 
+class CompetitionFile(models.Model):
+    """竞赛文件"""
+
+    competition = models.ForeignKey('Competition', models.CASCADE, 'team_files')
+    team = models.ForeignKey('Team', models.CASCADE, 'competition_files')
+    # 0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
+    status = models.IntegerField(default=0, db_index=True)
+    file = models.CharField(max_length=100, default='')
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'competition_file'
+
+
 class CompetitionTeamParticipator(models.Model):
     """竞赛参与者（团队）"""
 
     competition = models.ForeignKey(
         'Competition', models.CASCADE, 'team_participators')
-    team = models.ForeignKey('Team', models.CASCADE, '+')
+    team = models.ForeignKey('Team', models.CASCADE, 'competitions')
 
     class Meta:
         db_table = 'competition_team_participator'

@@ -3,12 +3,12 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from ..models import Competition, Team
-from ..utils import abort
+from ..utils import abort, save_uploaded_file
 from ..utils.decorators import *
 
 
-__all__ = ['List', 'Detail', 'CompetitionStage', 'TeamParticipatorList',
-           'Search']
+__all__ = ['List', 'Detail', 'CompetitionStage', 'CompetitionFile',
+           'TeamParticipatorList', 'Search']
 
 
 class List(View):
@@ -136,6 +136,67 @@ class CompetitionStage(View):
         return JsonResponse({'count': c, 'list': l})
 
 
+class CompetitionFile(View):
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, team, offset=0, limit=10):
+        """获取团队的上传文件信息
+        :param offset: 偏移量
+        :param limit: 数量上限
+
+        :return:
+            count: 参加的竞赛总数
+            list: 竞赛的文件上传情况列表
+                competition_id: 竞赛ID
+                name: 竞赛名称
+                status: 竞赛阶段0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
+                time_id: 团队ID
+                file: 上传的文件
+        """
+
+        c = team.competitions.count()
+        competitions = team.competitions.all()[offset: offset + limit]
+        l = []
+        for competition in competitions:
+            t = dict()
+            t['competition_id'] = competition.id
+            t['name'] = competition.name
+            t['team_id'] = team.id
+            t['status'] = competition.status
+            file = competition.team_files.get(
+                team=team, status=competition.status)
+            if not file:
+                t['file'] = ""
+            else:
+                t['file'] = file
+            l.append(t)
+        return JsonResponse({'count': c, 'list': l})
+
+    @fetch_object(Competition.enabled, 'competition')
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    def post(self, request, competition, team):
+        """上传文件"""
+
+        if request.user != team.owner:
+            abort(404, 'only team owner can upload file')
+        file = request.FILES.get('file')
+        if not file:
+            abort(400)
+
+        filename = save_uploaded_file(
+            file, competition.id, competition.status, team.id)
+        if filename:
+            competition.team_files.create(
+                file=filename, status=competition.status, team=team)
+            abort(200)
+        abort(400)
+
+
 class TeamParticipatorList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
@@ -175,8 +236,6 @@ class TeamParticipatorList(View):
         except Team.DoesNotExist:
             abort(400)
         else:
-            if not competition.team_participators.filter(team=team).exists():
-                competition.team_participators.create(team=team)
             if competition.province and competition.province != team.province:
                 abort(403, 'location limited')
             if competition.province and competition.city != team.city:
@@ -184,6 +243,18 @@ class TeamParticipatorList(View):
             for m in team.member:
                 if m.user.is_verified != 2:
                     abort(403, 'team member must verified')
+                if competition.user_type != 0:
+                    if competition.user_type == 1 and m.user.role != "学生":
+                        abort(403, 'member role limited')
+                    elif competition.user_type == 2 and m.user.role != "教师":
+                        abort(403, 'member role limited')
+                    elif competition.user_type == 3 and \
+                                    m.user.role != "社会人员":
+                        abort(403, 'member role limited')
+                if competition.unit and competition.unit != m.user.unit1:
+                    abort(403, 'unit limited')
+            if not competition.team_participators.filter(team=team).exists():
+                competition.team_participators.create(team=team)
             abort(200)
 
 
