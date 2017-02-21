@@ -27,7 +27,7 @@ li:hover {
 }
 
 .top img {
-    width: 89.5px;
+    width: 116px;
     height: 44.5px;
     margin-left: 10px;
     margin-top: 10px;
@@ -140,7 +140,7 @@ li:hover {
     background: white;
     position: fixed;
     top: 190px;
-    bottom: 20px;
+    bottom: 30px;
     left: 220px;
     right: 20px;
     overflow-y: auto;

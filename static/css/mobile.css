@@ -55,12 +55,17 @@ body {
     margin-top: 0px;
 }
 
+.rightbar ul {
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
 .content {
     position: absolute;
     left: 0px;
     right: 0px;
     top: 90px;
-    bottom: 0;
+    bottom: 25px;
     background-color: #F4F5F7;
 }
 
