@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>创易汇-上传页面</title>
+    <meta charset="utf-8" />
+    <script src="/static/js/jquery-3.1.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        html, body {
+            height: 100%;
+            background: #E2E2CD;
+        }
+        .content {
+            position: absolute;
+            width: 400px;
+            height: 200px;
+            top: 50%;
+            margin-top: -100px;
+            left: 50%;
+            margin-left: -200px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .logo {
+            margin-bottom: 10px;
+        }
+        .logo img {
+            width: 158.6px;
+            height: 59.4px;
+        }
+        .upload * {
+            display: inline-block;
+            box-sizing: border-box;
+            height: 41px;
+        }
+        .upload input {
+            text-indent: 10px;
+        }
+        .upload button {
+            background: #34B891;
+            border: 1px solid #34A391;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+            color: white;
+            cursor: pointer;
+            padding: 8px 20px 9px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        footer {
+            position: fixed;
+            width: 100%;
+            bottom: 5px;
+            text-align: center;
+        }
+        footer a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <div class="logo"><img src="/static/img/logo.png" /></div>
+        <div class="upload">
+            <span>竞赛</span>
+            <input type="text" readonly><button>上传</button>
+        </div>
+    </div>
+    <footer>
+        <a href="http://www.miitbeian.gov.cn/">京ICP备16066333号</a>
+    </footer>
+</body>
+
+</html>
