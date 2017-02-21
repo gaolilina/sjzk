@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:team:team' mod.id %}" method="post">
 <table>
-    <tr><td>owner：</td><td><a href="{% url "admin:team:user" mod.owner.id %}">{{ mod.owner.id }}</a></td></tr><tr><td>name：</td><td><input name="name" type="text" value="{{ mod.name }}"  maxlength="20" /></td></tr><tr><td>icon：</td><td><input name="icon" type="text" value="{{ mod.icon }}"  maxlength="100" /></td></tr><tr><td>description：</td><td><textarea name=description>{{ mod.description }}</textarea></td></tr><tr><td>url：</td><td><input name="url" type="text" value="{{ mod.url }}"  maxlength="100" /></td></tr><tr><td>field1：</td><td><input name="field1" type="text" value="{{ mod.field1 }}"  maxlength="10" /></td></tr><tr><td>field2：</td><td><input name="field2" type="text" value="{{ mod.field2 }}"  maxlength="10" /></td></tr><tr><td>province：</td><td><input name="province" type="text" value="{{ mod.province }}"  maxlength="20" /></td></tr><tr><td>city：</td><td><input name="city" type="text" value="{{ mod.city }}"  maxlength="20" /></td></tr><tr><td>county：</td><td><input name="county" type="text" value="{{ mod.county }}"  maxlength="20" /></td></tr><tr><td>is_recruiting：</td><td><input name="is_recruiting" type="checkbox" value="{{ mod.is_recruiting }}" /></td></tr><tr><td>is_enabled：</td><td><input name="is_enabled" type="checkbox" value="{{ mod.is_enabled }}" /></td></tr><tr><td>score：</td><td><input name="score" type="number" value="{{ mod.score }}" /></td></tr><tr><td>time_created：</td><td><input name="time_created" type="datetime" value="{{ mod.time_created }}" /></td></tr>
+    <tr><td>owner：</td><td><a href="{% url "admin:team:user" mod.owner.id %}">{{ mod.owner.id }}</a></td></tr><tr><td>name：</td><td><input name="name" type="text" value="{{ mod.name }}"  maxlength="20" /></td></tr><tr><td>icon：</td><td><input name="icon" type="text" value="{{ mod.icon }}"  maxlength="100" /></td></tr><tr><td>description：</td><td><textarea name=description>{{ mod.description }}</textarea></td></tr><tr><td>url：</td><td><input name="url" type="text" value="{{ mod.url }}"  maxlength="100" /></td></tr><tr><td>field1：</td><td><input name="field1" type="text" value="{{ mod.field1 }}"  maxlength="10" /></td></tr><tr><td>field2：</td><td><input name="field2" type="text" value="{{ mod.field2 }}"  maxlength="10" /></td></tr><tr><td>province：</td><td><input name="province" type="text" value="{{ mod.province }}"  maxlength="20" /></td></tr><tr><td>city：</td><td><input name="city" type="text" value="{{ mod.city }}"  maxlength="20" /></td></tr><tr><td>county：</td><td><input name="county" type="text" value="{{ mod.county }}"  maxlength="20" /></td></tr><tr><td>is_recruiting：</td><td><input name="is_recruiting" type="checkbox" value="{{ mod.is_recruiting }}" /></td></tr><tr><td>is_enabled：</td><td><input name="is_enabled" type="checkbox" value="{{ mod.is_enabled }}" /></td></tr><tr><td>score：</td><td><input name="score" type="number" value="{{ mod.score }}" /></td></tr><tr><td>time_created：</td><td><input name="time_created" type="text" readonly data-field="datetime" value="{{ mod.time_created }}" /></td></tr>
     <tr>
         <td>{{ msg }}</td>
         <td>
@@ -23,45 +23,8 @@
 {% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='team' rb='team' %}{% endblock %}
 
 {% block css %}
+{% include 'parts/input_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
     input.tiny {
         width: 60px;
     }

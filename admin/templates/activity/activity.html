@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:activity:activity' mod.id %}" method="post">
 <table>
-    <tr><td>name：</td><td><input name="name" type="text" value="{{ mod.name }}"  maxlength="50" /></td></tr><tr><td>status：</td><td><input name="status" type="number" value="{{ mod.status }}" /></td></tr><tr><td>content：</td><td><input name="content" type="text" value="{{ mod.content }}"  maxlength="1000" /></td></tr><tr><td>deadline：</td><td><input name="deadline" type="datetime" value="{{ mod.deadline }}" /></td></tr><tr><td>time_started：</td><td><input name="time_started" type="datetime" value="{{ mod.time_started }}" /></td></tr><tr><td>time_ended：</td><td><input name="time_ended" type="datetime" value="{{ mod.time_ended }}" /></td></tr><tr><td>time_created：</td><td><input name="time_created" type="datetime" value="{{ mod.time_created }}" /></td></tr><tr><td>allow_user：</td><td><input name="allow_user" type="number" value="{{ mod.allow_user }}" /></td></tr><tr><td>province：</td><td><input name="province" type="text" value="{{ mod.province }}"  maxlength="20" /></td></tr><tr><td>city：</td><td><input name="city" type="text" value="{{ mod.city }}"  maxlength="20" /></td></tr><tr><td>unit：</td><td><input name="unit" type="text" value="{{ mod.unit }}"  maxlength="20" /></td></tr><tr><td>user_type：</td><td><input name="user_type" type="number" value="{{ mod.user_type }}" /></td></tr><tr><td>is_enabled：</td><td><input name="is_enabled" type="checkbox" value="{{ mod.is_enabled }}" /></td></tr>
+    <tr><td>name：</td><td><input name="name" type="text" value="{{ mod.name }}"  maxlength="50" /></td></tr><tr><td>status：</td><td><input name="status" type="number" value="{{ mod.status }}" /></td></tr><tr><td>content：</td><td><input name="content" type="text" value="{{ mod.content }}"  maxlength="1000" /></td></tr><tr><td>deadline：</td><td><input name="deadline" type="text" readonly data-field="datetime" value="{{ mod.deadline }}" /></td></tr><tr><td>time_started：</td><td><input name="time_started" type="text" readonly data-field="datetime" value="{{ mod.time_started }}" /></td></tr><tr><td>time_ended：</td><td><input name="time_ended" type="text" readonly data-field="datetime" value="{{ mod.time_ended }}" /></td></tr><tr><td>time_created：</td><td><input name="time_created" type="text" readonly data-field="datetime" value="{{ mod.time_created }}" /></td></tr><tr><td>allow_user：</td><td><input name="allow_user" type="number" value="{{ mod.allow_user }}" /></td></tr><tr><td>province：</td><td><input name="province" type="text" value="{{ mod.province }}"  maxlength="20" /></td></tr><tr><td>city：</td><td><input name="city" type="text" value="{{ mod.city }}"  maxlength="20" /></td></tr><tr><td>unit：</td><td><input name="unit" type="text" value="{{ mod.unit }}"  maxlength="20" /></td></tr><tr><td>user_type：</td><td><input name="user_type" type="number" value="{{ mod.user_type }}" /></td></tr><tr><td>is_enabled：</td><td><input name="is_enabled" type="checkbox" value="{{ mod.is_enabled }}" /></td></tr>
     <tr>
         <td>{{ msg }}</td>
         <td>
@@ -23,45 +23,8 @@
 {% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='activity' rb='activity' %}{% endblock %}
 
 {% block css %}
+{% include 'parts/input_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
     input.tiny {
         width: 60px;
     }

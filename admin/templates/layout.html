@@ -6,8 +6,11 @@
     <title>{% block title %}创易{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/DateTimePicker.min.css' %}" />
     {% block css %}{% endblock %}
     <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'js/DateTimePicker.min.js' %}"></script>
+    <script src="{% static 'js/DatetimePicker-i18n-zh-CN.js' %}"></script>
     <script>
         if (navigator.userAgent.indexOf('Mobile') >= 0) {
             var link = document.createElement('link');
@@ -41,6 +44,23 @@
         <a href="http://www.miitbeian.gov.cn/">京ICP备16066333号</a>
     </footer>
     {% block js %}{% endblock %}
+    <div id="dtBox"></div>
+    <script>
+        $(document).ready(function() {
+            setDateTimePicker();
+        });
+        function displayPopup() {
+            if ($(document).width() >= 768) return false;
+            return true;
+        }
+        function setDateTimePicker() {
+            var bIsPopup = displayPopup();
+            $("#dtBox").DateTimePicker({
+                isPopup: bIsPopup,
+                language: 'zh-CN'
+            });
+        }
+    </script>
 </body>
 
 </html>

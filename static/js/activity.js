@@ -6,8 +6,8 @@ var stage_template = '<tr class="stage">\
     <option value="1">报名</option>\
     <option value="2">结束</option>\
 </select><input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /><br/>\
-开始时间：<input type="date" onchange="javascript:stage_gen()" /><br/>\
-结束时间：<input type="date" onchange="javascript:stage_gen()" /><br/>\
+开始时间：<input type="text" data-field="date" readonly onchange="javascript:stage_gen()" /><br/>\
+结束时间：<input type="text" data-field="date" readonly onchange="javascript:stage_gen()" /><br/>\
 </td>\
 </tr>';
 
@@ -56,6 +56,7 @@ $(document).ready(function() {
         $("table tr:nth-last-child(2)").before(str);
         stage_count++;
         stage_gen();
+        setDateTimePicker();
     });
 
     $('#status').change(function() {

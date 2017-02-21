@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:competition:competition_stage' mod.id %}" method="post">
 <table>
-    <tr><td>competition：</td><td><a href="{% url "admin:competition:competition" mod.competition.id %}">{{ mod.competition.id }}</a></td></tr><tr><td>status：</td><td><input name="status" type="number" value="{{ mod.status }}" /></td></tr><tr><td>time_started：</td><td><input name="time_started" type="datetime" value="{{ mod.time_started }}" /></td></tr><tr><td>time_ended：</td><td><input name="time_ended" type="datetime" value="{{ mod.time_ended }}" /></td></tr><tr><td>time_created：</td><td><input name="time_created" type="datetime" value="{{ mod.time_created }}" /></td></tr>
+    <tr><td>competition：</td><td><a href="{% url "admin:competition:competition" mod.competition.id %}">{{ mod.competition.id }}</a></td></tr><tr><td>status：</td><td><input name="status" type="number" value="{{ mod.status }}" /></td></tr><tr><td>time_started：</td><td><input name="time_started" type="text" readonly data-field="datetime" value="{{ mod.time_started }}" /></td></tr><tr><td>time_ended：</td><td><input name="time_ended" type="text" readonly data-field="datetime" value="{{ mod.time_ended }}" /></td></tr><tr><td>time_created：</td><td><input name="time_created" type="text" readonly data-field="datetime" value="{{ mod.time_created }}" /></td></tr>
     <tr>
         <td>{{ msg }}</td>
         <td>
@@ -23,45 +23,8 @@
 {% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='competition' rb='competition_stage' %}{% endblock %}
 
 {% block css %}
+{% include 'parts/input_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
     input.tiny {
         width: 60px;
     }
