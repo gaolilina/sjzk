@@ -186,7 +186,8 @@ class CompetitionFile(View):
             abort(404, 'only team owner can upload file')
         if team.competitions.filter(competition=competition).count() == 0:
             abort(404, 'please participate first')
-        if team.competition_files.filter(competition=competition).count != 0:
+        if team.competition_files.filter(
+                competition=competition, status=competition.status).count != 0:
             abort(403, 'already uploaded file')
 
         file = request.FILES.get('file')
