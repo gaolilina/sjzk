@@ -197,11 +197,14 @@ class CompetitionFile(View):
         filename = save_uploaded_file(
             file, competition.id, competition.status, team.id)
         if filename:
-            with transaction.atomic():
-                competition_file = competition.team_files.get_or_create(
+            try:
+                competition_file = competition.team_files.get(
                     status=competition.status, team=team)
                 competition_file.file = filename
                 competition_file.save()
+            except ObjectDoesNotExist:
+                competition.team_files.create(
+                    file=filename,status=competition.status, team=team)
             abort(200)
         abort(400)
 
