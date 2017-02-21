@@ -38,7 +38,7 @@ def save_uploaded_file(file, object_id, status, other_id):
               + "/" + str(other_id)
     os.makedirs(dirname, exist_ok=True)
 
-    filename = dirname + "/" + file
+    filename = dirname + "/" + file.filename
     try:
         with open(file) as i:
             i.write(filename)
