@@ -1,4 +1,5 @@
 from django import forms
+from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
@@ -174,7 +175,7 @@ class CompetitionFile(View):
             except ObjectDoesNotExist:
                 t['file'] = ""
             else:
-                t['file'] = file
+                t['file'] = file.file
             l.append(t)
         return JsonResponse({'count': c, 'list': l})
 
@@ -188,9 +189,6 @@ class CompetitionFile(View):
             abort(404, 'only team owner can upload file')
         if team.competitions.filter(competition=competition).count() == 0:
             abort(404, 'please participate first')
-        if team.competition_files.filter(
-                competition=competition, status=competition.status).count() != 0:
-            abort(403, 'already uploaded file')
 
         file = request.FILES.get('file')
         if not file:
@@ -199,8 +197,11 @@ class CompetitionFile(View):
         filename = save_uploaded_file(
             file, competition.id, competition.status, team.id)
         if filename:
-            competition.team_files.create(
-                file=filename, status=competition.status, team=team)
+            with transaction.atomic():
+                file = competition.team_files.get_or_create(
+                    status=competition.status, team=team)
+                file.file = filename
+                file.save()
             abort(200)
         abort(400)
 
