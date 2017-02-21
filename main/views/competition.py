@@ -75,6 +75,7 @@ class Detail(View):
             status: 竞赛当前阶段
             province: 省
             city: 城市
+            unit: 机构
             user_type: 参与人员身份
             time_created: 创建时间
         """
@@ -92,6 +93,7 @@ class Detail(View):
             'status': competition.status,
             'province': competition.province,
             'city': competition.city,
+            'unit': competition.unit,
             'user_type': competition.user_type,
             'time_created': competition.time_created,
         })

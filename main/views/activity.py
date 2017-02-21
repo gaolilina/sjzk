@@ -74,7 +74,7 @@ class Detail(View):
             status: 活动当前阶段
             province: 省
             city: 城市
-            school: 学校
+            unit: 机构
             user_type: 参与人员身份
             time_created: 创建时间
         """
@@ -92,7 +92,7 @@ class Detail(View):
             'status': activity.status,
             'province': activity.province,
             'city': activity.city,
-            'school': activity.school,
+            'unit': activity.unit,
             'user_type': activity.user_type,
             'time_created': activity.time_created,
         })
