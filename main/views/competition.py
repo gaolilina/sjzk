@@ -198,10 +198,10 @@ class CompetitionFile(View):
             file, competition.id, competition.status, team.id)
         if filename:
             with transaction.atomic():
-                file = competition.team_files.get_or_create(
+                competition_file = competition.team_files.get_or_create(
                     status=competition.status, team=team)
-                file.file = filename
-                file.save()
+                competition_file.file = filename
+                competition_file.save()
             abort(200)
         abort(400)
 
