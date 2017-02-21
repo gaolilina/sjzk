@@ -41,7 +41,7 @@ def save_uploaded_file(file, object_id, status, other_id):
     filename = dirname + "/" + file.name
     try:
         with open(filename, 'wb+') as i:
-            i.write(file)
+            i.write(file.file)
     except IOError:
         return None
     else:
