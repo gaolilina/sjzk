@@ -5,11 +5,11 @@
 <table>
     <tr>
         <td>*真实姓名：</td>
-        <td><input name="real_name" type="text" value="{{ u.real_name }}" maxlength="20" /></td>
+        <td><input name="real_name" type="text" value="{{ u.real_name }}" maxlength="20" required/></td>
     </tr>
     <tr>
         <td>*身份证号：</td>
-        <td><input name="id_number" type="text" value="{{ u.id_number }}" maxlength="18" /></td>
+        <td><input name="id_number" type="text" value="{{ u.id_number }}" maxlength="18" required/></td>
     </tr>
     <tr>
         <td>{{ msg }}</td>

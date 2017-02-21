@@ -303,7 +303,7 @@ class {{cls_name}}List(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': '{{tbl_name}}'})
+            context = Context({'rb': '{{tbl_name}}', 'user': request.user})
             return HttpResponse(template.render(context))
 """
 

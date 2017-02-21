@@ -53,7 +53,7 @@ class ExternalTaskList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'external_task'})
+            context = Context({'rb': 'external_task', 'user': request.user})
             return HttpResponse(template.render(context))
 class InternalTaskView(View):
     @fetch_record(InternalTask.objects, 'mod', 'id')
@@ -101,7 +101,7 @@ class InternalTaskList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'internal_task'})
+            context = Context({'rb': 'internal_task', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamView(View):
     @fetch_record(Team.objects, 'mod', 'id')
@@ -149,7 +149,7 @@ class TeamList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team'})
+            context = Context({'rb': 'team', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamAchievementView(View):
     @fetch_record(TeamAchievement.objects, 'mod', 'id')
@@ -197,7 +197,7 @@ class TeamAchievementList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_achievement'})
+            context = Context({'rb': 'team_achievement', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamActionView(View):
     @fetch_record(TeamAction.objects, 'mod', 'id')
@@ -245,7 +245,55 @@ class TeamActionList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_action'})
+            context = Context({'rb': 'team_action', 'user': request.user})
+            return HttpResponse(template.render(context))
+class TeamActionLikerView(View):
+    @fetch_record(TeamActionLiker.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("team/team_action_liker.html")
+        context = Context({'mod': mod, 'user': request.user})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(TeamActionLiker.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("team_action_liker", mod.id, 1, request.user)
+
+        template = loader.get_template("team/team_action_liker.html")
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
+        return HttpResponse(template.render(context))
+
+class TeamActionLikerList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = TeamActionLiker.objects.filter(team_id=kwargs["id"])
+            template = loader.get_template("team/team_action_liker_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_action_liker', 'user': request.user})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("name") is not None:
+            name = request.GET.get("name")
+            template = loader.get_template("team/index.html")
+            if TeamActionLiker == Team:
+                redir = 'admin:team:team'
+            else:
+                redir = 'admin:team:team_action_liker_list'
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_action_liker', 'user': request.user})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("team/index.html")
+            context = Context({'rb': 'team_action_liker', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamCommentView(View):
     @fetch_record(TeamComment.objects, 'mod', 'id')
@@ -293,7 +341,7 @@ class TeamCommentList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_comment'})
+            context = Context({'rb': 'team_comment', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamFeatureView(View):
     @fetch_record(TeamFeature.objects, 'mod', 'id')
@@ -341,7 +389,7 @@ class TeamFeatureList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_feature'})
+            context = Context({'rb': 'team_feature', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamFollowerView(View):
     @fetch_record(TeamFollower.objects, 'mod', 'id')
@@ -389,7 +437,7 @@ class TeamFollowerList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_follower'})
+            context = Context({'rb': 'team_follower', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamInvitationView(View):
     @fetch_record(TeamInvitation.objects, 'mod', 'id')
@@ -437,7 +485,7 @@ class TeamInvitationList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_invitation'})
+            context = Context({'rb': 'team_invitation', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamLikerView(View):
     @fetch_record(TeamLiker.objects, 'mod', 'id')
@@ -485,7 +533,7 @@ class TeamLikerList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_liker'})
+            context = Context({'rb': 'team_liker', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamMemberView(View):
     @fetch_record(TeamMember.objects, 'mod', 'id')
@@ -533,7 +581,7 @@ class TeamMemberList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_member'})
+            context = Context({'rb': 'team_member', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamMemberRequestView(View):
     @fetch_record(TeamMemberRequest.objects, 'mod', 'id')
@@ -581,7 +629,7 @@ class TeamMemberRequestList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_member_request'})
+            context = Context({'rb': 'team_member_request', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamNeedView(View):
     @fetch_record(TeamNeed.objects, 'mod', 'id')
@@ -629,7 +677,7 @@ class TeamNeedList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_need'})
+            context = Context({'rb': 'team_need', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamScoreView(View):
     @fetch_record(TeamScore.objects, 'mod', 'id')
@@ -677,7 +725,7 @@ class TeamScoreList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_score_record'})
+            context = Context({'rb': 'team_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamTagView(View):
     @fetch_record(TeamTag.objects, 'mod', 'id')
@@ -725,7 +773,7 @@ class TeamTagList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_tag'})
+            context = Context({'rb': 'team_tag', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamVisitorView(View):
     @fetch_record(TeamVisitor.objects, 'mod', 'id')
@@ -773,5 +821,5 @@ class TeamVisitorList(View):
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
-            context = Context({'rb': 'team_visitor'})
+            context = Context({'rb': 'team_visitor', 'user': request.user})
             return HttpResponse(template.render(context))

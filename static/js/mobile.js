@@ -1,6 +1,7 @@
 $(document).ready(function() {
     $('.top img').before('<div id="navbtn">≡</div>');
 
+    // 主目录
     var str = $('.topbar ul li').toArray().map(function(e){
         var elem = $(e).find('a');
         return {
@@ -13,6 +14,7 @@ $(document).ready(function() {
     }).join("");
     $('body').append("<ul id='mobilebar'>"+str+"</ul>");
 
+    // 次目录
     var str2 = $('.leftbar ul li').toArray().map(function(e){
         var elem = $(e).find('a');
         return {
@@ -24,6 +26,9 @@ $(document).ready(function() {
         return "<li"+(data.active?" class='active'":"")+"><a href='"+data.url+"'>"+data.data+"</a></li>";
     }).join("");
     $('#mobilebar li.active').append("<ul id='mobilebar2'>"+str2+"</ul>");
+
+    // 隐藏内容条
+    $('.rightbar li:not(.active)').hide();
 
     var width = $('#mobilebar').width();
     $('#mobilebar').css('left', '-'+width+'px');

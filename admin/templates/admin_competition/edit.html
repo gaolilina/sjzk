@@ -5,27 +5,27 @@
 <table>
     <tr>
         <td>标题：</td>
-        <td><input name="name" type="text" value="{{ model.name }}" /></td>
+        <td><input name="name" type="text" value="{{ model.name }}" required/></td>
     </tr>
     <tr>
         <td>详细内容：</td>
-        <td><textarea name="content">{{ model.content }}</textarea></td>
+        <td><textarea name="content" required>{{ model.content }}</textarea></td>
     </tr>
     <tr>
         <td>截至日期：</td>
-        <td><input name="deadline" type="datetime" value="{{ model.deadline }}" /></td>
+        <td><input name="deadline" type="datetime" value="{{ model.deadline }}" required/></td>
     </tr>
     <tr>
         <td>开始时间：</td>
-        <td><input name="time_started" type="datetime" value="{{ model.time_started }}" /></td>
+        <td><input name="time_started" type="datetime" value="{{ model.time_started }}" required/></td>
     </tr>
     <tr>
         <td>结束时间：</td>
-        <td><input name="time_ended" type="datetime" value="{{ model.time_ended }}" /></td>
+        <td><input name="time_ended" type="datetime" value="{{ model.time_ended }}" required/></td>
     </tr>
     <tr>
         <td>人数上限：</td>
-        <td><input name="allow_team" type="number" value="{{ model.allow_team }}" /> (0为不限)</td>
+        <td><input name="allow_team" type="number" value="{{ model.allow_team }}" required/> (0为不限)</td>
     </tr>
     <tr>
         <td>省：</td>
@@ -41,11 +41,11 @@
     </tr>
     <tr>
         <td>最少人数：</td>
-        <td><input name="min_member" type="text" value="{{ model.min_member }}" /></td>
+        <td><input name="min_member" type="text" value="{{ model.min_member }}" required/></td>
     </tr>
     <tr>
         <td>最多人数：</td>
-        <td><input name="max_member" type="text" value="{{ model.max_member }}" /></td>
+        <td><input name="max_member" type="text" value="{{ model.max_member }}" required/></td>
     </tr>
     <tr>
         <td>参与者类型：</td>
