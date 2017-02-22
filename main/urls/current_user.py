@@ -27,10 +27,10 @@ urls = [
     url(r'^followed_team/actions/$',
         FollowedTeamActionList.as_view(), name='followers'),
     # 评论
-    url(r'comments/$', UserCommentList.as_view(), name='comments'),
-    url(r'user_action/(?P<action_id>[0-9]+)/comment/$',
+    url(r'^comments/$', UserCommentList.as_view(), name='comments'),
+    url(r'^user_action/(?P<action_id>[0-9]+)/comments/$',
         UserActionCommentList.as_view(), name='user_action_comments'),
-    url(r'team_action/(?P<action_id>[0-9]+)/comment/$',
+    url(r'^team_action/(?P<action_id>[0-9]+)/comments/$',
         TeamActionCommentList.as_view(), name='team_action_comments'),
     # 经历
     url(r'^experiences/education/$',
