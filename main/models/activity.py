@@ -24,7 +24,7 @@ class Activity(models.Model):
     province = models.CharField(max_length=20, default='')
     city = models.CharField(max_length=20, default='')
     unit = models.CharField(max_length=20, default='')
-    # 0:不限, 1:学生, 2:教师, 3:社会人员
+    # 0:不限, 1:学生, 2:教师, 3:在职
     user_type = models.IntegerField(default=0, db_index=True)
     is_enabled = models.BooleanField(default=True)
 
@@ -57,8 +57,11 @@ class ActivityUserParticipator(models.Model):
         'Activity', models.CASCADE, 'user_participators')
     user = models.ForeignKey('User', models.CASCADE, '+')
 
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
     class Meta:
         db_table = 'activity_user_participator'
+        ordering = ['-time_created']
 
 
 class ActivityComment(Comment):

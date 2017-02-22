@@ -5,11 +5,11 @@ from . import EnabledManager, Action, Comment, Follower, Liker, Tag, \
     Visitor
 
 
-__all__ = ['Team', 'TeamAction', 'TeamActionLiker', 'TeamAchievement',
-           'TeamComment', 'TeamFollower', 'TeamInvitation', 'TeamLiker',
-           'TeamMember', 'TeamMemberRequest', 'TeamNeed', 'TeamTag',
-           'TeamVisitor', 'InternalTask', 'ExternalTask', 'TeamFeature',
-           'TeamScore']
+__all__ = ['Team', 'TeamAction', 'TeamActionLiker', 'TeamActionComment',
+           'TeamAchievement', 'TeamComment', 'TeamFollower', 'TeamInvitation',
+           'TeamLiker', 'TeamMember', 'TeamMemberRequest', 'TeamNeed',
+           'TeamTag', 'TeamVisitor', 'InternalTask', 'ExternalTask',
+           'TeamFeature', 'TeamScore']
 
 
 class Team(models.Model):
@@ -58,6 +58,15 @@ class TeamActionLiker(Liker):
 
     class Meta:
         db_table = 'team_action_liker'
+
+
+class TeamActionComment(Comment):
+    """团队动态评论记录"""
+
+    entity = models.ForeignKey('TeamAction', models.CASCADE, 'comments')
+
+    class Meta:
+        db_table = 'team_action_comment'
 
 
 class TeamAchievement(models.Model):

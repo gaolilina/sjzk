@@ -5,7 +5,8 @@ from . import EnabledManager, Comment, Liker
 
 
 __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
-           'CompetitionComment', 'CompetitionLiker', 'CompetitionFile']
+           'CompetitionComment', 'CompetitionLiker', 'CompetitionFile',
+           'CompetitionNotification']
 
 
 class Competition(models.Model):
@@ -26,7 +27,7 @@ class Competition(models.Model):
     min_member = models.IntegerField(default=1, db_index=True)
     max_member = models.IntegerField(default=1, db_index=True)
     unit = models.CharField(max_length=20, default='')
-    # 0:不限, 1:学生, 2:教师, 3:社会人员
+    # 0:不限, 1:学生, 2:教师, 3:在职
     user_type = models.IntegerField(default=0, db_index=True)
 
     is_enabled = models.BooleanField(default=True)
@@ -53,6 +54,20 @@ class CompetitionStage(models.Model):
         db_table = 'competition_stage'
 
 
+class CompetitionNotification(models.Model):
+    """竞赛通知"""
+
+    competition = models.ForeignKey(
+        'Competition', models.CASCADE, 'notifications')
+    # 0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
+    status = models.IntegerField(default=0, db_index=True)
+    notification = models.CharField(max_length=1000)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'competition_notification'
+
+
 class CompetitionFile(models.Model):
     """竞赛文件"""
 
@@ -74,8 +89,11 @@ class CompetitionTeamParticipator(models.Model):
         'Competition', models.CASCADE, 'team_participators')
     team = models.ForeignKey('Team', models.CASCADE, 'competitions')
 
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
     class Meta:
         db_table = 'competition_team_participator'
+        ordering = ['-time_created']
 
 
 class CompetitionComment(Comment):

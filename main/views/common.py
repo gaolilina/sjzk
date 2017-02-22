@@ -21,7 +21,8 @@ __all__ = ['UserActionList', 'TeamActionList', 'ActionsList',
            'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker',
            'UserVisitorList', 'TeamVisitorList',
            'ActivityCommentList', 'ActivityComment',
-           'CompetitionCommentList', 'CompetitionComment']
+           'CompetitionCommentList', 'CompetitionComment',
+           'UserActionCommentList', 'TeamActionCommentList']
 
 
 class ActionList(View):
@@ -51,6 +52,7 @@ class ActionList(View):
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
                 liker_count: 点赞数
+                comment_count: 评论数
         """
 
         # 获取与对象相关的动态
@@ -69,6 +71,7 @@ class ActionList(View):
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
               'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -100,6 +103,7 @@ class UserActionsList(View):
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
                 liker_count: 点赞数
+                comment_count: 评论数
         """
 
         # 获取主语是用户的动态
@@ -118,6 +122,7 @@ class UserActionsList(View):
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
               'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -149,6 +154,7 @@ class TeamActionsList(View):
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
                 liker_count: 点赞数
+                comment_count: 评论数
         """
 
         # 获取主语是团队的动态
@@ -167,6 +173,7 @@ class TeamActionsList(View):
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
               'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -199,6 +206,7 @@ class FollowedUserActionList(View):
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
                 liker_count: 点赞数
+                comment_count: 评论数
         """
 
         r = UserAction.objects.filter(Q(
@@ -218,6 +226,7 @@ class FollowedUserActionList(View):
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
               'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -250,6 +259,7 @@ class FollowedTeamActionList(View):
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
                 liker_count: 点赞数
+                comment_count: 评论数
         """
 
         r = TeamAction.objects.filter(
@@ -269,6 +279,7 @@ class FollowedTeamActionList(View):
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
               'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -321,6 +332,7 @@ class SearchUserActionList(View):
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
                 liker_count: 点赞数
+                comment_count: 评论数
         """
 
         r = UserAction.objects.filter(Q(entity__name__contains=kwargs['name']) |
@@ -340,6 +352,7 @@ class SearchUserActionList(View):
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
               'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -375,6 +388,7 @@ class SearchTeamActionList(View):
                 related_object_id: 额外相关对象的ID
                 related_object_name: 额外相关对象的名称
                 liker_count: 点赞数
+                comment_count: 评论数
         """
 
         r = TeamAction.objects.filter(Q(entity__name__contains=kwargs['name']) |
@@ -394,6 +408,7 @@ class SearchTeamActionList(View):
               'related_object_id': i.related_object_id,
               'related_object_name': action.get_related_object_name(i),
               'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
 
@@ -538,6 +553,60 @@ class CompetitionCommentList(CommentList):
         """当前用户对竞赛进行评论"""
 
         return super().post(request, competition)
+
+
+# noinspection PyMethodOverriding
+class UserActionCommentList(CommentList):
+    @fetch_object(UserAction.objects, 'action')
+    @require_token
+    def get(self, request, action):
+        """获取用户动态的评论信息列表
+
+        :return:
+            count: 评论总数
+            list: 评论列表
+                id: 评论ID
+                author_id: 评论者ID
+                author_name: 评论者昵称
+                icon_url: 头像
+                content: 内容
+                time_created: 发布时间
+        """
+        return super().get(request, action)
+
+    @fetch_object(UserAction.objects, 'action')
+    @require_token
+    def post(self, request, action):
+        """当前用户对用户动态进行评论"""
+
+        return super().post(request, action)
+
+
+# noinspection PyMethodOverriding
+class TeamActionCommentList(CommentList):
+    @fetch_object(TeamAction.objects, 'action')
+    @require_token
+    def get(self, request, action):
+        """获取团队动态的评论信息列表
+
+        :return:
+            count: 评论总数
+            list: 评论列表
+                id: 评论ID
+                author_id: 评论者ID
+                author_name: 评论者昵称
+                icon_url: 头像
+                content: 内容
+                time_created: 发布时间
+        """
+        return super().get(request, action)
+
+    @fetch_object(TeamAction.objects, 'action')
+    @require_token
+    def post(self, request, action):
+        """当前用户对团队动态进行评论"""
+
+        return super().post(request, action)
 
 
 class UserComment(View):

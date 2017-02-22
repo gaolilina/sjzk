@@ -7,10 +7,11 @@ from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
     Visitor
 
 
-__all__ = ['User', 'UserAction', 'UserActionLiker', 'UserComment',
-           'UserExperience', 'UserFollower', 'UserFriend', 'UserFriendRequest',
-           'UserLiker', 'UserTag', 'UserValidationCode', 'UserVisitor',
-           'UserFeedback', 'UserFeature', 'UserBehavior', 'UserScore']
+__all__ = ['User', 'UserAction', 'UserActionLiker', 'UserActionComment',
+           'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
+           'UserFriendRequest', 'UserLiker', 'UserTag', 'UserValidationCode',
+           'UserVisitor', 'UserFeedback', 'UserFeature', 'UserBehavior',
+           'UserScore']
 
 
 class User(models.Model):
@@ -116,6 +117,15 @@ class User(models.Model):
         self.invitation_code = code
 
 
+class UserComment(Comment):
+    """用户评论"""
+
+    entity = models.ForeignKey('User', models.CASCADE, 'comments')
+
+    class Meta:
+        db_table = 'user_comment'
+
+
 class UserAction(Action):
     """用户动态"""
 
@@ -135,13 +145,13 @@ class UserActionLiker(Liker):
         db_table = 'user_action_liker'
 
 
-class UserComment(Comment):
-    """用户评论"""
+class UserActionComment(Comment):
+    """用户动态评论记录"""
 
-    entity = models.ForeignKey('User', models.CASCADE, 'comments')
+    entity = models.ForeignKey('UserAction', models.CASCADE, 'comments')
 
     class Meta:
-        db_table = 'user_comment'
+        db_table = 'user_action_comment'
 
 
 class UserExperience(models.Model):
