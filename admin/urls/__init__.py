@@ -8,7 +8,7 @@ from admin.views.system import Setting
 urlpatterns = [
     url(r'^$', Main.as_view(), name='root'),
     url(r'^login', Login.as_view(), name='login'),
-    #url(r'^register', Register.as_view(), name='register'),
+    url(r'^register', Register.as_view(), name='register'),
     url(r'^admin_users/', include(admin_users.urls, namespace="admin_user")),
     url(r'^admin_activity/', include(admin_activity.urls, namespace="admin_activity")),
     url(r'^admin_competition/', include(admin_competition.urls, namespace="admin_competition")),
