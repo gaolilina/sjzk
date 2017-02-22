@@ -103,6 +103,54 @@ class CompetitionCommentList(View):
             template = loader.get_template("competition/index.html")
             context = Context({'rb': 'competition_comment', 'user': request.user})
             return HttpResponse(template.render(context))
+class CompetitionFileView(View):
+    @fetch_record(CompetitionFile.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("competition/competition_file.html")
+        context = Context({'mod': mod, 'user': request.user})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(CompetitionFile.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'status': forms.IntegerField(required=False,),'file': forms.CharField(max_length=100,required=False,),'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("competition_file", mod.id, 1, request.user)
+
+        template = loader.get_template("competition/competition_file.html")
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
+        return HttpResponse(template.render(context))
+
+class CompetitionFileList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = CompetitionFile.objects.filter(competition_id=kwargs["id"])
+            template = loader.get_template("competition/competition_file_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_file', 'user': request.user})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("name") is not None:
+            name = request.GET.get("name")
+            template = loader.get_template("competition/index.html")
+            if CompetitionFile == Competition:
+                redir = 'admin:competition:competition'
+            else:
+                redir = 'admin:competition:competition_file_list'
+            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_file', 'user': request.user})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("competition/index.html")
+            context = Context({'rb': 'competition_file', 'user': request.user})
+            return HttpResponse(template.render(context))
 class CompetitionLikerView(View):
     @fetch_record(CompetitionLiker.objects, 'mod', 'id')
     @require_cookie
@@ -150,6 +198,54 @@ class CompetitionLikerList(View):
         else:
             template = loader.get_template("competition/index.html")
             context = Context({'rb': 'competition_liker', 'user': request.user})
+            return HttpResponse(template.render(context))
+class CompetitionNotificationView(View):
+    @fetch_record(CompetitionNotification.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("competition/competition_notification.html")
+        context = Context({'mod': mod, 'user': request.user})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(CompetitionNotification.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'status': forms.IntegerField(required=False,),'notification': forms.CharField(max_length=1000,),'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("competition_notification", mod.id, 1, request.user)
+
+        template = loader.get_template("competition/competition_notification.html")
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
+        return HttpResponse(template.render(context))
+
+class CompetitionNotificationList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = CompetitionNotification.objects.filter(competition_id=kwargs["id"])
+            template = loader.get_template("competition/competition_notification_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_notification', 'user': request.user})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("name") is not None:
+            name = request.GET.get("name")
+            template = loader.get_template("competition/index.html")
+            if CompetitionNotification == Competition:
+                redir = 'admin:competition:competition'
+            else:
+                redir = 'admin:competition:competition_notification_list'
+            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_notification', 'user': request.user})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("competition/index.html")
+            context = Context({'rb': 'competition_notification', 'user': request.user})
             return HttpResponse(template.render(context))
 class CompetitionStageView(View):
     @fetch_record(CompetitionStage.objects, 'mod', 'id')
@@ -210,7 +306,7 @@ class CompetitionTeamParticipatorView(View):
     @fetch_record(CompetitionTeamParticipator.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        
+        'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:

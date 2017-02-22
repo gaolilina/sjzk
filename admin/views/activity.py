@@ -210,7 +210,7 @@ class ActivityUserParticipatorView(View):
     @fetch_record(ActivityUserParticipator.objects, 'mod', 'id')
     @require_cookie
     @validate_args2({
-        
+        'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:

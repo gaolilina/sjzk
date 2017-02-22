@@ -103,6 +103,54 @@ class UserActionList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_action', 'user': request.user})
             return HttpResponse(template.render(context))
+class UserActionCommentView(View):
+    @fetch_record(UserActionComment.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("user/user_action_comment.html")
+        context = Context({'mod': mod, 'user': request.user})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(UserActionComment.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'content': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("user_action_comment", mod.id, 1, request.user)
+
+        template = loader.get_template("user/user_action_comment.html")
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
+        return HttpResponse(template.render(context))
+
+class UserActionCommentList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = UserActionComment.objects.filter(user_id=kwargs["id"])
+            template = loader.get_template("user/user_action_comment_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_action_comment', 'user': request.user})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("username") is not None:
+            username = request.GET.get("username")
+            template = loader.get_template("user/index.html")
+            if UserActionComment == User:
+                redir = 'admin:user:user'
+            else:
+                redir = 'admin:user:user_action_comment_list'
+            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': 'user_action_comment', 'user': request.user})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("user/index.html")
+            context = Context({'rb': 'user_action_comment', 'user': request.user})
+            return HttpResponse(template.render(context))
 class UserActionLikerView(View):
     @fetch_record(UserActionLiker.objects, 'mod', 'id')
     @require_cookie

@@ -247,6 +247,54 @@ class TeamActionList(View):
             template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_action', 'user': request.user})
             return HttpResponse(template.render(context))
+class TeamActionCommentView(View):
+    @fetch_record(TeamActionComment.objects, 'mod', 'id')
+    @require_cookie
+    def get(self, request, mod):
+        template = loader.get_template("team/team_action_comment.html")
+        context = Context({'mod': mod, 'user': request.user})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(TeamActionComment.objects, 'mod', 'id')
+    @require_cookie
+    @validate_args2({
+        'content': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),
+    })
+    def post(self, request, mod, **kwargs):
+        for k in kwargs:
+            setattr(mod, k, kwargs[k])
+        mod.save()
+
+        admin_log("team_action_comment", mod.id, 1, request.user)
+
+        template = loader.get_template("team/team_action_comment.html")
+        context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
+        return HttpResponse(template.render(context))
+
+class TeamActionCommentList(View):
+    @require_cookie
+    @validate_args2({
+        'page': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, page=0, **kwargs):
+        if kwargs["id"] is not None:
+            list = TeamActionComment.objects.filter(team_id=kwargs["id"])
+            template = loader.get_template("team/team_action_comment_list.html")
+            context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_action_comment', 'user': request.user})
+            return HttpResponse(template.render(context))
+        elif request.GET.get("name") is not None:
+            name = request.GET.get("name")
+            template = loader.get_template("team/index.html")
+            if TeamActionComment == Team:
+                redir = 'admin:team:team'
+            else:
+                redir = 'admin:team:team_action_comment_list'
+            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_action_comment', 'user': request.user})
+            return HttpResponse(template.render(context))
+        else:
+            template = loader.get_template("team/index.html")
+            context = Context({'rb': 'team_action_comment', 'user': request.user})
+            return HttpResponse(template.render(context))
 class TeamActionLikerView(View):
     @fetch_record(TeamActionLiker.objects, 'mod', 'id')
     @require_cookie
