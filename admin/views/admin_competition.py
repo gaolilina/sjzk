@@ -84,7 +84,7 @@ class AdminCompetitionEdit(View):
         'min_member': forms.IntegerField(required=False),
         'max_member': forms.IntegerField(required=False),
         'user_type': forms.IntegerField(required=False),
-        'stages': forms.CharField(),
+        'stages': forms.CharField(required=False),
     })
     def post(self, request, **kwargs):
         user = request.user
@@ -97,12 +97,13 @@ class AdminCompetitionEdit(View):
             if k != "stages":
                 setattr(model, k, kwargs[k])
         model.save()
+        
+        if kwargs['stages'] != "":
+            CompetitionStage.objects.filter(competition=model).delete()
 
-        CompetitionStage.objects.filter(competition=model).delete()
-
-        stages = json.loads(kwargs['stages'])
-        for st in stages:
-            model.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
+            stages = json.loads(kwargs['stages'])
+            for st in stages:
+                model.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
 
         template = loader.get_template("admin_competition/edit.html")
         context = Context({'model': model, 'msg': '保存成功', 'user': request.user, 'stages': CompetitionStage.objects.filter(competition=model)})

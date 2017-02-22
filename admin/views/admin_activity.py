@@ -32,8 +32,6 @@ class AdminActivityAdd(View):
         'province': forms.CharField(max_length=20, required=False),
         'city': forms.CharField(max_length=20, required=False),
         'unit': forms.CharField(max_length=20, required=False),
-        'min_member': forms.IntegerField(),
-        'max_member': forms.IntegerField(),
         'user_type': forms.IntegerField(),
         'stages': forms.CharField(),
     })
@@ -84,7 +82,7 @@ class AdminActivityEdit(View):
         'city': forms.CharField(max_length=20, required=False),
         'unit': forms.CharField(max_length=20, required=False),
         'user_type': forms.IntegerField(required=False),
-        'stages': forms.CharField(),
+        'stages': forms.CharField(required=False),
     })
     def post(self, request, **kwargs):
         user = request.user
@@ -98,11 +96,12 @@ class AdminActivityEdit(View):
                 setattr(model, k, kwargs[k])
         model.save()
 
-        ActivityStage.objects.filter(activity=model).delete()
+        if kwargs['stages'] != "":
+            ActivityStage.objects.filter(activity=model).delete()
 
-        stages = json.loads(kwargs['stages'])
-        for st in stages:
-            model.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
+            stages = json.loads(kwargs['stages'])
+            for st in stages:
+                model.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
 
         template = loader.get_template("admin_activity/edit.html")
         context = Context({'model': model, 'msg': '保存成功', 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})

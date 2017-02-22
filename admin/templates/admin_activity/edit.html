@@ -40,14 +40,6 @@
         <td><input name="unit" type="text" value="{{ model.unit }}"/></td>
     </tr>
     <tr>
-        <td>最少人数：</td>
-        <td><input name="min_member" type="text" value="{{ model.min_member }}" required/></td>
-    </tr>
-    <tr>
-        <td>最多人数：</td>
-        <td><input name="max_member" type="text" value="{{ model.max_member }}" required/></td>
-    </tr>
-    <tr>
         <td>参与者类型：</td>
         <td>
             <select name="user_type">
@@ -61,7 +53,7 @@
     <tr>
         <td>当前活动阶段：</td>
         <td>
-            <input name="stages" type="hidden" value="" required/>
+            <input name="stages" type="hidden" value=""/>
             <input name="status" type="hidden" value="{{ model.status }}" required/>
             <select id="status">
                 {% for stage in stages %}
