@@ -16,10 +16,11 @@ urls = [
     # 搜索
     url(r'^search/$', Search.as_view(), name='search'),
     # 竞赛的阶段
-    url(r'^stage/$', CompetitionStage.as_view(), name='stage'),
-    # 竞赛的阶段通知
-    url(r'^notifications/$', CompetitionNotification.as_view(),
-        name='notifications'),
+    url(r'^(?P<competition_id>[0-9]+)/stage/$',
+        CompetitionStage.as_view(), name='stage'),
+    # 竞赛的通知
+    url(r'^(?P<competition_id>[0-9]+)/notifications/$',
+        CompetitionNotification.as_view(), name='notifications'),
     # 竞赛文件上传
     url(r'(?P<team_id>[0-9]+)/files/$', CompetitionFile.as_view(), name='files'),
     url(r'(?P<team_id>[0-9]+)/file/(?P<competition_id>[0-9]+)/$',
