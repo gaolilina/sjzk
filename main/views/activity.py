@@ -181,7 +181,7 @@ class UserParticipatorList(View):
                 abort(403, 'user role limited')
             elif activity.user_type == 2 and request.user.role != "教师":
                 abort(403, 'user role limited')
-            elif activity.user_type == 3 and request.user.role != "社会人员":
+            elif activity.user_type == 3 and request.user.role != "在职":
                 abort(403, 'user role limited')
 
         if not activity.user_participators.filter(user=request.user).exists():

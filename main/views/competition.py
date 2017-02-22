@@ -260,7 +260,7 @@ class TeamParticipatorList(View):
                     elif competition.user_type == 2 and m.user.role != "教师":
                         abort(403, 'member role limited')
                     elif competition.user_type == 3 and \
-                                    m.user.role != "社会人员":
+                                    m.user.role != "在职":
                         abort(403, 'member role limited')
                 if competition.unit and competition.unit != m.user.unit1:
                     abort(403, 'unit limited')

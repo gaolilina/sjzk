@@ -26,7 +26,7 @@ class Competition(models.Model):
     min_member = models.IntegerField(default=1, db_index=True)
     max_member = models.IntegerField(default=1, db_index=True)
     unit = models.CharField(max_length=20, default='')
-    # 0:不限, 1:学生, 2:教师, 3:社会人员
+    # 0:不限, 1:学生, 2:教师, 3:在职
     user_type = models.IntegerField(default=0, db_index=True)
 
     is_enabled = models.BooleanField(default=True)
