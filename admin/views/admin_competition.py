@@ -60,7 +60,7 @@ class AdminCompetitionEdit(View):
     @require_cookie
     @require_role('z')
     def get(self, request, model):
-        if model.owner is not request.user:
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
             return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/edit.html")
@@ -90,7 +90,7 @@ class AdminCompetitionEdit(View):
         user = request.user
         model = kwargs["model"]
 
-        if model.owner is not request.user:
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
             return HttpResponseForbidden()
 
         for k in kwargs:
@@ -126,7 +126,7 @@ class AdminCompetitionView(View):
     @require_cookie
     @require_role('az')
     def get(self, request, model):
-        if model.owner is not request.user:
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
             return HttpResponseForbidden()
             
         template = loader.get_template("admin_competition/view.html")
@@ -138,7 +138,7 @@ class AdminCompetitionFilesView(View):
     @require_cookie
     @require_role('az')
     def get(self, request, model, status):
-        if model.owner is not request.user:
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
             return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/file.html")

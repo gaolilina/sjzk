@@ -62,6 +62,9 @@ class AdminActivityEdit(View):
     @require_cookie
     @require_role('z')
     def get(self, request, model):
+        if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+        
         template = loader.get_template("admin_activity/edit.html")
         context = Context({'model': model, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
         return HttpResponse(template.render(context))
@@ -87,7 +90,7 @@ class AdminActivityEdit(View):
         user = request.user
         model = kwargs["model"]
 
-        if model.owner is not request.user:
+        if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
             return HttpResponseForbidden()
 
         for k in kwargs:
@@ -123,7 +126,7 @@ class AdminActivityView(View):
     @require_cookie
     @require_role('bz')
     def get(self, request, model):
-        if model.owner is not request.user:
+        if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
             return HttpResponseForbidden()
 
         template = loader.get_template("admin_activity/view.html")
