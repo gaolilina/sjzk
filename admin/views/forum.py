@@ -10,6 +10,7 @@ from admin.utils.decorators import *
 class ForumBoardView(View):
     @fetch_record(ForumBoard.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, mod):
         template = loader.get_template("forum/forum_board.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -17,6 +18,7 @@ class ForumBoardView(View):
 
     @fetch_record(ForumBoard.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=20,),'description': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),'is_system_board': forms.BooleanField(required=False),'is_enabled': forms.BooleanField(required=False),
     })
@@ -33,6 +35,7 @@ class ForumBoardView(View):
 
 class ForumBoardList(View):
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -53,6 +56,7 @@ class ForumBoardList(View):
 class ForumPostView(View):
     @fetch_record(ForumPost.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, mod):
         template = loader.get_template("forum/forum_post.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -60,6 +64,7 @@ class ForumPostView(View):
 
     @fetch_record(ForumPost.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'title': forms.CharField(max_length=20,),'content': forms.CharField(max_length=300,),'time_created': forms.DateTimeField(required=False,),
     })
@@ -76,6 +81,7 @@ class ForumPostView(View):
 
 class ForumPostList(View):
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })

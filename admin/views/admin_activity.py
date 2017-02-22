@@ -13,12 +13,14 @@ from admin.utils.decorators import *
 
 class AdminActivityAdd(View):
     @require_cookie
+    @require_role('z')
     def get(self, request):
         template = loader.get_template("admin_activity/add.html")
         context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
@@ -58,6 +60,7 @@ class AdminActivityAdd(View):
 class AdminActivityEdit(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, model):
         template = loader.get_template("admin_activity/edit.html")
         context = Context({'model': model, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
@@ -65,6 +68,7 @@ class AdminActivityEdit(View):
 
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
@@ -103,6 +107,7 @@ class AdminActivityEdit(View):
 
 class AdminActivityList(View):
     @require_cookie
+    @require_role('bz')
     def get(self, request):
         try:
             template = loader.get_template("admin_activity/list.html")
@@ -116,6 +121,7 @@ class AdminActivityList(View):
 class AdminActivityView(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
+    @require_role('bz')
     def get(self, request, model):
         if model.owner is not request.user:
             return HttpResponseForbidden()

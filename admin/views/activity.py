@@ -10,6 +10,7 @@ from admin.utils.decorators import *
 class ActivityView(View):
     @fetch_record(Activity.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, mod):
         template = loader.get_template("activity/activity.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -17,6 +18,7 @@ class ActivityView(View):
 
     @fetch_record(Activity.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=50,),'status': forms.IntegerField(required=False,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_user': forms.IntegerField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'unit': forms.CharField(max_length=20,required=False,),'user_type': forms.IntegerField(required=False,),'is_enabled': forms.BooleanField(required=False),
     })
@@ -33,6 +35,7 @@ class ActivityView(View):
 
 class ActivityList(View):
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -58,6 +61,7 @@ class ActivityList(View):
 class ActivityCommentView(View):
     @fetch_record(ActivityComment.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, mod):
         template = loader.get_template("activity/activity_comment.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -65,6 +69,7 @@ class ActivityCommentView(View):
 
     @fetch_record(ActivityComment.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'content': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),
     })
@@ -81,6 +86,7 @@ class ActivityCommentView(View):
 
 class ActivityCommentList(View):
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -106,6 +112,7 @@ class ActivityCommentList(View):
 class ActivityLikerView(View):
     @fetch_record(ActivityLiker.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, mod):
         template = loader.get_template("activity/activity_liker.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -113,6 +120,7 @@ class ActivityLikerView(View):
 
     @fetch_record(ActivityLiker.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False,),
     })
@@ -129,6 +137,7 @@ class ActivityLikerView(View):
 
 class ActivityLikerList(View):
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -154,6 +163,7 @@ class ActivityLikerList(View):
 class ActivityStageView(View):
     @fetch_record(ActivityStage.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, mod):
         template = loader.get_template("activity/activity_stage.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -161,6 +171,7 @@ class ActivityStageView(View):
 
     @fetch_record(ActivityStage.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'status': forms.IntegerField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
@@ -177,6 +188,7 @@ class ActivityStageView(View):
 
 class ActivityStageList(View):
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -202,6 +214,7 @@ class ActivityStageList(View):
 class ActivityUserParticipatorView(View):
     @fetch_record(ActivityUserParticipator.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, mod):
         template = loader.get_template("activity/activity_user_participator.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -209,6 +222,7 @@ class ActivityUserParticipatorView(View):
 
     @fetch_record(ActivityUserParticipator.objects, 'mod', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False,),
     })
@@ -225,6 +239,7 @@ class ActivityUserParticipatorView(View):
 
 class ActivityUserParticipatorList(View):
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })

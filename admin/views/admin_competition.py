@@ -12,12 +12,14 @@ from admin.utils.decorators import *
 
 class AdminCompetitionAdd(View):
     @require_cookie
+    @require_role('z')
     def get(self, request):
         template = loader.get_template("admin_competition/add.html")
         context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
@@ -56,6 +58,7 @@ class AdminCompetitionAdd(View):
 class AdminCompetitionEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, model):
         if model.owner is not request.user:
             return HttpResponseForbidden()
@@ -66,6 +69,7 @@ class AdminCompetitionEdit(View):
 
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
@@ -106,6 +110,7 @@ class AdminCompetitionEdit(View):
 
 class AdminCompetitionList(View):
     @require_cookie
+    @require_role('az')
     def get(self, request):
         try:
             template = loader.get_template("admin_competition/list.html")
@@ -119,6 +124,7 @@ class AdminCompetitionList(View):
 class AdminCompetitionView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
+    @require_role('az')
     def get(self, request, model):
         if model.owner is not request.user:
             return HttpResponseForbidden()
@@ -130,6 +136,7 @@ class AdminCompetitionView(View):
 class AdminCompetitionFilesView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
+    @require_role('az')
     def get(self, request, model, status):
         if model.owner is not request.user:
             return HttpResponseForbidden()
