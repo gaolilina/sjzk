@@ -9,7 +9,7 @@ from ..utils.decorators import *
 
 
 __all__ = ['List', 'Detail', 'CompetitionStage', 'CompetitionFile',
-           'TeamParticipatorList', 'Search']
+           'TeamParticipatorList', 'Search', 'CompetitionNotification']
 
 
 class List(View):
@@ -111,17 +111,12 @@ class CompetitionStage(View):
         """获取竞赛的阶段列表
         :param offset: 偏移量
         :param limit: 数量上限
-        :param order: 排序方式
-            0: 注册时间升序
-            1: 注册时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
 
         :return:
             count: 阶段总数
             list: 阶段列表
                 id: 阶段ID
-                stage: 阶段名称:0:前期宣传, 1:报名, 2:结束
+                stage: 阶段名称:0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
                 time_started: 开始时间
                 time_ended: 结束时间
                 time_created: 创建时间
@@ -133,6 +128,37 @@ class CompetitionStage(View):
               'status': p.status,
               'time_started': p.time_started,
               'time_ended': p.time_ended,
+              'time_created': p.time_created} for p in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class CompetitionNotification(View):
+    @fetch_object(Competition.enabled, 'competition')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, competition, offset=0, limit=10):
+        """获取竞赛通知列表
+        :param offset: 偏移量
+        :param limit: 数量上限
+
+        :return:
+            count: 通知总数
+            list: 通知列表
+                id: 阶段ID
+                stage: 阶段名称:0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
+                notification: 通知内容
+                time_created: 创建时间
+        """
+
+        c = competition.notifications.count()
+        qs = competition.notifications.all().order_by(
+            "-time_created")[offset: offset + limit]
+        l = [{'id': p.id,
+              'status': p.status,
+              'notification': p.notification,
               'time_created': p.time_created} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
