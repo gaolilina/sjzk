@@ -71,7 +71,7 @@
         <tr>
             <td>活动阶段{{forloop.counter}}</td>
             <td>
-                类　　型：{% if stage.status == 0 %}前期宣传{% endif %}{% if stage.status == 1 %}报名{% endif %}{% if stage.status == 2 %}预赛{% endif %}{% if stage.status == 3 %}周赛{% endif %}{% if stage.status == 4 %}月赛{% endif %}{% if stage.status == 5 %}中间赛{% endif %}{% if stage.status == 6 %}结束{% endif %}<br/>
+                类　　型：{% if stage.status == 0 %}前期宣传{% endif %}{% if stage.status == 1 %}报名{% endif %}{% if stage.status == 2 %}预赛{% endif %}{% if stage.status == 3 %}周赛{% endif %}{% if stage.status == 4 %}月赛{% endif %}{% if stage.status == 5 %}中间赛{% endif %}{% if stage.status == 6 %}结束{% endif %} <a href="{% url 'admin:admin_competition:file' model.id stage.status %}">查看提交文件</a><br/>
                 开始时间：{{ stage.time_started }}<br/>
                 结束时间：{{ stage.time_ended }}<br/>
             </td>
@@ -101,6 +101,10 @@ table {
 }
 table td {
     border: 1px solid #999;
+}
+td a {
+    text-decoration: underline;
+    color: blue;
 }
 </style>
 {% endblock %}
