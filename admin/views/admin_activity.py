@@ -1,5 +1,5 @@
 from django import forms
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader, Context
 from django.views.generic import View
 
@@ -82,6 +82,10 @@ class AdminActivityEdit(View):
     def post(self, request, **kwargs):
         user = request.user
         model = kwargs["model"]
+
+        if model.owner is not request.user:
+            return HttpResponseForbidden()
+
         for k in kwargs:
             if k != "stages":
                 setattr(model, k, kwargs[k])
@@ -113,6 +117,9 @@ class AdminActivityView(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
     def get(self, request, model):
+        if model.owner is not request.user:
+            return HttpResponseForbidden()
+
         template = loader.get_template("admin_activity/view.html")
         context = Context({'model': model, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
         return HttpResponse(template.render(context))

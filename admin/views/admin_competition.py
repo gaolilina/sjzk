@@ -1,5 +1,5 @@
 from django import forms
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader, Context
 from django.views.generic import View
 import json
@@ -57,6 +57,9 @@ class AdminCompetitionEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
     def get(self, request, model):
+        if model.owner is not request.user:
+            return HttpResponseForbidden()
+
         template = loader.get_template("admin_competition/edit.html")
         context = Context({'model': model, 'user': request.user, 'stages': CompetitionStage.objects.filter(competition=model)})
         return HttpResponse(template.render(context))
@@ -82,6 +85,10 @@ class AdminCompetitionEdit(View):
     def post(self, request, **kwargs):
         user = request.user
         model = kwargs["model"]
+
+        if model.owner is not request.user:
+            return HttpResponseForbidden()
+
         for k in kwargs:
             if k != "stages":
                 setattr(model, k, kwargs[k])
@@ -113,6 +120,9 @@ class AdminCompetitionView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
     def get(self, request, model):
+        if model.owner is not request.user:
+            return HttpResponseForbidden()
+            
         template = loader.get_template("admin_competition/view.html")
         context = Context({'model': model, 'user': request.user, 'stages': CompetitionStage.objects.filter(competition=model)})
         return HttpResponse(template.render(context))
@@ -121,6 +131,9 @@ class AdminCompetitionFilesView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
     def get(self, request, model, status):
+        if model.owner is not request.user:
+            return HttpResponseForbidden()
+
         template = loader.get_template("admin_competition/file.html")
         context = Context({'model': model, 'user': request.user, 'files': CompetitionFile.objects.filter(competition=model, status=status)})
         return HttpResponse(template.render(context))
