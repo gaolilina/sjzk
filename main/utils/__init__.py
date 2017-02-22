@@ -8,7 +8,7 @@ from .http import send_message, identity_verify, picture_verify
 from .system import get_score_stage
 
 __all__ = ['abort', 'send_message', 'identity_verify', 'picture_verify',
-           'save_uploaded_image', 'get_score_stage']
+           'save_uploaded_image', 'get_score_stage', 'save_uploaded_file']
 
 
 def save_uploaded_image(image, is_private=False):
@@ -27,6 +27,23 @@ def save_uploaded_image(image, is_private=False):
     try:
         with Image.open(image) as i:
             i.save(filename, quality=90)
+    except IOError:
+        return None
+    else:
+        return filename
+
+
+def save_uploaded_file(file, object_id, status, other_id):
+    dirname = "uploaded/competition/" + str(object_id) + "/" + str(status)\
+              + "/" + str(other_id)
+    os.makedirs(dirname, exist_ok=True)
+
+    filename = dirname + "/" + file.name
+    try:
+        destination = open(filename, 'wb+')
+        for chunk in file.chunks():
+            destination.write(chunk)
+        destination.close()
     except IOError:
         return None
     else:
