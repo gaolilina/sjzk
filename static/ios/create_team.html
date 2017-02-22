@@ -10,7 +10,7 @@
         body {
             padding-top: 50px;
         }
-
+        
         form {
             margin: 20px;
         }
@@ -32,18 +32,10 @@
     <div class="container">
         <form>
             <div class="form-group">
-                <label for="phone_number">手机号</label>
-                <input type="text" class="form-control" id="phone_number" placeholder="11位手机号"/>
+                <label for="name">团队名</label>
+                <input type="text" class="form-control" id="name" placeholder=""/>
             </div>
-            <div class="form-group">
-                <label for="password">密码</label>
-                <input type="password" class="form-control" id="password" placeholder="6-20位密码"/>
-            </div>
-            <div class="form-group">
-                <label for="validation_code">验证码</label>
-                <input type="validation_code" class="form-control" id="validation_code" placeholder="短信验证码"/>
-            </div>
-            <button type="submit" class="btn btn-primary">注册</button>
+            <button type="submit" class="btn btn-primary">创建</button>
         </form>
     </div>
     <div class="modal fade">
@@ -72,13 +64,10 @@
             $("form").submit(function(e) {
                 e.preventDefault();
 
-                post('/users/', {
-                    phone_number: $('#phone_number').val(),
-                    password: $('#password').val(),
-                    validation_code: $('#validation_code').val()
+                post('/teams/', {
+                    name: $('#name').val()
                 }).then(function(data) {
-                    saveToken(data.token);
-                    location.href = 'info.html';
+
                 }).fail(function(code, msg) {
                     switch (code) {
                         case 400:

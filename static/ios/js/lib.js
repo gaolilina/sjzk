@@ -31,3 +31,11 @@ function saveToken(token) {
 function readToken() {
     return localStorage.getItem("token");
 }
+
+window.alert = function(msg) {
+    BootstrapDialog.show({
+        title: 'Error',
+        message: msg,
+        type: 'type-danger'
+    });
+}
