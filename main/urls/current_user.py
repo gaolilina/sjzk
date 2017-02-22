@@ -3,7 +3,8 @@ from django.conf.urls import url
 from ..views.current_user import *
 from ..views.common import UserActionsList, TeamActionsList, UserActionList, \
     UserCommentList, UserFollowerList, UserLikerList, UserLiker, \
-    UserVisitorList, FollowedUserActionList, FollowedTeamActionList
+    UserVisitorList, FollowedUserActionList, FollowedTeamActionList, \
+    UserActionCommentList, TeamActionCommentList
 from ..views.forum import BoardList
 from ..views.report import Report
 
@@ -27,6 +28,10 @@ urls = [
         FollowedTeamActionList.as_view(), name='followers'),
     # 评论
     url(r'comments/$', UserCommentList.as_view(), name='comments'),
+    url(r'user_action/(?P<action_id>[0-9]+)/comments/$',
+        UserActionCommentList.as_view(), name='user_action_comments'),
+    url(r'team_action/(?P<action_id>[0-9]+)/comments/$',
+        TeamActionCommentList.as_view(), name='team_action_comments'),
     # 经历
     url(r'^experiences/education/$',
         ExperienceList.as_view(), name='education_experiences',

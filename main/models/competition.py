@@ -74,8 +74,11 @@ class CompetitionTeamParticipator(models.Model):
         'Competition', models.CASCADE, 'team_participators')
     team = models.ForeignKey('Team', models.CASCADE, 'competitions')
 
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
     class Meta:
         db_table = 'competition_team_participator'
+        ordering = ['-time_created']
 
 
 class CompetitionComment(Comment):

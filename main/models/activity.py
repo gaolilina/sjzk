@@ -57,8 +57,11 @@ class ActivityUserParticipator(models.Model):
         'Activity', models.CASCADE, 'user_participators')
     user = models.ForeignKey('User', models.CASCADE, '+')
 
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
     class Meta:
         db_table = 'activity_user_participator'
+        ordering = ['-time_created']
 
 
 class ActivityComment(Comment):

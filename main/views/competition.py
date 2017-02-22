@@ -1,5 +1,4 @@
 from django import forms
-from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist

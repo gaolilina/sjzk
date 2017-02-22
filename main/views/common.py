@@ -21,7 +21,8 @@ __all__ = ['UserActionList', 'TeamActionList', 'ActionsList',
            'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker',
            'UserVisitorList', 'TeamVisitorList',
            'ActivityCommentList', 'ActivityComment',
-           'CompetitionCommentList', 'CompetitionComment']
+           'CompetitionCommentList', 'CompetitionComment',
+           'UserActionCommentList', 'TeamActionCommentList']
 
 
 class ActionList(View):
@@ -538,6 +539,60 @@ class CompetitionCommentList(CommentList):
         """当前用户对竞赛进行评论"""
 
         return super().post(request, competition)
+
+
+# noinspection PyMethodOverriding
+class UserActionCommentList(CommentList):
+    @fetch_object(UserAction.enabled, 'action')
+    @require_token
+    def get(self, request, action):
+        """获取用户动态的评论信息列表
+
+        :return:
+            count: 评论总数
+            list: 评论列表
+                id: 评论ID
+                author_id: 评论者ID
+                author_name: 评论者昵称
+                icon_url: 头像
+                content: 内容
+                time_created: 发布时间
+        """
+        return super().get(request, action)
+
+    @fetch_object(UserAction.enabled, 'action')
+    @require_token
+    def post(self, request, action):
+        """当前用户对用户动态进行评论"""
+
+        return super().post(request, action)
+
+
+# noinspection PyMethodOverriding
+class TeamActionCommentList(CommentList):
+    @fetch_object(TeamAction.enabled, 'action')
+    @require_token
+    def get(self, request, action):
+        """获取团队动态的评论信息列表
+
+        :return:
+            count: 评论总数
+            list: 评论列表
+                id: 评论ID
+                author_id: 评论者ID
+                author_name: 评论者昵称
+                icon_url: 头像
+                content: 内容
+                time_created: 发布时间
+        """
+        return super().get(request, action)
+
+    @fetch_object(TeamAction.enabled, 'action')
+    @require_token
+    def post(self, request, action):
+        """当前用户对团队动态进行评论"""
+
+        return super().post(request, action)
 
 
 class UserComment(View):
