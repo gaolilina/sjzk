@@ -543,7 +543,7 @@ class CompetitionCommentList(CommentList):
 
 # noinspection PyMethodOverriding
 class UserActionCommentList(CommentList):
-    @fetch_object(UserAction.enabled, 'action')
+    @fetch_object(UserAction.objects, 'action')
     @require_token
     def get(self, request, action):
         """获取用户动态的评论信息列表
@@ -560,7 +560,7 @@ class UserActionCommentList(CommentList):
         """
         return super().get(request, action)
 
-    @fetch_object(UserAction.enabled, 'action')
+    @fetch_object(UserAction.objects, 'action')
     @require_token
     def post(self, request, action):
         """当前用户对用户动态进行评论"""
@@ -570,7 +570,7 @@ class UserActionCommentList(CommentList):
 
 # noinspection PyMethodOverriding
 class TeamActionCommentList(CommentList):
-    @fetch_object(TeamAction.enabled, 'action')
+    @fetch_object(TeamAction.objects, 'action')
     @require_token
     def get(self, request, action):
         """获取团队动态的评论信息列表
@@ -587,7 +587,7 @@ class TeamActionCommentList(CommentList):
         """
         return super().get(request, action)
 
-    @fetch_object(TeamAction.enabled, 'action')
+    @fetch_object(TeamAction.objects, 'action')
     @require_token
     def post(self, request, action):
         """当前用户对团队动态进行评论"""
