@@ -44,9 +44,9 @@ class ForumBoardList(View):
             name = request.GET.get("name")
             template = loader.get_template("forum/forum_board_index.html")
             if ForumBoard == ForumPost:
-                list = ForumPost.objects.filter(title=name)
+                list = ForumPost.objects.filter(title__contains=name)
             else:
-                list = ForumBoard.objects.filter(name=name)
+                list = ForumBoard.objects.filter(name__contains=name)
             context = Context({'name': name, 'list': list, 'user': request.user})
             return HttpResponse(template.render(context))
         else:
@@ -90,9 +90,9 @@ class ForumPostList(View):
             name = request.GET.get("name")
             template = loader.get_template("forum/forum_post_index.html")
             if ForumPost == ForumPost:
-                list = ForumPost.objects.filter(title=name)
+                list = ForumPost.objects.filter(title__contains=name)
             else:
-                list = ForumPost.objects.filter(name=name)
+                list = ForumPost.objects.filter(name__contains=name)
             context = Context({'name': name, 'list': list, 'user': request.user})
             return HttpResponse(template.render(context))
         else:

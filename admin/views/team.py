@@ -52,7 +52,7 @@ class ExternalTaskList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:external_task_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'external_task', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'external_task', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -103,7 +103,7 @@ class InternalTaskList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:internal_task_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'internal_task', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'internal_task', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -154,7 +154,7 @@ class TeamList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -205,7 +205,7 @@ class TeamAchievementList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_achievement_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_achievement', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_achievement', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -256,7 +256,7 @@ class TeamActionList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_action_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_action', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_action', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -307,7 +307,7 @@ class TeamActionCommentList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_action_comment_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_action_comment', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_action_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -358,7 +358,7 @@ class TeamActionLikerList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_action_liker_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_action_liker', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_action_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -409,7 +409,7 @@ class TeamCommentList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_comment_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_comment', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -460,7 +460,7 @@ class TeamFeatureList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_feature_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_feature', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_feature', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -511,7 +511,7 @@ class TeamFollowerList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_follower_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_follower', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_follower', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -562,7 +562,7 @@ class TeamInvitationList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_invitation_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_invitation', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_invitation', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -613,7 +613,7 @@ class TeamLikerList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_liker_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_liker', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -664,7 +664,7 @@ class TeamMemberList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_member_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_member', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_member', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -715,7 +715,7 @@ class TeamMemberRequestList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_member_request_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_member_request', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_member_request', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -766,7 +766,7 @@ class TeamNeedList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_need_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_need', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_need', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -817,7 +817,7 @@ class TeamScoreList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_score_record_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_score_record', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -868,7 +868,7 @@ class TeamTagList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_tag_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_tag', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_tag', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -919,7 +919,7 @@ class TeamVisitorList(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_visitor_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': 'team_visitor', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_visitor', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")

@@ -52,7 +52,7 @@ class ActivityList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity', 'user': request.user})
+            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
@@ -103,7 +103,7 @@ class ActivityCommentList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_comment_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_comment', 'user': request.user})
+            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
@@ -154,7 +154,7 @@ class ActivityLikerList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_liker_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_liker', 'user': request.user})
+            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
@@ -205,7 +205,7 @@ class ActivityStageList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_stage_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_stage', 'user': request.user})
+            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity_stage', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
@@ -256,7 +256,7 @@ class ActivityUserParticipatorList(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_user_participator_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': 'activity_user_participator', 'user': request.user})
+            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity_user_participator', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")

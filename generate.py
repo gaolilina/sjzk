@@ -74,7 +74,7 @@ class {{cls_name}}List(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:{{tbl_name}}_list'
-            context = Context({'username': username, 'list': User.objects.filter(username=username), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
+            context = Context({'username': username, 'list': User.objects.filter(name__contains=username), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -267,7 +267,7 @@ class {{cls_name}}List(View):
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:{{tbl_name}}_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name=name), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
+            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -459,7 +459,7 @@ class {{cls_name}}List(View):
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:{{tbl_name}}_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name=name), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
+            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
@@ -651,7 +651,7 @@ class {{cls_name}}List(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:{{tbl_name}}_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
+            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -835,9 +835,9 @@ class {{cls_name}}List(View):
             name = request.GET.get("name")
             template = loader.get_template("forum/{{tbl_name}}_index.html")
             if {{cls_name}} == ForumPost:
-                list = ForumPost.objects.filter(title=name)
+                list = ForumPost.objects.filter(title__contains=name)
             else:
-                list = {{cls_name}}.objects.filter(name=name)
+                list = {{cls_name}}.objects.filter(name__contains=name)
             context = Context({'name': name, 'list': list, 'user': request.user})
             return HttpResponse(template.render(context))
         else:

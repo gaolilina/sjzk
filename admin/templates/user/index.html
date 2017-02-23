@@ -16,7 +16,7 @@
         {% for item in list.all %}
         <tr>
             <td>{{ item.id }}</td>
-            <td>{{ item.username }}</td>
+            <td>{{ item.name }}</td>
             <td><a href="{% url redir item.id %}">查看</a></td>
         </tr>
         {% endfor %}

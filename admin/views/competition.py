@@ -52,7 +52,7 @@ class CompetitionList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition', 'user': request.user})
+            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -103,7 +103,7 @@ class CompetitionCommentList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_comment_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_comment', 'user': request.user})
+            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -154,7 +154,7 @@ class CompetitionFileList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_file_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_file', 'user': request.user})
+            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_file', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -205,7 +205,7 @@ class CompetitionLikerList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_liker_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_liker', 'user': request.user})
+            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -256,7 +256,7 @@ class CompetitionNotificationList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_notification_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_notification', 'user': request.user})
+            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_notification', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -307,7 +307,7 @@ class CompetitionStageList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_stage_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_stage', 'user': request.user})
+            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_stage', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -358,7 +358,7 @@ class CompetitionTeamParticipatorList(View):
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_team_participator_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name=name), 'redir': redir, 'rb': 'competition_team_participator', 'user': request.user})
+            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_team_participator', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
