@@ -9,7 +9,7 @@ from main.utils import abort
 from admin.models.admin_user import AdminUser
 from admin.models.operation_log import OperationLog
 
-__all__ = ['require_cookie', 'require_role', 'fetch_record', 'validate_args2']
+__all__ = ['require_cookie', 'require_role', 'fetch_record', 'validate_args2', 'admin_log']
 
 
 def require_cookie(function):
