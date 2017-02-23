@@ -532,7 +532,8 @@ class Screen(View):
             # 按机构筛选
             users = users.filter(unit1=unit1)
 
-        c = users.all().count()
+        users = users.all()
+        c = users.count()
         if order is not None:
             users = users.order_by(self.ORDERS[order])[i:j]
         else:
