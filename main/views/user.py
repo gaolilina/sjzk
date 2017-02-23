@@ -497,10 +497,7 @@ class Screen(View):
                 tags: 标签
                 time_created: 注册时间
         """
-        if kwargs:
-            users = User.enabled
-        else:
-            users = User.enabled.all()
+        users = User.enabled.all()
         i, j = offset, offset + limit
         name = kwargs.pop('name', '')
         if name:
