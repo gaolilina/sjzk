@@ -55,15 +55,17 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
         UserLiker.as_view(), name='liker'),
     # 搜索
-    url(r'search/$', Search.as_view(), name='search'),
-    url(r'search/user_action/$', SearchUserActionList.as_view(),
+    url(r'^search/$', Search.as_view(), name='search'),
+    url(r'^search/user_action/$', SearchUserActionList.as_view(),
         name='search_user_action'),
-    url(r'search/team_action/$', SearchTeamActionList.as_view(),
+    url(r'^search/team_action/$', SearchTeamActionList.as_view(),
         name='search_team_action'),
+    # 筛选
+    url(r'^screen/$', Screen.as_view(), name='screen'),
     # 验证码
-    url(r'validation_code/$', ValidationCode.as_view(), name='validation_code'),
+    url(r'^validation_code/$', ValidationCode.as_view(), name='validation_code'),
     # 忘记密码
-    url(r'password_forgotten/$', PasswordForgotten.as_view(), name='password_forgotten'),
+    url(r'^password_forgotten/$', PasswordForgotten.as_view(), name='password_forgotten'),
     # 访客
     url(r'^(?P<user_id>[0-9]+)/visitors/$',
         UserVisitorList.as_view(), name='visitors'),
