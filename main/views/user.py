@@ -168,7 +168,6 @@ class Profile(View):
 
         :return:
             id: 用户ID
-            username: 用户名
             name: 昵称
             icon_url: 头像
             time_created: 注册时间
@@ -192,6 +191,8 @@ class Profile(View):
             unit2:
             profession:
             score: 积分
+            id_number:
+            other_number:
         """
         user = user or request.user
 
@@ -203,7 +204,6 @@ class Profile(View):
 
         r = {'id': user.id,
              'time_created': user.time_created,
-             'username': user.username,
              'name': user.name,
              'icon_url': user.icon,
              'description': user.description,
@@ -226,7 +226,9 @@ class Profile(View):
              'unit1': user.unit1,
              'unit2': user.unit2,
              'profession': user.profession,
-             'score': user.score}
+             'score': user.score,
+             'id_number': user.id_number,
+             'other_number': user.other_number}
         return JsonResponse(r)
 
 
