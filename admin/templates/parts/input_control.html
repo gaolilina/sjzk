@@ -1,0 +1,19 @@
+{% if type == 'gender' %}
+ <tr><td>{{ text }}：</td><td>{% include "parts/gender.html" %}</td></tr>
+{% elif type == 'textarea' %}
+ <tr><td>{{ text }}：</td><td><textarea
+  name="{{ name }}"
+  {% if maxlen != "0" and maxlen != "{{maxlen}}" %}maxlen="{{ maxlen }}"{% endif %}>{% if value is not None %}{{ value }}{% endif %}</textarea></td></tr>
+{% elif type == 'checkbox' %}
+ <tr><td>{{ text }}：</td><td><input
+  name="{{ name }}" type="checkbox"
+  {% if value == True %}checked="checked"{% endif %}/></td></tr>
+{% elif type == 'datetime' or type == 'date' %}
+ <tr><td>{{ text }}：</td><td><input
+  name="{{ name }}" type="text" data-field="{{ type }}" readonly
+  value="{% if value is not None %}{{ value }}{% endif %}"/></td></tr>
+{% else %}
+ <tr><td>{{ text }}：</td><td><input
+  name="{{ name }}" type="{{ type }}" value="{% if value is not None %}{{ value }}{% endif %}"
+  {% if maxlen != "0" and maxlen != "{{maxlen}}" %}maxlen="{{ maxlen }}"{% endif %}/></td></tr>
+{% endif %}

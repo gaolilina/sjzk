@@ -117,9 +117,8 @@ for mod_name, mod_class in inspect.getmembers(users):
 </style>
 {% endblock %}
 """
-        template_contet_text = """<tr><td>{{text}}：</td><td><input name="{{name}}" type="{{type}}" value="{{ mod.{{name}} }}" {{minlen}}{{maxlen}}/></td></tr>"""
-        template_contet_text2 = """<tr><td>{{text}}：</td><td><textarea name="{{name}}" {{minlen}}{{maxlen}}>{{ mod.{{name}} }}></textarea></td></tr>"""
-
+        template_contet_text = """{% include "parts/input_control.html" with text="{{text}}" name="{{name}}" type="{{type}}" maxlen="{{maxlen}}" value=mod.{{name}} %}"""
+        
         tbl_name = mod_class._meta.db_table
         
         url_text += "url(r'^" + tbl_name + "/list/(?P<id>\w+)?$', " + mod_name  + "List.as_view(), name='" + tbl_name + "_list'),url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + "View.as_view(), name='" + tbl_name + "'),"
@@ -132,29 +131,29 @@ for mod_name, mod_class in inspect.getmembers(users):
                     continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
                 if fld.name == 'gender':
-                    content_text += '<tr><td>' + fld.name + '：</td><td>{% include "parts/gender.html" %}</td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
                 elif fld.name == 'description':
-                    content_text += '<tr><td>' + fld.name + '：</td><td><textarea name=' + fld.name + '>{{ mod.' + fld.name + ' }}</textarea></td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
                 else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.IntegerField):
                 args_text += "'" + fld.name + "': forms.IntegerField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.FloatField):
                 args_text += "'" + fld.name + "': forms.FloatField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.ForeignKey):
                 content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:user:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         
@@ -311,9 +310,8 @@ for mod_name, mod_class in inspect.getmembers(teams):
 </style>
 {% endblock %}
 """
-        template_contet_text = """<tr><td>{{text}}：</td><td><input name="{{name}}" type="{{type}}" value="{{ mod.{{name}} }}" {{minlen}}{{maxlen}}/></td></tr>"""
-        template_contet_text2 = """<tr><td>{{text}}：</td><td><textarea name="{{name}}" {{minlen}}{{maxlen}}>{{ mod.{{name}} }}></textarea></td></tr>"""
-
+        template_contet_text = """{% include "parts/input_control.html" with text="{{text}}" name="{{name}}" type="{{type}}" maxlen="{{maxlen}}" value=mod.{{name}} %}"""
+        
         tbl_name = mod_class._meta.db_table
         
         url_text += "url(r'^" + tbl_name + "/list/(?P<id>\w+)?$', " + mod_name  + "List.as_view(), name='" + tbl_name + "_list'),url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + "View.as_view(), name='" + tbl_name + "'),"
@@ -326,29 +324,29 @@ for mod_name, mod_class in inspect.getmembers(teams):
                     continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
                 if fld.name == 'gender':
-                    content_text += '<tr><td>' + fld.name + '：</td><td>{% include "parts/gender.html" %}</td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
                 elif fld.name == 'description':
-                    content_text += '<tr><td>' + fld.name + '：</td><td><textarea name=' + fld.name + '>{{ mod.' + fld.name + ' }}</textarea></td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
                 else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.IntegerField):
                 args_text += "'" + fld.name + "': forms.IntegerField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.FloatField):
                 args_text += "'" + fld.name + "': forms.FloatField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.ForeignKey):
                 content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:team:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         
@@ -504,9 +502,8 @@ for mod_name, mod_class in inspect.getmembers(activities):
 </style>
 {% endblock %}
 """
-        template_contet_text = """<tr><td>{{text}}：</td><td><input name="{{name}}" type="{{type}}" value="{{ mod.{{name}} }}" {{minlen}}{{maxlen}}/></td></tr>"""
-        template_contet_text2 = """<tr><td>{{text}}：</td><td><textarea name="{{name}}" {{minlen}}{{maxlen}}>{{ mod.{{name}} }}></textarea></td></tr>"""
-
+        template_contet_text = """{% include "parts/input_control.html" with text="{{text}}" name="{{name}}" type="{{type}}" maxlen="{{maxlen}}" value=mod.{{name}} %}"""
+        
         tbl_name = mod_class._meta.db_table
         
         url_text += "url(r'^" + tbl_name + "/list/(?P<id>\w+)?$', " + mod_name  + "List.as_view(), name='" + tbl_name + "_list'),url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + "View.as_view(), name='" + tbl_name + "'),"
@@ -519,29 +516,29 @@ for mod_name, mod_class in inspect.getmembers(activities):
                     continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
                 if fld.name == 'gender':
-                    content_text += '<tr><td>' + fld.name + '：</td><td>{% include "parts/gender.html" %}</td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
                 elif fld.name == 'description':
-                    content_text += '<tr><td>' + fld.name + '：</td><td><textarea name=' + fld.name + '>{{ mod.' + fld.name + ' }}</textarea></td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
                 else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.IntegerField):
                 args_text += "'" + fld.name + "': forms.IntegerField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.FloatField):
                 args_text += "'" + fld.name + "': forms.FloatField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.ForeignKey):
                 content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:activity:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         
@@ -697,9 +694,8 @@ for mod_name, mod_class in inspect.getmembers(competitions):
 </style>
 {% endblock %}
 """
-        template_contet_text = """<tr><td>{{text}}：</td><td><input name="{{name}}" type="{{type}}" value="{{ mod.{{name}} }}" {{minlen}}{{maxlen}}/></td></tr>"""
-        template_contet_text2 = """<tr><td>{{text}}：</td><td><textarea name="{{name}}" {{minlen}}{{maxlen}}>{{ mod.{{name}} }}></textarea></td></tr>"""
-
+        template_contet_text = """{% include "parts/input_control.html" with text="{{text}}" name="{{name}}" type="{{type}}" maxlen="{{maxlen}}" value=mod.{{name}} %}"""
+        
         tbl_name = mod_class._meta.db_table
         
         url_text += "url(r'^" + tbl_name + "/list/(?P<id>\w+)?$', " + mod_name  + "List.as_view(), name='" + tbl_name + "_list'),url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + "View.as_view(), name='" + tbl_name + "'),"
@@ -712,29 +708,29 @@ for mod_name, mod_class in inspect.getmembers(competitions):
                     continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
                 if fld.name == 'gender':
-                    content_text += '<tr><td>' + fld.name + '：</td><td>{% include "parts/gender.html" %}</td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
                 elif fld.name == 'description':
-                    content_text += '<tr><td>' + fld.name + '：</td><td><textarea name=' + fld.name + '>{{ mod.' + fld.name + ' }}</textarea></td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
                 else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.IntegerField):
                 args_text += "'" + fld.name + "': forms.IntegerField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.FloatField):
                 args_text += "'" + fld.name + "': forms.FloatField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.ForeignKey):
                 content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:competition:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         
@@ -885,12 +881,11 @@ for mod_name, mod_class in inspect.getmembers(forums):
 </style>
 {% endblock %}
 """
-        template_contet_text = """<tr><td>{{text}}：</td><td><input name="{{name}}" type="{{type}}" value="{{ mod.{{name}} }}" {{minlen}}{{maxlen}}/></td></tr>"""
-        template_contet_text2 = """<tr><td>{{text}}：</td><td><textarea name="{{name}}" {{minlen}}{{maxlen}}>{{ mod.{{name}} }}></textarea></td></tr>"""
-
+        template_contet_text = """{% include "parts/input_control.html" with text="{{text}}" name="{{name}}" type="{{type}}" maxlen="{{maxlen}}" value=mod.{{name}} %}"""
+        
         tbl_name = mod_class._meta.db_table
         
-        url_text += "url(r'^" + tbl_name + "/list$', " + mod_name  + "List.as_view(), name='" + tbl_name + "_list'),url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + "View.as_view(), name='" + tbl_name + "'),"
+        url_text += "url(r'^" + tbl_name + "/list/(?P<id>\w+)?$', " + mod_name  + "List.as_view(), name='" + tbl_name + "_list'),url(r'^" + tbl_name + "/(?P<id>\w+)$', " + mod_name  + "View.as_view(), name='" + tbl_name + "'),"
 
         args_text = ""
         content_text = ""
@@ -900,29 +895,29 @@ for mod_name, mod_class in inspect.getmembers(forums):
                     continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
                 if fld.name == 'gender':
-                    content_text += '<tr><td>' + fld.name + '：</td><td>{% include "parts/gender.html" %}</td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
                 elif fld.name == 'description':
-                    content_text += '<tr><td>' + fld.name + '：</td><td><textarea name=' + fld.name + '>{{ mod.' + fld.name + ' }}</textarea></td></tr>'
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
                 else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
             elif isinstance(fld, models.DateTimeField):
                 args_text += "'" + fld.name + "': forms.DateTimeField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="datetime').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'datetime')
             elif isinstance(fld, models.DateField):
                 args_text += "'" + fld.name + "': forms.DateField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text" readonly data-field="date').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'date')
             elif isinstance(fld, models.TextField):
                 args_text += "'" + fld.name + "': forms.CharField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text2.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{minlen}}", ' ').replace("{{maxlen}}", ('maxlength="'+str(fld.max_length)+'" ' if (fld.max_length is not None and fld.max_length > 0) else " "))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.IntegerField):
                 args_text += "'" + fld.name + "': forms.IntegerField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.FloatField):
                 args_text += "'" + fld.name + "': forms.FloatField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
-                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number').replace("{{minlen}}{{maxlen}}", '')
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.ForeignKey):
                 content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:forum:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         

@@ -94,7 +94,8 @@ def validate_args2(d):
                 data = QueryDict(request.body)
             for k, v in d.items():
                 try:
-                    kwargs[k] = v.clean(data[k])
+                    if data[k] != "":
+                        kwargs[k] = v.clean(data[k])
                 except KeyError:
                     if v.required:
                         abort(400, 'require argument "%s"' % k)
@@ -109,5 +110,5 @@ def validate_args2(d):
 def admin_log(table, id, type, user):
     """记录操作日志
     """
-    log = OperationLog(user=user, table=table, id=id, type=type)
+    log = OperationLog(user=user, table=table, data_id=id, operate_type=type)
     log.save()

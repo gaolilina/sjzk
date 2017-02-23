@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:team:team_invitation' mod.id %}" method="post">
 <table>
-    <tr><td>team：</td><td><a href="{% url "admin:team:team" mod.team.id %}">{{ mod.team.id }}</a></td></tr><tr><td>user：</td><td><a href="{% url "admin:team:user" mod.user.id %}">{{ mod.user.id }}</a></td></tr><tr><td>description：</td><td><textarea name=description>{{ mod.description }}</textarea></td></tr><tr><td>time_created：</td><td><input name="time_created" type="text" readonly data-field="datetime" value="{{ mod.time_created }}" /></td></tr>
+    <tr><td>team：</td><td><a href="{% url "admin:team:team" mod.team.id %}">{{ mod.team.id }}</a></td></tr><tr><td>user：</td><td><a href="{% url "admin:team:user" mod.user.id %}">{{ mod.user.id }}</a></td></tr>{% include "parts/input_control.html" with text="description" name="description" type="textarea" maxlen="100" value=mod.description %}{% include "parts/input_control.html" with text="time_created" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
     <tr>
         <td>{{ msg }}</td>
         <td>

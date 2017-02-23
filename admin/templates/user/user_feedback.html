@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:user:user_feedback' mod.id %}" method="post">
 <table>
-    <tr><td>user：</td><td><a href="{% url "admin:user:user" mod.user.id %}">{{ mod.user.id }}</a></td></tr><tr><td>content：</td><td><textarea name="content"  maxlength="100" >{{ mod.content }}></textarea></td></tr><tr><td>time_created：</td><td><input name="time_created" type="text" readonly data-field="datetime" value="{{ mod.time_created }}" /></td></tr>
+    <tr><td>user：</td><td><a href="{% url "admin:user:user" mod.user.id %}">{{ mod.user.id }}</a></td></tr>{% include "parts/input_control.html" with text="content" name="content" type="{{type}}" maxlen="100" value=mod.content %}{% include "parts/input_control.html" with text="time_created" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
     <tr>
         <td>{{ msg }}</td>
         <td>
