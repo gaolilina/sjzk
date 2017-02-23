@@ -457,7 +457,6 @@ class Screen(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-        'by_tag': forms.IntegerField(required=False),
         'name': forms.CharField(required=False, max_length=20),
         'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
         'province': forms.CharField(required=False, max_length=20),
