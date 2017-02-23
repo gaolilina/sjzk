@@ -497,14 +497,16 @@ class Screen(View):
                 tags: 标签
                 time_created: 注册时间
         """
-        users = User.enabled
+        if kwargs:
+            users = User.enabled
+        else:
+            users = User.enabled.all()
         i, j = offset, offset + limit
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称段检索
             users = users.filter(name__contains=name)
 
-        normal_keys = ('gender', 'province', 'city', 'county', 'role', 'unit1')
         gender = kwargs.pop('gender', '')
         if gender:
             # 按性别筛选
