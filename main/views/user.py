@@ -499,10 +499,7 @@ class Screen(View):
                 tags: 标签
                 time_created: 注册时间
         """
-        if kwargs:
-            users = User.enabled
-        else:
-            users = User.enabled.all()
+        users = User.enabled
 
         i, j = offset, offset + limit
         name = kwargs.pop('name', '')
@@ -527,7 +524,7 @@ class Screen(View):
             # 按区/县筛选
             users = users.filter(county=county)
         role = kwargs.pop('role', '')
-        if province:
+        if role:
             # 按角色筛选
             users = users.filter(role=role)
         unit1 = kwargs.pop('unit1', '')
@@ -535,7 +532,7 @@ class Screen(View):
             # 按机构筛选
             users = users.filter(unit1=unit1)
 
-        c = users.count()
+        c = users.all().count()
         if order is not None:
             users = users.order_by(self.ORDERS[order])[i:j]
         else:
