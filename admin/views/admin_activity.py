@@ -1,5 +1,5 @@
 from django import forms
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader, Context
 from django.views.generic import View
 
@@ -13,12 +13,14 @@ from admin.utils.decorators import *
 
 class AdminActivityAdd(View):
     @require_cookie
+    @require_role('z')
     def get(self, request):
         template = loader.get_template("admin_activity/add.html")
         context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
@@ -30,8 +32,6 @@ class AdminActivityAdd(View):
         'province': forms.CharField(max_length=20, required=False),
         'city': forms.CharField(max_length=20, required=False),
         'unit': forms.CharField(max_length=20, required=False),
-        'min_member': forms.IntegerField(),
-        'max_member': forms.IntegerField(),
         'user_type': forms.IntegerField(),
         'stages': forms.CharField(),
     })
@@ -58,13 +58,18 @@ class AdminActivityAdd(View):
 class AdminActivityEdit(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, model):
+        if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+        
         template = loader.get_template("admin_activity/edit.html")
         context = Context({'model': model, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
         return HttpResponse(template.render(context))
 
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
@@ -77,21 +82,26 @@ class AdminActivityEdit(View):
         'city': forms.CharField(max_length=20, required=False),
         'unit': forms.CharField(max_length=20, required=False),
         'user_type': forms.IntegerField(required=False),
-        'stages': forms.CharField(),
+        'stages': forms.CharField(required=False),
     })
     def post(self, request, **kwargs):
         user = request.user
         model = kwargs["model"]
+
+        if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+
         for k in kwargs:
             if k != "stages":
                 setattr(model, k, kwargs[k])
         model.save()
 
-        ActivityStage.objects.filter(activity=model).delete()
+        if kwargs['stages'] != "":
+            ActivityStage.objects.filter(activity=model).delete()
 
-        stages = json.loads(kwargs['stages'])
-        for st in stages:
-            model.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
+            stages = json.loads(kwargs['stages'])
+            for st in stages:
+                model.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
 
         template = loader.get_template("admin_activity/edit.html")
         context = Context({'model': model, 'msg': '保存成功', 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
@@ -99,6 +109,7 @@ class AdminActivityEdit(View):
 
 class AdminActivityList(View):
     @require_cookie
+    @require_role('bz')
     def get(self, request):
         try:
             template = loader.get_template("admin_activity/list.html")
@@ -112,7 +123,11 @@ class AdminActivityList(View):
 class AdminActivityView(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
+    @require_role('bz')
     def get(self, request, model):
+        if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+
         template = loader.get_template("admin_activity/view.html")
         context = Context({'model': model, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
         return HttpResponse(template.render(context))

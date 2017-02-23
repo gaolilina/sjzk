@@ -1,5 +1,5 @@
 from django import forms
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader, Context
 from django.views.generic import View
 import json
@@ -12,12 +12,14 @@ from admin.utils.decorators import *
 
 class AdminCompetitionAdd(View):
     @require_cookie
+    @require_role('z')
     def get(self, request):
         template = loader.get_template("admin_competition/add.html")
         context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
@@ -56,13 +58,18 @@ class AdminCompetitionAdd(View):
 class AdminCompetitionEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
+    @require_role('z')
     def get(self, request, model):
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+
         template = loader.get_template("admin_competition/edit.html")
         context = Context({'model': model, 'user': request.user, 'stages': CompetitionStage.objects.filter(competition=model)})
         return HttpResponse(template.render(context))
 
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
+    @require_role('z')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
@@ -77,21 +84,26 @@ class AdminCompetitionEdit(View):
         'min_member': forms.IntegerField(required=False),
         'max_member': forms.IntegerField(required=False),
         'user_type': forms.IntegerField(required=False),
-        'stages': forms.CharField(),
+        'stages': forms.CharField(required=False),
     })
     def post(self, request, **kwargs):
         user = request.user
         model = kwargs["model"]
+
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+
         for k in kwargs:
             if k != "stages":
                 setattr(model, k, kwargs[k])
         model.save()
+        
+        if kwargs['stages'] != "":
+            CompetitionStage.objects.filter(competition=model).delete()
 
-        CompetitionStage.objects.filter(competition=model).delete()
-
-        stages = json.loads(kwargs['stages'])
-        for st in stages:
-            model.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
+            stages = json.loads(kwargs['stages'])
+            for st in stages:
+                model.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
 
         template = loader.get_template("admin_competition/edit.html")
         context = Context({'model': model, 'msg': '保存成功', 'user': request.user, 'stages': CompetitionStage.objects.filter(competition=model)})
@@ -99,6 +111,7 @@ class AdminCompetitionEdit(View):
 
 class AdminCompetitionList(View):
     @require_cookie
+    @require_role('az')
     def get(self, request):
         try:
             template = loader.get_template("admin_competition/list.html")
@@ -112,7 +125,23 @@ class AdminCompetitionList(View):
 class AdminCompetitionView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
+    @require_role('az')
     def get(self, request, model):
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+            
         template = loader.get_template("admin_competition/view.html")
         context = Context({'model': model, 'user': request.user, 'stages': CompetitionStage.objects.filter(competition=model)})
+        return HttpResponse(template.render(context))
+
+class AdminCompetitionFilesView(View):
+    @fetch_record(Competition.enabled, 'model', 'id')
+    @require_cookie
+    @require_role('az')
+    def get(self, request, model, status):
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+
+        template = loader.get_template("admin_competition/file.html")
+        context = Context({'model': model, 'user': request.user, 'files': CompetitionFile.objects.filter(competition=model, status=status)})
         return HttpResponse(template.render(context))

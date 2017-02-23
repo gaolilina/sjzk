@@ -9,7 +9,7 @@ from main.utils import abort
 from admin.models.admin_user import AdminUser
 from admin.models.operation_log import OperationLog
 
-__all__ = ['require_cookie', 'fetch_record', 'validate_args2']
+__all__ = ['require_cookie', 'require_role', 'fetch_record', 'validate_args2']
 
 
 def require_cookie(function):
@@ -32,6 +32,31 @@ def require_cookie(function):
             return HttpResponseRedirect(reverse("admin:login"))
         except AdminUser.DoesNotExist:
             return HttpResponseRedirect(reverse("admin:login"))
+    return decorator
+
+def require_role(role = None):
+    """验证用户权限
+    a - 竞赛
+    b - 活动
+    z - admin
+    """
+    def decorator(function):
+        @wraps(function)
+        def inner(self, request, *args, **kwargs):
+            def check_role(source, target):
+                for role in list(target):
+                    if role in source:
+                        return True
+                return False
+
+            if role is None:
+                return function(self, request, *args, **kwargs)
+            else:
+                if check_role(request.user.role, role):
+                    return function(self, request, *args, **kwargs)
+                else:
+                    return HttpResponseRedirect(reverse("admin:login"))
+        return inner
     return decorator
 
 def fetch_record(model, object_name, col):

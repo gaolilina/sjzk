@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<h3 style="text-align: center;margin-top: 30px">{{ model.name }}
+-
+{% if model.status == 0 %}前期宣传{% endif %}
+{% if model.status == 1 %}报名{% endif %}
+{% if model.status == 2 %}预赛{% endif %}
+{% if model.status == 3 %}周赛{% endif %}
+{% if model.status == 4 %}月赛{% endif %}
+{% if model.status == 5 %}中间赛{% endif %}
+{% if model.status == 6 %}结束{% endif %}
+-
+提交列表
+</h3>
+<table>
+    <tr>
+        <td width="100px">团队名</td>
+        <td width="200px">上传时间</td>
+        <td width="50px">下载</td>
+    </tr>
+    {% for file in files %}
+        <tr>
+            <td>{{ file.team.name }}</td>
+            <td>{{ file.time_created }}</td>
+            <td><a href="{{ file.file }}">下载</a></td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='admin_competition' lb=1 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='admin_competition' lb=1 rb='' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+<style>
+table {
+    border-collapse: collapse;
+    margin: 30px;
+}
+table td {
+    border: 1px solid #999;
+}
+</style>
+{% endblock %}

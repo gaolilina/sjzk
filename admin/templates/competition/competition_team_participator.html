@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:competition:competition_team_participator' mod.id %}" method="post">
 <table>
-    <tr><td>competition：</td><td><a href="{% url "admin:competition:competition" mod.competition.id %}">{{ mod.competition.id }}</a></td></tr><tr><td>team：</td><td><a href="{% url "admin:competition:team" mod.team.id %}">{{ mod.team.id }}</a></td></tr>
+    <tr><td>competition：</td><td><a href="{% url "admin:competition:competition" mod.competition.id %}">{{ mod.competition.id }}</a></td></tr><tr><td>team：</td><td><a href="{% url "admin:competition:team" mod.team.id %}">{{ mod.team.id }}</a></td></tr><tr><td>time_created：</td><td><input name="time_created" type="text" readonly data-field="datetime" value="{{ mod.time_created }}" /></td></tr>
     <tr>
         <td>{{ msg }}</td>
         <td>
