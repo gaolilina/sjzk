@@ -507,8 +507,8 @@ class Screen(View):
             # 按用户昵称段检索
             users = users.filter(name__contains=name)
 
-        gender = kwargs.pop('gender', '')
-        if gender:
+        gender = kwargs.pop('gender', None)
+        if gender is not None:
             # 按性别筛选
             users = users.filter(gender=gender)
         province = kwargs.pop('province', '')
