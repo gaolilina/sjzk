@@ -18,7 +18,7 @@ class AdminUser(models.Model):
     password = models.CharField(max_length=128)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
     # a - 竞赛, b - 活动, z - 管理
-    role = models.CharField(default='ab', max_length=26)
+    role = models.CharField(default='', max_length=26)
 
     name = models.CharField(max_length=15, default='', db_index=True)
     description = models.CharField(max_length=100, default='')
