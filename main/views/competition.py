@@ -9,7 +9,8 @@ from ..utils.decorators import *
 
 
 __all__ = ['List', 'Detail', 'CompetitionStage', 'CompetitionFile',
-           'TeamParticipatorList', 'Search', 'CompetitionNotification']
+           'TeamParticipatorList', 'Search', 'Screen',
+           'CompetitionNotification']
 
 
 class List(View):
@@ -333,6 +334,111 @@ class Search(View):
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
         qs = Competition.enabled.filter(name__contains=kwargs['name'])
+        c = qs.count()
+        l = [{'id': a.id,
+              'name': a.name,
+              'liker_count': a.likers.count(),
+              'time_started': a.time_started,
+              'time_ended': a.time_ended,
+              'deadline': a.deadline,
+              'team_participator_count': a.team_participators.count(),
+              'time_created': a.time_created} for a in qs.order_by(k)[i:j]]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class Screen(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'name': forms.CharField(required=False, max_length=20),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'allow_team': forms.IntegerField(required=False, min_value=0),
+        'unit1': forms.CharField(required=False, max_length=20),
+        'user_type': forms.IntegerField(
+            required=False, min_value=0, max_value=3),
+        'time_started': forms.DateField(required=False),
+        'time_ended': forms.DateField(required=False),
+    })
+    def get(self, request, offset=0, limit=10, order=1, **kwargs):
+        """
+        筛选竞赛
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :param kwargs: 搜索条件
+            name: 竞赛名包含字段
+            status: 竞赛阶段0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
+            province: 省
+            city: 市
+            allow_team: 竞赛允许人数上限,0:不限人数
+            unit1: 机构
+            user_type: 允许人员身份,0:不限, 1:学生, 2:教师, 3:在职
+            time_started: 开始时间下限
+            time_ended: 结束时间上限
+
+        :return:
+            count: 竞赛总数
+            list: 竞赛列表
+                id: 竞赛ID
+                name: 竞赛名
+                liker_count: 点赞数
+                time_started: 开始时间
+                time_ended: 结束时间
+                deadline: 截止时间
+                team_participator_count: 已报名人数
+                time_created: 创建时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        qs = Competition.enabled
+        name = kwargs.pop('name', '')
+        if name:
+            # 按用户昵称段检索
+            qs = qs.filter(name__contains=name)
+        province = kwargs.pop('province', '')
+        if province:
+            # 按省会筛选
+            qs = qs.filter(province=province)
+        city = kwargs.pop('city', '')
+        if city:
+            # 按城市筛选
+            qs = qs.filter(city=city)
+        unit1 = kwargs.pop('unit1', '')
+        if unit1:
+            # 按机构筛选
+            qs = qs.filter(unit1=unit1)
+        user_type = kwargs.pop('user_type', None)
+        if user_type is not None:
+            # 按参与者身份筛选
+            qs = qs.filter(user_type=user_type)
+        status = kwargs.pop('status', None)
+        if status is not None:
+            # 按活动阶段筛选
+            qs = qs.filter(status=status)
+        allow_team = kwargs.pop('allow_team', '')
+        if allow_team:
+            # 按人数上限筛选
+            qs = qs.filter(allow_team__lte=allow_team)
+        time_started = kwargs.pop('time_started', '')
+        if time_started:
+            # 按开始时间下限筛选
+            qs = qs.filter(time_started__gte=time_started)
+        time_ended = kwargs.pop('time_ended', '')
+        if time_ended:
+            # 按结束时间上限筛选
+            qs = qs.filter(time_ended__gte=time_ended)
+
+        qs = qs.all()
         c = qs.count()
         l = [{'id': a.id,
               'name': a.name,

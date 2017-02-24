@@ -235,12 +235,12 @@ class Screen(View):
             1: 注册时间降序
             2: 昵称升序
             3: 昵称降序
-        :param name: 团队名包含字段
-        :param gender: 性别
-        :param province: 省
-        :param city: 市
-        :param county: 区/县
-        :param field: 领域
+        :param kwargs: 搜索条件
+            name: 团队名包含字段
+            province: 省
+            city: 市
+            county: 区/县
+            field: 领域
 
         :return:
             count: 团队总数

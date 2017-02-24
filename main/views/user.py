@@ -476,13 +476,14 @@ class Screen(View):
             1: 注册时间降序
             2: 昵称升序
             3: 昵称降序
-        :param name: 用户名包含字段
-        :param gender: 性别
-        :param province: 省
-        :param city: 市
-        :param county: 区/县
-        :param role: 角色
-        :param unit1: 机构
+        :param kwargs: 搜索条件
+            name: 用户名包含字段
+            gender: 性别
+            province: 省
+            city: 市
+            county: 区/县
+            role: 角色
+            unit1: 机构
 
         :return:
             count: 用户总数

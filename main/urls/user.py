@@ -3,7 +3,8 @@ from django.conf.urls import url
 from ..views.user import *
 from ..views.common import UserActionList, SearchUserActionList, \
     SearchTeamActionList, UserCommentList, UserComment,UserFollowerList, \
-    UserFollower, UserLikerList, UserLiker, UserVisitorList
+    UserFollower, UserLikerList, UserLiker, UserVisitorList, \
+    ScreenUserActionList, ScreenTeamActionList
 from ..views.recommend import UserRecommend
 
 urls = [
@@ -62,6 +63,10 @@ urls = [
         name='search_team_action'),
     # 筛选
     url(r'^screen/$', Screen.as_view(), name='screen'),
+    url(r'^screen/user_action/$', ScreenUserActionList.as_view(),
+        name='screen_user_action'),
+    url(r'^screen/team_action/$', ScreenTeamActionList.as_view(),
+        name='search_team_action'),
     # 验证码
     url(r'^validation_code/$', ValidationCode.as_view(), name='validation_code'),
     # 忘记密码

@@ -14,7 +14,9 @@ urls = [
     url(r'^comments/(?P<comment_id>[0-9]+)/$',
         ActivityComment.as_view(), name='comment'),
     # 搜索
-    url(r'search/$', Search.as_view(), name='search'),
+    url(r'^search/$', Search.as_view(), name='search'),
+    # 筛选
+    url(r'^screen/$', Screen.as_view(), name='screen'),
     # 活动的阶段
-    url(r'stage/$', ActivityStage.as_view(), name='stage'),
+    url(r'^stage/$', ActivityStage.as_view(), name='stage'),
 ]
