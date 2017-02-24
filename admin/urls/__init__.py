@@ -4,6 +4,7 @@ from . import admin_users, admin_activity, admin_competition, feedback, user, te
 
 from admin.views.main import Login, Register, Main
 from admin.views.system import Setting
+from admin.views.op_log import OpLog
 
 urlpatterns = [
     url(r'^$', Main.as_view(), name='root'),
@@ -20,4 +21,5 @@ urlpatterns = [
     url(r'^forum_admin/', include(forum.urls, namespace="forum")),
     url(r'^system_admin/', Setting.as_view(), name='system'),
     url(r'^admin_user/', include(admin_user.urls, namespace='admin_user')),
+    url(r'^op_log/', OpLog.as_view(), name='op_log'),
 ]

@@ -11,12 +11,14 @@ from admin.utils.decorators import *
 
 class Setting(View):
     @require_cookie
+    @require_role('yz')
     def get(self, request):
         template = loader.get_template("system.html")
         context = Context({'m': SystemModel.objects.get(id=1), 'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
+    @require_role('yz')
     @validate_args({
         'version_number': forms.FloatField(required=False),
         'recent_visitor_time': forms.IntegerField(required=False),
