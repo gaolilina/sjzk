@@ -1,1 +1,5 @@
+{% if mod.score is None %}
+<input name="gender" type="radio" value="男" {% ifequal mod.gender '男' %}checked="checked" {% endifequal %}/>男<input name="gender" type="radio" value="女" {% ifequal mod.gender '女' %}checked="checked" {% endifequal %}/>女
+{% else %}
 <input name="gender" type="radio" value="0" {% ifequal mod.gender 0 %}checked="checked" {% endifequal %}/>男<input name="gender" type="radio" value="1" {% ifequal mod.gender 1 %}checked="checked" {% endifequal %}/>女<input name="gender" type="radio" value="-1" {% ifequal mod.gender -1 %}checked="checked" {% endifequal %}/>(留空)
+{% endif %}

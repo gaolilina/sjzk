@@ -12,7 +12,7 @@ from admin.models.admin_user import AdminUser
 
 class Main(View):
     def get(self, request):
-        return HttpResponseRedirect(reverse("admin:admin_user:info"))
+        return HttpResponseRedirect(reverse("admin:admin_users:info"))
 
 class Login(View):
     def get(self, request):
@@ -28,7 +28,7 @@ class Login(View):
         try:
             user = AdminUser.enabled.get(username=username)
             if user.check_password(password):
-                response = HttpResponseRedirect(reverse("admin:admin_user:info"))
+                response = HttpResponseRedirect(reverse("admin:admin_users:info"))
                 response.set_cookie("usr", username)
                 response.set_cookie("pwd", user.password[18:24])
                 return response
@@ -62,7 +62,7 @@ class Register(View):
                 user.set_password(password)
                 user.save_and_generate_name()
 
-                response = HttpResponseRedirect(reverse("admin:admin_user:info"))
+                response = HttpResponseRedirect(reverse("admin:admin_users:info"))
                 response.set_cookie("usr", username)
                 response.set_cookie("pwd", user.password[:6])
                 return response
