@@ -10,7 +10,7 @@ from admin.utils.decorators import *
 class AdminUserView(View):
     @fetch_record(AdminUser.objects, 'mod', 'id')
     @require_cookie
-    @require_role('yz')
+    @require_role('z')
     def get(self, request, mod):
         template = loader.get_template("admin_user/admin_user.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -18,7 +18,7 @@ class AdminUserView(View):
 
     @fetch_record(AdminUser.objects, 'mod', 'id')
     @require_cookie
-    @require_role('yz')
+    @require_role('z')
     @validate_args2({
         'is_enabled': forms.BooleanField(required=False),'username': forms.CharField(max_length=20,),'password': forms.CharField(max_length=128,),'time_created': forms.DateTimeField(required=False,),'role': forms.CharField(max_length=26,required=False,),'name': forms.CharField(max_length=15,required=False,),'description': forms.CharField(max_length=100,required=False,),'icon': forms.CharField(max_length=100,required=False,),'gender': forms.CharField(max_length=1,required=False,),'email': forms.CharField(max_length=254,required=False,),'phone_number': forms.CharField(max_length=11,required=False,),'is_verified': forms.BooleanField(required=False),'real_name': forms.CharField(max_length=20,required=False,),'id_number': forms.CharField(max_length=18,required=False,),
     })
@@ -35,7 +35,7 @@ class AdminUserView(View):
 
 class AdminUserList(View):
     @require_cookie
-    @require_role('yz')
+    @require_role('z')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })

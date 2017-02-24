@@ -36,7 +36,7 @@ from admin.utils.decorators import *
 view_class_text = """class {{cls_name}}View(View):
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('yz')
+    @require_role('{{role}}')
     def get(self, request, mod):
         template = loader.get_template("{{item}}/{{tbl_name}}.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -44,7 +44,7 @@ view_class_text = """class {{cls_name}}View(View):
 
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('yz')
+    @require_role('{{role}}')
     @validate_args2({
         {{args}}
     })
@@ -61,7 +61,7 @@ view_class_text = """class {{cls_name}}View(View):
 
 class {{cls_name}}List(View):
     @require_cookie
-    @require_role('yz')
+    @require_role('{{role}}')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -215,32 +215,72 @@ py_forum_view_list_text = '''if request.GET.get("name") is not None:
 
 py_file = codecs.open("./user.py", "w", "utf-8")
 py_file.write(py_head)
-py_file.write(py_text.replace("{{view_list}}", py_view_list_text).replace("{{package}}", "main.models").replace("{{item}}", "user").replace("{{model}}", "User").replace("{{model2}}", "user").replace("{{tb}}", "user_admin").replace("{{lb}}", "user").replace("{{chinese}}", "用户名"))
+py_file.write(py_text.replace("{{view_list}}", py_view_list_text)
+    .replace("{{package}}", "main.models")
+    .replace("{{role}}", "yz")
+    .replace("{{item}}", "user")
+    .replace("{{model}}", "User")
+    .replace("{{model2}}", "user")
+    .replace("{{tb}}", "user_admin")
+    .replace("{{lb}}", "user")
+    .replace("{{chinese}}", "用户名"))
 py_file.close()
 
 py_file = codecs.open("./team.py", "w", "utf-8")
 py_file.write(py_head)
-py_file.write(py_text.replace("{{view_list}}", py_view_list_text).replace("{{package}}", "main.models").replace("{{item}}", "team").replace("{{model}}", "Team").replace("{{model2}}", "team").replace("{{tb}}", "user_admin").replace("{{lb}}", "team").replace("{{chinese}}", "团队名"))
+py_file.write(py_text.replace("{{view_list}}", py_view_list_text)
+    .replace("{{package}}", "main.models")
+    .replace("{{role}}", "yz")
+    .replace("{{item}}", "team")
+    .replace("{{model}}", "Team")
+    .replace("{{model2}}", "team")
+    .replace("{{tb}}", "user_admin")
+    .replace("{{lb}}", "team")
+    .replace("{{chinese}}", "团队名"))
 py_file.close()
 
 py_file = codecs.open("./activity.py", "w", "utf-8")
 py_file.write(py_head)
-py_file.write(py_text.replace("{{view_list}}", py_view_list_text).replace("{{package}}", "main.models").replace("{{item}}", "activity").replace("{{model}}", "Activity").replace("{{model2}}", "activity").replace("{{tb}}", "activity_admin").replace("{{lb}}", "activity").replace("{{chinese}}", "活动名"))
+py_file.write(py_text.replace("{{view_list}}", py_view_list_text)
+    .replace("{{package}}", "main.models")
+    .replace("{{role}}", "yz")
+    .replace("{{item}}", "activity")
+    .replace("{{model}}", "Activity")
+    .replace("{{model2}}", "activity")
+    .replace("{{tb}}", "activity_admin")
+    .replace("{{lb}}", "activity")
+    .replace("{{chinese}}", "活动名"))
 py_file.close()
 
 py_file = codecs.open("./competition.py", "w", "utf-8")
 py_file.write(py_head)
-py_file.write(py_text.replace("{{view_list}}", py_view_list_text).replace("{{package}}", "main.models").replace("{{item}}", "competition").replace("{{model}}", "Competition").replace("{{model2}}", "competition").replace("{{tb}}", "activity_admin").replace("{{lb}}", "competition").replace("{{chinese}}", "竞赛名"))
+py_file.write(py_text.replace("{{view_list}}", py_view_list_text)
+    .replace("{{package}}", "main.models")
+    .replace("{{role}}", "yz")
+    .replace("{{item}}", "competition")
+    .replace("{{model}}", "Competition")
+    .replace("{{model2}}", "competition")
+    .replace("{{tb}}", "activity_admin")
+    .replace("{{lb}}", "competition")
+    .replace("{{chinese}}", "竞赛名"))
 py_file.close()
 
 py_file = codecs.open("./forum.py", "w", "utf-8")
 py_file.write(py_head)
-forum_py_text = py_text.replace("{{view_list}}", py_forum_view_list_text).replace("{{package}}", "main.models").replace("{{item}}", "forum").replace("{{tb}}", "forum_admin").replace("{{lb}}", "forum")
+forum_py_text = py_text.replace("{{view_list}}", py_forum_view_list_text).replace("{{package}}", "main.models").replace("{{role}}", "yz").replace("{{item}}", "forum").replace("{{tb}}", "forum_admin").replace("{{lb}}", "forum")
 forum_py_text = re.sub('template2_text = """.*template2_file\.close\(\)', '', forum_py_text, flags=re.DOTALL)
 py_file.write(forum_py_text)
 py_file.close()
 
 py_file = codecs.open("./admin_user.py", "w", "utf-8")
 py_file.write(py_head)
-py_file.write(py_text.replace("{{view_list}}", py_view_list_text).replace("{{package}}", "admin.models").replace("{{item}}", "admin_user").replace("{{model}}", "AdminUser").replace("{{model2}}", "admin_user").replace("{{tb}}", "admin_user_admin").replace("{{lb}}", "None").replace("{{chinese}}", "用户名"))
+py_file.write(py_text.replace("{{view_list}}", py_view_list_text)
+    .replace("{{package}}", "admin.models")
+    .replace("{{role}}", "z")
+    .replace("{{item}}", "admin_user")
+    .replace("{{model}}", "AdminUser")
+    .replace("{{model2}}", "admin_user")
+    .replace("{{tb}}", "admin_user_admin")
+    .replace("{{lb}}", "None")
+    .replace("{{chinese}}", "用户名"))
 py_file.close()
