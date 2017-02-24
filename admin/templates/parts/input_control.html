@@ -1,0 +1,22 @@
+{% if name == 'gender' %}
+ <tr><td>{{ text }}：</td><td>{% include "parts/gender.html" %}</td></tr>
+{% elif name == 'description' %}
+ <tr><td>{{ text }}：</td><td><textarea
+  name="{{ name }}"
+  {% if maxlen != "0" and maxlen != "{{maxlen}}" %}maxlen="{{ maxlen }}"{% endif %}>{% if value is not None %}{{ value }}{% endif %}</textarea></td></tr>
+{% elif name == 'id_card' or name == 'other_card' %}
+  <tr><td>{{ text }}：</td><td><a target="_blank" href="http://www.chuangyh.com/{{ value }}">
+    <img class="ext" src="http://www.chuangyh.com/{{ value }}" /></a></td></tr>
+{% elif type == 'checkbox' %}
+ <tr><td>{{ text }}：</td><td><input
+  name="{{ name }}" type="checkbox"
+  {% if value == True %}checked="checked"{% endif %}/></td></tr>
+{% elif type == 'datetime' or type == 'date' %}
+ <tr><td>{{ text }}：</td><td><input
+  name="{{ name }}" type="text" data-field="{{ type }}" readonly
+  value="{% if value is not None %}{{ value }}{% endif %}"/></td></tr>
+{% else %}
+ <tr><td>{{ text }}：</td><td><input
+  name="{{ name }}" type="{{ type }}" value="{% if value is not None %}{{ value }}{% endif %}"
+  {% if maxlen != "0" and maxlen != "{{maxlen}}" %}maxlen="{{ maxlen }}"{% endif %}/></td></tr>
+{% endif %}

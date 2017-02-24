@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from admin.views.admin_user import *
+from admin.views.admin_users import *
 
 urls = [
     url(r'^$', AdminUsersInfo.as_view(), name='info'),

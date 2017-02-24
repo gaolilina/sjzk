@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% block content %}
 <form role="form" action="" method="get" style="text-align:center">
-    用户名：<input type="text" name="username" value="{{username}}" />
+    用户名：<input type="text" name="name" value="{{name}}" />
     <input type="submit" value="搜索" />
 </form>
 {% if list %}
@@ -16,7 +16,7 @@
         {% for item in list.all %}
         <tr>
             <td>{{ item.id }}</td>
-            <td>{{ item.username }}</td>
+            <td>{{ item.name }}</td>
             <td><a href="{% url redir item.id %}">查看</a></td>
         </tr>
         {% endfor %}

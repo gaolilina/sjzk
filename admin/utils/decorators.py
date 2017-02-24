@@ -9,7 +9,7 @@ from main.utils import abort
 from admin.models.admin_user import AdminUser
 from admin.models.operation_log import OperationLog
 
-__all__ = ['require_cookie', 'require_role', 'fetch_record', 'validate_args2']
+__all__ = ['require_cookie', 'require_role', 'fetch_record', 'validate_args2', 'admin_log']
 
 
 def require_cookie(function):
@@ -35,11 +35,7 @@ def require_cookie(function):
     return decorator
 
 def require_role(role = None):
-    """验证用户权限
-    a - 竞赛
-    b - 活动
-    z - admin
-    """
+    """验证用户权限"""
     def decorator(function):
         @wraps(function)
         def inner(self, request, *args, **kwargs):
@@ -94,7 +90,8 @@ def validate_args2(d):
                 data = QueryDict(request.body)
             for k, v in d.items():
                 try:
-                    kwargs[k] = v.clean(data[k])
+                    if data[k] != "":
+                        kwargs[k] = v.clean(data[k])
                 except KeyError:
                     if v.required:
                         abort(400, 'require argument "%s"' % k)
@@ -109,5 +106,5 @@ def validate_args2(d):
 def admin_log(table, id, type, user):
     """记录操作日志
     """
-    log = OperationLog(user=user, table=table, id=id, type=type)
+    log = OperationLog(user=user, table=table, data_id=id, operate_type=type)
     log.save()

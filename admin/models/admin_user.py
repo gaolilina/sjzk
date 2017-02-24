@@ -17,8 +17,8 @@ class AdminUser(models.Model):
     username = models.CharField(max_length=20, unique=True, db_index=True)
     password = models.CharField(max_length=128)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
-    # a - 竞赛, b - 活动, z - 管理
-    role = models.CharField(default='ab', max_length=26)
+    # a - 竞赛, b - 活动, y - 运维, z - 管理
+    role = models.CharField(default='', max_length=26)
 
     name = models.CharField(max_length=15, default='', db_index=True)
     description = models.CharField(max_length=100, default='')
@@ -54,5 +54,5 @@ class AdminUser(models.Model):
         """保存当前实例并生成序列用户名"""
 
         self.save()
-        self.name = '创易后台用户 #{}'.format(self.id)
+        self.name = '创易汇后台用户 #{}'.format(self.id)
         self.save()

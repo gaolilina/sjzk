@@ -6,12 +6,13 @@ from django.template import loader, Context
 from django.views.generic import View
 
 from main.utils.decorators import validate_args
+from admin.utils.decorators import *
 
 from admin.models.admin_user import AdminUser
 
 class Main(View):
     def get(self, request):
-        return HttpResponseRedirect(reverse("admin:admin_user:info"))
+        return HttpResponseRedirect(reverse("admin:admin_users:info"))
 
 class Login(View):
     def get(self, request):
@@ -27,7 +28,7 @@ class Login(View):
         try:
             user = AdminUser.enabled.get(username=username)
             if user.check_password(password):
-                response = HttpResponseRedirect(reverse("admin:admin_user:info"))
+                response = HttpResponseRedirect(reverse("admin:admin_users:info"))
                 response.set_cookie("usr", username)
                 response.set_cookie("pwd", user.password[18:24])
                 return response
@@ -41,11 +42,15 @@ class Login(View):
             return HttpResponseForbidden(template.render(context))
 
 class Register(View):
+    @require_cookie
+    @require_role('yz')
     def get(self, request):
         template = loader.get_template("register.html")
         context = Context()
         return HttpResponse(template.render(context))
 
+    @require_cookie
+    @require_role('yz')
     @validate_args({
         'username': forms.CharField(),
         'password': forms.CharField(min_length=6, max_length=20, strip=False),
@@ -57,7 +62,7 @@ class Register(View):
                 user.set_password(password)
                 user.save_and_generate_name()
 
-                response = HttpResponseRedirect(reverse("admin:admin_user:info"))
+                response = HttpResponseRedirect(reverse("admin:admin_users:info"))
                 response.set_cookie("usr", username)
                 response.set_cookie("pwd", user.password[:6])
                 return response

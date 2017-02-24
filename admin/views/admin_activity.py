@@ -13,14 +13,14 @@ from admin.utils.decorators import *
 
 class AdminActivityAdd(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request):
         template = loader.get_template("admin_activity/add.html")
         context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'name': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
@@ -58,7 +58,7 @@ class AdminActivityAdd(View):
 class AdminActivityEdit(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, model):
         if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
             return HttpResponseForbidden()
@@ -69,7 +69,7 @@ class AdminActivityEdit(View):
 
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
@@ -109,7 +109,7 @@ class AdminActivityEdit(View):
 
 class AdminActivityList(View):
     @require_cookie
-    @require_role('bz')
+    @require_role('byz')
     def get(self, request):
         try:
             template = loader.get_template("admin_activity/list.html")
@@ -123,7 +123,7 @@ class AdminActivityList(View):
 class AdminActivityView(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @require_cookie
-    @require_role('bz')
+    @require_role('byz')
     def get(self, request, model):
         if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
             return HttpResponseForbidden()

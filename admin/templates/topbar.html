@@ -1,18 +1,22 @@
 <ul>
     {% if user is not None %}
-        <li{% if tb == 1 %} class="active"{% endif %}><a href="{% url 'admin:admin_user:info' %}">个人信息</a></li>
-        {% if 'a' in user.role or 'z' in user.role %}
+        <li{% if tb == 1 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:info' %}">个人信息</a></li>
+        {% if 'a' in user.role or 'y' in user.role or 'z' in user.role %}
             <li{% if tb == 'admin_competition' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:list' %}">竞赛</a></li>
         {% endif %}
-        {% if 'b' in user.role or 'z' in user.role %}
+        {% if 'b' in user.role or 'y' in user.role or 'z' in user.role %}
             <li{% if tb == 'admin_activity' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">活动</a></li>
         {% endif %}
-        {% if 'z' in user.role %}
+        {% if 'y' in user.role or 'z' in user.role %}
             <li{% if tb == 'system_admin' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">参数设定</a></li>
             <li{% if tb == 'feedback' %} class="active"{% endif %}><a href="{% url 'admin:feedback:feedback' %}">反馈举报</a></li>
             <li{% if tb == 'user_admin' %} class="active"{% endif %}><a href="{% url 'admin:user:user_list' %}">用户管理</a></li>
             <li{% if tb == 'activity_admin' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动管理</a></li>
             <li{% if tb == 'forum_admin' %} class="active"{% endif %}><a href="{% url 'admin:forum:forum_board_list' %}">论坛管理</a></li>
+        {% endif %}
+        {% if 'z' in user.role %}
+            <li{% if tb == 'admin_user_admin' %} class="active"{% endif %}><a href="{% url 'admin:admin_user:admin_user_list' %}">后台用户管理</a></li>
+            <li{% if tb == 'op_log' %} class="active"{% endif %}><a href="{% url 'admin:op_log' %}">操作日志</a></li>
         {% endif %}
     {% endif %}
 </ul>

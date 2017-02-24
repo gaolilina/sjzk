@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="{% url 'admin:admin_user:info' %}" method="post">
+<form role="form" action="{% url 'admin:admin_users:info' %}" method="post">
 <table>
     <tr>
         <td rowspan="5">{% ifequal u.icon '' %}<img src="{% static 'img/user.png' %}" />{% else %}<img src="{{ u.icon }}" />{% endifequal %}</td>
@@ -37,7 +37,7 @@
 
 </form>
 
-<form id="f2" role="form" action="{% url 'admin:admin_user:icon' %}" method="post" style="display:none;">
+<form id="f2" role="form" action="{% url 'admin:admin_users:icon' %}" method="post" style="display:none;">
 <input type="file" onchange="javascript:upload()" />
 </form>
 

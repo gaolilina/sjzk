@@ -126,3 +126,15 @@
         </ul>
     {% endif %}
 {% endif %}
+
+{% if tb == 'admin_user_admin' %}
+        <ul>
+            <li class="active"><a href="{% url 'admin:admin_user:admin_user_list' %}">用户</a></li>
+        </ul>
+{% endif %}
+
+{% if tb == 'op_log' %}
+        <ul>
+            <li class="active"><a href="{% url 'admin:op_log' %}">日志</a></li>
+        </ul>
+{% endif %}

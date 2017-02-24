@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<table style="margin:30px">
+    <tr>
+        <td>用户</td>
+        <td>对象</td>
+        <td>操作</td>
+        <td>时间</td>
+    </tr>
+    {% for item in list %}
+        <tr>
+            <td><a href="{% url 'admin:admin_user:admin_user' item.user.id %}" target="_blank">{{ item.user.name }}</a></td>
+            <td>{{ item.table }}: {{ item.data_id }}</td>
+            <td>{% if item.operate_type == 1 %}修改{% endif %}{% if item.operate_type == 2 %}新增{% endif %}{% if item.operate_type == 3 %}删除{% endif %}</td>
+            <td>{{ item.time }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='op_log' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='op_log' lb='1' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='op_log' lb='1' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+<style>
+table {
+    border-collapse: collapse;
+}
+table td {
+    border: 1px solid #999;
+}
+table tr:nth-child(1) td {
+    text-align: center;
+}
+</style>
+{% endblock %}
