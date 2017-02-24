@@ -13,8 +13,9 @@ from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
 
 
 __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
-           'FriendList', 'Friend', 'FriendRequestList', 'Search',
-           'TeamOwnedList', 'TeamJoinedList', 'ValidationCode', 'PasswordForgotten']
+           'FriendList', 'Friend', 'FriendRequestList', 'Search', 'Screen',
+           'TeamOwnedList', 'TeamJoinedList', 'ValidationCode',
+           'PasswordForgotten']
 
 
 class List(View):
@@ -167,7 +168,6 @@ class Profile(View):
 
         :return:
             id: 用户ID
-            username: 用户名
             name: 昵称
             icon_url: 头像
             time_created: 注册时间
@@ -191,6 +191,8 @@ class Profile(View):
             unit2:
             profession:
             score: 积分
+            id_number:
+            other_number:
         """
         user = user or request.user
 
@@ -202,7 +204,6 @@ class Profile(View):
 
         r = {'id': user.id,
              'time_created': user.time_created,
-             'username': user.username,
              'name': user.name,
              'icon_url': user.icon,
              'description': user.description,
@@ -225,7 +226,9 @@ class Profile(View):
              'unit1': user.unit1,
              'unit2': user.unit2,
              'profession': user.profession,
-             'score': user.score}
+             'score': user.score,
+             'id_number': user.id_number,
+             'other_number': user.other_number}
         return JsonResponse(r)
 
 
@@ -406,7 +409,6 @@ class Search(View):
             count: 用户总数
             list: 用户列表
                 id: 用户ID
-                username: 用户名
                 name: 用户昵称
                 icon_url: 用户头像
                 gender: 性别
@@ -435,7 +437,112 @@ class Search(View):
             user_list = sorted(user_list, key=lambda x: x[1], reverse=True)
             users = (u[0] for u in user_list[i:j])
         l = [{'id': u.id,
-              'username': u.username,
+              'name': u.name,
+              'gender': u.gender,
+              'like_count': u.likers.count(),
+              'follower_count': u.followers.count(),
+              'followed_count': u.followed_users.count() + u.followed_teams.count(),
+              'visitor_count': u.visitors.count(),
+              'icon_url': u.icon,
+              'tags': [tag.name for tag in u.tags.all()],
+              'time_created': u.time_created} for u in users]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class Screen(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'name': forms.CharField(required=False, max_length=20),
+        'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'county': forms.CharField(required=False, max_length=20),
+        'role': forms.CharField(required=False, max_length=20),
+        'unit1': forms.CharField(required=False, max_length=20),
+    })
+    def get(self, request, offset=0, limit=10, order=None, **kwargs):
+        """
+        搜索用户
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式（若无则进行个性化排序）
+            0: 注册时间升序
+            1: 注册时间降序
+            2: 昵称升序
+            3: 昵称降序
+        :param name: 用户名包含字段
+        :param gender: 性别
+        :param province: 省
+        :param city: 市
+        :param county: 区/县
+        :param role: 角色
+        :param unit1: 机构
+
+        :return:
+            count: 用户总数
+            list: 用户列表
+                id: 用户ID
+                name: 用户昵称
+                icon_url: 用户头像
+                gender: 性别
+                like_count: 点赞数
+                follower_count: 粉丝数
+                followed_count: 关注的实体数
+                visitor_count: 访问数
+                tags: 标签
+                time_created: 注册时间
+        """
+        users = User.enabled
+
+        i, j = offset, offset + limit
+        name = kwargs.pop('name', '')
+        if name:
+            # 按用户昵称段检索
+            users = users.filter(name__contains=name)
+
+        gender = kwargs.pop('gender', None)
+        if gender is not None:
+            # 按性别筛选
+            users = users.filter(gender=gender)
+        province = kwargs.pop('province', '')
+        if province:
+            # 按省会筛选
+            users = users.filter(province=province)
+        city = kwargs.pop('city', '')
+        if city:
+            # 按城市筛选
+            users = users.filter(city=city)
+        county = kwargs.pop('county', '')
+        if county:
+            # 按区/县筛选
+            users = users.filter(county=county)
+        role = kwargs.pop('role', '')
+        if role:
+            # 按角色筛选
+            users = users.filter(role=role)
+        unit1 = kwargs.pop('unit1', '')
+        if unit1:
+            # 按机构筛选
+            users = users.filter(unit1=unit1)
+
+        users = users.all()
+        c = users.count()
+        if order is not None:
+            users = users.order_by(self.ORDERS[order])[i:j]
+        else:
+            # 将结果进行个性化排序
+            user_list = list()
+            for u in users:
+                user_list.append((u, calculate_ranking_score(request.user, u)))
+            user_list = sorted(user_list, key=lambda x: x[1], reverse=True)
+            users = (u[0] for u in user_list[i:j])
+        l = [{'id': u.id,
               'name': u.name,
               'gender': u.gender,
               'like_count': u.likers.count(),

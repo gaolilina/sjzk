@@ -248,7 +248,8 @@ class Profile(Profile_):
         normal_keys = ('description', 'qq', 'wechat', 'email', 'gender',
                        'birthday', 'province', 'city', 'county')
         for k in normal_keys:
-            setattr(request.user, k, kwargs[k])
+            if k in kwargs:
+                setattr(request.user, k, kwargs[k])
 
         tags = kwargs.pop('tags', None)
         if tags:
