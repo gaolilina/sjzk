@@ -32,7 +32,7 @@ from admin.utils.decorators import *
 view_class_text = """class {{cls_name}}View(View):
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/{{tbl_name}}.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -40,7 +40,7 @@ view_class_text = """class {{cls_name}}View(View):
 
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         {{args}}
     })
@@ -57,7 +57,7 @@ view_class_text = """class {{cls_name}}View(View):
 
 class {{cls_name}}List(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -218,7 +218,7 @@ from admin.utils.decorators import *
 view_class_text = """class {{cls_name}}View(View):
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/{{tbl_name}}.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -226,7 +226,7 @@ view_class_text = """class {{cls_name}}View(View):
 
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         {{args}}
     })
@@ -243,7 +243,7 @@ view_class_text = """class {{cls_name}}View(View):
 
 class {{cls_name}}List(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -403,7 +403,7 @@ from admin.utils.decorators import *
 view_class_text = """class {{cls_name}}View(View):
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("activity/{{tbl_name}}.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -411,7 +411,7 @@ view_class_text = """class {{cls_name}}View(View):
 
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         {{args}}
     })
@@ -428,7 +428,7 @@ view_class_text = """class {{cls_name}}View(View):
 
 class {{cls_name}}List(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -588,7 +588,7 @@ from admin.utils.decorators import *
 view_class_text = """class {{cls_name}}View(View):
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("competition/{{tbl_name}}.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -596,7 +596,7 @@ view_class_text = """class {{cls_name}}View(View):
 
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         {{args}}
     })
@@ -613,7 +613,7 @@ view_class_text = """class {{cls_name}}View(View):
 
 class {{cls_name}}List(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -773,7 +773,7 @@ from admin.utils.decorators import *
 view_class_text = """class {{cls_name}}View(View):
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("forum/{{tbl_name}}.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -781,7 +781,7 @@ view_class_text = """class {{cls_name}}View(View):
 
     @fetch_record({{cls_name}}.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         {{args}}
     })
@@ -798,7 +798,7 @@ view_class_text = """class {{cls_name}}View(View):
 
 class {{cls_name}}List(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })

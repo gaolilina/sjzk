@@ -6,6 +6,7 @@ from django.template import loader, Context
 from django.views.generic import View
 
 from main.utils.decorators import validate_args
+from admin.utils.decorators import *
 
 from admin.models.admin_user import AdminUser
 
@@ -41,11 +42,15 @@ class Login(View):
             return HttpResponseForbidden(template.render(context))
 
 class Register(View):
+    @require_cookie
+    @require_role('yz')
     def get(self, request):
         template = loader.get_template("register.html")
         context = Context()
         return HttpResponse(template.render(context))
 
+    @require_cookie
+    @require_role('yz')
     @validate_args({
         'username': forms.CharField(),
         'password': forms.CharField(min_length=6, max_length=20, strip=False),

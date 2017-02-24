@@ -35,11 +35,7 @@ def require_cookie(function):
     return decorator
 
 def require_role(role = None):
-    """验证用户权限
-    a - 竞赛
-    b - 活动
-    z - admin
-    """
+    """验证用户权限"""
     def decorator(function):
         @wraps(function)
         def inner(self, request, *args, **kwargs):

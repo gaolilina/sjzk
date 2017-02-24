@@ -10,7 +10,7 @@ from admin.utils.decorators import *
 class CompetitionView(View):
     @fetch_record(Competition.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("competition/competition.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -18,7 +18,7 @@ class CompetitionView(View):
 
     @fetch_record(Competition.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'name': forms.CharField(max_length=50,),'status': forms.IntegerField(required=False,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_team': forms.IntegerField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'min_member': forms.IntegerField(required=False,),'max_member': forms.IntegerField(required=False,),'unit': forms.CharField(max_length=20,required=False,),'user_type': forms.IntegerField(required=False,),'is_enabled': forms.BooleanField(required=False),
     })
@@ -35,7 +35,7 @@ class CompetitionView(View):
 
 class CompetitionList(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -61,7 +61,7 @@ class CompetitionList(View):
 class CompetitionCommentView(View):
     @fetch_record(CompetitionComment.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("competition/competition_comment.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -69,7 +69,7 @@ class CompetitionCommentView(View):
 
     @fetch_record(CompetitionComment.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'content': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),
     })
@@ -86,7 +86,7 @@ class CompetitionCommentView(View):
 
 class CompetitionCommentList(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -112,7 +112,7 @@ class CompetitionCommentList(View):
 class CompetitionFileView(View):
     @fetch_record(CompetitionFile.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("competition/competition_file.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -120,7 +120,7 @@ class CompetitionFileView(View):
 
     @fetch_record(CompetitionFile.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'status': forms.IntegerField(required=False,),'file': forms.CharField(max_length=100,required=False,),'time_created': forms.DateTimeField(required=False,),
     })
@@ -137,7 +137,7 @@ class CompetitionFileView(View):
 
 class CompetitionFileList(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -163,7 +163,7 @@ class CompetitionFileList(View):
 class CompetitionLikerView(View):
     @fetch_record(CompetitionLiker.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("competition/competition_liker.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -171,7 +171,7 @@ class CompetitionLikerView(View):
 
     @fetch_record(CompetitionLiker.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False,),
     })
@@ -188,7 +188,7 @@ class CompetitionLikerView(View):
 
 class CompetitionLikerList(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -214,7 +214,7 @@ class CompetitionLikerList(View):
 class CompetitionNotificationView(View):
     @fetch_record(CompetitionNotification.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("competition/competition_notification.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -222,7 +222,7 @@ class CompetitionNotificationView(View):
 
     @fetch_record(CompetitionNotification.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'status': forms.IntegerField(required=False,),'notification': forms.CharField(max_length=1000,),'time_created': forms.DateTimeField(required=False,),
     })
@@ -239,7 +239,7 @@ class CompetitionNotificationView(View):
 
 class CompetitionNotificationList(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -265,7 +265,7 @@ class CompetitionNotificationList(View):
 class CompetitionStageView(View):
     @fetch_record(CompetitionStage.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("competition/competition_stage.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -273,7 +273,7 @@ class CompetitionStageView(View):
 
     @fetch_record(CompetitionStage.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'status': forms.IntegerField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
@@ -290,7 +290,7 @@ class CompetitionStageView(View):
 
 class CompetitionStageList(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
@@ -316,7 +316,7 @@ class CompetitionStageList(View):
 class CompetitionTeamParticipatorView(View):
     @fetch_record(CompetitionTeamParticipator.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("competition/competition_team_participator.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -324,7 +324,7 @@ class CompetitionTeamParticipatorView(View):
 
     @fetch_record(CompetitionTeamParticipator.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False,),
     })
@@ -341,7 +341,7 @@ class CompetitionTeamParticipatorView(View):
 
 class CompetitionTeamParticipatorList(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })
