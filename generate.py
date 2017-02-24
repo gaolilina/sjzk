@@ -127,15 +127,8 @@ for mod_name, mod_class in inspect.getmembers(users):
         content_text = ""
         for fld in mod_class._meta.get_fields():
             if isinstance(fld, models.CharField):
-                if fld.name == 'password':
-                    continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
-                if fld.name == 'gender':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
-                elif fld.name == 'description':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
-                else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
@@ -320,15 +313,8 @@ for mod_name, mod_class in inspect.getmembers(teams):
         content_text = ""
         for fld in mod_class._meta.get_fields():
             if isinstance(fld, models.CharField):
-                if fld.name == 'password':
-                    continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
-                if fld.name == 'gender':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
-                elif fld.name == 'description':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
-                else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
@@ -512,15 +498,8 @@ for mod_name, mod_class in inspect.getmembers(activities):
         content_text = ""
         for fld in mod_class._meta.get_fields():
             if isinstance(fld, models.CharField):
-                if fld.name == 'password':
-                    continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
-                if fld.name == 'gender':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
-                elif fld.name == 'description':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
-                else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
@@ -704,15 +683,8 @@ for mod_name, mod_class in inspect.getmembers(competitions):
         content_text = ""
         for fld in mod_class._meta.get_fields():
             if isinstance(fld, models.CharField):
-                if fld.name == 'password':
-                    continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
-                if fld.name == 'gender':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
-                elif fld.name == 'description':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
-                else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
@@ -891,15 +863,8 @@ for mod_name, mod_class in inspect.getmembers(forums):
         content_text = ""
         for fld in mod_class._meta.get_fields():
             if isinstance(fld, models.CharField):
-                if fld.name == 'password':
-                    continue
                 args_text += "'" + fld.name + "': forms.CharField(" + ("max_length=" + str(fld.max_length) + "," if (fld.max_length is not None and fld.max_length > 0) else "") + ("required=False," if (fld.null or fld.default == '') else "") + "),"
-                if fld.name == 'gender':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'gender')
-                elif fld.name == 'description':
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'textarea').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
-                else:
-                    content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
+                content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'text').replace("{{maxlen}}", (str(fld.max_length) if (fld.max_length is not None and fld.max_length > 0) else "0"))
             elif isinstance(fld, models.BooleanField):
                 args_text += "'" + fld.name + "': forms.BooleanField(required=False),"
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'checkbox')
