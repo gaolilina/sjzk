@@ -436,7 +436,7 @@ class Screen(View):
         time_ended = kwargs.pop('time_ended', '')
         if time_ended:
             # 按结束时间上限筛选
-            qs = qs.filter(time_ended__gte=time_ended)
+            qs = qs.filter(time_ended__lte=time_ended)
 
         qs = qs.all()
         c = qs.count()
