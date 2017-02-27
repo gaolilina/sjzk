@@ -47,7 +47,7 @@ def get_object_icon(action):
     """ 获取对象的头像"""
 
     if action.object_type == "user":
-        icon = Team.enabled.get(id=action.object_id).icon
+        icon = User.enabled.get(id=action.object_id).icon
     elif action.object_type == "team":
         icon = Team.enabled.get(id=action.object_id).icon
     else:
