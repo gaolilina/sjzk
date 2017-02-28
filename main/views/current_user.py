@@ -229,7 +229,8 @@ class Profile(Profile_):
 
         name = kwargs.pop('name', '')
         if len(name) > 0:
-            if re.match(r'创易汇用户 #\w+', name):
+            if (request.user.name == "创易汇用户 #" + str(request.user.id)) and \
+                    (request.user.name != name):
                 request.user.score += get_score_stage(3)
                 request.user.score_records.create(
                     score=get_score_stage(3), type="初始数据",
