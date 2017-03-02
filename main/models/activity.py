@@ -4,7 +4,7 @@ from django.utils import timezone
 from . import EnabledManager, Comment, Liker
 
 
-__all__ = ['Activity', 'ActivityStage','ActivityUserParticipator',
+__all__ = ['Activity', 'ActivityStage', 'ActivityUserParticipator',
            'ActivityComment', 'ActivityLiker']
 
 

@@ -121,7 +121,6 @@ class List(View):
             setattr(team, k, kwargs[k])
         fields = fields.split('|')[:2] if fields is not None else ('', '')
         team.field1, team.field2 = fields[0].strip(), fields[1].strip()
-        team.save()
 
         if tags:
             tags = tags.split('|')[:5]
@@ -132,8 +131,9 @@ class List(View):
                 for tag in tags:
                     tag = tag.strip()
                     if tag:
-                        request.user.tags.create(name=tag, order=order)
+                        team.tags.create(name=tag, order=order)
                         order += 1
+        team.save()
 
         action.create_team(request.user, team)
         request.user.score += get_score_stage(2)
