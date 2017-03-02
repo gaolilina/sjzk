@@ -403,7 +403,7 @@ class Profile(View):
             fields = fields.split('|')[:2]
             if len(fields) < 2:
                 fields.append('')
-        team.field1, team.field2 = fields[0].strip(), fields[1].strip()
+            team.field1, team.field2 = fields[0].strip(), fields[1].strip()
 
         team.members.create(user=request.user)
 
