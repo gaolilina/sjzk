@@ -359,7 +359,7 @@ class Profile(View):
     @fetch_object(Team.enabled, 'team')
     @require_token
     @validate_args({
-        'name': forms.CharField(max_length=20),
+        'name': forms.CharField(required=False, max_length=20),
         'description': forms.CharField(required=False, max_length=100),
         'is_recruiting': forms.BooleanField(required=False),
         'url': forms.CharField(required=False, max_length=100),
@@ -401,11 +401,9 @@ class Profile(View):
 
         if fields:
             fields = fields.split('|')[:2]
-        if len(fields) < 2:
-            fields.append('')
+            if len(fields) < 2:
+                fields.append('')
         team.field1, team.field2 = fields[0].strip(), fields[1].strip()
-
-        team.save()
 
         team.members.create(user=request.user)
 
@@ -417,9 +415,9 @@ class Profile(View):
             for tag in tags:
                 tag = tag.strip()
                 if tag:
-                    request.user.tags.create(name=tag, order=order)
+                    team.tags.create(name=tag, order=order)
                     order += 1
-
+        team.save()
         abort(200)
 
 
