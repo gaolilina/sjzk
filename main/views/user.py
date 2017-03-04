@@ -644,17 +644,17 @@ class TeamJoinedList(View):
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
         c = user.teams.count()
-        teams = user.teams.order_by(k)[i:j]
-        l = [{'id': t.id,
-              'name': t.name,
-              'icon_url': t.icon,
-              'owner_id': t.owner.id,
-              'liker_count': t.likers.count(),
-              'visitor_count': t.visitors.count(),
-              'member_count': t.members.count(),
-              'fields': [t.field1, t.field2],
-              'tags': [tag.name for tag in t.tags.all()],
-              'time_created': t.time_created} for t in teams]
+        qs = user.teams.order_by(k)[i:j]
+        l = [{'id': t.team.id,
+              'name': t.team.name,
+              'icon_url': t.team.icon,
+              'owner_id': t.team.owner.id,
+              'liker_count': t.team.likers.count(),
+              'visitor_count': t.team.visitors.count(),
+              'member_count': t.team.members.count(),
+              'fields': [t.team.field1, t.team.field2],
+              'tags': [tag.name for tag in t.team.tags.all()],
+              'time_created': t.team.time_created} for t in qs]
         return JsonResponse({'count': c, 'list': l})
 
 
