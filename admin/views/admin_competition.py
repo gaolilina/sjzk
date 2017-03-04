@@ -145,3 +145,16 @@ class AdminCompetitionFilesView(View):
         template = loader.get_template("admin_competition/file.html")
         context = Context({'model': model, 'user': request.user, 'files': CompetitionFile.objects.filter(competition=model, status=status)})
         return HttpResponse(template.render(context))
+
+class AdminCompetitionExcelView(View):
+    @fetch_record(Competition.enabled, 'model', 'id')
+    @require_cookie
+    @require_role('az')
+    def get(self, request, model):
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+
+        template = loader.get_template("admin_competition/excel.html")
+        context = Context({'model': model})
+        return HttpResponse(template.render(context),
+            content_type="text/csv")
