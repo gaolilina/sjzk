@@ -39,3 +39,17 @@ window.alert = function(msg) {
         type: 'type-danger'
     });
 }
+
+function errorHandler(code, msg) {
+    switch (code) {
+        case 400:
+            alert('400');
+            break;
+        case 403:
+            alert('403');
+            break;
+        default:
+            alert(msg);
+            break;
+    }
+}

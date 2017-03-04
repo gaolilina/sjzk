@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>创易汇</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-dialog.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 70px;
+        }
+
+        .tab-content {
+            margin-top: 20px;
+        }
+
+        .list-group-item a {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-brand">创易汇</div>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <ul class="nav nav-pills nav-justified">
+            <li role="presentation" class="active"><a href="#msg" data-toggle="tab">消息</a></li>
+            <li role="presentation"><a href="#team" data-toggle="tab">团队</a></li>
+            <li role="presentation"><a href="#competiton" data-toggle="tab">竞赛</a></li>
+        </ul>
+        <div class="tab-content clearfix">
+            <div class="tab-pane active" id="msg">
+                <div>
+                    <ul class="list-group" id="msg_list"></ul>
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+            <div class="tab-pane" id="team">
+                <div>
+                    <ul class="list-group" id="team_list"></ul>
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+            <div class="tab-pane" id="competiton">
+                <div>
+                    <ul class="list-group" id="competition_list"></ul>
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    <p>One fine body…</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-dialog.min.js"></script>
+    <script src="js/lib.js"></script>
+    <script>
+        if (readToken() == null || readToken() == "") {
+            location.href = "register.html";
+        }
+
+        var msgPage = 0;
+        var teamPage = 0;
+        var competitonPage = 0;
+
+        var msgTotalPage = 0;
+        var teamTotalPage = 0;
+        var competitionTotalPage = 0;
+
+        var msgIdx = 0;
+        var teamIdx = 0;
+        var competitonIdx = 0;
+
+        function fetchOwnedTeamList() {
+            get('/', {
+            }).then(function(data) {
+                window.localStorage.getItem("user_id");
+                return get('/', {
+                    
+                });
+            }).then(function(data) {
+                var user_id = window.localStorage.getItem("user_id");
+                return get('/owned_teams/', {
+                    offset: 0,
+                    limit: 999
+                });
+            }).then(function(data) {
+                window.localStorage.setItem("team_list", JSON.stringify(
+                    data.list.map(function(d) {
+                        return {
+                            id: d.id,
+                            name: d.name,
+                            owner_id: d.owner_id
+                        }
+                    })
+                ));
+            }).fail(errorHandler);
+        }
+
+        function fetchMsg() {
+        }
+
+        function fetchTeam(page) {
+            teamPage = page;
+            get('/teams/', {
+                offset: (page - 1) * 10,
+                limit: 10
+            }).then(function(data) {
+                teamTotalPage = Math.ceil(data.count / 10);
+
+                var str1 = "";
+                for (var i = 0; i < data.list.length; i++) {
+                    str1 += '<li class="list-group-item"><a href="javascript:joinTeam(' + data.list[0].id + ')">加入</a>' + data.list[i].name + '</li>';
+                }
+                document.querySelector("#team_list").innerHTML = str1;
+
+                var str3 = '<li class="page-item active"><a class="page-link" href="javascript:fetchTeam(' + teamPage + ')">' + teamPage + '</a></li>';
+                for (var i = teamPage - 1; i > 0 && i > teamPage - 3; i--) {
+                    str3 = '<li class="page-item"><a class="page-link" href="javascript:fetchTeam(' + i + ')">' + i + '</a></li>' + str3;
+                }
+                for (var i = teamPage + 1; i <= teamTotalPage && i < teamPage + 3; i++) {
+                    str3 += '<li class="page-item"><a class="page-link" href="javascript:fetchTeam(' + i + ')">' + i + '</a></li>';
+                }
+                document.querySelector("#team_list ~ ul").innerHTML = str3;
+            }).fail(errorHandler);
+        }
+
+        function fetchCompetition(page) {
+            competitonPage = page;
+            get('/competition/', {
+                offset: (page - 1) * 10,
+                limit: 10
+            }).then(function(data) {
+                competitionTotalPage = Math.ceil(data.count / 10);
+
+                var str1 = "";
+                for (var i = 0; i < data.list.length; i++) {
+                    str1 += '<li class="list-group-item"><a href="javascript:participateCompetition(' + data.list[0].id + ')">参加</a>' + data.list[i].name + '</li>';
+                }
+                document.querySelector("#competition_list").innerHTML = str1;
+
+                var str3 = '<li class="page-item active"><a class="page-link" href="javascript:fetchCompetition(' + teamPage + ')">' + teamPage + '</a></li>';
+                for (var i = competitonPage - 1; i > 0 && i > competitonPage - 3; i--) {
+                    str3 = '<li class="page-item"><a class="page-link" href="javascript:fetchCompetition(' + i + ')">' + i + '</a></li>' + str3;
+                }
+                for (var i = competitonPage + 1; i <= competitionTotalPage && i < competitonPage + 3; i++) {
+                    str3 += '<li class="page-item"><a class="page-link" href="javascript:fetchCompetition(' + i + ')">' + i + '</a></li>';
+                }
+                document.querySelector("#competition_list ~ ul").innerHTML = str3;
+            }).fail(errorHandler);
+        }
+
+        function joinTeam(id) {
+            post('/teams/' + id + '/member_requests/', {
+            }).fail(errorHandler);
+        }
+
+        function participateCompetition(id) {
+            var team_id = window.localStorage.getItem("team_id");
+            if (team_id == null) {
+                alert('not a team member');
+                return;
+            }
+
+            post('/competition/' + id + '/team_participators/', {
+                team_id: team_id
+            }).fail(errorHandler);
+        }
+
+        $(function() {
+            fetchOwnedTeamList();
+
+            fetchTeam(1);
+            fetchCompetition(1);
+        });
+    </script>
+</body>
+</html>
