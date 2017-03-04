@@ -131,3 +131,16 @@ class AdminActivityView(View):
         template = loader.get_template("admin_activity/view.html")
         context = Context({'model': model, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=model)})
         return HttpResponse(template.render(context))
+
+class AdminActivityExcelView(View):
+    @fetch_record(Activity.enabled, 'model', 'id')
+    @require_cookie
+    @require_role('bz')
+    def get(self, request, model):
+        if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+
+        template = loader.get_template("admin_competition/excel.html")
+        context = Context({'model': model})
+        return HttpResponse(template.render(context),
+            content_type="text/csv")
