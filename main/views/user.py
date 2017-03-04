@@ -608,8 +608,8 @@ class TeamOwnedList(View):
 
 
 class TeamJoinedList(View):
-    ORDERS = ('time_created', '-time_created',
-              'name', '-name')
+    ORDERS = ('team__time_created', '-team__time_created',
+              'team__name', '-team__name')
 
     @fetch_object(User.enabled, 'user')
     @require_token
