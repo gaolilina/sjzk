@@ -557,8 +557,8 @@ class Screen(View):
 
 
 class TeamOwnedList(View):
-    ORDERS = ('team__time_created', '-team__time_created',
-              'team__name', '-team__name')
+    ORDERS = ('time_created', '-time_created',
+              'name', '-name')
 
     @fetch_object(User.enabled, 'user')
     @require_token
@@ -592,8 +592,8 @@ class TeamOwnedList(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        teams = Team.enabled.filter(owner=user)
-        c = teams.count()
+        c = Team.enabled.filter(owner=user).count()
+        teams = Team.enabled.filter(owner=user).order_by(k)[i:j]
         l = [{'id': t.id,
               'name': t.name,
               'icon_url': t.icon,
@@ -603,14 +603,13 @@ class TeamOwnedList(View):
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
               'tags': [tag.name for tag in t.tags.all()],
-              'time_created': t.time_created} for t in teams.order_by(
-                k)[i:j]]
+              'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
 
 class TeamJoinedList(View):
-    ORDERS = ('team__time_created', '-team__time_created',
-              'team__name', '-team__name')
+    ORDERS = ('time_created', '-time_created',
+              'name', '-name')
 
     @fetch_object(User.enabled, 'user')
     @require_token
