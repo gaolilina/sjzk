@@ -80,6 +80,7 @@
     <tr>
         <td>报名者：</td>
         <td>
+            <div><a href="{% url 'admin:admin_competition:excel' model.id %}">导出Excel</a></div>
             {% for team in model.team_participators.all %}
                 <div>{{ team.name }}</div>
             {% endfor %}

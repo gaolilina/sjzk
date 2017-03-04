@@ -7,4 +7,5 @@ urls = [
     url(r'^view/(?P<id>\w+)$', AdminActivityView.as_view(), name='view'),
     url(r'^edit/(?P<id>\w+)$', AdminActivityEdit.as_view(), name='edit'),
     url(r'^list$', AdminActivityList.as_view(), name='list'),
+    url(r'^view/(?P<id>\w+)/excel.csv$', AdminActivityExcelView.as_view(), name='excel'),
 ]

@@ -8,4 +8,5 @@ urls = [
     url(r'^view/(?P<id>\w+)/files/(?P<status>\w+)$', AdminCompetitionFilesView.as_view(), name='file'),
     url(r'^edit/(?P<id>\w+)$', AdminCompetitionEdit.as_view(), name='edit'),
     url(r'^list$', AdminCompetitionList.as_view(), name='list'),
+    url(r'^view/(?P<id>\w+)/excel.csv$', AdminCompetitionExcelView.as_view(), name='excel'),
 ]
