@@ -112,6 +112,10 @@
             location.href = "edit_team.html?" + team_id;
         }
 
+        function jumpToNotification(id) {
+            location.href = "notification.html?" + id;
+        }
+
         $('#team_selector').change(function() {
             window.localStorage.setItem("team_id", this.value);
             fetchMsg(1);
@@ -240,7 +244,7 @@
 
                 var str1 = "";
                 for (var i = 0; i < data.list.length; i++) {
-                    str1 += '<li class="list-group-item"><a href="javascript:participateCompetition(' + data.list[i].id + ')">参加</a>' + data.list[i].name + '</li>';
+                    str1 += '<li class="list-group-item"><a href="javascript:jumpToNotification(' + data.list[i].id + ')">通知</a><a href="javascript:participateCompetition(' + data.list[i].id + ')">参加</a>' + data.list[i].name + '</li>';
                 }
                 document.querySelector("#competition_list").innerHTML = str1;
 
