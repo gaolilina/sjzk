@@ -409,14 +409,14 @@ class Profile(View):
 
         if tags:
             tags = tags.split('|')[:5]
-        with transaction.atomic():
-            request.user.tags.all().delete()
-            order = 0
-            for tag in tags:
-                tag = tag.strip()
-                if tag:
-                    team.tags.create(name=tag, order=order)
-                    order += 1
+            with transaction.atomic():
+                request.user.tags.all().delete()
+                order = 0
+                for tag in tags:
+                    tag = tag.strip()
+                    if tag:
+                        team.tags.create(name=tag, order=order)
+                        order += 1
         team.save()
         abort(200)
 
