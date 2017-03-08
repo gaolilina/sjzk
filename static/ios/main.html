@@ -17,6 +17,7 @@
 
         .list-group-item a {
             float: right;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -30,26 +31,38 @@
     </nav>
     <div class="container">
         <ul class="nav nav-pills nav-justified">
-            <li role="presentation" class="active"><a href="#msg" data-toggle="tab">消息</a></li>
+            <li role="presentation" class="active"><a href="#competiton" data-toggle="tab">竞赛</a></li>
             <li role="presentation"><a href="#team" data-toggle="tab">团队</a></li>
-            <li role="presentation"><a href="#competiton" data-toggle="tab">竞赛</a></li>
+            <li><a href="info.html">个人信息</a></li>
+            <li role="presentation"><a href="#msg" data-toggle="tab">申请消息</a></li>
         </ul>
-        <div class="tab-content clearfix">
-            <div class="tab-pane active" id="msg">
-                <div>
-                    <ul class="list-group" id="msg_list"></ul>
-                    <ul class="pagination"></ul>
-                </div>
+        <div style="margin: 20px 0;">
+            <div class="input-group">
+                <select id="team_selector" class="form-control" ></select>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick="javascript:location.href='create_team.html';">创建团队</button>
+                </span>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick="javascript:jumpToTeamEdit();">修改团队信息</button>
+                </span>
             </div>
+        </div>
+        <div class="tab-content clearfix">
             <div class="tab-pane" id="team">
                 <div>
                     <ul class="list-group" id="team_list"></ul>
                     <ul class="pagination"></ul>
                 </div>
             </div>
-            <div class="tab-pane" id="competiton">
+            <div class="tab-pane active" id="competiton">
                 <div>
                     <ul class="list-group" id="competition_list"></ul>
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+            <div class="tab-pane" id="msg">
+                <div>
+                    <ul class="list-group" id="msg_list"></ul>
                     <ul class="pagination"></ul>
                 </div>
             </div>
@@ -89,37 +102,107 @@
         var teamTotalPage = 0;
         var competitionTotalPage = 0;
 
-        var msgIdx = 0;
-        var teamIdx = 0;
-        var competitonIdx = 0;
+        function jumpToTeamEdit() {
+            var team_id = +window.localStorage.getItem("team_id");
+            if (isNaN(team_id)) {
+                alert('not a team owner');
+                return;
+            }
+
+            location.href = "edit_team.html?" + team_id;
+        }
+
+        $('#team_selector').change(function() {
+            window.localStorage.setItem("team_id", this.value);
+            fetchMsg(1);
+        });
 
         function fetchOwnedTeamList() {
-            get('/', {
+            return get('/users/current/profile/', {
             }).then(function(data) {
-                window.localStorage.getItem("user_id");
-                return get('/', {
-                    
-                });
-            }).then(function(data) {
-                var user_id = window.localStorage.getItem("user_id");
-                return get('/owned_teams/', {
+                var user_id = data.id;
+                window.localStorage.setItem("user_id", user_id);
+
+                return get('/users/' + user_id + '/owned_teams/', {
                     offset: 0,
                     limit: 999
                 });
             }).then(function(data) {
-                window.localStorage.setItem("team_list", JSON.stringify(
-                    data.list.map(function(d) {
-                        return {
-                            id: d.id,
-                            name: d.name,
-                            owner_id: d.owner_id
-                        }
-                    })
-                ));
+                var list = data.list.map(function(d) {
+                    return {
+                        id: d.id,
+                        name: d.name,
+                        owner_id: d.owner_id
+                    }
+                });
+                window.localStorage.setItem("team_list", JSON.stringify(list));
+                if (list.length > 0)
+                    window.localStorage.setItem("team_id", list[0].id);
+                else
+                    window.localStorage.removeItem("team_id");
+
+                $('#team_selector').html(list.map(function(d) {
+                    return '<option value="' + d.id + '">' + d.name + '</option>';
+                }).join(''));
             }).fail(errorHandler);
         }
 
-        function fetchMsg() {
+        function approveId(id) {
+            var team_id = +window.localStorage.getItem("team_id");
+            if (isNaN(team_id)) {
+                return;
+            }
+
+            post('/teams/' + team_id + '/members/' + id + '/', {
+            }).then(function() {
+                BootstrapDialog.show({
+                    message: '已同意'
+                });
+            }).fail(errorHandler);
+        }
+
+        function disapproveId(id) {
+            var team_id = +window.localStorage.getItem("team_id");
+            if (isNaN(team_id)) {
+                return;
+            }
+
+            deleteAjax('/teams/' + team_id + '/members/' + id + '/', {
+            }).then(function() {
+                BootstrapDialog.show({
+                    message: '已拒绝'
+                });
+            }).fail(errorHandler);
+        }
+
+        function fetchMsg(page) {
+            var team_id = +window.localStorage.getItem("team_id");
+            if (isNaN(team_id)) {
+                return;
+            }
+
+            msgPage = page;
+            get('/teams/' + team_id + '/member_requests/', {
+                offset: (page - 1) * 10,
+                limit: 10
+            }).then(function(data) {
+                msgTotalPage = Math.ceil(data.count / 10);
+
+                var str1 = "";
+                for (var i = 0; i < data.list.length; i++) {
+                    str1 += '<li class="list-group-item"><a href="javascript:disapproveId(' + data.list[i].id + ')">拒绝</a><a href="javascript:approveId(' + data.list[i].id + ')">同意</a>' + data.list[i].name + '</li>';
+                }
+                document.querySelector("#msg_list").innerHTML = str1;
+
+                var str3 = '<li class="page-item active"><a class="page-link" href="javascript:fetchMsg(' + msgPage + ')">' + msgPage + '</a></li>';
+                for (var i = msgPage - 1; i > 0 && i > msgPage - 3; i--) {
+                    str3 = '<li class="page-item"><a class="page-link" href="javascript:fetchMsg(' + i + ')">' + i + '</a></li>' + str3;
+                }
+                for (var i = msgPage + 1; i <= msgTotalPage && i < msgPage + 3; i++) {
+                    str3 += '<li class="page-item"><a class="page-link" href="javascript:fetchMsg(' + i + ')">' + i + '</a></li>';
+                }
+                document.querySelector("#msg_list ~ ul").innerHTML = str3;
+            }).fail(errorHandler);
         }
 
         function fetchTeam(page) {
@@ -132,7 +215,7 @@
 
                 var str1 = "";
                 for (var i = 0; i < data.list.length; i++) {
-                    str1 += '<li class="list-group-item"><a href="javascript:joinTeam(' + data.list[0].id + ')">加入</a>' + data.list[i].name + '</li>';
+                    str1 += '<li class="list-group-item"><a href="javascript:joinTeam(' + data.list[i].id + ')">加入</a>' + data.list[i].name + '</li>';
                 }
                 document.querySelector("#team_list").innerHTML = str1;
 
@@ -157,11 +240,11 @@
 
                 var str1 = "";
                 for (var i = 0; i < data.list.length; i++) {
-                    str1 += '<li class="list-group-item"><a href="javascript:participateCompetition(' + data.list[0].id + ')">参加</a>' + data.list[i].name + '</li>';
+                    str1 += '<li class="list-group-item"><a href="javascript:participateCompetition(' + data.list[i].id + ')">参加</a>' + data.list[i].name + '</li>';
                 }
                 document.querySelector("#competition_list").innerHTML = str1;
 
-                var str3 = '<li class="page-item active"><a class="page-link" href="javascript:fetchCompetition(' + teamPage + ')">' + teamPage + '</a></li>';
+                var str3 = '<li class="page-item active"><a class="page-link" href="javascript:fetchCompetition(' + competitonPage + ')">' + competitonPage + '</a></li>';
                 for (var i = competitonPage - 1; i > 0 && i > competitonPage - 3; i--) {
                     str3 = '<li class="page-item"><a class="page-link" href="javascript:fetchCompetition(' + i + ')">' + i + '</a></li>' + str3;
                 }
@@ -174,26 +257,35 @@
 
         function joinTeam(id) {
             post('/teams/' + id + '/member_requests/', {
+            }).then(function() {
+                BootstrapDialog.show({
+                    message: '已发送申请'
+                });
             }).fail(errorHandler);
         }
 
         function participateCompetition(id) {
-            var team_id = window.localStorage.getItem("team_id");
-            if (team_id == null) {
-                alert('not a team member');
+            var team_id = +window.localStorage.getItem("team_id");
+            if (isNaN(team_id)) {
+                alert('not a team owner');
                 return;
             }
 
             post('/competition/' + id + '/team_participators/', {
                 team_id: team_id
+            }).then(function() {
+                BootstrapDialog.show({
+                    message: '报名成功'
+                });
             }).fail(errorHandler);
         }
 
         $(function() {
-            fetchOwnedTeamList();
-
-            fetchTeam(1);
-            fetchCompetition(1);
+            fetchOwnedTeamList().then(function() {
+                fetchMsg(1);
+                fetchTeam(1);
+                fetchCompetition(1);
+            });
         });
     </script>
 </body>

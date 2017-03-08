@@ -10,10 +10,9 @@
         body {
             padding-top: 50px;
         }
-
+        
         form {
             margin: 20px;
-            padding-bottom: 70px;
         }
 
         button[type=submit] {
@@ -33,36 +32,16 @@
     <div class="container">
         <form>
             <div class="form-group">
-                <label for="name">name</label>
+                <label for="name">团队名</label>
                 <input type="text" class="form-control" id="name" placeholder=""/>
-            </div>
-            <div class="form-group">
-                <label for="birthday">birthday</label>
-                <input type="text" class="form-control" id="birthday" placeholder="0000-00-00"/>
-            </div>
-            <div class="form-group">
-                <label for="real_name">real_name</label>
-                <input type="text" class="form-control" id="real_name" placeholder=""/>
-            </div>
-            <div class="form-group">
-                <label for="gender">gender</label>
-                <input type="text" class="form-control" id="gender" placeholder=""/>
             </div>
             <div class="form-group">
                 <label for="description">description</label>
                 <input type="text" class="form-control" id="description" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="qq">qq</label>
-                <input type="text" class="form-control" id="qq" placeholder=""/>
-            </div>
-            <div class="form-group">
-                <label for="wechat">wechat</label>
-                <input type="text" class="form-control" id="wechat" placeholder=""/>
-            </div>
-            <div class="form-group">
-                <label for="email">email</label>
-                <input type="text" class="form-control" id="email" placeholder=""/>
+                <label for="url">url</label>
+                <input type="text" class="form-control" id="url" placeholder=""/>
             </div>
             <div class="form-group">
                 <label for="province">province</label>
@@ -75,26 +54,6 @@
             <div class="form-group">
                 <label for="county">county</label>
                 <input type="text" class="form-control" id="county" placeholder=""/>
-            </div>
-            <div class="form-group">
-                <label for="role">role</label>
-                <input type="text" class="form-control" id="role" placeholder=""/>
-            </div>
-            <div class="form-group">
-                <label for="other_number">other_number</label>
-                <input type="text" class="form-control" id="other_number" placeholder=""/>
-            </div>
-            <div class="form-group">
-                <label for="unit1">unit1</label>
-                <input type="text" class="form-control" id="unit1" placeholder=""/>
-            </div>
-            <div class="form-group">
-                <label for="unit2">unit2</label>
-                <input type="text" class="form-control" id="unit2" placeholder=""/>
-            </div>
-            <div class="form-group">
-                <label for="profession">profession</label>
-                <input type="text" class="form-control" id="profession" placeholder=""/>
             </div>
             <button type="submit" class="btn btn-primary">更新</button>
         </form>
@@ -121,53 +80,31 @@
     <script src="js/bootstrap-dialog.min.js"></script>
     <script src="js/lib.js"></script>
     <script>
-        if (readToken() == null || readToken() == "") {
-            location.href = "register.html";
-        }
-
         $(function() {
-            get('/users/current/profile/', {
+            var team_id = location.search.substring(1);
+
+            get('/teams/' + team_id + '/profile/', {
             }).then(function(data) {
                 $('#name').val(data.name);
-                $('#birthday').val(data.birthday);
-                $('#real_name').val(data.real_name);
-                $('#gender').val(data.gender);
                 $('#description').val(data.description);
-                $('#qq').val(data.qq);
-                $('#wechat').val(data.wechat);
-                $('#email').val(data.email);
+                $('#url').val(data.url);
                 $('#province').val(data.province);
                 $('#city').val(data.city);
                 $('#county').val(data.county);
-                $('#role').val(data.role);
-                $('#other_number').val(data.other_number);
-                $('#unit1').val(data.unit1);
-                $('#unit2').val(data.unit2);
-                $('#profession').val(data.profession);
             }).fail(errorHandler);
 
             $("form").submit(function(e) {
                 e.preventDefault();
 
-                post('/users/current/profile/', {
+                post('/teams/' + team_id + '/profile/', {
                     name: $('#name').val(),
-                    birthday: $('#birthday').val(),
-                    real_name: $('#real_name').val(),
-                    gender: $('#gender').val(),
                     description: $('#description').val(),
-                    qq: $('#qq').val(),
-                    wechat: $('#wechat').val(),
-                    email: $('#email').val(),
+                    url: $('#url').val(),
                     province: $('#province').val(),
                     city: $('#city').val(),
-                    county: $('#county').val(),
-                    role: $('#role').val(),
-                    other_number: $('#other_number').val(),
-                    unit1: $('#unit1').val(),
-                    unit2: $('#unit2').val(),
-                    profession: $('#profession').val()
+                    county: $('#county').val()
                 }).then(function(data) {
-                    location.href = 'main.html';
+                    location.href = "main.html";
                 }).fail(function(code, msg) {
                     switch (code) {
                         case 400:
