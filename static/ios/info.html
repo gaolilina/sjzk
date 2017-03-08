@@ -126,6 +126,26 @@
         }
 
         $(function() {
+            get('/users/current/profile/', {
+            }).then(function(data) {
+                $('#name').val(data.name);
+                $('#birthday').val(data.birthday);
+                $('#real_name').val(data.real_name);
+                $('#gender').val(data.gender);
+                $('#description').val(data.description);
+                $('#qq').val(data.qq);
+                $('#wechat').val(data.wechat);
+                $('#email').val(data.email);
+                $('#province').val(data.province);
+                $('#city').val(data.city);
+                $('#county').val(data.county);
+                $('#role').val(data.role);
+                $('#other_number').val(data.other_number);
+                $('#unit1').val(data.unit1);
+                $('#unit2').val(data.unit2);
+                $('#profession').val(data.profession);
+            }).fail(errorHandler);
+
             $("form").submit(function(e) {
                 e.preventDefault();
 

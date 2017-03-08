@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>创易汇</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-dialog.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 50px;
+        }
+        
+        .tab-content {
+            margin-top: 70px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-brand">创易汇</div>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tab-content clearfix">
+            <div class="tab-pane active" id="msg">
+                <div>
+                    <ul class="list-group" id="msg_list"></ul>
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    <p>One fine body…</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-dialog.min.js"></script>
+    <script src="js/lib.js"></script>
+    <script>
+        var _page = 0;
+        var _totalPage = 0;
+        var competition_id = location.search.substring(1);
+
+        function fetchPage(page) {
+            if (isNaN(+competition_id)) {
+                return;
+            }
+
+            _page = page;
+            get('/competition/' + competition_id + '/notifications/', {
+                offset: (page - 1) * 10,
+                limit: 10
+            }).then(function(data) {
+                _totalPage = Math.ceil(data.count / 10);
+
+                var str1 = "";
+                for (var i = 0; i < data.list.length; i++) {
+                    str1 += '<li class="list-group-item">' + data.list[i].notification + '</li>';
+                }
+                document.querySelector("#msg_list").innerHTML = str1;
+
+                var str3 = '<li class="page-item active"><a class="page-link" href="javascript:fetchPage(' + _page + ')">' + _page + '</a></li>';
+                for (var i = _page - 1; i > 0 && i > _page - 3; i--) {
+                    str3 = '<li class="page-item"><a class="page-link" href="javascript:fetchPage(' + i + ')">' + i + '</a></li>' + str3;
+                }
+                for (var i = _page + 1; i <= _totalPage && i < _page + 3; i++) {
+                    str3 += '<li class="page-item"><a class="page-link" href="javascript:fetchPage(' + i + ')">' + i + '</a></li>';
+                }
+                document.querySelector("#msg_list ~ ul").innerHTML = str3;
+
+                if (data.count == 0) {
+                    document.querySelector("#msg_list").innerHTML = "暂无通知";
+                }
+            }).fail(errorHandler);
+        }
+
+        $(function() {
+            fetchPage(1);
+        });
+    </script>
+</body>
+</html>

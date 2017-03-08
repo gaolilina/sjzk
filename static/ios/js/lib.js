@@ -24,6 +24,23 @@ function post(url, params) {
     return ajax($.post, url, params);
 }
 
+function deleteAjax(url, params) {
+    var dtd = $.Deferred();
+    $.ajax({
+        url: HOST + url,
+        data: params,
+        type: 'DELETE',
+        headers: readToken() == "" || readToken() == null ? undefined : {
+            "X-User-Token": readToken()
+        }
+    }).done(function(data) {
+        dtd.resolve(data);
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        dtd.reject(jqXHR.status, errorThrown);
+    });
+    return dtd;
+}
+
 function saveToken(token) {
     localStorage.setItem("token", token);
 }
@@ -38,4 +55,18 @@ window.alert = function(msg) {
         message: msg,
         type: 'type-danger'
     });
+}
+
+function errorHandler(code, msg) {
+    switch (code) {
+        case 400:
+            alert('400');
+            break;
+        case 403:
+            alert('403');
+            break;
+        default:
+            alert(msg);
+            break;
+    }
 }

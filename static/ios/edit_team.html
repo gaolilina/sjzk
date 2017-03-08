@@ -55,7 +55,7 @@
                 <label for="county">county</label>
                 <input type="text" class="form-control" id="county" placeholder=""/>
             </div>
-            <button type="submit" class="btn btn-primary">创建</button>
+            <button type="submit" class="btn btn-primary">更新</button>
         </form>
     </div>
     <div class="modal fade">
@@ -81,10 +81,22 @@
     <script src="js/lib.js"></script>
     <script>
         $(function() {
+            var team_id = location.search.substring(1);
+
+            get('/teams/' + team_id + '/profile/', {
+            }).then(function(data) {
+                $('#name').val(data.name);
+                $('#description').val(data.description);
+                $('#url').val(data.url);
+                $('#province').val(data.province);
+                $('#city').val(data.city);
+                $('#county').val(data.county);
+            }).fail(errorHandler);
+
             $("form").submit(function(e) {
                 e.preventDefault();
 
-                post('/teams/', {
+                post('/teams/' + team_id + '/profile/', {
                     name: $('#name').val(),
                     description: $('#description').val(),
                     url: $('#url').val(),
