@@ -55,7 +55,7 @@ class ActivityUserParticipator(models.Model):
 
     activity = models.ForeignKey(
         'Activity', models.CASCADE, 'user_participators')
-    user = models.ForeignKey('User', models.CASCADE, '+')
+    user = models.ForeignKey('User', models.CASCADE, 'activities')
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
