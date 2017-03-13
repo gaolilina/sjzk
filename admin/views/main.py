@@ -46,7 +46,7 @@ class Register(View):
     @require_role('yz')
     def get(self, request):
         template = loader.get_template("register.html")
-        context = Context()
+        context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
@@ -63,10 +63,11 @@ class Register(View):
                 user.save_and_generate_name()
 
                 response = HttpResponseRedirect(reverse("admin:admin_users:info"))
-                response.set_cookie("usr", username)
-                response.set_cookie("pwd", user.password[:6])
+                # response.set_cookie("usr", username)
+                # response.set_cookie("pwd", user.password[:6])
                 return response
-            except IntegrityError:
+            except IntegrityError as err:
+                print(err)
                 template = loader.get_template("register.html")
-                context = Context({'msg': '用户名已存在'})
+                context = Context({'msg': '用户名已存在', 'user': request.user})
                 return HttpResponseBadRequest(template.render(context))

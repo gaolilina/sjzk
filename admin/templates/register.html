@@ -10,12 +10,9 @@
 </form>
 {% endblock %}
 
-{% block topbar %}
-<ul>
-</ul>
-{% endblock %}
-{% block leftbar %}{% include 'leftbar.html' with tb=1 lb=1 %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb=1 lb=1 rb=1 %}{% endblock %}
+{% block topbar %}{% include 'topbar.html' with tb=1 %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb=1 lb=4 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb=1 lb=4 rb=1 %}{% endblock %}
 
 {% block css %}
 <style>
