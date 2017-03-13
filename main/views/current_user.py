@@ -9,7 +9,7 @@ from django.views.generic import View
 from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
 from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
-    Activity, Competition, UserAction, TeamAction
+    Activity, Competition, UserAction, TeamAction, CompetitionTeamParticipator
 from ..utils import abort, action, save_uploaded_image, identity_verify, \
     get_score_stage
 from ..utils.decorators import *
@@ -25,7 +25,7 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'LikedTeamAction', 'RelatedTeamList', 'OwnedTeamList',
            'InvitationList', 'Invitation', 'IdentityVerification',
            'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
-           'UserScoreRecord', 'OwnedActivityList', 'OwnedCompetitionList']
+           'UserScoreRecord', 'CompetitionList']
 
 
 class Username(View):
@@ -884,7 +884,7 @@ class OwnedTeamList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-class OwnedActivityList(View):
+class ActivityList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @require_token
@@ -932,7 +932,7 @@ class OwnedActivityList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-class OwnedCompetitionList(View):
+class CompetitionList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @require_token
@@ -967,8 +967,11 @@ class OwnedCompetitionList(View):
         """
 
         k = self.ORDERS[order]
-        c = request.user.competitions.enabled.count()
-        qs = request.user.competitions.order_by(k)[offset: offset + limit]
+        qs = CompetitionTeamParticipator.enabled.filter(
+            team__members__user=request.user).order_by(
+            k)[offset: offset + limit]
+        c = CompetitionTeamParticipator.enabled.filter(
+            team__members__user=request.user).count()
         l = [{'id': a.competition.id,
               'name': a.competition.name,
               'liker_count': a.competition.likers.count(),
@@ -977,7 +980,8 @@ class OwnedCompetitionList(View):
               'deadline': a.competition.deadline,
               'team_participator_count':
                   a.competition.team_participators.count(),
-              'time_created': a.competition.time_created} for a in qs]
+              'time_created': a.competition.time_created
+              } for a in qs]
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -1069,28 +1073,6 @@ class Invitation(View):
 
         invitation.delete()
         abort(200)
-
-
-class ActivityList(View):
-    @require_token
-    @validate_args({
-        'offset': forms.IntegerField(required=False, min_value=0),
-        'limit': forms.IntegerField(required=False, min_value=0),
-    })
-    def get(self, request, offset=0, limit=10):
-        """获取用户参加的活动列表"""
-
-        r = ActivityUserParticipator.objects.filter(user=request.user)
-        c = r.count()
-        qs = r[offset: offset + limit]
-        l = [{'id': a.activity.id,
-              'name': a.activity.name,
-              'time_started': a.activity.time_started,
-              'time_ended': a.activity.time_ended,
-              'deadline': a.activity.deadline,
-              'user_participator_count': a.activity.user_participators.count(),
-              'time_created': a.activity.time_created} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
 
 
 class Feedback(View):
