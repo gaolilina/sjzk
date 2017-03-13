@@ -2,9 +2,11 @@
 <ul>
     <li{% if lb == 1 %} class="active"{% endif %}><a href="{% url 'admin:login' %}">登录注销</a></li>
     {% if user is not None %}
-    <li{% if lb == 2 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:info' %}">个人信息修改</a></li>
+        <li{% if lb == 2 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:info' %}">个人信息修改</a></li>
+        {% if 'y' in user.role or 'z' in user.role %}
+            <li{% if lb == 4 %} class="active"{% endif %}><a href="{% url 'admin:register' %}">注册</a></li>
+        {% endif %}
     {% endif %}
-    <!--<li{% if lb == 3 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:identify' %}">实名认证</a></li>-->
 </ul>
 {% endif %}
 {% if tb == 'admin_competition' %}

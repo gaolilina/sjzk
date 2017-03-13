@@ -25,7 +25,7 @@ class AdminUser(models.Model):
     icon = models.CharField(max_length=100, default='')
     gender = models.CharField(max_length=1, default='')
     email = models.EmailField(default='')
-    phone_number = models.CharField(max_length=11, default='', unique=True)
+    phone_number = models.CharField(max_length=11, default='')
 
     is_verified = models.BooleanField(default=False, db_index=True)
     real_name = models.CharField(max_length=20, default='', db_index=True)
