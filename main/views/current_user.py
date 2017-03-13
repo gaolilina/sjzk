@@ -967,10 +967,10 @@ class CompetitionList(View):
         """
 
         k = self.ORDERS[order]
-        qs = CompetitionTeamParticipator.enabled.filter(
+        qs = CompetitionTeamParticipator.objects.filter(
             team__members__user=request.user).order_by(
             k)[offset: offset + limit]
-        c = CompetitionTeamParticipator.enabled.filter(
+        c = CompetitionTeamParticipator.objects.filter(
             team__members__user=request.user).count()
         l = [{'id': a.competition.id,
               'name': a.competition.name,
