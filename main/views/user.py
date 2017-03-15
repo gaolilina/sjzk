@@ -177,22 +177,22 @@ class Profile(View):
             email: 电子邮箱
             gender: 性别（0-保密，1-男，2-女）
             birthday: 生日
-            province:
-            city:
-            county:
+            province: 所在省
+            city: 所在市
+            county: 所在区/县
             tags: 标签，格式：['tag1', 'tag2', ...]
             x_counts 各种计数
                 x: follower | followed | friend | liker | visitor
-            is_verified:
-            real_name:
+            is_verified: 是否实名，0：未提交，1：待审核，2：审核通过，3：审核未通过，请重新提交
+            real_name: 真实名
             is_role_verified
-            role:
-            unit1:
-            unit2:
-            profession:
+            role: 角色
+            unit1: 机构名（学校或公司等）
+            unit2: 二级机构名（学院或部门等）
+            profession: 专业
             score: 积分
-            id_number:
-            other_number:
+            id_number: 身份证号码
+            other_number: 其他证件号码
         """
         user = user or request.user
 
