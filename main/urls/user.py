@@ -22,7 +22,7 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/activity/$', ActivityList.as_view(),
         name='activity'),
     # 竞赛
-    url(r'^(?P<user_id>[0-9]+)competition/$', CompetitionList.as_view(),
+    url(r'^(?P<user_id>[0-9]+)/competition/$', CompetitionList.as_view(),
         name='competition'),
     # 动态
     url(r'^(?P<user_id>[0-9]+)/actions/$', UserActionList.as_view(),
