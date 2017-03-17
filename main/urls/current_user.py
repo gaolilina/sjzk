@@ -92,7 +92,7 @@ urls = [
     # 意见反馈
     url(r'^feedback/$', Feedback.as_view(), name='feedback'),
     # 活动
-    url(r'^activity/$', ActivityList.as_view(), name='activity'),
+    url(r'^activity/$', ActivityList.as_view(), name='owned_activity'),
     # 竞赛
     url(r'^competition/$', CompetitionList.as_view(), name='owned_competition'),
     # 邀请码
