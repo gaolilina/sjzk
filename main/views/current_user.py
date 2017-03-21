@@ -967,11 +967,10 @@ class CompetitionList(View):
         """
 
         k = self.ORDERS[order]
-        qs = CompetitionTeamParticipator.objects.filter(
-            team__members__user=request.user).order_by(
-            k)[offset: offset + limit]
-        c = CompetitionTeamParticipator.objects.filter(
-            team__members__user=request.user).count()
+        ctp = CompetitionTeamParticipator.objects.filter(
+                team__members__user=request.user).distinct()
+        qs = ctp.order_by(k)[offset: offset + limit]
+        c = ctp.count()
         l = [{'id': a.competition.id,
               'name': a.competition.name,
               'liker_count': a.competition.likers.count(),

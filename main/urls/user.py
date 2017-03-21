@@ -18,6 +18,12 @@ urls = [
         TeamOwnedList.as_view(), name='owned_teams'),
     url(r'^(?P<user_id>[0-9]+)/joined_teams/$',
         TeamJoinedList.as_view(), name='joined_teams'),
+    # 活动
+    url(r'^(?P<user_id>[0-9]+)/activity/$', ActivityList.as_view(),
+        name='activity'),
+    # 竞赛
+    url(r'^(?P<user_id>[0-9]+)/competition/$', CompetitionList.as_view(),
+        name='competition'),
     # 动态
     url(r'^(?P<user_id>[0-9]+)/actions/$', UserActionList.as_view(),
         name='actions'),
