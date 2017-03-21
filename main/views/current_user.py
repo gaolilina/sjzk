@@ -296,9 +296,8 @@ class IdentityVerification(Profile_):
         id_keys = ('role', 'real_name', 'id_number')
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'], kwargs['real_name'])
-        error_code = res["error_code"]
-        if error_code != 0:
-            abort(404, res["reason"])
+        if res != 1:
+            abort(404)
 
         if not request.user.is_verified:
             for k in id_keys:

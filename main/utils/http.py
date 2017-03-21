@@ -74,9 +74,12 @@ def identity_verify(id_number, real_number, m="GET"):
     content = f.read().decode('utf-8')
     res = json.loads(content)
     if res['error_code'] == '0':
-        return 0
+        if res['result']['res'] == '1':
+            return 1
+        else:
+            return 0
     else:
-        return 1 if res['result']['res'] == 1 else 0
+        return 0
 
 
 def picture_verify(picture):
