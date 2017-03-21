@@ -295,7 +295,7 @@ class IdentityVerification(Profile_):
             abort(403, 'Please upload the positive and negative of ID card')
         id_keys = ('role', 'real_name', 'id_number')
         # 调用第三方接口验证身份证的正确性
-        res = identity_verify(kwargs['id_number'])
+        res = identity_verify(kwargs['id_number'], kwargs['real_name'])
         error_code = res["error_code"]
         if error_code != 0:
             abort(404, res["reason"])

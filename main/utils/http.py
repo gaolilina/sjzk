@@ -22,9 +22,9 @@ def send_message(data, m="GET"):
 
 
 def send_message(mobile, tpl_value, m="GET"):
-    """第三方短信调用api(聚合数据)"""
+    """第三方短信调用api"""
     data = dict()
-    data['tpl_id'] = 0
+    data['tpl_id'] = "30517"
     data['key'] = 'c2b426f88a99c9fdf9a2a55d617e4f0d'
     data['mobile'] = mobile
     data['tpl_value'] = tpl_value
@@ -36,9 +36,10 @@ def send_message(mobile, tpl_value, m="GET"):
         urllib.request.urlopen(url, params)
 
 
+"""
 def identity_verify(id_number, m="GET"):
-    """第三方身份证验证api(聚合数据)"""
-    appkey = '778643c12a1bc37c78ba2463c91745a8'  # 填写你申请的账号的appkey
+    # 第三方身份证验证api(聚合数据)
+    appkey = 'b5b4cdc54bd373c66ed391d8ba1c5cc1' # 填写你申请的账号的appkey
     url = "http://apis.juhe.cn/idcard/index"
     params = {
         "cardno": id_number,  # 身份证号码
@@ -53,6 +54,29 @@ def identity_verify(id_number, m="GET"):
     content = f.read().decode('utf-8')
     res = json.loads(content)
     return res
+"""
+
+
+def identity_verify(id_number, real_number, m="GET"):
+    """第三方身份证实名认证api(聚合数据)"""
+    appkey = '778643c12a1bc37c78ba2463c91745a8'  # 填写你申请的账号的appkey
+    url = "http://op.juhe.cn/idcard/query"
+    params = {
+        "idcard": id_number,  # 身份证号码
+        "realname": real_number,  # 真实姓名
+        "key": appkey,  # 申请的appkey
+    }
+    params = urllib.parse.urlencode(params)
+    if m == "GET":
+        f = urllib.request.urlopen("%s?%s" % (url, params))
+    else:
+        f = urllib.request.urlopen(url, params)
+    content = f.read().decode('utf-8')
+    res = json.loads(content)
+    if res['error_code'] == '0':
+        return 0
+    else:
+        return 1 if res['result']['res'] == 1 else 0
 
 
 def picture_verify(picture):
