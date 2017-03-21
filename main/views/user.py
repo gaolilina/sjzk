@@ -774,7 +774,7 @@ class ValidationCode(View):
         if not phone_number.isdigit():
             abort(400)
         code = UserValidationCode.generate(phone_number)
-        tpl_value = "#code#=431515"
+        tpl_value = "#code#=" + code
 
         send_message(phone_number, tpl_value)
         return JsonResponse({
