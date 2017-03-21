@@ -22,7 +22,7 @@ def send_message(data, m="GET"):
 
 
 def send_message(mobile, tpl_value, m="GET"):
-    """第三方短信调用api"""
+    """第三方短信调用api(聚合数据)"""
     data = dict()
     data['tpl_id'] = 0
     data['key'] = 'c2b426f88a99c9fdf9a2a55d617e4f0d'
@@ -38,7 +38,7 @@ def send_message(mobile, tpl_value, m="GET"):
 
 def identity_verify(id_number, m="GET"):
     """第三方身份证验证api(聚合数据)"""
-    appkey = 'b5b4cdc54bd373c66ed391d8ba1c5cc1' # 填写你申请的账号的appkey
+    appkey = '778643c12a1bc37c78ba2463c91745a8'  # 填写你申请的账号的appkey
     url = "http://apis.juhe.cn/idcard/index"
     params = {
         "cardno": id_number,  # 身份证号码
