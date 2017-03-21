@@ -73,9 +73,8 @@ def identity_verify(id_number, real_number, m="GET"):
         f = urllib.request.urlopen(url, params)
     content = f.read().decode('utf-8')
     res = json.loads(content)
-    print(res)
-    if res['error_code'] == '0':
-        if res['result']['res'] == '1':
+    if res['error_code'] == 0:
+        if res['result']['res'] == 1:
             return 1
         else:
             return 0
