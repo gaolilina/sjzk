@@ -6,7 +6,7 @@ from django.views.generic import View
 from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
-from ..utils import abort, get_score_stage
+from ..utils import abort, get_score_stage, send_message
 from ..utils.decorators import *
 from ..utils.recommender import calculate_ranking_score, record_view_user
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, Team
@@ -671,10 +671,9 @@ class ValidationCode(View):
         if not phone_number.isdigit():
             abort(400)
         code = UserValidationCode.generate(phone_number)
-        data = {"mobile": phone_number,
-                "content": "您本次的验证码为：" +
-                           code + "，如非本人操作，请忽略！【创易】"}
-        # send_message(data)
+        tpl_value = "#code#=431515"
+
+        send_message(phone_number, tpl_value)
         return JsonResponse({
             'validation_code': code,
         })

@@ -23,11 +23,18 @@ class ExampleTestCase(TestCase):
         
     def log(self, title, message):
         logging.info('{0}: {1}'.format(title, message))
-
+    """
     def test_picture_verify(self):
         picture_url = 'test_data/yellow.png'
         code = picture_verify(picture_url)
         self.assertEqual(code, 0)
+    """
+    def test_sendMessage(self):
+        # phone_number = '18811611286'
+        phone_number = '13051391335'
+        code = '123456'
+        tpl_value = "#code#=431515"
+        send_message(phone_number, tpl_value)
 
     '''
     def test_sendMessage(self):

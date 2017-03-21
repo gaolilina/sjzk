@@ -6,8 +6,9 @@ import tencentyun
 from PIL import Image
 
 
+"""
 def send_message(data, m="GET"):
-    """第三方短信调用api(云信)"""
+    # 第三方短信调用api(云信)
     data['uid'] = 'zq353996852' # 填写“云信”账号的id
     data['pwd'] = 'c334c800ae8802557106fe09d70f3eb8' # 填写“云信”账号的密码
     data['ac'] = 'send'
@@ -17,6 +18,20 @@ def send_message(data, m="GET"):
         urllib.request.urlopen("%s?%s" % (url, params))
     else:
         urllib.request.urlopen(url, params)
+"""
+
+
+def send_message(mobile, tpl_value, m="GET"):
+    data = dict()
+    data['tpl_id'] = 0
+    data['key'] = 'c2b426f88a99c9fdf9a2a55d617e4f0d'
+    data['mobile'] = mobile
+    data['tpl_value'] = urllib.parse.urlencode(tpl_value)
+    url = "http://v.juhe.cn/sms/send"
+    if m == "GET":
+        urllib.request.urlopen("%s?%s" % (url, data))
+    else:
+        urllib.request.urlopen(url, data)
 
 
 def identity_verify(id_number, m="GET"):
