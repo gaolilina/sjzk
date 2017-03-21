@@ -44,7 +44,7 @@ class ExampleTestCase(TestCase):
         print(res)
 
     def test_identityVerify_right(self):
-        id_number = '430723199212023812'
+        id_number = '430723199312023812'
         real_name = '赵强'
         res = identity_verify(id_number, real_name)
         print(res)
