@@ -28,13 +28,20 @@ class ExampleTestCase(TestCase):
         picture_url = 'test_data/yellow.png'
         code = picture_verify(picture_url)
         self.assertEqual(code, 0)
-    """
-    def test_sendMessage(self):
+
+    def test_sendMessage_new(self):
         # phone_number = '18811611286'
         phone_number = '13051391335'
         code = '123456'
         tpl_value = "#code#=431515"
         send_message(phone_number, tpl_value)
+    """
+
+    def test_identityVerify_new(self):
+        id_number = '430723199212023303'
+        real_name = '赵强'
+        res = identity_verify(id_number, real_name)
+        print(res)
 
     '''
     def test_sendMessage(self):
