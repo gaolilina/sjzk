@@ -47,12 +47,25 @@ class ExternalTaskList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if ExternalTask == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:external_task_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'external_task', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'external_task', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -98,12 +111,25 @@ class InternalTaskList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if InternalTask == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:internal_task_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'internal_task', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'internal_task', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -149,12 +175,25 @@ class TeamList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if Team == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -200,12 +239,25 @@ class TeamAchievementList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamAchievement == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_achievement_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_achievement', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_achievement', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -251,12 +303,25 @@ class TeamActionList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamAction == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_action_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_action', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_action', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -302,12 +367,25 @@ class TeamActionCommentList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamActionComment == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_action_comment_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_action_comment', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_action_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -353,12 +431,25 @@ class TeamActionLikerList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamActionLiker == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_action_liker_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_action_liker', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_action_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -404,12 +495,25 @@ class TeamCommentList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamComment == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_comment_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_comment', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -455,12 +559,25 @@ class TeamFeatureList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamFeature == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_feature_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_feature', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_feature', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -506,12 +623,25 @@ class TeamFollowerList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamFollower == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_follower_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_follower', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_follower', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -557,12 +687,25 @@ class TeamInvitationList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamInvitation == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_invitation_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_invitation', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_invitation', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -608,12 +751,25 @@ class TeamLikerList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamLiker == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_liker_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_liker', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -659,12 +815,25 @@ class TeamMemberList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamMember == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_member_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_member', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_member', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -710,12 +879,25 @@ class TeamMemberRequestList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamMemberRequest == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_member_request_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_member_request', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_member_request', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -761,12 +943,25 @@ class TeamNeedList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamNeed == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_need_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_need', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_need', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -812,12 +1007,25 @@ class TeamScoreList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamScore == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_score_record_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_score_record', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -863,12 +1071,25 @@ class TeamTagList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamTag == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_tag_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_tag', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_tag', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")
@@ -914,12 +1135,25 @@ class TeamVisitorList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("team/index.html")
             if TeamVisitor == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_visitor_list'
-            context = Context({'name': name, 'list': Team.objects.filter(name__contains=name), 'redir': redir, 'rb': 'team_visitor', 'user': request.user})
+            context = Context({
+                'name': name,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': Team.objects.filter(
+                    name__contains=name,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'team_visitor', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("team/index.html")

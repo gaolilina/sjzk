@@ -58,12 +58,20 @@ class UserList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -120,12 +128,20 @@ class UserActionList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_action_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_action', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_action', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -182,12 +198,20 @@ class UserActionCommentList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_action_comment_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_action_comment', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_action_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -244,12 +268,20 @@ class UserActionLikerList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_action_liker_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_action_liker', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_action_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -306,12 +338,20 @@ class UserBehaviorList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_behavior_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_behavior', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_behavior', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -368,12 +408,20 @@ class UserCommentList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_comment_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_comment', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -430,12 +478,20 @@ class UserExperienceList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_experience_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_experience', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_experience', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -492,12 +548,20 @@ class UserFeatureList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_feature_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_feature', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_feature', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -554,12 +618,20 @@ class UserFeedbackList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_feedback_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_feedback', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_feedback', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -616,12 +688,20 @@ class UserFollowerList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_follower_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_follower', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_follower', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -678,12 +758,20 @@ class UserFriendList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_friend_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_friend', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_friend', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -740,12 +828,20 @@ class UserFriendRequestList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_friend_request_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_friend_request', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_friend_request', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -802,12 +898,20 @@ class UserLikerList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_liker_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_liker', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -864,12 +968,20 @@ class UserScoreList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_score_record_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_score_record', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -926,12 +1038,20 @@ class UserTagList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_tag_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_tag', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_tag', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -988,12 +1108,20 @@ class UserValidationCodeList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_validation_code_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_validation_code', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_validation_code', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -1050,12 +1178,20 @@ class UserVisitorList(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_visitor_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': 'user_visitor', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_visitor', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")

@@ -79,12 +79,20 @@ class {{cls_name}}List(View):
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:{{tbl_name}}_list'
-            context = Context({'name': name, 'list': User.objects.filter(
-                name__contains=name,
-                phone_number__contains=phone,
-                unit1__contains=unit1,
-                province__contains=province,
-                county__contains=county), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -158,7 +166,8 @@ for mod_name, mod_class in inspect.getmembers(users):
                 args_text += "'" + fld.name + "': forms.FloatField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.ForeignKey):
-                content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:user:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
+                t = fld.rel.to.__module__.split('.')
+                content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:' + t[-1] + ':' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         
         view_text += view_class_text.replace('{{cls_name}}', mod_name).replace('{{tbl_name}}', tbl_name).replace('{{args}}', args_text)
         template_file = codecs.open("./admin/templates/user/" + tbl_name + ".html", "w", "utf-8")
