@@ -143,7 +143,8 @@ for mod_name, mod_class in inspect.getmembers(forums):
                 args_text += "'" + fld.name + "': forms.FloatField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.ForeignKey):
-                content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:forum:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
+                t = fld.rel.to.__module__.split('.')
+                content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:' + t[-1] + ':' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         
         view_text += view_class_text.replace('{{cls_name}}', mod_name).replace('{{tbl_name}}', tbl_name).replace('{{args}}', args_text)
         template_file = codecs.open("./admin/templates/forum/" + tbl_name + ".html", "w", "utf-8")
