@@ -33,67 +33,69 @@
     <div class="container">
         <form>
             <div class="form-group">
-                <label for="name">name</label>
+                <label for="name">昵称</label>
                 <input type="text" class="form-control" id="name" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="birthday">birthday</label>
+                <label for="birthday">生日</label>
                 <input type="text" class="form-control" id="birthday" placeholder="0000-00-00"/>
             </div>
             <div class="form-group">
-                <label for="real_name">real_name</label>
+                <label for="real_name">真实姓名</label>
                 <input type="text" class="form-control" id="real_name" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="gender">gender</label>
-                <input type="text" class="form-control" id="gender" placeholder=""/>
+                <label>性别</label><br/>
+                <input type="radio" name="gender" value="0" /> 男
+                <input type="radio" name="gender" value="1" style="margin-left:20px" /> 女
+                <input type="radio" name="gender" value="-1" style="margin-left:20px" checked="checked" /> 保密
             </div>
             <div class="form-group">
-                <label for="description">description</label>
+                <label for="description">个人简介</label>
                 <input type="text" class="form-control" id="description" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="qq">qq</label>
+                <label for="qq">QQ</label>
                 <input type="text" class="form-control" id="qq" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="wechat">wechat</label>
+                <label for="wechat">微信</label>
                 <input type="text" class="form-control" id="wechat" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="email">email</label>
+                <label for="email">电子邮箱</label>
                 <input type="text" class="form-control" id="email" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="province">province</label>
+                <label for="province">所在省</label>
                 <input type="text" class="form-control" id="province" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="city">city</label>
+                <label for="city">所在市</label>
                 <input type="text" class="form-control" id="city" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="county">county</label>
+                <label for="county">所在区/县</label>
                 <input type="text" class="form-control" id="county" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="role">role</label>
+                <label for="role">角色</label>
                 <input type="text" class="form-control" id="role" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="other_number">other_number</label>
+                <label for="other_number">其他证件号码</label>
                 <input type="text" class="form-control" id="other_number" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="unit1">unit1</label>
+                <label for="unit1">机构名（学校或公司等）</label>
                 <input type="text" class="form-control" id="unit1" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="unit2">unit2</label>
+                <label for="unit2">二级机构名（学院或部门等）</label>
                 <input type="text" class="form-control" id="unit2" placeholder=""/>
             </div>
             <div class="form-group">
-                <label for="profession">profession</label>
+                <label for="profession">专业</label>
                 <input type="text" class="form-control" id="profession" placeholder=""/>
             </div>
             <button type="submit" class="btn btn-primary">更新</button>
@@ -131,7 +133,6 @@
                 $('#name').val(data.name);
                 $('#birthday').val(data.birthday);
                 $('#real_name').val(data.real_name);
-                $('#gender').val(data.gender);
                 $('#description').val(data.description);
                 $('#qq').val(data.qq);
                 $('#wechat').val(data.wechat);
@@ -153,7 +154,7 @@
                     name: $('#name').val(),
                     birthday: $('#birthday').val(),
                     real_name: $('#real_name').val(),
-                    gender: $('#gender').val(),
+                    gender: $('input[name=gender]:checked').val(),
                     description: $('#description').val(),
                     qq: $('#qq').val(),
                     wechat: $('#wechat').val(),
