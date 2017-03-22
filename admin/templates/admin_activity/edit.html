@@ -80,8 +80,8 @@
     <tr>
         <td>报名者：</td>
         <td>
-            {% for team in model.team_participators.all %}
-                <div>{{ team.name }}</div>
+            {% for user in model.user_participators.all %}
+                <div>{{ user.user.name }}</div>
             {% endfor %}
         </td>
     </tr>

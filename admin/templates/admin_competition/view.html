@@ -82,7 +82,7 @@
         <td>
             <div><a href="{% url 'admin:admin_competition:excel' model.id %}">导出Excel</a></div>
             {% for team in model.team_participators.all %}
-                <div>{{ team.name }}</div>
+                <div>{{ team.team.name }}</div>
             {% endfor %}
         </td>
     </tr>

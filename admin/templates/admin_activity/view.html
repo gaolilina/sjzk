@@ -70,7 +70,7 @@
         <td>
             <div><a href="{% url 'admin:admin_activity:excel' model.id %}">导出Excel</a></div>
             {% for user in model.user_participators.all %}
-                <div>{{ user.username }}</div>
+                <div>{{ user.user.username }}</div>
             {% endfor %}
         </td>
     </tr>
