@@ -176,6 +176,9 @@ for mod_name, mod_class in inspect.getmembers(competitions):
 {% load staticfiles %}
 {% block content %}
 <table style="margin:30px">
+    {% if list.count == 0 %}
+        <tr><td>无记录</td></tr>
+    {% endif %}
     {% for item in list %}
         <tr>
             <td>竞赛名： </td>
