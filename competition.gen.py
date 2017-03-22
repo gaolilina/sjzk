@@ -68,12 +68,28 @@ class {{cls_name}}List(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("competition/index.html")
             if {{cls_name}} == Competition:
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:{{tbl_name}}_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Competition.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -147,7 +163,8 @@ for mod_name, mod_class in inspect.getmembers(competitions):
                 args_text += "'" + fld.name + "': forms.FloatField(" + ("required=False," if (fld.null or fld.default is not None ) else "") + "),"
                 content_text += template_contet_text.replace('{{text}}', fld.name).replace('{{name}}', fld.name).replace('{{type}}', 'number')
             elif isinstance(fld, models.ForeignKey):
-                content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:competition:' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
+                t = fld.rel.to.__module__.split('.')
+                content_text += '<tr><td>' + fld.name + '：</td><td><a href="{% url "admin:' + t[-1] + ':' + fld.rel.to._meta.db_table + '" mod.' + fld.name + '.id %}">{{ mod.' + fld.name + '.id }}</a></td></tr>'
         
         view_text += view_class_text.replace('{{cls_name}}', mod_name).replace('{{tbl_name}}', tbl_name).replace('{{args}}', args_text)
         template_file = codecs.open("./admin/templates/competition/" + tbl_name + ".html", "w", "utf-8")

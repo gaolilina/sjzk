@@ -47,12 +47,28 @@ class CompetitionList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("competition/index.html")
             if Competition == Competition:
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Competition.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'competition', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -98,12 +114,28 @@ class CompetitionCommentList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("competition/index.html")
             if CompetitionComment == Competition:
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_comment_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_comment', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Competition.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'competition_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -149,12 +181,28 @@ class CompetitionFileList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("competition/index.html")
             if CompetitionFile == Competition:
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_file_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_file', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Competition.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'competition_file', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -200,12 +248,28 @@ class CompetitionLikerList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("competition/index.html")
             if CompetitionLiker == Competition:
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_liker_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_liker', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Competition.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'competition_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -251,12 +315,28 @@ class CompetitionNotificationList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("competition/index.html")
             if CompetitionNotification == Competition:
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_notification_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_notification', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Competition.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'competition_notification', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -302,12 +382,28 @@ class CompetitionStageList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("competition/index.html")
             if CompetitionStage == Competition:
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_stage_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_stage', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Competition.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'competition_stage', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
@@ -353,12 +449,28 @@ class CompetitionTeamParticipatorList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("competition/index.html")
             if CompetitionTeamParticipator == Competition:
                 redir = 'admin:competition:competition'
             else:
                 redir = 'admin:competition:competition_team_participator_list'
-            context = Context({'name': name, 'list': Competition.objects.filter(name__contains=name), 'redir': redir, 'rb': 'competition_team_participator', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Competition.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'competition_team_participator', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("competition/index.html")
