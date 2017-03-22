@@ -96,7 +96,7 @@ class AdminActivityEdit(View):
                 setattr(model, k, kwargs[k])
         model.save()
 
-        if kwargs['stages'] != "":
+        if 'stages' in kwargs and kwargs['stages'] != "":
             ActivityStage.objects.filter(activity=model).delete()
 
             stages = json.loads(kwargs['stages'])
