@@ -276,7 +276,7 @@ class TeamParticipatorList(View):
         else:
             if competition.province and competition.province != team.province:
                 abort(403, 'location limited')
-            if competition.province and competition.city != team.city:
+            if competition.city and competition.city != team.city:
                 abort(403, 'location limited')
             for m in team.members.all():
                 if m.user.is_verified != 2:
