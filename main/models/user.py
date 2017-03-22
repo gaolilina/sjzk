@@ -28,7 +28,8 @@ class User(models.Model):
     name = models.CharField(max_length=15)
     description = models.CharField(max_length=100, default='')
     icon = models.CharField(max_length=100, default='')
-    gender = models.IntegerField(default=-1, db_index=True)
+    # 性别,0：未知，1：男，2：女
+    gender = models.IntegerField(default=0, db_index=True)
     qq = models.CharField(max_length=20, default='')
     wechat = models.CharField(max_length=20, default='')
     email = models.EmailField(default='')
