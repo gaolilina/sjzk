@@ -1,16 +1,8 @@
 #!/bin/sh
-python generate.py
 
-python activity
-python competition.py
-python forum.py
-python team.py
-python user.py
-python admin_user.py
-
-rm activity
-rm competition.py
-rm forum.py
-rm team.py
-rm user.py
-rm admin_user.py
+python activity.gen.py
+python competition.gen.py
+python forum.gen.py
+python team.gen.py
+python user.gen.py
+python admin_user.gen.py
