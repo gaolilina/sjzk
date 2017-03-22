@@ -98,7 +98,7 @@ class AdminCompetitionEdit(View):
                 setattr(model, k, kwargs[k])
         model.save()
         
-        if kwargs['stages'] != "":
+        if 'stages' in kwargs and kwargs['stages'] != "":
             CompetitionStage.objects.filter(competition=model).delete()
 
             stages = json.loads(kwargs['stages'])
