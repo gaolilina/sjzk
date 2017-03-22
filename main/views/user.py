@@ -777,9 +777,7 @@ class ValidationCode(View):
         tpl_value = "#code#=" + code
 
         send_message(phone_number, tpl_value)
-        return JsonResponse({
-            'validation_code': code,
-        })
+        abort(200)
 
 
 class PasswordForgotten(View):
