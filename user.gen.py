@@ -68,12 +68,23 @@ class {{cls_name}}List(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if {{cls_name}} == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:{{tbl_name}}_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
+            context = Context({'name': name, 'list': User.objects.filter(
+                name__contains=name,
+                phone_number__contains=phone,
+                unit1__contains=unit1,
+                province__contains=province,
+                county__contains=county), 'redir': redir, 'rb': '{{tbl_name}}', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
