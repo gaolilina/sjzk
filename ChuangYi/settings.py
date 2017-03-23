@@ -63,7 +63,7 @@ LANGUAGE_CODE = 'zh-cn'
 TIME_ZONE = 'Asia/Shanghai'
 USE_I18N = False
 USE_L10N = False
-USE_TZ = True
+USE_TZ = False
 
 DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATETIME_INPUT_FORMAT = ['%Y-%m-%d %H:%M:%S']
