@@ -7,3 +7,5 @@ uploaded/
 test.db
 
 admin/migrations/
+
+json_data/
