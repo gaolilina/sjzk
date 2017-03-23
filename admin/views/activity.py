@@ -108,7 +108,7 @@ class ActivityCommentList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = ActivityComment.objects.filter(activity_id=kwargs["id"])
+            list = ActivityComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("activity/activity_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_comment', 'user': request.user})
             return HttpResponse(template.render(context))
