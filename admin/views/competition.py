@@ -108,7 +108,7 @@ class CompetitionCommentList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = CompetitionComment.objects.filter(competition_id=kwargs["id"])
+            list = CompetitionComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("competition/competition_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:competition:competition_comment', 'user': request.user})
             return HttpResponse(template.render(context))

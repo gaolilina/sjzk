@@ -10,7 +10,7 @@
         <tr>
             <td>竞赛名： </td>
             <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.competition.name }}</td>
-            <td><a href="{% url 'admin:competition:competition_stage' item.competition.id %}">查看</a></td>
+            <td><a href="{% url 'admin:competition:competition_stage' item.id %}">查看</a></td>
         </tr>
     {% endfor %}
 </table>

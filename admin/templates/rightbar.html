@@ -98,9 +98,10 @@
         <ul>
             <li{% if rb == 'competition' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_list' %}">竞赛信息</a></li>
             <li{% if rb == 'competition_stage' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_stage_list' %}">竞赛阶段</a></li>
+            <li{% if rb == 'competition_notification' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_notification_list' %}">竞赛通知</a></li>
             <li{% if rb == 'competition_team_participator' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_team_participator_list' %}">竞赛参与者</a></li>
             <li{% if rb == 'competition_comment' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_comment_list' %}">竞赛评论</a></li>
-            <li{% if rb == 'competition_liker' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_liker_list' %}">竞赛点赞记录</a></li>
+            <li{% if rb == 'competition_file' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_file_list' %}">竞赛文件</a></li>
         </ul>
     {% endif %}
 {% endif %}
