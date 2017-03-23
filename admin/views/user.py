@@ -181,7 +181,7 @@ class UserActionCommentList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = UserActionComment.objects.filter(user_id=kwargs["id"])
+            list = UserActionComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("user/user_action_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_action_comment', 'user': request.user})
             return HttpResponse(template.render(context))
@@ -391,7 +391,7 @@ class UserCommentList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = UserComment.objects.filter(user_id=kwargs["id"])
+            list = UserComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("user/user_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_comment', 'user': request.user})
             return HttpResponse(template.render(context))
@@ -1021,7 +1021,7 @@ class UserTagList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = UserTag.objects.filter(user_id=kwargs["id"])
+            list = UserTag.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("user/user_tag_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_tag', 'user': request.user})
             return HttpResponse(template.render(context))
