@@ -361,7 +361,7 @@ class TeamActionCommentList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = TeamActionComment.objects.filter(team_id=kwargs["id"])
+            list = TeamActionComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("team/team_action_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_action_comment', 'user': request.user})
             return HttpResponse(template.render(context))
@@ -489,7 +489,7 @@ class TeamCommentList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = TeamComment.objects.filter(team_id=kwargs["id"])
+            list = TeamComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("team/team_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_comment', 'user': request.user})
             return HttpResponse(template.render(context))
@@ -1065,7 +1065,7 @@ class TeamTagList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = TeamTag.objects.filter(team_id=kwargs["id"])
+            list = TeamTag.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("team/team_tag_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_tag', 'user': request.user})
             return HttpResponse(template.render(context))
