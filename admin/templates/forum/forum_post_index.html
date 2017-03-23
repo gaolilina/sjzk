@@ -7,13 +7,13 @@
 </form>
 {% if list %}
 <table style="margin:30px">
-    <tr>
-        {% for item in list %}
+    {% for item in list %}
+        <tr>
             <td>帖子名： </td>
             <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.title }}</td>
             <td><a href="{% url 'admin:forum:forum_post' item.id %}">查看</a></td>
-        {% endfor %}
-    </tr>
+        </tr>
+    {% endfor %}
 </table>
 {% endif %}
 {% endblock %}
