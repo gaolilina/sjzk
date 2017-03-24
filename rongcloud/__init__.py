@@ -20,10 +20,10 @@ class RongCloud:
     def __init__(self, app_key=None, app_secret=None):
         if app_key is None:
             # app_key = os.environ.get('APP_KEY', '')
-            app_key = '82hegw5uh8wdx'
+            app_key = 'bmdehs6pbtd4s'  # 你的容云app_key
         if app_secret is None:
             # app_secret = os.environ.get('APP_SECRET', '')
-            app_secret = 'jGKdv4sJX0is'
+            app_secret = 'DpTiS6wJlmp'  # 你的容云app_secret
         self.User = User(app_key, app_secret)
         self.Message = Message(app_key, app_secret)
         self.Wordfilter = Wordfilter(app_key, app_secret)
