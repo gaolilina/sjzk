@@ -168,25 +168,25 @@ class UserParticipatorList(View):
         """报名"""
 
         if activity.status != 1:
-            abort(403, 'not on the stage of signing up')
+            abort(403, '非报名阶段')
         c = activity.user_participators.count()
         if activity.allow_user != 0 and c >= activity.allow_user:
-            abort(403, 'participators are enough')
+            abort(403, '参与者已满')
         if activity.province and activity.province != request.user.province:
-            abort(403, 'location limited')
+            abort(403, '地区不符')
         if activity.province and activity.city != request.user.city:
-            abort(403, 'location limited')
+            abort(403, '地区不符')
         if activity.unit and activity.unit != request.user.unit1:
-            abort(403, 'unit limited')
+            abort(403, '学校不符')
         if request.user.is_verified != 2:
-            abort(403, 'user must verified')
+            abort(403, '用户未实名认证')
         if activity.user_type != 0:
             if activity.user_type == 1 and request.user.role != "学生":
-                abort(403, 'user role limited')
+                abort(403, '用户角色不符')
             elif activity.user_type == 2 and request.user.role != "教师":
-                abort(403, 'user role limited')
+                abort(403, '用户角色不符')
             elif activity.user_type == 3 and request.user.role != "在职":
-                abort(403, 'user role limited')
+                abort(403, '用户角色不符')
 
         if not activity.user_participators.filter(user=request.user).exists():
             activity.user_participators.create(user=request.user)
