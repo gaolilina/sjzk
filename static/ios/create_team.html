@@ -45,15 +45,15 @@
             </div>
             <div class="form-group">
                 <label for="province">所在省</label>
-                <input type="text" class="form-control" id="province" placeholder=""/>
+                <select class="form-control" id="province" name="province"></select>
             </div>
             <div class="form-group">
                 <label for="city">所在市</label>
-                <input type="text" class="form-control" id="city" placeholder=""/>
+                <select class="form-control" id="city" name="city"></select>
             </div>
             <div class="form-group">
                 <label for="county">所在区/县</label>
-                <input type="text" class="form-control" id="county" placeholder=""/>
+                <select class="form-control" id="county" name="county"></select>
             </div>
             <button type="submit" class="btn btn-primary">创建</button>
         </form>
@@ -79,6 +79,7 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap-dialog.min.js"></script>
     <script src="js/lib.js"></script>
+    <script src="js/place.js"></script>
     <script>
         $(function() {
             $("form").submit(function(e) {
