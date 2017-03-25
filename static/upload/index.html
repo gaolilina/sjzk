@@ -88,7 +88,10 @@
         var token, team, competition;
         var params = location.search.substring(1).split('?');
         for (var p in params) {
-            var str = p.split('=');
+            var i = params[p].indexOf('=');
+            var str = [];
+            str[0] = params[p].substr(0, i);
+            str[1] = params[p].substring(i + 1);
             switch (str[0]) {
                 case "token":
                     token = str[1];
@@ -106,7 +109,7 @@
             e.preventDefault();
 
             $.post({
-                url: 'http://www.chuangyh.com:8000/competition/'+team+'/files/'+competition,
+                url: 'http://www.chuangyh.com:8000/competition/'+team+'/file/'+competition+'/',
                 data: new FormData(this),
                 processData: false,
                 contentType: false,

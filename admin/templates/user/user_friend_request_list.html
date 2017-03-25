@@ -3,11 +3,14 @@
 {% load staticfiles %}
 {% block content %}
 <table style="margin:30px">
+    {% if list.count == 0 %}
+        <tr><td>无记录</td></tr>
+    {% endif %}
     {% for item in list %}
         <tr>
             <td>用户名： </td>
             <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.user.name }}</td>
-            <td><a href="{% url 'admin:user:user_friend_request' item.user.id %}">查看</a></td>
+            <td><a href="{% url 'admin:user:user_friend_request' item.id %}">查看</a></td>
         </tr>
     {% endfor %}
 </table>

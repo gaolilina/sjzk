@@ -47,12 +47,28 @@ class ActivityList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("activity/index.html")
             if Activity == Activity:
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Activity.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'activity', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
@@ -92,18 +108,34 @@ class ActivityCommentList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = ActivityComment.objects.filter(activity_id=kwargs["id"])
+            list = ActivityComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("activity/activity_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("activity/index.html")
             if ActivityComment == Activity:
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_comment_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity_comment', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Activity.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'activity_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
@@ -149,12 +181,28 @@ class ActivityLikerList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("activity/index.html")
             if ActivityLiker == Activity:
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_liker_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity_liker', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Activity.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'activity_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
@@ -200,12 +248,28 @@ class ActivityStageList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("activity/index.html")
             if ActivityStage == Activity:
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_stage_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity_stage', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Activity.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'activity_stage', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")
@@ -251,12 +315,28 @@ class ActivityUserParticipatorList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            content = request.GET.get("content")
+            unit = request.GET.get("unit")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+
             template = loader.get_template("activity/index.html")
             if ActivityUserParticipator == Activity:
                 redir = 'admin:activity:activity'
             else:
                 redir = 'admin:activity:activity_user_participator_list'
-            context = Context({'name': name, 'list': Activity.objects.filter(name__contains=name), 'redir': redir, 'rb': 'activity_user_participator', 'user': request.user})
+            context = Context({
+                'name': name,
+                'content': content,
+                'unit': unit,
+                'province': province,
+                'city': city,
+                'list': Activity.objects.filter(
+                    name__contains=name,
+                    content__contains=content,
+                    unit__contains=unit,
+                    province__contains=province,
+                    city__contains=city), 'redir': redir, 'rb': 'activity_user_participator', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("activity/index.html")

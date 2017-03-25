@@ -38,6 +38,7 @@ class List(View):
                 id: 活动ID
                 name: 活动名
                 liker_count: 点赞数
+                status: 竞赛当前阶段
                 time_started: 开始时间
                 time_ended: 结束时间
                 deadline: 截止时间
@@ -51,6 +52,7 @@ class List(View):
         l = [{'id': a.id,
               'name': a.name,
               'liker_count': a.likers.count(),
+              'status': a.status,
               'time_started': a.time_started,
               'time_ended': a.time_ended,
               'deadline': a.deadline,

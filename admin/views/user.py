@@ -47,12 +47,31 @@ class UserList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if User == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -98,12 +117,31 @@ class UserActionList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserAction == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_action_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_action', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_action', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -143,18 +181,37 @@ class UserActionCommentList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = UserActionComment.objects.filter(user_id=kwargs["id"])
+            list = UserActionComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("user/user_action_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_action_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserActionComment == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_action_comment_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_action_comment', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_action_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -200,12 +257,31 @@ class UserActionLikerList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserActionLiker == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_action_liker_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_action_liker', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_action_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -251,12 +327,31 @@ class UserBehaviorList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserBehavior == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_behavior_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_behavior', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_behavior', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -296,18 +391,37 @@ class UserCommentList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = UserComment.objects.filter(user_id=kwargs["id"])
+            list = UserComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("user/user_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserComment == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_comment_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_comment', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -353,12 +467,31 @@ class UserExperienceList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserExperience == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_experience_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_experience', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_experience', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -404,12 +537,31 @@ class UserFeatureList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserFeature == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_feature_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_feature', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_feature', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -455,12 +607,31 @@ class UserFeedbackList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserFeedback == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_feedback_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_feedback', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_feedback', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -506,12 +677,31 @@ class UserFollowerList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserFollower == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_follower_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_follower', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_follower', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -557,12 +747,31 @@ class UserFriendList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserFriend == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_friend_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_friend', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_friend', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -608,12 +817,31 @@ class UserFriendRequestList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserFriendRequest == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_friend_request_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_friend_request', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_friend_request', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -659,12 +887,31 @@ class UserLikerList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserLiker == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_liker_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_liker', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -710,12 +957,31 @@ class UserScoreList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserScore == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_score_record_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_score_record', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -755,18 +1021,37 @@ class UserTagList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = UserTag.objects.filter(user_id=kwargs["id"])
+            list = UserTag.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("user/user_tag_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_tag', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserTag == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_tag_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_tag', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_tag', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -812,12 +1097,31 @@ class UserValidationCodeList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserValidationCode == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_validation_code_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_validation_code', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_validation_code', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
@@ -863,12 +1167,31 @@ class UserVisitorList(View):
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
+            phone = request.GET.get("phone")
+            unit1 = request.GET.get("unit1")
+            province = request.GET.get("province")
+            city = request.GET.get("city")
+            county = request.GET.get("county")
+
             template = loader.get_template("user/index.html")
             if UserVisitor == User:
                 redir = 'admin:user:user'
             else:
                 redir = 'admin:user:user_visitor_list'
-            context = Context({'name': name, 'list': User.objects.filter(name__contains=name), 'redir': redir, 'rb': 'user_visitor', 'user': request.user})
+            context = Context({
+                'name': name,
+                'phone': phone,
+                'unit1': unit1,
+                'province': province,
+                'city': city,
+                'county': county,
+                'list': User.objects.filter(
+                    name__contains=name,
+                    phone_number__contains=phone,
+                    unit1__contains=unit1,
+                    province__contains=province,
+                    city__contains=city,
+                    county__contains=county), 'redir': redir, 'rb': 'user_visitor', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")

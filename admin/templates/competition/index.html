@@ -3,6 +3,10 @@
 {% block content %}
 <form role="form" action="" method="get" style="text-align:center">
     竞赛名：<input type="text" name="name" value="{{name}}" />
+    内容：<input type="text" name="content" value="{{content}}" />
+    机构名：<input type="text" name="unit" value="{{unit}}" /><br/>
+    所在省：<input type="text" name="province" value="{{province}}" />
+    所在市：<input type="text" name="city" value="{{city}}" />
     <input type="submit" value="搜索" />
 </form>
 {% if list %}
