@@ -105,3 +105,9 @@ def picture_verify(picture):
             return pornRet["data"]["result"]
     except IOError:
         return None
+
+
+def eid_verify(eID):
+    """调用eID接口进行认证"""
+    appid = "06YD1703230855371854"
+    appkey = "670C017516CB97D52C0B92A1F3DF8A20"
