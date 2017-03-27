@@ -58,6 +58,11 @@ class User(models.Model):
     # 用户积分
     score = models.IntegerField(default=0, db_index=True)
 
+    # 用户eID信息
+    eid_issuer = models.CharField(max_length=20, default='')
+    eid_issuer_sn = models.CharField(max_length=20, default='')
+    eid_sn = models.CharField(max_length=50, default='')
+
     # 邀请码
     invitation_code = models.CharField(max_length=8)
     used_invitation_code = models.CharField(max_length=8, default='')

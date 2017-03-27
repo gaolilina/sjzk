@@ -11,7 +11,7 @@ from rongcloud import RongCloud
 from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
     Activity, Competition, UserAction, TeamAction, CompetitionTeamParticipator
 from ..utils import abort, action, save_uploaded_image, identity_verify, \
-    get_score_stage
+    get_score_stage, eid_verify
 from ..utils.decorators import *
 from ..utils.recommender import record_like_user, record_like_team
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
@@ -25,7 +25,7 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'LikedTeamAction', 'RelatedTeamList', 'OwnedTeamList',
            'InvitationList', 'Invitation', 'IdentityVerification',
            'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
-           'UserScoreRecord', 'CompetitionList']
+           'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification']
 
 
 class Username(View):
@@ -279,16 +279,16 @@ class IdentityVerification(Profile_):
     @require_token
     @validate_args({
         'role': forms.CharField(required=False, max_length=20),
-        'real_name': forms.CharField(required=False, max_length=20),
-        'id_number': forms.CharField(
-            required=False, min_length=18, max_length=18),
+        'real_name': forms.CharField(max_length=20),
+        'id_number': forms.CharField(min_length=18, max_length=18),
     })
     def post(self, request, **kwargs):
         """实名认证
 
         :param kwargs:
-            real_name:
-            id_number:
+            role: 角色
+            real_name: 真实姓名
+            id_number: 身份证号码
         """
 
         if not request.user.id_card:
@@ -297,13 +297,77 @@ class IdentityVerification(Profile_):
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'], kwargs['real_name'])
         if res != 1:
-            abort(404)
+            abort(404, 'id number and real name not match')
 
-        if not request.user.is_verified:
+        # 用户未提交实名信息或者等待重新审核
+        if request.user.is_verified in [0, 3]:
             for k in id_keys:
                 if k in kwargs:
                     setattr(request.user, k, kwargs[k])
         request.user.is_verified = 1
+        request.user.save()
+        abort(200)
+
+
+# noinspection PyClassHasNoInit
+class EidIdentityVerification(Profile_):
+    @require_token
+    @validate_args({
+        'role': forms.CharField(required=False, max_length=20),
+        'real_name': forms.CharField(max_length=20),
+        'id_number': forms.CharField(min_length=18, max_length=18),
+        'eid_issuer': forms.CharField(max_length=20),
+        'eid_issuer_sn': forms.CharField(max_length=20),
+        'eid_sn': forms.CharField(max_length=50),
+        'data_to_sign': forms.CharField(),
+        'eid_sign': forms.CharField(),
+        'eid_sign_algorithm': forms.CharField(),
+    })
+    def post(self, request, **kwargs):
+        """eid实名认证
+
+        :param kwargs:
+            role: 角色
+            real_name: 真实姓名
+            id_number: 身份证号码
+            eid_issuer: eid相关信息
+            eid_issuer_sn: eid相关信息
+            eid_sn: eid: eid相关信息
+            data_to_sign: 待签原文的base64字符串
+            eid_sign: eid卡对签名原文的签名结果
+            eid_sign_algorithm: eid卡进行签名的类型
+        """
+
+        if not request.user.id_card:
+            abort(403, 'Please upload the positive and negative of ID card')
+        id_keys = ('role', 'real_name', 'id_number', 'eid_issuer',
+                   'eid_issuer_sn', 'eid_sn')
+        # 调用第三方接口验证身份证的正确性
+        res = identity_verify(kwargs['id_number'], kwargs['real_name'])
+        if res != 1:
+            abort(404, 'id number and real name not match')
+
+        # 调用eid接口验证用户信息
+        data = {
+            'eidIssuer': kwargs['eid_issuer'],
+            'eidIssuerSn': kwargs['eid_issuer_sn'],
+            'eidSn': kwargs['eid_sn'],
+            'idNum': kwargs['id_number'],
+            'name': kwargs['real_name'],
+            'dataToSign': kwargs['data_to_sign'],
+            'eidSign': kwargs['eid_sign'],
+            'eidSignAlgorithm': kwargs['eid_sign_algorithm'],
+        }
+        res = eid_verify(data)
+        if res != 1:
+            abort(404, 'eid information and identity not match')
+
+        # 验证成功后将用户相关信息保存到数据库
+        if request.user.is_verified in [0, 3]:
+            for k in id_keys:
+                if k in kwargs:
+                    setattr(request.user, k, kwargs[k])
+        request.user.is_verified = 2
         request.user.save()
         abort(200)
 

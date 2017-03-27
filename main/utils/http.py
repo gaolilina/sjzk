@@ -107,7 +107,13 @@ def picture_verify(picture):
         return None
 
 
-def eid_verify(eID):
+def eid_verify(data):
     """调用eID接口进行认证"""
-    appid = "06YD1703230855371854"
-    appkey = "670C017516CB97D52C0B92A1F3DF8A20"
+    url = "http://127.0.0.1:8080/apserver/login"
+    f = urllib.request.urlopen(url, json.dumps(data))
+    content = f.read().decode('utf-8')
+    res = json.loads(content)
+    if res['result'] == "00":
+        return 1
+    else:
+        return 0
