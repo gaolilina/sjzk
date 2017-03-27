@@ -110,8 +110,8 @@ def picture_verify(picture):
 def eid_verify(data):
     """调用eID接口进行认证"""
     url = "http://127.0.0.1:8080/apserver/login"
-    headers = {'Content-Type': 'application/json'}
-    f = urllib.request.urlopen(url=url, headers=headers, data=json.dumps(data))
+    data = bytes(json.dumps(data), 'utf8')
+    f = urllib.request.urlopen(url, data)
     content = f.read().decode('utf-8')
     res = json.loads(content)
     if res['result'] == "00":

@@ -51,6 +51,7 @@ class List(View):
                 follower_count: 粉丝数
                 visitor_count: 访问数
                 is_verified: 是否通过实名认证
+                is_eid_verified: 是否通过eid认证(False/True)
         """
         c = User.enabled.count()
         users = User.enabled.order_by(self.ORDERS[order])[offset:offset + limit]
@@ -64,7 +65,8 @@ class List(View):
               'liker_count': u.likers.count(),
               'follower_count': u.followers.count(),
               'visitor_count': u.visitors.count(),
-              'is_verified': u.is_verified} for u in users]
+              'is_verified': u.is_verified,
+              'is_eid_verified': u.is_eid_verified} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
     @validate_args({
@@ -192,8 +194,7 @@ class Profile(View):
             unit2: 二级机构名（学院或部门等）
             profession: 专业
             score: 积分
-            id_number: 身份证号码
-            other_number: 其他证件号码
+            is_eid_verified: 是否通过eid认证(False/True)
         """
         user = user or request.user
 
@@ -228,8 +229,7 @@ class Profile(View):
              'unit2': user.unit2,
              'profession': user.profession,
              'score': user.score,
-             'id_number': user.id_number,
-             'other_number': user.other_number}
+             'is_eid_verified': user.is_eid_verified}
         return JsonResponse(r)
 
 
@@ -418,6 +418,8 @@ class Search(View):
                 followed_count: 关注的实体数
                 visitor_count: 访问数
                 tags: 标签
+                is_verified: 是否实名认证
+                is_eid_verified: 是否eid认证
                 time_created: 注册时间
         """
         i, j = offset, offset + limit
@@ -446,6 +448,8 @@ class Search(View):
               'visitor_count': u.visitors.count(),
               'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
+              'is_verified': u.is_verified,
+              'is_eid_verified': u.is_eid_verified,
               'time_created': u.time_created} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
@@ -498,6 +502,8 @@ class Screen(View):
                 followed_count: 关注的实体数
                 visitor_count: 访问数
                 tags: 标签
+                is_verified: 是否通过实名认证
+                is_eid_verified: 是否通过eid认证
                 time_created: 注册时间
         """
         users = User.enabled
@@ -553,6 +559,8 @@ class Screen(View):
               'visitor_count': u.visitors.count(),
               'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
+              'is_verified': u.is_verified,
+              'is_eid_verified': u.is_eid_verified,
               'time_created': u.time_created} for u in users]
         return JsonResponse({'count': c, 'list': l})
 

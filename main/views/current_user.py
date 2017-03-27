@@ -373,7 +373,7 @@ class EidIdentityVerification(Profile_):
             for k in id_keys:
                 if k in kwargs:
                     setattr(request.user, k, kwargs[k])
-        request.user.is_verified = 2
+        request.user.is_eid_verified = True
         request.user.save()
         abort(200)
 

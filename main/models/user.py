@@ -59,6 +59,7 @@ class User(models.Model):
     score = models.IntegerField(default=0, db_index=True)
 
     # 用户eID信息
+    is_eid_verified = models.BooleanField(default=False, db_index=True)
     eid_issuer = models.CharField(max_length=20, default='')
     eid_issuer_sn = models.CharField(max_length=20, default='')
     eid_sn = models.CharField(max_length=50, default='')
