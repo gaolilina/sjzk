@@ -279,6 +279,8 @@ class IdentityVerification(Profile_):
     @require_token
     @validate_args({
         'role': forms.CharField(required=False, max_length=20),
+        'unit1': forms.CharField(required=False, max_length=20),
+        'unit2': forms.CharField(required=False, max_length=20),
         'real_name': forms.CharField(max_length=20),
         'id_number': forms.CharField(min_length=18, max_length=18),
     })
@@ -287,13 +289,15 @@ class IdentityVerification(Profile_):
 
         :param kwargs:
             role: 角色
+            unit1: 机构
+            unit2: 次级机构
             real_name: 真实姓名
             id_number: 身份证号码
         """
 
         if not request.user.id_card:
             abort(403, 'Please upload the positive and negative of ID card')
-        id_keys = ('role', 'real_name', 'id_number')
+        id_keys = ('role', 'unit1', 'unit2', 'real_name', 'id_number')
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'], kwargs['real_name'])
         if res != 1:
@@ -314,6 +318,8 @@ class EidIdentityVerification(Profile_):
     @require_token
     @validate_args({
         'role': forms.CharField(required=False, max_length=20),
+        'unit1': forms.CharField(required=False, max_length=20),
+        'unit2': forms.CharField(required=False, max_length=20),
         'real_name': forms.CharField(max_length=20),
         'id_number': forms.CharField(min_length=18, max_length=18),
         'eid_issuer': forms.CharField(max_length=20),
@@ -328,6 +334,8 @@ class EidIdentityVerification(Profile_):
 
         :param kwargs:
             role: 角色
+            unit1: 机构
+            unit2: 次级机构
             real_name: 真实姓名
             id_number: 身份证号码
             eid_issuer: eid相关信息
@@ -338,8 +346,8 @@ class EidIdentityVerification(Profile_):
             eid_sign_algorithm: eid卡进行签名的类型
         """
 
-        id_keys = ('role', 'real_name', 'id_number', 'eid_issuer',
-                   'eid_issuer_sn', 'eid_sn')
+        id_keys = ('role', 'unit1', 'unit2', 'real_name', 'id_number',
+                   'eid_issuer', 'eid_issuer_sn', 'eid_sn')
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'], kwargs['real_name'])
         if res != 1:
