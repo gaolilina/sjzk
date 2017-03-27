@@ -338,8 +338,6 @@ class EidIdentityVerification(Profile_):
             eid_sign_algorithm: eid卡进行签名的类型
         """
 
-        if not request.user.id_card:
-            abort(403, 'Please upload the positive and negative of ID card')
         id_keys = ('role', 'real_name', 'id_number', 'eid_issuer',
                    'eid_issuer_sn', 'eid_sn')
         # 调用第三方接口验证身份证的正确性
