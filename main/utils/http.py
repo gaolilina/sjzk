@@ -121,4 +121,4 @@ def eid_verify(data):
     if res['result'] == "00":
         return 1
     else:
-        return 0
+        return int(res['result'])

@@ -351,7 +351,7 @@ class EidIdentityVerification(Profile_):
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'], kwargs['real_name'])
         if res != 1:
-            abort(404, 'id number and real name not match')
+            abort(403, 'id number and real name not match')
 
         # 调用eid接口验证用户信息
         data = {
@@ -366,7 +366,7 @@ class EidIdentityVerification(Profile_):
         }
         res = eid_verify(data)
         if res != 1:
-            abort(404, 'eid information and identity not match')
+            abort(res, 'eid information and identity not match')
 
         # 验证成功后将用户相关信息保存到数据库
         if request.user.is_verified in [0, 3]:
