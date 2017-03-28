@@ -117,8 +117,9 @@ def eid_verify(data):
     conn.request('POST', '/apserver/login', data, headers)
     response = conn.getresponse()
     content = response.read().decode('utf-8')
-    res = json.loads(content)
-    if res['result'] == "00":
+    print (content)
+    # res = json.loads(content)
+    if content['result'] == "00":
         return 1
     else:
         return 0
