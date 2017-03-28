@@ -109,7 +109,7 @@ def picture_verify(picture):
 
 def eid_verify(data):
     """调用eID接口进行认证"""
-    url = "http://127.0.0.1"
+    url = "http://www.chuangyh.com"
     data = json.dumps(data)
     headers = {"Content-type": "application/json",
                "Accept": "text/plain"}
