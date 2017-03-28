@@ -349,9 +349,9 @@ class EidIdentityVerification(Profile_):
         id_keys = ('role', 'unit1', 'unit2', 'real_name', 'id_number',
                    'eid_issuer', 'eid_issuer_sn', 'eid_sn')
         # 调用第三方接口验证身份证的正确性
-        res = identity_verify(kwargs['id_number'], kwargs['real_name'])
-        if res != 1:
-            abort(403, 'id number and real name not match')
+        # res = identity_verify(kwargs['id_number'], kwargs['real_name'])
+        # if res != 1:
+        #    abort(403, 'id number and real name not match')
 
         # 调用eid接口验证用户信息
         data = {
