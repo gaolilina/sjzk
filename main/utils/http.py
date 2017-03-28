@@ -111,13 +111,13 @@ def eid_verify(data):
     """调用eID接口进行认证"""
     url = "127.0.0.1"
     data = json.dumps(data)
-    headers = {"Content-type": "application/x-www-form-urlencoded",
-               "Accept": "text/plain"}
+    headers = {"Content-type": "application/json"}
     conn = http.client.HTTPConnection(url, 8080)
     conn.request('POST', '/apserver/login', data, headers)
     response = conn.getresponse()
+    print(response.status, response.reason)
     content = response.read().decode('utf-8')
-    print (content)
+    print(content)
     # res = json.loads(content)
     if content['result'] == "00":
         return 1
