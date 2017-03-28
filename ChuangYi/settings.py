@@ -17,8 +17,15 @@ WSGI_APPLICATION = 'ChuangYi.wsgi.application'
 INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'admin.apps.ChuangYiAdmin',
-    'main.apps.ChuangYi'
+    'main.apps.ChuangYi',
+    'django_crontab',
 ]
+
+CRONJOBS = [
+    ('00 00 * * *', 'django.core.management.call_command', ['build_models'], {},
+     '>> /var/log/run.log'),
+]
+
 ROOT_URLCONF = 'main.urls'
 MIDDLEWARE_CLASSES = ['main.utils.abort.AbortExceptionHandler']
 TEMPLATES = [
