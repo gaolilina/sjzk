@@ -38,13 +38,15 @@ class User(models.Model):
     city = models.CharField(max_length=20, default='')
     county = models.CharField(max_length=20, default='')
 
-    # 是否通过身份验证，0：未提交，1：待审核，2：审核通过，3：审核未通过，请重新提交
+    # 是否通过实名验证,0:未提交, 1:待审核, 2:身份证审核通过, 3:审核未通过,请重新提交,
+    # 4:Eid审核通过
     is_verified = models.IntegerField(default=0, db_index=True)
     real_name = models.CharField(max_length=20, default='')
     id_number = models.CharField(max_length=18, default='')
     id_card = models.CharField(max_length=100, default='')
 
-    is_role_verified = models.BooleanField(default=False, db_index=True)
+    # 是否通过身份验证，0:未提交, 1:待审核, 2:审核通过, 3:审核未通过,请重新提交
+    is_role_verified = models.IntegerField(default=0, db_index=True)
     role = models.CharField(max_length=20, default='')
     other_number = models.CharField(max_length=20, default='')
     other_card = models.CharField(max_length=100, default='')
@@ -52,14 +54,13 @@ class User(models.Model):
     unit1 = models.CharField(max_length=20, default='')
     # 学院或子部门
     unit2 = models.CharField(max_length=20, default='')
-    # 专用或职业
+    # 专业或职业
     profession = models.CharField(max_length=20, default='')
 
     # 用户积分
     score = models.IntegerField(default=0, db_index=True)
 
     # 用户eID信息
-    is_eid_verified = models.BooleanField(default=False, db_index=True)
     eid_issuer = models.CharField(max_length=20, default='')
     eid_issuer_sn = models.CharField(max_length=20, default='')
     eid_sn = models.CharField(max_length=50, default='')

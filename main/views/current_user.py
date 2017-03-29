@@ -25,7 +25,8 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'LikedTeamAction', 'RelatedTeamList', 'OwnedTeamList',
            'InvitationList', 'Invitation', 'IdentityVerification',
            'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
-           'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification']
+           'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification',
+           'OtherIdentityVerification']
 
 
 class Username(View):
@@ -278,9 +279,6 @@ class Profile(Profile_):
 class IdentityVerification(Profile_):
     @require_token
     @validate_args({
-        'role': forms.CharField(required=False, max_length=20),
-        'unit1': forms.CharField(required=False, max_length=20),
-        'unit2': forms.CharField(required=False, max_length=20),
         'real_name': forms.CharField(max_length=20),
         'id_number': forms.CharField(min_length=18, max_length=18),
     })
@@ -288,16 +286,13 @@ class IdentityVerification(Profile_):
         """实名认证
 
         :param kwargs:
-            role: 角色
-            unit1: 机构
-            unit2: 次级机构
             real_name: 真实姓名
             id_number: 身份证号码
         """
 
         if not request.user.id_card:
             abort(403, 'Please upload the positive and negative of ID card')
-        id_keys = ('role', 'unit1', 'unit2', 'real_name', 'id_number')
+        id_keys = ('real_name', 'id_number')
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'], kwargs['real_name'])
         if res != 1:
@@ -306,8 +301,8 @@ class IdentityVerification(Profile_):
         # 用户未提交实名信息或者等待重新审核
         if request.user.is_verified in [0, 3]:
             for k in id_keys:
-                if k in kwargs:
-                    setattr(request.user, k, kwargs[k])
+                setattr(request.user, k, kwargs[k])
+        # 将实名认证状态码改为1表示待审核状态
         request.user.is_verified = 1
         request.user.save()
         abort(200)
@@ -317,9 +312,6 @@ class IdentityVerification(Profile_):
 class EidIdentityVerification(Profile_):
     @require_token
     @validate_args({
-        'role': forms.CharField(required=False, max_length=20),
-        'unit1': forms.CharField(required=False, max_length=20),
-        'unit2': forms.CharField(required=False, max_length=20),
         'real_name': forms.CharField(max_length=20),
         'id_number': forms.CharField(min_length=18, max_length=18),
         'eid_issuer': forms.CharField(max_length=20),
@@ -333,9 +325,6 @@ class EidIdentityVerification(Profile_):
         """eid实名认证
 
         :param kwargs:
-            role: 角色
-            unit1: 机构
-            unit2: 次级机构
             real_name: 真实姓名
             id_number: 身份证号码
             eid_issuer: eid相关信息
@@ -346,12 +335,8 @@ class EidIdentityVerification(Profile_):
             eid_sign_algorithm: eid卡进行签名的类型
         """
 
-        id_keys = ('role', 'unit1', 'unit2', 'real_name', 'id_number',
-                   'eid_issuer', 'eid_issuer_sn', 'eid_sn')
-        # 调用第三方接口验证身份证的正确性
-        # res = identity_verify(kwargs['id_number'], kwargs['real_name'])
-        # if res != 1:
-        #    abort(403, 'id number and real name not match')
+        id_keys = ('real_name', 'id_number', 'eid_issuer', 'eid_issuer_sn',
+                   'eid_sn')
 
         # 调用eid接口验证用户信息
         data = {
@@ -368,12 +353,55 @@ class EidIdentityVerification(Profile_):
         if res != 1:
             abort(res, 'eid information and identity not match')
 
-        # 验证成功后将用户相关信息保存到数据库
+        # 验证成功后，若用户当前的状态时待审核或者审核未通过，则将用户相关信息保存到数据库
         if request.user.is_verified in [0, 3]:
             for k in id_keys:
                 if k in kwargs:
                     setattr(request.user, k, kwargs[k])
-        request.user.is_eid_verified = True
+        # 将实名认证状态码改为4表示EID认证通过
+        request.user.is_verified = 4
+        request.user.save()
+        abort(200)
+
+
+# noinspection PyClassHasNoInit
+class OtherIdentityVerification(Profile_):
+    @require_token
+    @validate_args({
+        'role': forms.CharField(max_length=20),
+        'unit1': forms.CharField(max_length=20),
+        'unit2': forms.CharField(required=False, max_length=20),
+        'real_name': forms.CharField(required=False, max_length=20),
+        'other_number': forms.CharField(min_length=18, max_length=18),
+        'profession': forms.CharField(required=False, max_length=20),
+    })
+    def post(self, request, **kwargs):
+        """身份认证
+
+        :param kwargs:
+            role: 角色
+            unit1: 机构
+            unit2: 次级机构
+            real_name: 真实姓名
+            other_number: 证件号码
+            profession: 专业
+        """
+
+        if not request.user.other_card:
+            abort(403,
+                  'Please upload the positive and negative of your card')
+
+        role_keys = ('role', 'other_number', 'unit1', 'unit2', 'real_name',
+                     'profession')
+
+        # 用户未提交身份审核信息或者审核未通过
+        if request.user.is_role_verified in [0, 3]:
+            for k in role_keys:
+                if k in kwargs:
+                    setattr(request.user, k, kwargs[k])
+
+        # 将身份认证状态设为1表示待审核
+        request.user.is_role_verified = 1
         request.user.save()
         abort(200)
 
