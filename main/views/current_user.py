@@ -372,7 +372,7 @@ class OtherIdentityVerification(Profile_):
         'unit1': forms.CharField(max_length=20),
         'unit2': forms.CharField(required=False, max_length=20),
         'real_name': forms.CharField(required=False, max_length=20),
-        'other_number': forms.CharField(min_length=18, max_length=18),
+        'other_number': forms.CharField(max_length=20),
         'profession': forms.CharField(required=False, max_length=20),
     })
     def post(self, request, **kwargs):
