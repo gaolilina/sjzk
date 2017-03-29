@@ -404,8 +404,6 @@ class Profile(View):
                 fields.append('')
             team.field1, team.field2 = fields[0].strip(), fields[1].strip()
 
-        team.members.create(user=request.user)
-
         if tags:
             tags = tags.split('|')[:5]
             with transaction.atomic():
