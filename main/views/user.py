@@ -51,7 +51,7 @@ class List(View):
                 follower_count: 粉丝数
                 visitor_count: 访问数
                 is_verified: 是否通过实名认证
-                is_eid_verified: 是否通过eid认证(False/True)
+                is_role_verified: 是否通过身份认证
         """
         c = User.enabled.count()
         users = User.enabled.order_by(self.ORDERS[order])[offset:offset + limit]
@@ -66,7 +66,7 @@ class List(View):
               'follower_count': u.followers.count(),
               'visitor_count': u.visitors.count(),
               'is_verified': u.is_verified,
-              'is_eid_verified': u.is_eid_verified} for u in users]
+              'is_role_verified': u.is_role_verified} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
     @validate_args({
@@ -186,15 +186,16 @@ class Profile(View):
             tags: 标签，格式：['tag1', 'tag2', ...]
             x_counts 各种计数
                 x: follower | followed | friend | liker | visitor
-            is_verified: 是否实名，0：未提交，1：待审核，2：审核通过，3：审核未通过，请重新提交
+            is_verified: 是否实名，0：未提交，1：待审核，2：身份认证通过，
+                3：审核未通过，请重新提交，4：通过Eid认证
             real_name: 真实名
-            is_role_verified
+            is_role_verified: 是否实名，
+                0：未提交，1：待审核，2：审核通过，3：审核未通过，请重新提交
             role: 角色
             unit1: 机构名（学校或公司等）
             unit2: 二级机构名（学院或部门等）
             profession: 专业
             score: 积分
-            is_eid_verified: 是否通过eid认证(False/True)
         """
         user = user or request.user
 
@@ -228,8 +229,7 @@ class Profile(View):
              'unit1': user.unit1,
              'unit2': user.unit2,
              'profession': user.profession,
-             'score': user.score,
-             'is_eid_verified': user.is_eid_verified}
+             'score': user.score}
         return JsonResponse(r)
 
 
@@ -419,7 +419,7 @@ class Search(View):
                 visitor_count: 访问数
                 tags: 标签
                 is_verified: 是否实名认证
-                is_eid_verified: 是否eid认证
+                is_role_verified: 是否通过身份认证
                 time_created: 注册时间
         """
         i, j = offset, offset + limit
@@ -449,7 +449,7 @@ class Search(View):
               'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
               'is_verified': u.is_verified,
-              'is_eid_verified': u.is_eid_verified,
+              'is_role_verified': u.is_role_verified,
               'time_created': u.time_created} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
@@ -503,7 +503,7 @@ class Screen(View):
                 visitor_count: 访问数
                 tags: 标签
                 is_verified: 是否通过实名认证
-                is_eid_verified: 是否通过eid认证
+                is_role_verified: 是否通过身份认证
                 time_created: 注册时间
         """
         users = User.enabled
@@ -560,7 +560,7 @@ class Screen(View):
               'icon_url': u.icon,
               'tags': [tag.name for tag in u.tags.all()],
               'is_verified': u.is_verified,
-              'is_eid_verified': u.is_eid_verified,
+              'is_role_verified': u.is_role_verified,
               'time_created': u.time_created} for u in users]
         return JsonResponse({'count': c, 'list': l})
 
