@@ -1311,9 +1311,9 @@ class NeedSearch(View):
         if type is not None:
             qs = qs.filter(type=type)
         if status:
-            qs = qs.filter(status=status, name__contains=name)
+            qs = qs.filter(status=status, title__contains=name)
         else:
-            qs = qs.filter(status=0, name__contains=name)
+            qs = qs.filter(status=0, title__contains=name)
         c = qs.count()
         needs = qs[offset:offset + limit]
         l = list()
