@@ -95,6 +95,8 @@ urls = [
         NeedInvitation.as_view(), name='team_cooperation_invitations'),
     url(r'^(?P<team_id>[0-9]+)/needs/invitation/(?P<need_id>[0-9]+)/$',
         NeedInvitation.as_view(), name='need_cooperation_invitation'),
+    # 需求搜索
+    url(r'^needs/search/$', NeedSearch.as_view(), name='need_search'),
 
     # 任务
     url(r'^(?P<team_id>[0-9]+)/internal_tasks/$', InternalTaskList.as_view(),

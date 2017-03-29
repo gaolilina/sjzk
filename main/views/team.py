@@ -25,7 +25,7 @@ __all__ = ('List', 'Search', 'Screen', 'Profile', 'Icon', 'MemberList',
            'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
            'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
            'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList',
-           'CompetitionList', 'TeamScoreRecord')
+           'CompetitionList', 'TeamScoreRecord', 'NeedSearch')
 
 
 class List(View):
@@ -1274,6 +1274,72 @@ class Need(View):
         need.status = 2
         need.save()
         abort(200)
+
+
+# noinspection PyUnusedLocal
+class NeedSearch(View):
+    # noinspection PyShadowingBuiltins
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'type': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'name': forms.CharField(max_length=20),
+    })
+    def get(self, request, name, type=None, status=None, offset=0, limit=10):
+        """
+        获取发布中的需求列表
+
+        :param offset: 偏移量
+        :param name: 标题包含字段
+        :return:
+            count: 需求总数
+            list: 需求列表
+                need_id: 需求ID
+                team_id: 团队ID
+                team_name: 团队名称
+                icon_url: 团队头像
+                status: 需求状态
+                title: 需求标题
+                number: 所需人数/团队人数
+                degree: 需求学历
+                members: 需求的加入者
+                time_created: 发布时间
+        """
+        qs = TeamNeed.objects
+        if type is not None:
+            qs = qs.filter(type=type)
+        if status:
+            qs = qs.filter(status=status, name__contains=name)
+        else:
+            qs = qs.filter(status=0, name__contains=name)
+        c = qs.count()
+        needs = qs[offset:offset + limit]
+        l = list()
+        for n in needs:
+            need_dic = dict()
+            members = dict()
+            if n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
+            need_dic['id'] = n.id
+            need_dic['team_id'] = n.team.id
+            need_dic['team_name'] = n.team.name
+            need_dic['number'] = n.number
+            need_dic['icon_url'] = n.team.icon
+            need_dic['status'] = n.status
+            need_dic['title'] = n.title
+            need_dic['degree'] = n.degree
+            need_dic['members'] = members
+            need_dic['time_created'] = n.time_created
+            l.append(need_dic)
+        return JsonResponse({'count': c, 'list': l})
 
 
 class NeedUserList(View):
