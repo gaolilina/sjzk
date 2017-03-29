@@ -13,11 +13,11 @@ def get_object_name(action):
     elif action.object_type == "team":
         name = Team.enabled.get(id=action.object_id).name
     elif action.object_type == "member_need":
-        name = TeamNeed.enabled.get(id=action.object_id).title
+        name = TeamNeed.objects.get(id=action.object_id).title
     elif action.object_type == "outsource_need":
-        name = TeamNeed.enabled.get(id=action.object_id).title
+        name = TeamNeed.objects.get(id=action.object_id).title
     elif action.object_type == "undertake_need":
-        name = TeamNeed.enabled.get(id=action.object_id).title
+        name = TeamNeed.objects.get(id=action.object_id).title
     else:
         name = ""
     return name
@@ -32,11 +32,11 @@ def get_related_object_name(action):
     elif action.related_object_type == "team":
         name = Team.enabled.get(id=action.related_object_id).name
     elif action.related_object_type == "member_need":
-        name = TeamNeed.enabled.get(id=action.related_object_id).title
+        name = TeamNeed.objects.get(id=action.related_object_id).title
     elif action.related_object_type == "outsource_need":
-        name = TeamNeed.enabled.get(id=action.related_object_id).title
+        name = TeamNeed.objects.get(id=action.related_object_id).title
     elif action.related_object_type == "undertake_need":
-        name = TeamNeed.enabled.get(id=action.related_object_id).title
+        name = TeamNeed.objects.get(id=action.related_object_id).title
     else:
         name = ""
     return name
