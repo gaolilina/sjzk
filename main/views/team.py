@@ -1287,12 +1287,14 @@ class NeedSearch(View):
         'type': forms.IntegerField(required=False, min_value=0, max_value=2),
         'name': forms.CharField(max_length=20),
     })
-    def get(self, request, name, type=None, status=None, offset=0, limit=10):
+    def get(self, request, name, type=None, status=0, offset=0, limit=10):
         """
         获取发布中的需求列表
 
         :param offset: 偏移量
         :param name: 标题包含字段
+        :param type: 需求的类型
+        :param status: 需求状态，默认为0:发布中
         :return:
             count: 需求总数
             list: 需求列表
@@ -1307,13 +1309,9 @@ class NeedSearch(View):
                 members: 需求的加入者
                 time_created: 发布时间
         """
-        qs = TeamNeed.objects
+        qs = TeamNeed.objects.filter(status=status, title__contains=name)
         if type is not None:
             qs = qs.filter(type=type)
-        if status:
-            qs = qs.filter(status=status, title__contains=name)
-        else:
-            qs = qs.filter(status=0, title__contains=name)
         c = qs.count()
         needs = qs[offset:offset + limit]
         l = list()
