@@ -38,6 +38,10 @@
         </ul>
         <div style="margin: 20px 0;">
             <div class="input-group">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick="javascript:fetchCompetition(1);">显示全部竞赛</button>
+                    <button class="btn btn-default" type="button" onclick="javascript:fetchCompetition(1, true);">只显示参加的竞赛</button>
+                </span>
                 <select id="team_selector" class="form-control" ></select>
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button" onclick="javascript:location.href='create_team.html';">创建团队</button>
@@ -234,9 +238,10 @@
             }).fail(errorHandler);
         }
 
-        function fetchCompetition(page) {
+        function fetchCompetition(page, owned) {
+            var team_id = +window.localStorage.getItem("team_id");
             competitonPage = page;
-            get('/competition/', {
+            get(owned && !isNaN(team_id) ? ('/teams/' +  team_id + '/competition/') : '/competition/', {
                 offset: (page - 1) * 10,
                 limit: 10
             }).then(function(data) {
@@ -244,7 +249,13 @@
 
                 var str1 = "";
                 for (var i = 0; i < data.list.length; i++) {
-                    str1 += '<li class="list-group-item"><a href="javascript:jumpToNotification(' + data.list[i].id + ')">通知</a><a href="javascript:participateCompetition(' + data.list[i].id + ')">参加</a>' + data.list[i].name + '</li>';
+                    var str2 = "";
+                    if (data.list[i].status > 1 && data.list[i].status < 6) {
+                        var str3 = "token=" + localStorage.getItem("token") + "?team_id=" + team_id + "?competition_id=" + data.list[i].id;
+                        str2 = '<a href="/static/upload/?' + str3 + '" target="_blank">上传</a>';
+                    }
+                    str1 += '<li class="list-group-item">' + str2 + '<a href="javascript:jumpToNotification(' + data.list[i].id + ')">通知</a><a href="javascript:participateCompetition(' + data.list[i].id + ')">参加</a>' + data.list[i].name + '</li>';
+                    
                 }
                 document.querySelector("#competition_list").innerHTML = str1;
 
