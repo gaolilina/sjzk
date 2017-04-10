@@ -65,15 +65,23 @@
             </td>
         </tr>
     {% endfor %}
+</table>
+报名者：<a href="{% url 'admin:admin_activity:excel' model.id %}">导出Excel</a>
+<table>
     <tr>
-        <td>报名者：</td>
-        <td>
-            <div><a href="{% url 'admin:admin_activity:excel' model.id %}">导出Excel</a></div>
-            {% for user in model.user_participators.all %}
-                <div>{{ user.user.username }}</div>
-            {% endfor %}
-        </td>
+        <td>用户</td>
+        <td>报名时间</td>
+        <td>联系方式</td>
+        <td>省 市 区</td>
     </tr>
+    {% for user in model.user_participators.all %}
+    <tr>
+        <td>{{ user.user.name }}</td>
+        <td>{{ user.time_created }}</td>
+        <td>{{ user.user.phone_number }}</td>
+        <td>{{ user.user.province }} {{ user.user.city }} {{ user.user.county }}</td>
+    </tr>
+    {% endfor %}
 </table>
 {% endblock %}
 

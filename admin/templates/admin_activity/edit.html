@@ -78,14 +78,6 @@
         </tr>
     {% endfor %}
     <tr>
-        <td>报名者：</td>
-        <td>
-            {% for user in model.user_participators.all %}
-                <div>{{ user.user.name }}</div>
-            {% endfor %}
-        </td>
-    </tr>
-    <tr>
         <td colspan="2">
             {{ msg }}
             <div class="buttons">

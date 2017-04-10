@@ -77,15 +77,25 @@
             </td>
         </tr>
     {% endfor %}
+</table>
+报名者：<a href="{% url 'admin:admin_competition:excel' model.id %}">导出Excel</a>
+<table>
     <tr>
-        <td>报名者：</td>
-        <td>
-            <div><a href="{% url 'admin:admin_competition:excel' model.id %}">导出Excel</a></div>
-            {% for team in model.team_participators.all %}
-                <div>{{ team.team.name }}</div>
-            {% endfor %}
-        </td>
+        <td>团队</td>
+        <td>报名时间</td>
+        <td>队长</td>
+        <td>队长联系方式</td>
+        <td>省 市 区</td>
     </tr>
+    {% for team in model.team_participators.all %}
+    <tr>
+        <td>{{ team.team.name }}</td>
+        <td>{{ team.time_created }}</td>
+        <td>{{ team.team.owner.name }}</td>
+        <td>{{ team.team.owner.phone_number }}</td>
+        <td>{{ team.team.province }} {{ team.team.city }} {{ team.team.county }}</td>
+    </tr>
+    {% endfor %}
 </table>
 {% endblock %}
 

@@ -140,7 +140,7 @@ class AdminActivityExcelView(View):
         if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
             return HttpResponseForbidden()
 
-        template = loader.get_template("admin_competition/excel.html")
+        template = loader.get_template("admin_activity/excel.html")
         context = Context({'model': model})
         return HttpResponse(template.render(context),
             content_type="text/csv")

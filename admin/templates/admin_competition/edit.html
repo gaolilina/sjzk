@@ -90,14 +90,6 @@
         </tr>
     {% endfor %}
     <tr>
-        <td>报名者：</td>
-        <td>
-            {% for team in model.team_participators.all %}
-                <div>{{ team.team.name }}</div>
-            {% endfor %}
-        </td>
-    </tr>
-    <tr>
         <td colspan="2">
             {{ msg }}
             <div class="buttons">
