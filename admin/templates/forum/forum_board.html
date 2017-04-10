@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:forum:forum_board' mod.id %}" method="post">
 <table>
-    {% include "parts/input_control.html" with text="name" name="name" type="text" maxlen="20" value=mod.name %}{% include "parts/input_control.html" with text="description" name="description" type="text" maxlen="100" value=mod.description %}<tr><td>owner：</td><td><a href="{% url "admin:user:user" mod.owner.id %}">{{ mod.owner.id }}</a></td></tr>{% include "parts/input_control.html" with text="time_created" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}{% include "parts/input_control.html" with text="is_system_board" name="is_system_board" type="checkbox" maxlen="{{maxlen}}" value=mod.is_system_board %}{% include "parts/input_control.html" with text="is_enabled" name="is_enabled" type="checkbox" maxlen="{{maxlen}}" value=mod.is_enabled %}
+    {% include "parts/input_control.html" with text="名字" name="name" type="text" maxlen="20" value=mod.name %}{% include "parts/input_control.html" with text="简介" name="description" type="text" maxlen="100" value=mod.description %}<tr><td>所有者：</td><td><a href="{% url "admin:user:user" mod.owner.id %}">{{ mod.owner.id }}</a></td></tr>{% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}{% include "parts/input_control.html" with text="是否系统板块" name="is_system_board" type="checkbox" maxlen="{{maxlen}}" value=mod.is_system_board %}{% include "parts/input_control.html" with text="是否启用" name="is_enabled" type="checkbox" maxlen="{{maxlen}}" value=mod.is_enabled %}
     <tr>
         <td>{{ msg }}</td>
         <td>

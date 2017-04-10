@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:competition:competition_stage' mod.id %}" method="post">
 <table>
-    <tr><td>competition：</td><td><a href="{% url "admin:competition:competition" mod.competition.id %}">{{ mod.competition.id }}</a></td></tr>{% include "parts/input_control.html" with text="status" name="status" type="number" maxlen="{{maxlen}}" value=mod.status %}{% include "parts/input_control.html" with text="time_started" name="time_started" type="datetime" maxlen="{{maxlen}}" value=mod.time_started %}{% include "parts/input_control.html" with text="time_ended" name="time_ended" type="datetime" maxlen="{{maxlen}}" value=mod.time_ended %}{% include "parts/input_control.html" with text="time_created" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
+    <tr><td>竞赛：</td><td><a href="{% url "admin:competition:competition" mod.competition.id %}">{{ mod.competition.id }}</a></td></tr>{% include "parts/input_control.html" with text="状态" name="status" type="number" maxlen="{{maxlen}}" value=mod.status %}{% include "parts/input_control.html" with text="开始时间" name="time_started" type="datetime" maxlen="{{maxlen}}" value=mod.time_started %}{% include "parts/input_control.html" with text="结束时间" name="time_ended" type="datetime" maxlen="{{maxlen}}" value=mod.time_ended %}{% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
     <tr>
         <td>{{ msg }}</td>
         <td>
