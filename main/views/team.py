@@ -962,6 +962,9 @@ class NeedList(View):
             gender: 性别要求
             field: 领域
             skill: 技能
+            province: 省
+            city: 市
+            county: 县\区
             degree: 学历
             major: 专业
             time_graduated: 毕业时间
@@ -974,6 +977,9 @@ class NeedList(View):
             gender: 性别要求
             field: 领域
             skill: 技能
+            province: 省
+            city: 市
+            county: 县\区
             degree: 学历
             major: 专业
             cost: 费用
@@ -988,6 +994,9 @@ class NeedList(View):
             skill: 技能
             degree: 学历
             major: 专业
+            province: 省
+            city: 市
+            county: 县\区
             cost: 费用
             cost_unit: 费用单位
             time_started: 承接开始时间
@@ -1019,6 +1028,9 @@ class NeedList(View):
             required=False, min_value=0, max_value=99),
         'age_max': forms.IntegerField(
             required=False, min_value=1, max_value=100),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'county': forms.CharField(required=False, max_length=20),
         'time_graduated': forms.DateField(required=False),
     })
     def create_member_need(self, request, team, **kwargs):
@@ -1065,6 +1077,9 @@ class NeedList(View):
             required=False, min_value=1, max_value=100),
         'cost': forms.IntegerField(required=False),
         'cost_unit': forms.CharField(required=False, max_length=1),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'county': forms.CharField(required=False, max_length=20),
         'time_started': forms.DateField(),
         'time_ended': forms.DateField(),
     })
@@ -1103,6 +1118,9 @@ class NeedList(View):
         'number': forms.IntegerField(min_value=1),
         'field': forms.CharField(required=False, max_length=20),
         'skill': forms.CharField(required=False, max_length=20),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'county': forms.CharField(required=False, max_length=20),
         'degree': forms.CharField(required=False, max_length=20),
         'major': forms.CharField(required=False, max_length=20),
         'cost': forms.IntegerField(required=False),
@@ -1142,14 +1160,15 @@ class NeedList(View):
 class Need(View):
     member_keys = ('id', 'title', 'description', 'number', 'age_min',
                    'age_max', 'gender', 'field', 'skill', 'degree', 'major',
-                   'time_graduated', 'deadline')
+                   'time_graduated', 'deadline', 'province', 'city', 'county')
     outsource_keys = ('id', 'title', 'description', 'number', 'age_min',
                       'age_max', 'gender', 'field', 'skill', 'degree', 'major',
                       'cost', 'cost_unit', 'time_started', 'time_ended',
-                      'deadline')
+                      'deadline', 'province', 'city', 'county')
     undertake_keys = ('id', 'title', 'description', 'number', 'field', 'skill',
                       'degree', 'major', 'cost', 'cost_unit',
-                      'time_started', 'time_ended', 'deadline')
+                      'time_started', 'time_ended', 'deadline',
+                      'province', 'city', 'county')
 
     @fetch_object(TeamNeed.objects, 'need')
     @require_token
@@ -1172,6 +1191,9 @@ class Need(View):
                 skill: 技能
                 degree: 学历
                 major: 专业
+                province: 省
+                city: 市
+                county: 县\区
                 members: 已加入成员
                 time_graduated: 毕业时间
                 deadline: 截止时间
@@ -1191,6 +1213,9 @@ class Need(View):
                 degree: 学历
                 major: 专业
                 cost: 费用
+                province: 省
+                city: 市
+                county: 县\区
                 cost_unit: 费用单位
                 members: 已加入团队
                 time_started: 任务开始时间
@@ -1210,6 +1235,9 @@ class Need(View):
                 degree: 学历
                 major: 专业
                 cost: 费用
+                province: 省
+                city: 市
+                county: 县\区
                 cost_unit: 费用单位
                 members: 已加入团队
                 time_started: 任务开始时间

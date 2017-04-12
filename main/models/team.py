@@ -158,6 +158,10 @@ class TeamNeed(models.Model):
     # 0: member, 1: outsource, 2: undertake
     type = models.IntegerField(db_index=True)
     title = models.TextField(max_length=20)
+    # 地区相关
+    province = models.CharField(max_length=20, default='')
+    city = models.CharField(max_length=20, default='')
+    county = models.CharField(max_length=20, default='')
     description = models.CharField(default='', max_length=200)
     # 0: pending, 1: completed, 2: removed
     status = models.IntegerField(default=0, db_index=True)
