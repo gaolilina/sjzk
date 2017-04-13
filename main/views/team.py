@@ -106,6 +106,10 @@ class List(View):
         fields = kwargs.pop('fields', None)
         tags = kwargs.pop('tags', None)
 
+        # 昵称唯一性验证
+        if Team.enabled.filter(name=name).count() != 0:
+            abort(400, 'group already exists')
+
         team = Team(owner=request.user, name=name)
         team.save()
         # 调用融云接口创建团队群聊
@@ -390,13 +394,19 @@ class Profile(View):
         tags = kwargs.pop('tags', None)
 
         for k in kwargs:
-            setattr(team, k, kwargs[k])
             if k == "name":
+                # 昵称的唯一性验证
+                if Team.enabled.filter(name=kwargs['name']).exclude(
+                        id=team.id).count() != 0:
+                    abort(400, 'group already exists')
+
+                # 更新容云上的信息
                 rcloud = RongCloud()
                 r = rcloud.Group.refresh(
                     groupId=str(team.id), groupName=kwargs['name'])
                 if r.result['code'] != 200:
                     abort(404, 'refresh group chat failed')
+            setattr(team, k, kwargs[k])
 
         if fields:
             fields = fields.split('|')[:2]
@@ -1005,6 +1015,10 @@ class NeedList(View):
         if request.user != team.owner:
             abort(403)
 
+        # 检查是否实名
+        if request.user.is_verified not in [2, 4]:
+            abort(400, 'you must verified firstly!')
+
         if type == 0:
             self.create_member_need(request, team)
         elif type == 1:
@@ -1544,6 +1558,10 @@ class MemberNeedRequestList(View):
         if request.user == need.team.owner:
             abort(403)
 
+        # 是否实名认证
+        if request.user.is_verified not in [2, 4]:
+            abort(400, 'you must verified firstly!')
+
         if need.team.members.filter(user=request.user).exists():
             abort(403)
 
@@ -1656,6 +1674,10 @@ class NeedRequestList(View):
         """向需求发出合作申请
 
         """
+        # 检查是否实名
+        if request.user.is_verified not in [2, 4]:
+            abort(400, 'you must verified firstly!')
+
         if need.cooperation_requests.filter(sender=team).exists():
             abort(404)
         if need.cooperation_invitations.filter(invitee=team).exists():

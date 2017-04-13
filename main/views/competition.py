@@ -281,7 +281,7 @@ class TeamParticipatorList(View):
             if competition.city and competition.city != team.city:
                 abort(403, '团队所在地区不符')
             for m in team.members.all():
-                if m.user.is_verified != 2:
+                if m.user.is_verified not in [2, 4]:
                     abort(403, '团队成员未实名认证')
                 if competition.user_type != 0:
                     if competition.user_type == 1 and m.user.role != "学生":

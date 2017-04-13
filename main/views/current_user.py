@@ -230,12 +230,17 @@ class Profile(Profile_):
 
         name = kwargs.pop('name', '')
         if len(name) > 0:
+            # 昵称唯一性验证
+            if Team.enabled.filter(name=kwargs['name']).exclude(
+                    id=request.user.id).count() != 0:
+                abort(400, 'group already exists')
+            # 首次修改昵称增加积分
             if (request.user.name == "创易汇用户 #" + str(request.user.id)) and \
                     (request.user.name != name):
                 request.user.score += get_score_stage(3)
                 request.user.score_records.create(
                     score=get_score_stage(3), type="初始数据",
-                    description="首次更换用户名")
+                    description="首次更换昵称")
             request.user.name = name
             # 用户昵称更换后调用融云接口更改融云上的用户头像
             if request.user.icon:
