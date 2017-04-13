@@ -231,7 +231,7 @@ class Profile(Profile_):
         name = kwargs.pop('name', '')
         if len(name) > 0:
             # 昵称唯一性验证
-            if User.enabled.filter(name=kwargs['name']).exclude(
+            if User.enabled.filter(name=name).exclude(
                     id=request.user.id).count() != 0:
                 abort(400, 'group already exists')
             # 首次修改昵称增加积分
