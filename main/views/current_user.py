@@ -1,5 +1,3 @@
-import re
-
 from django import forms
 from django.db import IntegrityError
 from django.db import transaction
@@ -9,7 +7,8 @@ from django.views.generic import View
 from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
 from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
-    Activity, Competition, UserAction, TeamAction, CompetitionTeamParticipator
+    Activity, Competition, UserAction, TeamAction, CompetitionTeamParticipator,\
+    IllegalWord
 from ..utils import abort, action, save_uploaded_image, identity_verify, \
     get_score_stage, eid_verify
 from ..utils.decorators import *
@@ -233,7 +232,10 @@ class Profile(Profile_):
             # 昵称唯一性验证
             if User.enabled.filter(name=name).exclude(
                     id=request.user.id).count() != 0:
-                abort(400, 'group already exists')
+                abort(403, '昵称已存在')
+            # 昵称非法词验证
+            if IllegalWord.objects.filter(word__contains=name):
+                abort(403, '昵称非法')
             # 首次修改昵称增加积分
             if (request.user.name == "创易汇用户 #" + str(request.user.id)) and \
                     (request.user.name != name):

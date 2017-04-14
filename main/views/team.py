@@ -12,7 +12,7 @@ from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL
 from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
-    ExternalTask, CompetitionTeamParticipator
+    ExternalTask, CompetitionTeamParticipator, IllegalWord
 from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
 from main.utils.recommender import record_view_team
@@ -108,7 +108,10 @@ class List(View):
 
         # 昵称唯一性验证
         if Team.enabled.filter(name=name).count() != 0:
-            abort(400, 'group already exists')
+            abort(403, '团队名已被注册')
+        # 昵称非法词验证
+        if IllegalWord.objects.filter(word__contains=name):
+            abort(403, '团队名非法')
 
         team = Team(owner=request.user, name=name)
         team.save()
@@ -395,11 +398,13 @@ class Profile(View):
 
         for k in kwargs:
             if k == "name":
-                # 昵称的唯一性验证
+                # 昵称唯一性验证
                 if Team.enabled.filter(name=kwargs['name']).exclude(
                         id=team.id).count() != 0:
-                    abort(400, 'group already exists')
-
+                    abort(403, '团队名已被注册')
+                # 昵称非法词验证
+                if IllegalWord.objects.filter(word__contains=kwargs['name']):
+                    abort(403, '团队名非法')
                 # 更新容云上的信息
                 rcloud = RongCloud()
                 r = rcloud.Group.refresh(
