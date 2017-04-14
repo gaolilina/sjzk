@@ -237,7 +237,7 @@ class Profile(Profile_):
             illegal_words = IllegalWord.objects.all()
             for illegal_word in illegal_words:
                 if illegal_word.word in name:
-                    abort(403, '团队名含非法词汇')
+                    abort(403, '昵称含非法词汇')
             # 首次修改昵称增加积分
             if (request.user.name == "创易汇用户 #" + str(request.user.id)) and \
                     (request.user.name != name):
