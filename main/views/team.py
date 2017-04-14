@@ -110,8 +110,10 @@ class List(View):
         if Team.enabled.filter(name=name).count() != 0:
             abort(403, '团队名已被注册')
         # 昵称非法词验证
-        if IllegalWord.objects.filter(word__contains=name):
-            abort(403, '团队名非法')
+        illegal_words = IllegalWord.objects.all()
+        for illegal_word in illegal_words:
+            if illegal_word.word in name:
+                abort(403, '团队名含非法词汇')
 
         team = Team(owner=request.user, name=name)
         team.save()
@@ -398,17 +400,20 @@ class Profile(View):
 
         for k in kwargs:
             if k == "name":
+                name = kwargs['name']
                 # 昵称唯一性验证
-                if Team.enabled.filter(name=kwargs['name']).exclude(
+                if Team.enabled.filter(name=name).exclude(
                         id=team.id).count() != 0:
                     abort(403, '团队名已被注册')
                 # 昵称非法词验证
-                if IllegalWord.objects.filter(word__contains=kwargs['name']):
-                    abort(403, '团队名非法')
+                illegal_words = IllegalWord.objects.all()
+                for illegal_word in illegal_words:
+                    if illegal_word.word in name:
+                        abort(403, '团队名含非法词汇')
                 # 更新容云上的信息
                 rcloud = RongCloud()
                 r = rcloud.Group.refresh(
-                    groupId=str(team.id), groupName=kwargs['name'])
+                    groupId=str(team.id), groupName=name)
                 if r.result['code'] != 200:
                     abort(404, 'refresh group chat failed')
             setattr(team, k, kwargs[k])

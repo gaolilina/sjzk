@@ -234,8 +234,10 @@ class Profile(Profile_):
                     id=request.user.id).count() != 0:
                 abort(403, '昵称已存在')
             # 昵称非法词验证
-            if IllegalWord.objects.filter(word__contains=name):
-                abort(403, '昵称非法')
+            illegal_words = IllegalWord.objects.all()
+            for illegal_word in illegal_words:
+                if illegal_word.word in name:
+                    abort(403, '团队名含非法词汇')
             # 首次修改昵称增加积分
             if (request.user.name == "创易汇用户 #" + str(request.user.id)) and \
                     (request.user.name != name):
