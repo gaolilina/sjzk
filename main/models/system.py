@@ -1,7 +1,7 @@
 from django.db import models
 
 
-__all__ = ['System']
+__all__ = ['System', 'IllegalWord']
 
 
 class System(models.Model):
@@ -24,3 +24,13 @@ class System(models.Model):
 
     class Meta:
         db_table = 'system'
+
+
+class IllegalWord(models.Model):
+    """系统过滤词"""
+
+    # 非法词汇
+    word = models.CharField(max_length=20, unique=True)
+
+    class Meta:
+        db_table = 'illegal_word'
