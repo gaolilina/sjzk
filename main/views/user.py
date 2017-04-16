@@ -73,8 +73,7 @@ class List(View):
         'phone_number': forms.CharField(min_length=11, max_length=11),
         'password': forms.CharField(min_length=6, max_length=32),
         'validation_code': forms.CharField(min_length=6, max_length=6),
-        'invitation_code': forms.CharField(
-            min_length=8, max_length=8, required=False),
+        'invitation_code': forms.CharField(required=False),
     })
     def post(self, request, phone_number, password, validation_code,
              invitation_code=None):

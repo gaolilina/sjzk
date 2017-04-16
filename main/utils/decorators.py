@@ -62,7 +62,8 @@ def validate_args(d):
                     if v.required:
                         abort(400, '需要参数 "%s"' % k)
                 except ValidationError:
-                    abort(400, '不合法参数 "%s"' % k)
+                    # abort(400, '不合法参数 "%s"' % k)
+                    abort(400, '含有不合法参数')
             return function(self, request, *args, **kwargs)
         return inner
     return decorator
