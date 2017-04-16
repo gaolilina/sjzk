@@ -100,7 +100,7 @@ class List(View):
                 if invitation_code:
                     u = User.enabled.filter(invitation_code=invitation_code)
                     if not u:
-                        abort(404, 'error invitation code!')
+                        abort(404, '推荐码错误')
                     user.used_invitation_code = invitation_code
                     u.score_records.create(
                         score=get_score_stage(4), type="活跃度",
@@ -796,9 +796,9 @@ class PasswordForgotten(View):
     })
     def post(self, request, phone_number, password, validation_code):
         """忘记密码，若成功返回用户令牌
-        :param phone_number: 新手机号
+        :param phone_number: 手机号
         :param password: 密码
-        :param validation_code: 新手机号收到的验证码
+        :param validation_code: 手机号收到的验证码
 
         :return token
         """
