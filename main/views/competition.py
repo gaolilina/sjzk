@@ -209,7 +209,7 @@ class CompetitionFile(View):
 
     @fetch_object(Competition.enabled, 'competition')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, competition, team):
         """上传文件"""
 
@@ -261,7 +261,7 @@ class TeamParticipatorList(View):
 
     @fetch_object(Competition.enabled, 'competition')
     @validate_args({'team_id': forms.IntegerField()})
-    @require_token
+    @require_verification_token
     def post(self, request, competition, team_id):
         """报名"""
 

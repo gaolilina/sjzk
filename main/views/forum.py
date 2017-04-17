@@ -60,7 +60,7 @@ class BoardList(View):
               'time_created': b.time_created} for b in boards]
         return JsonResponse({'count': c, 'list': l})
 
-    @require_token
+    @require_verification_token
     @validate_args({
         'name': forms.CharField(min_length=1, max_length=20),
         'description': forms.CharField(min_length=1, max_length=100),
@@ -84,7 +84,7 @@ class BoardList(View):
 
 
 class Board(View):
-    @require_token
+    @require_verification_token
     @fetch_object(ForumBoard.enabled, 'board')
     def delete(self, request, board):
         """删除版块，只是改变is_enabled字段为False，数据库中并不删除"""
@@ -131,7 +131,7 @@ class PostList(View):
               'time_created': p.time_created} for p in posts]
         return JsonResponse({'count': c, 'list': l})
 
-    @require_token
+    @require_verification_token
     @fetch_object(ForumBoard.enabled, 'board')
     @validate_args({
         'title': forms.CharField(max_length=20),
@@ -182,7 +182,7 @@ class Post(View):
               'time_created': p.time_created} for p in posts]
         return JsonResponse({'count': c, 'list': l})
 
-    @require_token
+    @require_verification_token
     @fetch_object(ForumPost.objects, 'post')
     @validate_args({
         'title': forms.CharField(max_length=20),
@@ -195,7 +195,7 @@ class Post(View):
                               author=request.user, title=title, content=content)
         return JsonResponse({'post_id': p.id})
 
-    @require_token
+    @require_verification_token
     @fetch_object(ForumPost.objects, 'post')
     def delete(self, request, post):
         """删除帖子"""

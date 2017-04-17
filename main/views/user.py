@@ -358,7 +358,7 @@ class Friend(View):
 
 class FriendRequestList(View):
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100)
     })

@@ -665,7 +665,7 @@ class UserCommentList(CommentList):
         return super().get(request, user)
 
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def post(self, request, user=None):
         user = user or request.user
         return super().post(request, user)
@@ -691,7 +691,7 @@ class TeamCommentList(CommentList):
         return super().get(request, team)
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, team):
         """当前用户对团队进行评论"""
 
@@ -718,7 +718,7 @@ class ActivityCommentList(CommentList):
         return super().get(request, activity)
 
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @require_verification_token
     def post(self, request, activity):
         """当前用户对活动进行评论"""
 
@@ -745,7 +745,7 @@ class CompetitionCommentList(CommentList):
         return super().get(request, competition)
 
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @require_verification_token
     def post(self, request, competition):
         """当前用户对竞赛进行评论"""
 
@@ -772,7 +772,7 @@ class UserActionCommentList(CommentList):
         return super().get(request, action)
 
     @fetch_object(UserAction.objects, 'action')
-    @require_token
+    @require_verification_token
     def post(self, request, action):
         """当前用户对用户动态进行评论"""
 
@@ -799,7 +799,7 @@ class TeamActionCommentList(CommentList):
         return super().get(request, action)
 
     @fetch_object(TeamAction.objects, 'action')
-    @require_token
+    @require_verification_token
     def post(self, request, action):
         """当前用户对团队动态进行评论"""
 
@@ -808,7 +808,7 @@ class TeamActionCommentList(CommentList):
 
 class UserComment(View):
     @fetch_object(UserCommentModel.objects, 'comment')
-    @require_token
+    @require_verification_token
     def delete(self, request, comment):
         """删除用户评论"""
 
@@ -820,7 +820,7 @@ class UserComment(View):
 
 class TeamComment(View):
     @fetch_object(TeamCommentModel.objects, 'comment')
-    @require_token
+    @require_verification_token
     def delete(self, request, comment):
         """删除团队评论"""
 
@@ -833,7 +833,7 @@ class TeamComment(View):
 
 class ActivityComment(View):
     @fetch_object(ActivityCommentModel.objects, 'comment')
-    @require_token
+    @require_verification_token
     def delete(self, request, comment):
         """删除活动评论"""
 
@@ -845,7 +845,7 @@ class ActivityComment(View):
 
 class CompetitionComment(View):
     @fetch_object(CompetitionCommentModel.objects, 'comment')
-    @require_token
+    @require_verification_token
     def delete(self, request, comment):
         """删除竞赛评论"""
 

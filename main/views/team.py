@@ -77,7 +77,7 @@ class List(View):
               'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
-    @require_token
+    @require_verification_token
     @validate_args({
         'name': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=100),
@@ -365,7 +365,7 @@ class Profile(View):
         return JsonResponse(r)
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'name': forms.CharField(required=False, max_length=20),
         'description': forms.CharField(required=False, max_length=100),
@@ -450,7 +450,7 @@ class Icon(View):
         abort(404)
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, team):
         """设置团队的头像"""
 
@@ -529,7 +529,7 @@ class Member(View):
 
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def post(self, request, team, user):
         """将目标用户添加为自己的团队成员（对方需发送过加入团队申请）"""
 
@@ -561,7 +561,7 @@ class Member(View):
 
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def delete(self, request, team, user):
         """退出团队(默认)/删除成员"""
         if user == team.owner:
@@ -627,7 +627,7 @@ class MemberRequestList(View):
         abort(404)
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100),
     })
@@ -676,7 +676,7 @@ class MemberRequest(View):
 class Invitation(View):
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100),
     })
@@ -753,7 +753,7 @@ class AllAchievementList(View):
 # noinspection PyUnusedLocal
 class AllAchievement(View):
     @fetch_object(TeamAchievement.objects, 'achievement')
-    @require_token
+    @require_verification_token
     def delete(self, request, team, achievement):
         """删除成果"""
 
@@ -800,7 +800,7 @@ class AchievementList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(min_length=1, max_length=100),
     })
@@ -969,7 +969,7 @@ class NeedList(View):
 
     # noinspection PyShadowingBuiltins
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, team, type):
         """发布需求
 
@@ -1024,10 +1024,6 @@ class NeedList(View):
         """
         if request.user != team.owner:
             abort(403)
-
-        # 检查是否实名
-        if request.user.is_verified not in [2, 4]:
-            abort(400, 'you must verified firstly!')
 
         if type == 0:
             self.create_member_need(request, team)
@@ -1296,7 +1292,7 @@ class Need(View):
         return JsonResponse(d)
 
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @require_verification_token
     def post(self, request, need):
         """将需求标记成已满足"""
 
@@ -1317,7 +1313,7 @@ class Need(View):
         abort(200)
 
     @fetch_object(TeamNeed, 'need')
-    @require_token
+    @require_verification_token
     def delete(self, request, need):
         """将需求标记成已删除"""
 
@@ -1556,7 +1552,7 @@ class MemberNeedRequestList(View):
         abort(404)
 
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100),
     })
@@ -1589,7 +1585,7 @@ class MemberNeedRequestList(View):
 class MemberNeedRequest(View):
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def post(self, request, need, user):
         """将目标用户添加为自己的团队成员（对方需发送过人员需求下的加入团队申请）"""
 
@@ -1628,7 +1624,7 @@ class MemberNeedRequest(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def delete(self, request, need, user):
         """忽略某用户人员需求下的加团队请求"""
 
@@ -1679,7 +1675,7 @@ class NeedRequestList(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, need, team):
         """向需求发出合作申请
 
@@ -1736,7 +1732,7 @@ class NeedRequest(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, need, team):
         """同意加入申请并将创始人加入自己团队（对方需发送过合作申请）"""
 
@@ -1773,7 +1769,7 @@ class NeedRequest(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def delete(self, request, need, team):
         """忽略某团队的合作申请"""
 
@@ -1822,7 +1818,7 @@ class NeedInvitationList(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, need, team):
         """向团队发出合作邀请
 
@@ -1875,7 +1871,7 @@ class NeedInvitation(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, need, team):
         """同意邀请并将加入他人的团队（对方需发送过合作邀请）"""
 
@@ -1911,7 +1907,7 @@ class NeedInvitation(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def delete(self, request, need, team):
         """忽略某来自需求的合作邀请"""
 
@@ -1973,7 +1969,7 @@ class InternalTaskList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'executor_id': forms.IntegerField(),
         'title': forms.CharField(max_length=20),
@@ -2065,7 +2061,7 @@ class InternalTasks(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(InternalTask.objects, 'task')
-    @require_token
+    @require_verification_token
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
         'content': forms.CharField(required=False, max_length=200),
@@ -2132,7 +2128,7 @@ class TeamInternalTask(View):
         return JsonResponse(d)
 
     @fetch_object(InternalTask.objects, 'task')
-    @require_token
+    @require_verification_token
     @validate_args({
         'status': forms.IntegerField(required=False, min_value=0, max_value=7),
     })
@@ -2286,7 +2282,7 @@ class ExternalTaskList(View):
             return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'executor_id': forms.IntegerField(),
         'title': forms.CharField(max_length=20),
@@ -2334,7 +2330,7 @@ class ExternalTaskList(View):
 
 class ExternalTasks(View):
     @fetch_object(ExternalTask.objects, 'task')
-    @require_token
+    @require_verification_token
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
         'content': forms.CharField(required=False, max_length=200),
@@ -2407,7 +2403,7 @@ class TeamExternalTask(View):
         return JsonResponse(d)
 
     @fetch_object(ExternalTask.objects, 'task')
-    @require_token
+    @require_verification_token
     @validate_args({
         'expend_actual': forms.IntegerField(required=False, min_value=0),
         'pay_time': forms.DateField(required=False),

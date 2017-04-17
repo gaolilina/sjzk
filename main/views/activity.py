@@ -163,7 +163,7 @@ class UserParticipatorList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @require_verification_token
     def post(self, request, activity):
         """报名"""
 
@@ -178,8 +178,6 @@ class UserParticipatorList(View):
             abort(403, '地区不符')
         if activity.unit and activity.unit != request.user.unit1:
             abort(403, '学校不符')
-        if request.user.is_verified not in [2, 4]:
-            abort(403, '用户未实名认证')
         if activity.user_type != 0:
             if activity.user_type == 1 and request.user.role != "学生":
                 abort(403, '用户角色不符')

@@ -12,7 +12,7 @@ class Report(View):
     type_list = ['user', 'team', 'need', 'task', 'activity', 'competition',
                  'action', 'forum']
 
-    @require_token
+    @require_verification_token
     @validate_args({
         'type': forms.CharField(max_length=20),
         'object_id': forms.IntegerField(min_value=1),

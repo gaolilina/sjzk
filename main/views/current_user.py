@@ -633,7 +633,7 @@ class FollowedTeam(View):
 # noinspection PyClassHasNoInit
 class Friend(Friend_):
     @fetch_object(User.enabled, 'other_user')
-    @require_token
+    @require_verification_token
     def post(self, request, other_user):
         """将目标用户添加为自己的好友（对方需发送过好友请求）"""
 
@@ -659,7 +659,7 @@ class Friend(Friend_):
         abort(200)
 
     @fetch_object(User.enabled, 'other_user')
-    @require_token
+    @require_verification_token
     def delete(self, request, other_user):
         """删除好友"""
 
@@ -722,7 +722,7 @@ class FriendRequestList(View):
 
 
 class FriendRequest(View):
-    @require_token
+    @require_verification_token
     def delete(self, request, req_id):
         """忽略某条好友请求"""
 
@@ -1129,7 +1129,7 @@ class Invitation(View):
     from ..models import TeamInvitation
 
     @fetch_object(TeamInvitation.objects, 'invitation')
-    @require_token
+    @require_verification_token
     def post(self, request, invitation):
         """同意团队的加入邀请并成为团队成员（需收到过加入团队邀请）"""
 
@@ -1169,7 +1169,7 @@ class Invitation(View):
         abort(200)
 
     @fetch_object(TeamInvitation.objects, 'invitation')
-    @require_token
+    @require_verification_token
     def delete(self, request, invitation):
         """忽略某邀请"""
 
