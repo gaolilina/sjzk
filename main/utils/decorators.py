@@ -82,9 +82,10 @@ def validate_args(d):
                     kwargs[k] = v.clean(data[k])
                 except KeyError:
                     if v.required:
-                        abort(400, 'require argument "%s"' % k)
+                        abort(400, '需要参数 "%s"' % k)
                 except ValidationError:
-                    abort(400, 'invalid argument "%s"' % k)
+                    # abort(400, '不合法参数 "%s"' % k)
+                    abort(400, '含有不合法参数')
             return function(self, request, *args, **kwargs)
         return inner
     return decorator

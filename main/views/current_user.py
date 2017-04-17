@@ -44,7 +44,7 @@ class Username(View):
         """设置当前用户的用户名，存储时字母转换成小写，只能设置一次"""
 
         if request.user.username:
-            abort(403, 'username is already set')
+            abort(403, '用户名已经设置过')
 
         if username.isdigit():
             abort(400)
@@ -64,7 +64,7 @@ class Username(View):
                 portraitUri=portraitUri)
             return JsonResponse({'username': request.user.username})
         except IntegrityError:
-            abort(403, 'username is used')
+            abort(403, '用户名已存在')
 
 
 class Password(View):
@@ -300,12 +300,12 @@ class IdentityVerification(Profile_):
         """
 
         if not request.user.id_card:
-            abort(403, 'Please upload the positive and negative of ID card')
+            abort(403, '请先上传身份证照片')
         id_keys = ('real_name', 'id_number')
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'], kwargs['real_name'])
         if res != 1:
-            abort(404, 'id number and real name not match')
+            abort(404, '身份证号和姓名不匹配')
 
         # 用户未提交实名信息或者等待重新审核
         if request.user.is_verified in [0, 3]:
@@ -360,7 +360,7 @@ class EidIdentityVerification(Profile_):
         }
         res = eid_verify(data)
         if res != 1:
-            abort(res, 'eid information and identity not match')
+            abort(res, 'eid信息与身份证信息不符')
 
         # 验证成功后，若用户当前的状态时待审核或者审核未通过，则将用户相关信息保存到数据库
         if request.user.is_verified in [0, 3]:
@@ -397,8 +397,7 @@ class OtherIdentityVerification(Profile_):
         """
 
         if not request.user.other_card:
-            abort(403,
-                  'Please upload the positive and negative of your card')
+            abort(403, '请先上传照片')
 
         role_keys = ('role', 'other_number', 'unit1', 'unit2', 'real_name',
                      'profession')
@@ -1148,7 +1147,7 @@ class Invitation(View):
             groupId=invitation.team.id,
             groupName=invitation.team.name)
         if r.result['code'] != 200:
-            abort(404, 'add member to group chat failed')
+            abort(404, '团队成员加入群聊失败')
 
         # 在事务中建立关系，并删除对应的加团队邀请
         with transaction.atomic():
@@ -1220,16 +1219,22 @@ class BindPhoneNumber(View):
         'validation_code': forms.CharField(min_length=6, max_length=6),
     })
     def post(self, request, phone_number, password, validation_code):
-        """绑定手机号，若成功返回200"""
+        """绑定手机号，若成功返回200
+        param phone_number: 手机号
+        :param password: 密码
+        :param validation_code: 手机号收到的验证码
+
+        :return 200
+        """
 
         if not UserValidationCode.verify(phone_number, validation_code):
-            abort(400)
+            abort(400, '验证码与手机不匹配')
 
         if not request.user.check_password(password):
-            abort(401)
+            abort(401, '密码错误')
 
         if User.enabled.filter(phone_number=phone_number).count() > 0:
-            abort(404, 'phone number already existed')
+            abort(404, '手机号已存在')
 
         request.user.phone_number = phone_number
         request.user.save()
