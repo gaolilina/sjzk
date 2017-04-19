@@ -150,7 +150,15 @@ class UserParticipatorList(View):
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, activity, offset=0, limit=10, order=1):
-        """获取报名用户列表"""
+        """
+        获取报名用户列表
+        :return:
+            count: 用户总数
+            list: 用户列表
+                id: 用户ID
+                name: 用户昵称
+                icon_url: 头像
+        """
 
         k = self.ORDERS[order]
         c = activity.user_participators.count()
@@ -158,7 +166,6 @@ class UserParticipatorList(View):
             k)[offset: offset + limit]
         l = [{'id': p.user.id,
               'name': p.user.name,
-              'username': p.user.username,
               'icon_url': p.user.icon} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 

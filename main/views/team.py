@@ -234,7 +234,7 @@ class Screen(View):
     })
     def get(self, request, offset=0, limit=10, order=None, **kwargs):
         """
-        搜索用户
+        筛选团队
 
         :param offset: 偏移量
         :param limit: 数量上限
@@ -1337,7 +1337,7 @@ class NeedSearch(View):
     })
     def get(self, request, name, type=None, status=0, offset=0, limit=10):
         """
-        获取发布中的需求列表
+        搜索发布中的需求列表
 
         :param offset: 偏移量
         :param name: 标题包含字段

@@ -34,7 +34,7 @@ urls = [
     # 成果
     url(r'^achievements/$', AllAchievementList.as_view(),
         name='all_achievements'),
-    url(r'^achievement/(?P<achievement_id>[0-9]+)$',
+    url(r'^achievement/(?P<achievement_id>[0-9]+)/$',
         AllAchievement.as_view(), name='achievement'),
     url(r'^(?P<team_id>[0-9]+)/achievements/$', AchievementList.as_view(),
         name='achievements'),
