@@ -41,7 +41,11 @@ class Username(View):
         'username': forms.RegexField(r'^[a-zA-Z0-9_]{4,15}$', strip=True)
     })
     def post(self, request, username):
-        """设置当前用户的用户名，存储时字母转换成小写，只能设置一次"""
+        """
+        设置当前用户的用户名，存储时字母转换成小写，只能设置一次
+
+        :param username: 用户名
+        """
 
         if request.user.username:
             abort(403, '用户名已经设置过')
@@ -950,7 +954,7 @@ class OwnedTeamList(View):
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, offset=0, limit=10, order=1):
-        """获取团队列表
+        """获取当前用户创建的团队列表
 
         :param offset: 偏移量
         :param limit: 数量上限

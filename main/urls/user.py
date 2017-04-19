@@ -43,7 +43,7 @@ urls = [
         ExperienceList.as_view(), name='fieldwork_experiences',
         kwargs={'type': 'fieldwork'}),
     url(r'experiences/(?P<exp_id>[0-9]+)/$', Experience.as_view(),
-        name='comment'),
+        name='experiences'),
     # 关注者
     url(r'^(?P<user_id>[0-9]+)/followers/$', UserFollowerList.as_view(),
         name='followers'),

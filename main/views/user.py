@@ -121,7 +121,12 @@ class Token(View):
         'password': forms.CharField(min_length=6, max_length=20, strip=False),
     })
     def post(self, request, username, password):
-        """更新并返回用户令牌，纯数字用户名视为手机号"""
+        """更新并返回用户令牌，纯数字用户名视为手机号
+
+        :param username: 用户名
+        :param password: 密码
+        :return token: 用户token
+        """
 
         try:
             if username.isdigit():
@@ -471,7 +476,7 @@ class Screen(View):
     })
     def get(self, request, offset=0, limit=10, order=None, **kwargs):
         """
-        搜索用户
+        筛选用户
 
         :param offset: 偏移量
         :param limit: 数量上限
