@@ -9,8 +9,9 @@ __all__ = ['Report']
 
 
 class Report(View):
-    type_list = ['user', 'team', 'need', 'task', 'activity', 'competition',
-                 'action', 'forum']
+    type_list = ['user', 'team', 'need', 'activity', 'competition',
+                 'forum', 'internal_task', 'external_task',
+                 'user_action', 'team_action']
 
     @require_token
     @validate_args({
