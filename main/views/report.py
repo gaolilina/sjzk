@@ -28,7 +28,7 @@ class Report(View):
         """
 
         if type not in self.type_list:
-            abort(400, 'require correct type')
+            abort(400, '举报对象类型错误')
 
         report = ReportModel(
             user=request.user, type=type, object_id=object_id, content=content)
