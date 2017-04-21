@@ -1564,10 +1564,6 @@ class MemberNeedRequestList(View):
         if request.user == need.team.owner:
             abort(403)
 
-        # 是否实名认证
-        if request.user.is_verified not in [2, 4]:
-            abort(400, 'you must verified firstly!')
-
         if need.team.members.filter(user=request.user).exists():
             abort(403)
 
@@ -1680,10 +1676,6 @@ class NeedRequestList(View):
         """向需求发出合作申请
 
         """
-        # 检查是否实名
-        if request.user.is_verified not in [2, 4]:
-            abort(400, 'you must verified firstly!')
-
         if need.cooperation_requests.filter(sender=team).exists():
             abort(404)
         if need.cooperation_invitations.filter(invitee=team).exists():

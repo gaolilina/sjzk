@@ -44,7 +44,7 @@ def require_verification_token(function):
             user = User.objects.get(token=token)
             if user.is_enabled:
                 if user.is_verified not in [2, 4]:
-                    abort(403, '请先实名认证')
+                    abort(304, '请先实名认证')
                 request.user = user
                 return function(self, request, *args, **kwargs)
             abort(403, '用户已注销')
