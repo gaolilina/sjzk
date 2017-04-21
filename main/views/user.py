@@ -80,7 +80,7 @@ class List(View):
         """注册，若成功返回用户令牌"""
 
         if not UserValidationCode.verify(phone_number, validation_code):
-            abort(400)
+            abort(400, '验证码错误')
 
         with transaction.atomic():
             try:
@@ -112,7 +112,7 @@ class List(View):
                 user.save()
                 return JsonResponse({'token': user.token})
             except IntegrityError:
-                abort(403)
+                abort(403, '创建用户失败')
 
 
 class Token(View):
@@ -134,12 +134,12 @@ class Token(View):
             else:
                 user = User.enabled.get(username=username.lower())
         except User.DoesNotExist:
-            abort(401)
+            abort(401, '用户不存在')
         else:
             if not user.is_enabled:
-                abort(403)
+                abort(403, '用户已删除')
             if not user.check_password(password):
-                abort(401)
+                abort(401, '密码错误')
             # user.update_token()
             if not user.icon:
                 portraitUri = SERVER_URL + user.icon
@@ -164,7 +164,7 @@ class Icon(View):
         user = user or request.user
         if user.icon:
             return HttpResponseRedirect(UPLOADED_URL + user.icon)
-        abort(404)
+        abort(404, '用户未设置头像')
 
 
 class Profile(View):
@@ -284,7 +284,7 @@ class Experience(View):
         """修改用户的某条经历"""
 
         if exp.user != request.user:
-            abort(403)
+            abort(403, '只能修改自己的经历')
         for k in kwargs:
             setattr(exp, k, kwargs[k])
         exp.save()
@@ -296,7 +296,7 @@ class Experience(View):
         """删除用户的某条经历"""
 
         if exp.user != request.user:
-            abort(403)
+            abort(403, '只能删除自己的经历')
         exp.delete()
         abort(200)
 
@@ -357,7 +357,7 @@ class Friend(View):
 
         if user.friends.filter(other_user=other_user).exists():
             abort(200)
-        abort(404)
+        abort(404, '非好友关系')
 
 
 class FriendRequestList(View):
@@ -372,10 +372,10 @@ class FriendRequestList(View):
         :param description: 附带消息
         """
         if user == request.user:
-            abort(403)
+            abort(403, '不能给自己发送好友申请')
 
         if user.friends.filter(other_user=request.user).exists():
-            abort(403)
+            abort(403, '已经是好友了')
 
         if user.friend_requests.filter(other_user=request.user).exists():
             abort(200)
@@ -784,7 +784,7 @@ class ValidationCode(View):
         """
 
         if not phone_number.isdigit():
-            abort(400)
+            abort(400, '手机号码格式不正确')
         code = UserValidationCode.generate(phone_number)
         tpl_value = "#code#=" + code
 
@@ -801,14 +801,14 @@ class PasswordForgotten(View):
     def post(self, request, phone_number, password, validation_code):
         """忘记密码，若成功返回用户令牌
         :param phone_number: 手机号
-        :param password: 密码
+        :param password: 新的密码
         :param validation_code: 手机号收到的验证码
 
         :return token
         """
 
         if not UserValidationCode.verify(phone_number, validation_code):
-            abort(400)
+            abort(400, '验证码错误')
 
         with transaction.atomic():
             try:
@@ -817,4 +817,4 @@ class PasswordForgotten(View):
                 user.save()
                 return JsonResponse({'token': user.token})
             except IntegrityError:
-                abort(403)
+                abort(403, '修改密码失败')

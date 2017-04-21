@@ -124,7 +124,7 @@ class List(View):
             groupId=str(team.id),
             groupName=name)
         if r.result['code'] != 200:
-            abort(404, 'create group chat failed')
+            abort(404, '创建团队群聊失败')
 
         for k in kwargs:
             setattr(team, k, kwargs[k])
@@ -393,7 +393,7 @@ class Profile(View):
             tags: 标签，格式：'tag1|tag2|tag3|...'
         """
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只允许队长操作')
 
         fields = kwargs.pop('fields', None)
         tags = kwargs.pop('tags', None)
@@ -415,7 +415,7 @@ class Profile(View):
                 r = rcloud.Group.refresh(
                     groupId=str(team.id), groupName=name)
                 if r.result['code'] != 200:
-                    abort(404, 'refresh group chat failed')
+                    abort(404, '更新群聊信息失败')
             setattr(team, k, kwargs[k])
 
         if fields:
@@ -447,7 +447,7 @@ class Icon(View):
 
         if team.icon:
             return HttpResponseRedirect(UPLOADED_URL + team.icon)
-        abort(404)
+        abort(404, '未设置头像')
 
     @fetch_object(Team.enabled, 'team')
     @require_verification_token
@@ -455,18 +455,18 @@ class Icon(View):
         """设置团队的头像"""
 
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
 
         icon = request.FILES.get('image')
         if not icon:
-            abort(400)
+            abort(400, '头像上传失败')
 
         filename = save_uploaded_image(icon)
         if filename:
             team.icon = filename
             team.save()
             return JsonResponse({'icon_url': team.icon})
-        abort(400)
+        abort(400, '头像保存失败')
 
 
 # noinspection PyUnusedLocal
@@ -525,7 +525,7 @@ class Member(View):
 
         if team.members.filter(user=user).exists():
             abort(200)
-        abort(404)
+        abort(404, '非团队成员')
 
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
@@ -534,10 +534,10 @@ class Member(View):
         """将目标用户添加为自己的团队成员（对方需发送过加入团队申请）"""
 
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只有队长能操作')
 
         if not team.member_requests.filter(user=user):
-            abort(403)
+            abort(403, '该用户未发送过请求')
 
         # 若对方已是团队成员则不做处理
         if team.members.filter(user=user).exists():
@@ -550,7 +550,7 @@ class Member(View):
             groupId=str(team.id),
             groupName=team.name)
         if r.result['code'] != 200:
-            abort(404, 'add member to group chat failed')
+            abort(404, '加入团队群聊失败')
 
         # 在事务中建立关系，并删除对应的加团队申请
         with transaction.atomic():
@@ -565,7 +565,7 @@ class Member(View):
     def delete(self, request, team, user):
         """退出团队(默认)/删除成员"""
         if user == team.owner:
-            abort(403, "can not be team owner")
+            abort(403, "队长不能退出")
 
         qs = team.members.filter(user=user)
         if qs.exists():
@@ -575,11 +575,11 @@ class Member(View):
                 userId=str(user.id),
                 groupId=str(team.id))
             if r.result['code'] != 200:
-                abort(404, 'remove member from group chat failed')
+                abort(404, '将成员移出团队群聊失败')
 
             qs.delete()
             abort(200)
-        abort(404)
+        abort(404, '成员不存在')
 
 
 class MemberRequestList(View):
@@ -622,10 +622,6 @@ class MemberRequestList(View):
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
 
-        if team.member_requests.filter(user=request.user).exists():
-            abort(200)
-        abort(404)
-
     @fetch_object(Team.enabled, 'team')
     @require_verification_token
     @validate_args({
@@ -637,20 +633,20 @@ class MemberRequestList(View):
         :param description: 附带消息
         """
         if request.user == team.owner:
-            abort(403)
+            abort(403, '队长不能申请')
 
         if team.members.filter(user=request.user).exists():
-            abort(403)
+            abort(403, '已经发送过申请')
 
         if team.member_requests.filter(user=request.user).exists():
             abort(200)
 
         if team.invitations.filter(user=request.user).exists():
-            abort(403)
+            abort(403, '团队已经发送过邀请')
 
         for need in team.needs.all():
             if need.member_requests.filter(sender=request.user).exists():
-                abort(403)
+                abort(403, '已经发送过申请')
 
         team.member_requests.create(user=request.user, description=description)
         abort(200)
@@ -664,11 +660,11 @@ class MemberRequest(View):
         """忽略某用户的加团队请求"""
 
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
 
         qs = team.member_requests.filter(user=user)
         if not qs.exists():
-            abort(404)
+            abort(404, '申请不存在')
         qs.delete()
         abort(200)
 
@@ -686,23 +682,23 @@ class Invitation(View):
         :param description: 附带消息
         """
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
 
         if user == team.owner:
-            abort(403)
+            abort(403, '对方是本团队队长')
 
         if team.members.filter(user=user).exists():
-            abort(403)
+            abort(403, '对方已经是团队成员')
 
         if team.invitations.filter(user=user).exists():
             abort(200)
 
         if team.member_requests.filter(user=user).exists():
-            abort(403)
+            abort(403, '对方已经发送过申请')
 
         for need in team.needs.all():
             if need.member_requests.filter(sender=request.user).exists():
-                abort(403)
+                abort(403, '对方已经发送过申请')
 
         team.invitations.create(user=user, description=description)
         abort(200)
@@ -758,7 +754,7 @@ class AllAchievement(View):
         """删除成果"""
 
         if request.user != achievement.team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
         achievement.delete()
         abort(200)
 
@@ -811,7 +807,7 @@ class AchievementList(View):
         :return: achievement_id: 成果id
         """
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
 
         achievement_num = team.achievements.count()
         if achievement_num == 0:
@@ -827,7 +823,7 @@ class AchievementList(View):
             if filename:
                 achievement.picture = filename
         else:
-            abort(400)
+            abort(400, '图片上传失败')
         achievement.save()
 
         request.user.score += get_score_stage(1)
@@ -1023,7 +1019,7 @@ class NeedList(View):
             time_ended: 承接结束时间
         """
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
 
         if type == 0:
             self.create_member_need(request, team)
@@ -1297,7 +1293,7 @@ class Need(View):
         """将需求标记成已满足"""
 
         if request.user != need.team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
         need.status = 1
         need.save()
         request.user.score += get_score_stage(1)
@@ -1318,7 +1314,7 @@ class Need(View):
         """将需求标记成已删除"""
 
         if request.user != need.team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
         need.status = 2
         need.save()
         abort(200)
@@ -1548,8 +1544,7 @@ class MemberNeedRequestList(View):
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
-
-        abort(404)
+        abort(404, '只有队长可以操作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @require_verification_token
@@ -1562,16 +1557,16 @@ class MemberNeedRequestList(View):
         :param description: 附带消息
         """
         if request.user == need.team.owner:
-            abort(403)
+            abort(403, '队长不能操作')
 
         if need.team.members.filter(user=request.user).exists():
-            abort(403)
+            abort(403, '已经是对方团队成员')
 
         if need.team.member_requests.filter(user=request.user).exists():
             abort(200)
 
         if need.team.invitations.filter(user=request.user).exists():
-            abort(403)
+            abort(403, '对方团队已经发送邀请')
 
         need.member_requests.create(sender=request.user,
                                     description=description)
@@ -1586,10 +1581,10 @@ class MemberNeedRequest(View):
         """将目标用户添加为自己的团队成员（对方需发送过人员需求下的加入团队申请）"""
 
         if request.user != need.team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
 
         if not need.member_requests.filter(sender=user):
-            abort(403)
+            abort(403, '对方未发送申请')
 
         # 若对方已是团队成员则不做处理
         if need.team.members.filter(user=user).exists():
@@ -1625,11 +1620,11 @@ class MemberNeedRequest(View):
         """忽略某用户人员需求下的加团队请求"""
 
         if request.user != need.team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
 
         qs = need.member_requests.filter(sender=user)
         if not qs.exists():
-            abort(404)
+            abort(404, '申请不存在')
         qs.delete()
         abort(200)
 
@@ -1667,7 +1662,7 @@ class NeedRequestList(View):
                   'icon_url': r.sender.icon,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
-        abort(404)
+        abort(404, '只有队长可以操作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -1677,13 +1672,13 @@ class NeedRequestList(View):
 
         """
         if need.cooperation_requests.filter(sender=team).exists():
-            abort(404)
+            abort(404, '合作申请已经发送过')
         if need.cooperation_invitations.filter(invitee=team).exists():
-            abort(404)
+            abort(404, '合作申请已经发送过')
         if request.user == team.owner:
             need.cooperation_requests.create(sender=team)
             abort(200)
-        abort(404)
+        abort(404, '只有队长能操作')
 
 
 class NeedRequest(View):
@@ -1720,7 +1715,7 @@ class NeedRequest(View):
                   'icon_url': r.need.team.icon,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
-        abort(404)
+        abort(404, '只有队长能操作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -1729,7 +1724,7 @@ class NeedRequest(View):
         """同意加入申请并将创始人加入自己团队（对方需发送过合作申请）"""
 
         if request.user != need.team.owner:
-            abort(404)
+            abort(404, '只有队长能操作')
 
         if need.cooperation_requests.filter(sender=team).exists():
             # 在事务中建立关系，并删除对应的申请合作
@@ -1757,7 +1752,7 @@ class NeedRequest(View):
                 request.user.save()
                 team.save()
             abort(200)
-        abort(404)
+        abort(404, '对方未发送过申请合作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -1766,11 +1761,11 @@ class NeedRequest(View):
         """忽略某团队的合作申请"""
 
         if request.user != need.team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
 
         qs = need.cooperation_requests.filter(sender=team)
         if not qs.exists():
-            abort(404)
+            abort(404, '合作申请不存在')
         qs.delete()
         abort(200)
 
@@ -1806,7 +1801,7 @@ class NeedInvitationList(View):
                   'icon_url': r.invitee.icon,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
-        abort(404)
+        abort(404, '只有队长可以操作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -1816,13 +1811,13 @@ class NeedInvitationList(View):
 
         """
         if need.cooperation_invitations.filter(invitee=team).exists():
-            abort(404)
+            abort(404, '已经发送过合作申请')
         if need.cooperation_requests.filter(sender=team).exists():
-            abort(404)
+            abort(404, '对方已经发送过合作申请')
         if request.user == team.owner:
             need.cooperation_invitations.create(invitee=team)
             abort(200)
-        abort(404)
+        abort(404, '只有队长可以操作')
 
 
 class NeedInvitation(View):
@@ -1859,7 +1854,7 @@ class NeedInvitation(View):
                   'icon_url': r.invitee.icon,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
-        abort(404)
+        abort(404, '只有队长可以操作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -1868,10 +1863,10 @@ class NeedInvitation(View):
         """同意邀请并将加入他人的团队（对方需发送过合作邀请）"""
 
         if request.user != need.team.owner:
-            abort(404)
+            abort(404, '只有队长可以操作')
 
         if need.cooperation_invitations.filter(invitee=team).exists():
-            # 在事务中建立关系，并删除对应的申请合作
+            # 在事务中建立关系，并删除对应的邀请合作
             with transaction.atomic():
                 need.cooperation_invitations.filter(invitee=team).delete()
                 if need.team.members.filter(user=team.owner).exists():
@@ -1895,7 +1890,7 @@ class NeedInvitation(View):
                 request.user.save()
                 team.save()
             abort(200)
-        abort(404)
+        abort(404, '邀请合作不存在')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -1904,11 +1899,11 @@ class NeedInvitation(View):
         """忽略某来自需求的合作邀请"""
 
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
 
         qs = need.cooperation_invitations.filter(invitee=team)
         if not qs.exists():
-            abort(404)
+            abort(404, '合作邀请不存在')
         qs.delete()
         abort(200)
 
@@ -1977,16 +1972,16 @@ class InternalTaskList(View):
         :param；deadline: 截止时间
         """
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
         executor_id = kwargs.pop('executor_id')
         executor = None
         try:
             executor = User.enabled.get(id=executor_id)
         except ObjectDoesNotExist:
-            abort(401)
+            abort(401, '执行者不存在')
 
         if not team.members.filter(user=executor).exists():
-            abort(404)
+            abort(404, '执行者非团队成员')
         t = team.internal_tasks.create(status=0, executor=executor,
                                        deadline=kwargs['deadline'])
         for k in kwargs:
@@ -2068,9 +2063,9 @@ class InternalTasks(View):
 
         """
         if request.user != task.team.owner:
-            abort(403)
+            abort(403, '不能给自己发送任务')
         if task.status != 1:
-            abort(404)
+            abort(404, '任务状态错误')
 
         for k in kwargs:
             setattr(task, k, kwargs[k])
@@ -2134,15 +2129,15 @@ class TeamInternalTask(View):
                           ('超时结束', 6), ('终止', 7)
         """
         if request.user != task.team.owner and request.user != task.executor:
-            abort(403, 'operation limit')
+            abort(403, '非法操作')
 
         # 任务已经终止，不允许操作
         if task.status == 7:
-            abort(404)
+            abort(404, '任务已结束')
 
         if status is None:
             if request.user != task.team.owner or task.status != 3:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
             task.finish_time = timezone.now()
             if task.finish_time.date() > task.deadline:
                 task.status = 6
@@ -2163,30 +2158,30 @@ class TeamInternalTask(View):
             abort(200)
         elif status == 0:
             if request.user != task.team.owner or task.status != 1:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
             else:
                 # 如果任务状态为再派任务-->等待接受，则分派次数+1
                 task.assign_num += 1
         elif status == 1:
             if request.user != task.executor or task.status != 0:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
         elif status == 2:
             if request.user != task.executor or task.status != 0:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
         elif status == 3:
             if request.user != task.executor or (task.status not in [2, 4]):
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
             elif task.status == 4:
                 # 如果任务状态为再次提交-->等待验收，则提交次数+1
                 task.submit_num += 1
         elif status == 4:
             if request.user != task.team.owner or task.status != 3:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
         elif status == 7:
             if request.user != task.team.owner or task.status != 1:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
         else:
-            abort(403, 'invalid argument status')
+            abort(403, '状态参数错误')
 
         task.status = status
         task.save()
@@ -2292,16 +2287,16 @@ class ExternalTaskList(View):
         :param；deadline: 截止时间
         """
         if request.user != team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
         executor_id = kwargs.pop('executor_id')
         executor = None
         try:
             executor = Team.enabled.get(id=executor_id)
         except ObjectDoesNotExist:
-            abort(403)
+            abort(403, '执行者不存在')
 
         if not team.members.filter(user=executor.owner).exists():
-            abort(404)
+            abort(404, '执行者非团队成员')
         t = team.outsource_external_tasks.create(
             status=0, executor=executor, deadline=kwargs['deadline'])
         for k in kwargs:
@@ -2338,9 +2333,9 @@ class ExternalTasks(View):
 
         """
         if request.user != task.team.owner:
-            abort(403)
+            abort(403, '只有队长可以操作')
         if task.status != 1:
-            abort(404)
+            abort(404, '任务状态错误')
 
         for k in kwargs:
             setattr(task, k, kwargs[k])
@@ -2416,11 +2411,11 @@ class TeamExternalTask(View):
         """
         if request.user != task.team.owner \
                 and request.user != task.executor.owner:
-            abort(403, 'operation limit')
+            abort(403, '非法操作')
 
         if status is None:
             if request.user != task.executor.owner or task.status != 8:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
             task.finish_time = timezone.now()
             if task.finish_time.date() > task.deadline:
                 task.status = 10
@@ -2441,46 +2436,46 @@ class TeamExternalTask(View):
             abort(200)
         elif status == 0:
             if request.user != task.team.owner or task.status != 1:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
             else:
                 # 如果任务状态为再派任务-->等待接受，则分派次数+1
                 task.assign_num += 1
         elif status == 1:
             if request.user != task.executor.owner or task.status != 0:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
         elif status == 2:
             if request.user != task.executor.owner or task.status != 0:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
         elif status == 3:
             if request.user != task.executor.owner \
                     or (task.status not in [2, 4]):
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
             elif task.status == 4:
                 # 如果任务状态为再次提交-->等待验收，则提交次数+1
                 task.submit_num += 1
         elif status == 4:
             if request.user != task.team.owner or task.status != 3:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
         elif status == 6:
             if request.user != task.team.owner or task.status != 3:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
         elif status == 7:
             if request.user != task.executor.owner or task.status != 8:
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
         elif status == 8:
             if request.user != task.team.owner or (task.status not in [6, 7]):
-                abort(403, 'operation invalid')
+                abort(403, '非法操作')
             elif task.status == 7:
                 # 如果任务状态为再次支付-->等待确认，则支付次数+1
                 task.pay_num += 1
             # 获取任务的支付信息
             if expend_actual is None or pay_time is None:
-                abort(404, 'require argument')
+                abort(404, '参数不全')
             else:
                 task.expend_actual = expend_actual
                 task.pay_time = pay_time
         else:
-            abort(403, 'invalid argument status')
+            abort(403, '状态参数错误')
 
         task.status = status
         task.save()

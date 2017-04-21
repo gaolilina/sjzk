@@ -17,4 +17,4 @@ class VersionNumber(View):
             num = SystemModel.objects.get(id=1).VERSION_NUMBER
             return JsonResponse({'VERSION_NUMBER': num})
         except ObjectDoesNotExist:
-            abort(400)
+            abort(400, '版本号不存在')

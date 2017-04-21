@@ -12,22 +12,22 @@ __all__ = ['require_token', 'require_verification', 'validate_args',
 
 
 def require_token(function):
-    """对被装饰的方法进行用户验证，并且当前用户模型存为request.user，
+    """对被装饰的方法进行用户身份验证，并且当前用户模型存为request.user，
     用户令牌作为请求头X-User-Token进行传递
     """
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
         token = request.META.get('HTTP_X_USER_TOKEN')
         if not token:
-            abort(401)
+            abort(401, '缺少参数token')
         try:
             user = User.objects.get(token=token)
             if user.is_enabled:
                 request.user = user
                 return function(self, request, *args, **kwargs)
-            abort(403, '用户已注销')
+            abort(403, '用户已删除')
         except User.DoesNotExist:
-            abort(404)
+            abort(404, '用户不存在')
     return decorator
 
 
@@ -39,7 +39,7 @@ def require_verification_token(function):
     def decorator(self, request, *args, **kwargs):
         token = request.META.get('HTTP_X_USER_TOKEN')
         if not token:
-            abort(401)
+            abort(401, '缺少参数token')
         try:
             user = User.objects.get(token=token)
             if user.is_enabled:
@@ -47,9 +47,9 @@ def require_verification_token(function):
                     abort(304, '请先实名认证')
                 request.user = user
                 return function(self, request, *args, **kwargs)
-            abort(403, '用户已注销')
+            abort(403, '用户已删除')
         except User.DoesNotExist:
-            abort(404)
+            abort(404, '用户不存在')
     return decorator
 
 
