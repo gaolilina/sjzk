@@ -77,7 +77,7 @@ class BoardList(View):
         description = kwargs['description']
 
         if ForumBoard.enabled.filter(name=name).exists():
-            abort(403)
+            abort(403, '板块已存在')
 
         b = request.user.forum_boards.create(name=name, description=description)
         return JsonResponse({'board_id': b.id})
@@ -90,7 +90,7 @@ class Board(View):
         """删除版块，只是改变is_enabled字段为False，数据库中并不删除"""
 
         if request.user != board.owner:
-            abort(403)
+            abort(403, '非法操作')
         board.is_enable = False
         board.save()
         abort(200)
@@ -167,7 +167,7 @@ class Post(View):
                 time_created: 创建时间
         """
         if post.main_post is not None:
-            abort(400)
+            abort(400, '无主题帖')
 
         i, j = offset, offset + limit
         qs = post.posts.all()
@@ -201,7 +201,7 @@ class Post(View):
         """删除帖子"""
 
         if request.user != post.author or request.user != post.board.owner:
-            abort(403)
+            abort(403, '操作非法')
         post.delete()
         abort(200)
 

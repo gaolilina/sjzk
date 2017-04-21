@@ -214,13 +214,13 @@ class CompetitionFile(View):
         """上传文件"""
 
         if request.user != team.owner:
-            abort(404, 'only team owner can upload file')
+            abort(404, '只有队长才可以上传文件')
         if team.competitions.filter(competition=competition).count() == 0:
-            abort(404, 'please participate first')
+            abort(404, '未参加该竞赛')
 
         file = request.FILES.get('file')
         if not file:
-            abort(400)
+            abort(400, '文件上传失败')
 
         filename = save_uploaded_file(
             file, competition.id, competition.status, team.id)
@@ -234,7 +234,7 @@ class CompetitionFile(View):
                 competition.team_files.create(
                     file=filename,status=competition.status, team=team)
             abort(200)
-        abort(400)
+        abort(400, '文件保存失败')
 
 
 class TeamParticipatorList(View):
@@ -274,7 +274,7 @@ class TeamParticipatorList(View):
         try:
             team = Team.enabled.get(id=team_id)
         except Team.DoesNotExist:
-            abort(400)
+            abort(400, '团队不存在')
         else:
             if competition.province and competition.province != team.province:
                 abort(403, '团队所在地区不符')

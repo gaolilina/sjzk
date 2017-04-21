@@ -51,7 +51,7 @@ class Username(View):
             abort(403, '用户名已经设置过')
 
         if username.isdigit():
-            abort(400)
+            abort(400, '用户名格式错误')
 
         try:
             request.user.username = username.lower()
@@ -88,7 +88,7 @@ class Password(View):
             request.user.set_password(new_password)
             request.user.save()
             abort(200)
-        abort(403)
+        abort(403, '旧密码错误')
 
 
 # noinspection PyClassHasNoInit
@@ -99,7 +99,7 @@ class Icon(Icon_):
 
         icon = request.FILES.get('image')
         if not icon:
-            abort(400)
+            abort(400, '头像上传失败')
 
         filename = save_uploaded_image(icon)
         if filename:
@@ -118,7 +118,7 @@ class Icon(Icon_):
                 name=request.user.name,
                 portraitUri=portraitUri)
             return JsonResponse({'icon_url': request.user.icon})
-        abort(400)
+        abort(400, '头像保存失败')
 
 
 class IDCard(View):
@@ -128,7 +128,7 @@ class IDCard(View):
 
         if request.user.id_card:
             abort(200)
-        abort(404)
+        abort(404, '未设置头像')
 
     @require_token
     def post(self, request):
@@ -136,11 +136,13 @@ class IDCard(View):
 
         # 等待审核或者已通过审核不能上传照片
         if request.user.is_verified in [1, 2]:
-            abort(403)
+            abort(403, '等待审核或已实名认证')
+        if request.user.is_verified == 4:
+            abort(403, '已通过eid认证')
 
         id_card = request.FILES.get('image')
         if not id_card:
-            abort(400)
+            abort(400, '图片上传失败')
 
         filename = save_uploaded_image(id_card, is_private=True)
         if filename:
@@ -152,7 +154,7 @@ class IDCard(View):
             request.user.id_card = filename
             request.user.save()
             abort(200)
-        abort(400)
+        abort(400, '图片保存失败')
 
 
 class OtherCard(View):
@@ -162,18 +164,18 @@ class OtherCard(View):
 
         if request.user.other_card:
             abort(200)
-        abort(404)
+        abort(404, '未上传图片')
 
     @require_token
     def post(self, request):
         """上传其他证件照片"""
 
         if request.user.is_role_verified:
-            abort(403)
+            abort(403, '已经通过认证')
 
         other_card = request.FILES.get('image')
         if not other_card:
-            abort(400)
+            abort(400, '图片上传失败')
 
         filename = save_uploaded_image(other_card, is_private=True)
         if filename:
@@ -185,7 +187,7 @@ class OtherCard(View):
             request.user.other_card = filename
             request.user.save()
             abort(200)
-        abort(400)
+        abort(400, '图片保存失败')
 
 
 # noinspection PyClassHasNoInit
@@ -500,7 +502,7 @@ class FollowedUser(View):
 
         if request.user.followed_users.filter(followed=user).exists():
             abort(200)
-        abort(404)
+        abort(404, '未关注该用户')
 
     @fetch_object(User.enabled, 'user')
     @require_token
@@ -508,7 +510,7 @@ class FollowedUser(View):
         """令当前用户关注user"""
 
         if request.user.followed_users.filter(followed=user).exists():
-            abort(403)
+            abort(403, '已经关注过')
         request.user.followed_users.create(followed=user)
         # 积分
         request.user.score += get_score_stage(1)
@@ -540,7 +542,7 @@ class FollowedUser(View):
             user.save()
             qs.delete()
             abort(200)
-        abort(403)
+        abort(403, '未关注过该用户')
 
 
 class FollowedTeamList(View):
@@ -590,7 +592,7 @@ class FollowedTeam(View):
 
         if request.user.followed_teams.filter(followed=team).exists():
             abort(200)
-        abort(404)
+        abort(404, '未关注该团队')
 
     @fetch_object(Team.enabled, 'team')
     @require_token
@@ -598,7 +600,7 @@ class FollowedTeam(View):
         """令当前用户关注team"""
 
         if request.user.followed_teams.filter(followed=team).exists():
-            abort(403)
+            abort(403, '已经关注过该团队')
         request.user.followed_teams.create(followed=team)
         request.user.score += get_score_stage(1)
         request.user.score_records.create(
@@ -630,7 +632,7 @@ class FollowedTeam(View):
             team.save()
             qs.delete()
             abort(200)
-        abort(403)
+        abort(403, '未关注过该团队')
 
 
 # noinspection PyClassHasNoInit
@@ -642,10 +644,10 @@ class Friend(Friend_):
 
         if not request.user.friend_requests.filter(other_user=other_user) \
                 .exists():
-            abort(403)
+            abort(403, '对方未发送过申请')
 
         if request.user.friends.filter(other_user=other_user).exists():
-            abort(403)
+            abort(403, '已经是好友')
 
         request.user.friends.create(other_user=other_user)
         other_user.friends.create(other_user=request.user)
@@ -667,7 +669,7 @@ class Friend(Friend_):
         """删除好友"""
 
         if not request.user.friends.filter(other_user=other_user).exists():
-            abort(404)
+            abort(404, '好友不存在')
 
         from ..models import UserFriend
         UserFriend.objects.filter(user=request.user, other_user=other_user) \
@@ -742,7 +744,7 @@ class LikedEntity(View):
 
         if entity.likers.filter(liker=request.user).exists():
             abort(200)
-        abort(404)
+        abort(404, '未点过赞')
 
     @require_token
     def post(self, request, entity):
@@ -1137,7 +1139,7 @@ class Invitation(View):
         """同意团队的加入邀请并成为团队成员（需收到过加入团队邀请）"""
 
         if invitation.user != request.user:
-            abort(403)
+            abort(403, '未收到过邀请')
 
         # 若已是团队成员则不做处理
         if invitation.team.members.filter(user=request.user).exists():
@@ -1177,7 +1179,7 @@ class Invitation(View):
         """忽略某邀请"""
 
         if invitation.user != request.user:
-            abort(403)
+            abort(403, '未收到过邀请')
 
         invitation.delete()
         abort(200)

@@ -19,15 +19,15 @@ def require_token(function):
     def decorator(self, request, *args, **kwargs):
         token = request.META.get('HTTP_X_USER_TOKEN')
         if not token:
-            abort(401)
+            abort(401, '缺少参数token')
         try:
             user = User.objects.get(token=token)
             if user.is_enabled:
                 request.user = user
                 return function(self, request, *args, **kwargs)
-            abort(403)
+            abort(403, '用户已删除')
         except User.DoesNotExist:
-            abort(404)
+            abort(404, '用户不存在')
     return decorator
 
 
@@ -83,7 +83,7 @@ def fetch_object(model, object_name):
                     obj_id = int(kwargs.pop(arg))
                     obj = model.get(id=obj_id)
                 except ObjectDoesNotExist:
-                    abort(404)
+                    abort(404, '对象不存在')
                 else:
                     kwargs[object_name] = obj
             return function(*args, **kwargs)

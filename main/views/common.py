@@ -833,7 +833,7 @@ class UserComment(View):
         if comment.entity == request.user or comment.author == request.user:
             comment.delete()
             abort(200)
-        abort(403)
+        abort(403, '非法操作')
 
 
 class TeamComment(View):
@@ -846,7 +846,7 @@ class TeamComment(View):
                 or comment.author == request.user:
             comment.delete()
             abort(200)
-        abort(403)
+        abort(403, '非法操作')
 
 
 class ActivityComment(View):
@@ -858,7 +858,7 @@ class ActivityComment(View):
         if comment.author == request.user:
             comment.delete()
             abort(200)
-        abort(403)
+        abort(403, '非法操作')
 
 
 class CompetitionComment(View):
@@ -870,7 +870,7 @@ class CompetitionComment(View):
         if comment.author == request.user:
             comment.delete()
             abort(200)
-        abort(403)
+        abort(403, '非法操作')
 
 
 class FollowerList(View):
@@ -935,7 +935,7 @@ class Follower(View):
 
         if entity.followers.filter(follower=other_user).exists():
             abort(200)
-        abort(404)
+        abort(404, '对方不是你的粉丝')
 
 
 # noinspection PyMethodOverriding
@@ -1018,7 +1018,7 @@ class Liker(View):
 
         if entity.likers.filter(liker=other_user).exists():
             abort(200)
-        abort(404)
+        abort(404, '未点赞')
 
 
 class UserLiker(Liker):
