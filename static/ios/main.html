@@ -109,7 +109,7 @@
 
         function jumpToTeamEdit() {
             var team_id = +window.localStorage.getItem("team_id");
-            if (isNaN(team_id)) {
+            if (isNaN(team_id) || team_id == 0) {
                 alert('not a team owner');
                 return;
             }
@@ -158,7 +158,7 @@
 
         function approveId(id) {
             var team_id = +window.localStorage.getItem("team_id");
-            if (isNaN(team_id)) {
+            if (isNaN(team_id) || team_id == 0) {
                 return;
             }
 
@@ -172,7 +172,7 @@
 
         function disapproveId(id) {
             var team_id = +window.localStorage.getItem("team_id");
-            if (isNaN(team_id)) {
+            if (isNaN(team_id) || team_id == 0) {
                 return;
             }
 
@@ -186,7 +186,7 @@
 
         function fetchMsg(page) {
             var team_id = +window.localStorage.getItem("team_id");
-            if (isNaN(team_id)) {
+            if (isNaN(team_id) || team_id == 0) {
                 return;
             }
 
@@ -242,7 +242,7 @@
         function fetchCompetition(page, owned) {
             var team_id = +window.localStorage.getItem("team_id");
             competitonPage = page;
-            get(owned && !isNaN(team_id) ? ('/teams/' +  team_id + '/competition/') : '/competition/', {
+            get(owned && !(isNaN(team_id) || team_id == 0) ? ('/teams/' +  team_id + '/competition/') : '/competition/', {
                 offset: (page - 1) * 10,
                 limit: 10
             }).then(function(data) {
@@ -282,7 +282,7 @@
 
         function participateCompetition(id) {
             var team_id = +window.localStorage.getItem("team_id");
-            if (isNaN(team_id)) {
+            if (isNaN(team_id) || team_id == 0) {
                 alert('not a team owner');
                 return;
             }

@@ -66,7 +66,7 @@ function errorHandler(code, msg) {
             alert('用户权限不足');
             break;
         default:
-            if (msg == null) alert('发生未知错误，请注销后重新登陆');
+            if (msg == "") alert('发生未知错误，请尝试注销后重新登陆');
             else alert(msg);
             break;
     }

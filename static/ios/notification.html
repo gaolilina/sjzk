@@ -61,7 +61,7 @@
         var competition_id = location.search.substring(1);
 
         function fetchPage(page) {
-            if (isNaN(+competition_id)) {
+            if (isNaN(+competition_id) || competition_id == 0) {
                 return;
             }
 
