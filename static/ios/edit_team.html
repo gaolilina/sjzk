@@ -110,19 +110,7 @@
                     county: $('#county').val()
                 }).then(function(data) {
                     location.href = "main.html";
-                }).fail(function(code, msg) {
-                    switch (code) {
-                        case 400:
-                            alert('400');
-                            break;
-                        case 403:
-                            alert('403');
-                            break;
-                        default:
-                            alert(msg);
-                            break;
-                    }
-                });
+                }).fail(errorHandler);
             });
         });
     </script>

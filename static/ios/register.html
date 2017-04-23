@@ -77,8 +77,6 @@
         function getCode() {
             if ($('#phone_number').val().length < 11) return;
             get('/users/validation_code/?phone_number=' + $('#phone_number').val(), {
-            }).then(function(data) {
-                alert(data.validation_code);
             }).fail(errorHandler);
         }
 
@@ -93,19 +91,7 @@
                 }).then(function(data) {
                     saveToken(data.token);
                     location.href = 'info.html';
-                }).fail(function(code, msg) {
-                    switch (code) {
-                        case 400:
-                            alert('400');
-                            break;
-                        case 403:
-                            alert('403');
-                            break;
-                        default:
-                            alert(msg);
-                            break;
-                    }
-                });
+                }).fail(errorHandler);
             });
         });
     </script>
