@@ -150,10 +150,17 @@
                 $('#unit1').val(data.unit1);
                 $('#unit2').val(data.unit2);
                 $('#profession').val(data.profession);
+
+                $('input[name=gender][value=' + data.gender + ']').click();
             }).fail(errorHandler);
 
             $("form").submit(function(e) {
                 e.preventDefault();
+
+                if (Date.parse($('#birthday').val()) >= new Date()) {
+                    alert('生日错误');
+                    return;
+                }                
 
                 post('/users/current/profile/', {
                     name: $('#name').val(),

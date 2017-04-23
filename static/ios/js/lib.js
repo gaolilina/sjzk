@@ -60,14 +60,13 @@ window.alert = function(msg) {
 function errorHandler(code, msg) {
     switch (code) {
         case 400:
-            alert('输入有误');
+            alert(msg || '输入有误');
             break;
         case 403:
-            alert('用户权限不足');
+            alert(msg || '用户权限不足');
             break;
         default:
-            if (msg == "") alert('发生未知错误，请尝试注销后重新登陆');
-            else alert(msg);
+            alert(msg || '发生未知错误，请尝试注销后重新登陆');
             break;
     }
 }
