@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>创易汇</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-dialog.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 50px;
+        }
+
+        button[type=submit] {
+            margin-top: 30px;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-brand">创易汇</div>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div style="margin-top: 70px;">
+            <input id="i_sfz" type="file" accept="image/*" style="display:none" />
+            上传身份证照片：<button style="margin-left:10px" id="sfz">上传</button>
+        </div>
+        <div style="margin-top: 70px;">
+            <input id="i_zj" type="file" accept="image/*" style="display:none" />
+            上传证件照片：<button style="margin-left:10px" id="zj">上传</button>
+        </div>
+    </div>
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    <p>One fine body…</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-dialog.min.js"></script>
+    <script src="js/lib.js"></script>
+    <script>
+        $(function() {
+            $("#i_sfz").change(function() {
+                upload('/users/current/id_card/', $('#i_sfz')[0].files[0]).then(function(data) {
+                    alertInfo("上传成功");
+                }).fail(errorHandler);
+            });
+            $("#i_zj").change(function() {
+                upload('/users/current/other_card/', $('#i_zj')[0].files[0]).then(function(data) {
+                    alertInfo("上传成功");
+                }).fail(errorHandler);
+            });
+
+            $("#sfz").click(function() {
+                $("#i_sfz").click();
+            });
+            $("#zj").click(function() {
+                $("#i_zj").click();
+            });
+        });
+    </script>
+</body>
+</html>

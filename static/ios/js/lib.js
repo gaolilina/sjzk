@@ -41,12 +41,40 @@ function deleteAjax(url, params) {
     return dtd;
 }
 
+function upload(url, file) {
+    var dtd = $.Deferred();
+    var data = new FormData();
+    data.append("image", file);
+    $.post({
+        url: HOST + url,
+        data: data,
+        contentType: false,
+        processData: false,
+        headers: readToken() == "" || readToken() == null ? undefined : {
+            "X-User-Token": readToken()
+        }
+    }).done(function(data) {
+        dtd.resolve(data);
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        dtd.reject(jqXHR.status, errorThrown);
+    });
+    return dtd;
+}
+
 function saveToken(token) {
     localStorage.setItem("token", token);
 }
 
 function readToken() {
     return localStorage.getItem("token");
+}
+
+window.alertInfo = function(msg) {
+    BootstrapDialog.show({
+        title: 'Info',
+        message: msg,
+        type: 'type-info'
+    });
 }
 
 window.alert = function(msg) {
