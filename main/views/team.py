@@ -813,7 +813,7 @@ class AchievementList(View):
         if achievement_num == 0:
             team.score += get_score_stage(2)
             team.score_records.create(
-                score=get_score_stage(2), type="能力",
+                score=get_score_stage(2), type="初始数据",
                 description="首次发布团队成果")
 
         achievement = TeamAchievement(team=team, description=description)
@@ -2147,11 +2147,11 @@ class TeamInternalTask(View):
             task.executor.score += get_score_stage(1)
             task.executor.score_records.create(
                 score=get_score_stage(1), type="能力",
-                description="完成一个外部任务")
+                description="完成一个内部任务")
             task.team.score += get_score_stage(1)
             task.team.score_records.create(
                 score=get_score_stage(1), type="能力",
-                description="队友完成一个外部任务")
+                description="队友完成一个内部任务")
             task.executor.save()
             task.team.save()
             task.save()

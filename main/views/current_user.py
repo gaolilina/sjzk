@@ -183,7 +183,7 @@ class OtherCard(View):
                 request.user.score += get_score_stage(5)
                 request.user.score_records.create(
                     score=get_score_stage(5), type="初始数据",
-                    description="首次学生认证")
+                    description="首次身份认证")
             request.user.other_card = filename
             request.user.save()
             abort(200)
@@ -373,6 +373,13 @@ class EidIdentityVerification(Profile_):
             for k in id_keys:
                 if k in kwargs:
                     setattr(request.user, k, kwargs[k])
+
+        # 积分相关
+        if not request.user.id_card:
+            request.user.score += get_score_stage(5)
+            request.user.score_records.create(
+                score=get_score_stage(5), type="初始数据",
+                description="首次Eid认证")
         # 将实名认证状态码改为4表示EID认证通过
         request.user.is_verified = 4
         request.user.save()
