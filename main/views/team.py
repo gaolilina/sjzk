@@ -1005,10 +1005,8 @@ class NeedList(View):
         承接需求：
             deadline: 截止时间
             description: 需求描述
-            number: 团队人数
             field: 领域
             skill: 技能
-            degree: 学历
             major: 专业
             province: 省
             city: 市
@@ -1081,11 +1079,9 @@ class NeedList(View):
         'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
-        'number': forms.IntegerField(min_value=1),
         'gender': forms.CharField(required=False, max_length=1),
         'field': forms.CharField(required=False, max_length=20),
         'skill': forms.CharField(required=False, max_length=20),
-        'degree': forms.CharField(required=False, max_length=20),
         'major': forms.CharField(required=False, max_length=20),
         'age_min': forms.IntegerField(
             required=False, min_value=0, max_value=99),
@@ -1177,8 +1173,8 @@ class Need(View):
     member_keys = ('id', 'title', 'description', 'number', 'age_min',
                    'age_max', 'gender', 'field', 'skill', 'degree', 'major',
                    'time_graduated', 'deadline', 'province', 'city', 'county')
-    outsource_keys = ('id', 'title', 'description', 'number', 'age_min',
-                      'age_max', 'gender', 'field', 'skill', 'degree', 'major',
+    outsource_keys = ('id', 'title', 'description', 'age_min',
+                      'age_max', 'gender', 'field', 'skill', 'major',
                       'cost', 'cost_unit', 'time_started', 'time_ended',
                       'deadline', 'province', 'city', 'county')
     undertake_keys = ('id', 'title', 'description', 'number', 'field', 'skill',
@@ -1245,10 +1241,8 @@ class Need(View):
                 team_id: 团队ID
                 team_name: 团队名称
                 icon_url: 团队头像
-                number: 团队人数
                 field: 领域
                 skill: 技能
-                degree: 学历
                 major: 专业
                 cost: 费用
                 province: 省
