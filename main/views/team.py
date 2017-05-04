@@ -1079,10 +1079,12 @@ class NeedList(View):
         'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
+        'number': forms.IntegerField(min_value=1),
         'gender': forms.CharField(required=False, max_length=1),
         'field': forms.CharField(required=False, max_length=20),
         'skill': forms.CharField(required=False, max_length=20),
         'major': forms.CharField(required=False, max_length=20),
+        'degree': forms.CharField(required=False, max_length=20),
         'age_min': forms.IntegerField(
             required=False, min_value=0, max_value=99),
         'age_max': forms.IntegerField(
@@ -1127,13 +1129,11 @@ class NeedList(View):
         'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
-        'number': forms.IntegerField(min_value=1),
         'field': forms.CharField(required=False, max_length=20),
         'skill': forms.CharField(required=False, max_length=20),
         'province': forms.CharField(required=False, max_length=20),
         'city': forms.CharField(required=False, max_length=20),
         'county': forms.CharField(required=False, max_length=20),
-        'degree': forms.CharField(required=False, max_length=20),
         'major': forms.CharField(required=False, max_length=20),
         'cost': forms.IntegerField(required=False),
         'cost_unit': forms.CharField(required=False, max_length=1),
@@ -1173,14 +1173,13 @@ class Need(View):
     member_keys = ('id', 'title', 'description', 'number', 'age_min',
                    'age_max', 'gender', 'field', 'skill', 'degree', 'major',
                    'time_graduated', 'deadline', 'province', 'city', 'county')
-    outsource_keys = ('id', 'title', 'description', 'age_min',
-                      'age_max', 'gender', 'field', 'skill', 'major',
+    outsource_keys = ('id', 'title', 'description', 'number', 'age_min',
+                      'age_max', 'gender', 'degree', 'field', 'skill', 'major',
                       'cost', 'cost_unit', 'time_started', 'time_ended',
                       'deadline', 'province', 'city', 'county')
-    undertake_keys = ('id', 'title', 'description', 'number', 'field', 'skill',
-                      'degree', 'major', 'cost', 'cost_unit',
-                      'time_started', 'time_ended', 'deadline',
-                      'province', 'city', 'county')
+    undertake_keys = ('id', 'title', 'description', 'field', 'skill', 'major',
+                      'cost', 'cost_unit', 'time_started', 'time_ended',
+                      'deadline', 'province', 'city', 'county')
 
     @fetch_object(TeamNeed.objects, 'need')
     @require_token
