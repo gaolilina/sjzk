@@ -37,6 +37,12 @@ class User(models.Model):
     province = models.CharField(max_length=20, default='')
     city = models.CharField(max_length=20, default='')
     county = models.CharField(max_length=20, default='')
+    adept_field = models.CharField(default='', max_length=20)
+    adept_skill = models.CharField(default='', max_length=20)
+    expect_role = models.CharField(max_length=20, default='')
+    follow_field = models.CharField(default='', max_length=20)
+    follow_skill = models.CharField(default='', max_length=20)
+
 
     # 是否通过实名验证,0:未提交, 1:待审核, 2:身份证审核通过, 3:审核未通过,请重新提交,
     # 4:Eid审核通过

@@ -206,6 +206,11 @@ class Profile(Profile_):
         'county': forms.CharField(required=False, max_length=20),
         'tags': forms.CharField(required=False, max_length=100),
         'role': forms.CharField(required=False, max_length=20),
+        'adept_field': forms.CharField(required=False, max_length=20),
+        'adept_skill': forms.CharField(required=False, max_length=20),
+        'expect_role': forms.CharField(required=False, max_length=20),
+        'follow_field': forms.CharField(required=False, max_length=20),
+        'follow_skill': forms.CharField(required=False, max_length=20),
         'other_number': forms.CharField(required=False, max_length=20),
         'unit1': forms.CharField(required=False, max_length=20),
         'unit2': forms.CharField(required=False, max_length=20),
@@ -227,6 +232,11 @@ class Profile(Profile_):
             county:
             tags: 标签，格式：'tag1|tag2|...'，最多5个
             role:
+            adept_field: 擅长领域
+            adept_skill: 擅长技能
+            expect_role: 期望角色
+            follow_field: 关注领域
+            follow_skill: 关注技能
             other_number:
             unit1:
             unit2:
@@ -263,7 +273,9 @@ class Profile(Profile_):
                 name=request.user.name,
                 portraitUri=portraitUri)
         normal_keys = ('description', 'qq', 'wechat', 'email', 'gender',
-                       'birthday', 'province', 'city', 'county')
+                       'birthday', 'province', 'city', 'county', 'adept_field',
+                       'adept_skill', 'expect_role', 'follow_field',
+                       'follow_skill')
         for k in normal_keys:
             if k in kwargs:
                 setattr(request.user, k, kwargs[k])
