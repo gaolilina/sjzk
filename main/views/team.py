@@ -932,7 +932,7 @@ class NeedList(View):
         qs = team.needs
         if type is not None:
             qs = qs.filter(type=type)
-        if request.user == team.owner and status:
+        if status is not None:
             qs = qs.filter(status=status)
         else:
             qs = qs.filter(status=0)
