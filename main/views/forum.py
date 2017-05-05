@@ -234,7 +234,7 @@ class SearchBoard(View):
         i, j, k = offset, offset + limit, self.available_orders[order]
 
         qs = request.user.forum_boards.filter(
-            Q(enabled=True) & Q(name__contains=kwargs['name']))
+            Q(enabled=True) & Q(name__icontains=kwargs['name']))
         c = qs.count()
         boards = qs.order_by(k)[i:j]
         l = [{'id': b.id,
@@ -276,7 +276,8 @@ class SearchPost(View):
                 time_created: 创建时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
-        qs = board.posts.filter(Q(main_post=None) & Q(title__contains=kwargs['title']))
+        qs = board.posts.filter(Q(main_post=None) &
+                                Q(title__icontains=kwargs['title']))
         c = qs.count()
         posts = qs.order_by(k)[i:j]
         l = [{'id': p.id,

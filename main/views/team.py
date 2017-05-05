@@ -191,7 +191,7 @@ class Search(View):
         i, j = offset, offset + limit
         if by_tag == 0:
             # 按团队名称段检索
-            teams = Team.enabled.filter(name__contains=name)
+            teams = Team.enabled.filter(name__icontains=name)
         else:
             # 按标签检索
             teams = Team.enabled.filter(tags__name=name)
@@ -270,7 +270,7 @@ class Screen(View):
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称段检索
-            teams = teams.filter(name__contains=name)
+            teams = teams.filter(name__icontains=name)
 
         province = kwargs.pop('province', '')
         if province:
@@ -1346,7 +1346,7 @@ class NeedSearch(View):
                 members: 需求的加入者
                 time_created: 发布时间
         """
-        qs = TeamNeed.objects.filter(status=status, title__contains=name)
+        qs = TeamNeed.objects.filter(status=status, title__icontains=name)
         if type is not None:
             qs = qs.filter(type=type)
         c = qs.count()

@@ -335,7 +335,7 @@ class Search(View):
                 time_created: 创建时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        qs = Competition.enabled.filter(name__contains=kwargs['name'])
+        qs = Competition.enabled.filter(name__icontains=kwargs['name'])
         c = qs.count()
         l = [{'id': a.id,
               'name': a.name,
@@ -406,7 +406,7 @@ class Screen(View):
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称段检索
-            qs = qs.filter(name__contains=name)
+            qs = qs.filter(name__icontains=name)
         province = kwargs.pop('province', '')
         if province:
             # 按省会筛选

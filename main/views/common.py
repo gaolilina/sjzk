@@ -347,8 +347,8 @@ class SearchUserActionList(View):
                 time_created: 创建时间
         """
 
-        r = UserAction.objects.filter(Q(entity__name__contains=kwargs['name']) |
-                                      Q(action__contains=kwargs['name']))
+        r = UserAction.objects.filter(Q(entity__name__icontains=kwargs['name'])
+                                      | Q(action__icontains=kwargs['name']))
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
@@ -423,8 +423,8 @@ class ScreenUserActionList(View):
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称或动态名检索
-            r = r.filter(Q(entity__name__contains=name) |
-                         Q(action__contains=name))
+            r = r.filter(Q(entity__name__icontains=name) |
+                         Q(action__icontains=name))
         gender = kwargs.pop('gender', None)
         if gender is not None:
             # 按性别筛选
@@ -451,8 +451,8 @@ class ScreenUserActionList(View):
             r = r.filter(entity__unit1=unit1)
         act = kwargs.pop('action', '')
         if act:
-            # 按机构筛选
-            r = r.filter(action__contains=act)
+            # 按动作筛选
+            r = r.filter(action__icontains=act)
 
         r = r.all()
         c = r.count()
@@ -511,8 +511,8 @@ class SearchTeamActionList(View):
                 time_created: 创建时间
         """
 
-        r = TeamAction.objects.filter(Q(entity__name__contains=kwargs['name']) |
-                                      Q(action__contains=kwargs['name']))
+        r = TeamAction.objects.filter(Q(entity__name__icontains=kwargs['name'])
+                                      | Q(action__icontains=kwargs['name']))
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
@@ -583,8 +583,8 @@ class ScreenTeamActionList(View):
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称或动态名检索
-            r = r.filter(Q(entity__name__contains=name) |
-                         Q(action__contains=name))
+            r = r.filter(Q(entity__name__icontains=name) |
+                         Q(action__icontains=name))
         province = kwargs.pop('province', '')
         if province:
             # 按省会筛选
@@ -603,8 +603,8 @@ class ScreenTeamActionList(View):
             r = r.filter(entity__field=field)
         act = kwargs.pop('action', '')
         if act:
-            # 按机构筛选
-            r = r.filter(action__contains=act)
+            # 按动作筛选
+            r = r.filter(action__icontains=act)
 
         r = r.all()
         c = r.count()

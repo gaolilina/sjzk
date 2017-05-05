@@ -429,7 +429,7 @@ class Search(View):
         i, j = offset, offset + limit
         if by_tag == 0:
             # 按用户昵称段检索
-            users = User.enabled.filter(name__contains=name)
+            users = User.enabled.filter(name__icontains=name)
         else:
             # 按标签检索
             users = User.enabled.filter(tags__name=name)
@@ -516,7 +516,7 @@ class Screen(View):
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称段检索
-            users = users.filter(name__contains=name)
+            users = users.filter(name__icontains=name)
 
         gender = kwargs.pop('gender', None)
         if gender is not None:
