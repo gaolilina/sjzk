@@ -172,7 +172,7 @@ class TeamNeed(models.Model):
 
     age_min = models.IntegerField(default=0)
     age_max = models.IntegerField(default=0)
-    gender = models.CharField(default='', max_length=1)
+    gender = models.IntegerField(default=0, db_index=True)
     degree = models.CharField(default='', max_length=20)
     major = models.CharField(default='', max_length=20)
     time_graduated = models.DateField(default=None, null=True)

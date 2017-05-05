@@ -25,7 +25,7 @@ __all__ = ('List', 'Search', 'Screen', 'Profile', 'Icon', 'MemberList',
            'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
            'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
            'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList',
-           'CompetitionList', 'TeamScoreRecord', 'NeedSearch')
+           'CompetitionList', 'TeamScoreRecord', 'NeedSearch', 'NeedScreen')
 
 
 class List(View):
@@ -1033,7 +1033,7 @@ class NeedList(View):
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
-        'gender': forms.CharField(required=False, max_length=1),
+        'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
         'field': forms.CharField(required=False, max_length=20),
         'skill': forms.CharField(required=False, max_length=20),
         'degree': forms.CharField(required=False, max_length=20),
@@ -1080,7 +1080,7 @@ class NeedList(View):
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
-        'gender': forms.CharField(required=False, max_length=1),
+        'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
         'field': forms.CharField(required=False, max_length=20),
         'skill': forms.CharField(required=False, max_length=20),
         'major': forms.CharField(required=False, max_length=20),
@@ -1313,9 +1313,7 @@ class Need(View):
         abort(200)
 
 
-# noinspection PyUnusedLocal
 class NeedSearch(View):
-    # noinspection PyShadowingBuiltins
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1349,6 +1347,100 @@ class NeedSearch(View):
         qs = TeamNeed.objects.filter(status=status, title__icontains=name)
         if type is not None:
             qs = qs.filter(type=type)
+        c = qs.count()
+        needs = qs[offset:offset + limit]
+        l = list()
+        for n in needs:
+            need_dic = dict()
+            members = dict()
+            if n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
+            need_dic['id'] = n.id
+            need_dic['team_id'] = n.team.id
+            need_dic['team_name'] = n.team.name
+            need_dic['number'] = n.number
+            need_dic['icon_url'] = n.team.icon
+            need_dic['status'] = n.status
+            need_dic['title'] = n.title
+            need_dic['degree'] = n.degree
+            need_dic['members'] = members
+            need_dic['time_created'] = n.time_created
+            l.append(need_dic)
+        return JsonResponse({'count': c, 'list': l})
+
+
+class NeedScreen(View):
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'type': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'name': forms.CharField(required=False, max_length=20),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'county': forms.CharField(required=False, max_length=20),
+        'number': forms.IntegerField(required=False, min_value=0),
+        'degree': forms.CharField(required=False, max_length=20),
+    })
+    def get(self, request, type=None, status=0, offset=0, limit=10, **kwargs):
+        """
+        搜索发布中的需求列表
+
+        :param offset: 起始量
+        :param limit: 偏移量
+        :param name: 标题包含字段
+        :param type: 需求的类型
+        :param status: 需求状态，默认为0:发布中
+        :return:
+            count: 需求总数
+            list: 需求列表
+                need_id: 需求ID
+                team_id: 团队ID
+                team_name: 团队名称
+                icon_url: 团队头像
+                status: 需求状态
+                title: 需求标题
+                number: 所需人数/团队人数
+                degree: 需求学历
+                members: 需求的加入者
+                time_created: 发布时间
+        """
+        qs = TeamNeed.objects.filter(status=status)
+        if type is not None:
+            qs = qs.filter(type=type)
+        name = kwargs.pop('name', '')
+        if name:
+            # 按标题检索
+            qs = qs.filter(title__icontains=name)
+
+        province = kwargs.pop('province', '')
+        if province:
+            # 按省会筛选
+            qs = qs.filter(province=province)
+        city = kwargs.pop('city', '')
+        if city:
+            # 按城市筛选
+            qs = qs.filter(city=city)
+        county = kwargs.pop('county', '')
+        if county:
+            # 按区/县筛选
+            qs = qs.filter(county=county)
+        number = kwargs.pop('number', '')
+        if number:
+            # 按需求所需最多人数筛选
+            qs = qs.filter(number__lte=number)
+        degree = kwargs.pop('number', '')
+        if degree:
+            # 按学历筛选
+            qs = qs.filter(degree=degree)
+
         c = qs.count()
         needs = qs[offset:offset + limit]
         l = list()
