@@ -1338,6 +1338,7 @@ class NeedSearch(View):
                 team_name: 团队名称
                 icon_url: 团队头像
                 status: 需求状态
+                type: 需求类型
                 title: 需求标题
                 number: 所需人数/团队人数
                 degree: 需求学历
@@ -1371,6 +1372,7 @@ class NeedSearch(View):
             need_dic['number'] = n.number
             need_dic['icon_url'] = n.team.icon
             need_dic['status'] = n.status
+            need_dic['type'] = n.type
             need_dic['title'] = n.title
             need_dic['degree'] = n.degree
             need_dic['members'] = members
