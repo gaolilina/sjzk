@@ -1322,7 +1322,7 @@ class NeedSearch(View):
         'type': forms.IntegerField(required=False, min_value=0, max_value=2),
         'name': forms.CharField(max_length=20),
     })
-    def get(self, request, name, type=None, status=0, offset=0, limit=10):
+    def get(self, request, name, type=None, status=None, offset=0, limit=10):
         """
         搜索发布中的需求列表
 
@@ -1344,8 +1344,12 @@ class NeedSearch(View):
                 members: 需求的加入者
                 time_created: 发布时间
         """
-        qs = TeamNeed.objects.filter(status=status, title__icontains=name)
+        qs = TeamNeed.objects.filter(title__icontains=name)
+        if status is not None:
+            # 按需求状态搜索
+            qs = qs.filter(status=status)
         if type is not None:
+            # 按需求类别搜索
             qs = qs.filter(type=type)
         c = qs.count()
         needs = qs[offset:offset + limit]
@@ -1389,7 +1393,8 @@ class NeedScreen(View):
         'number': forms.IntegerField(required=False, min_value=0),
         'degree': forms.CharField(required=False, max_length=20),
     })
-    def get(self, request, type=None, status=0, offset=0, limit=10, **kwargs):
+    def get(self, request, type=None, status=None, offset=0, limit=10,
+            **kwargs):
         """
         搜索发布中的需求列表
 
@@ -1406,14 +1411,19 @@ class NeedScreen(View):
                 team_name: 团队名称
                 icon_url: 团队头像
                 status: 需求状态
+                type: 需求类别
                 title: 需求标题
                 number: 所需人数/团队人数
                 degree: 需求学历
                 members: 需求的加入者
                 time_created: 发布时间
         """
-        qs = TeamNeed.objects.filter(status=status)
+        qs = TeamNeed.objects.all()
+        if status is not None:
+            # 按需求状态筛选
+            qs = qs.filter(status=status)
         if type is not None:
+            # 按需求类别筛选
             qs = qs.filter(type=type)
         name = kwargs.pop('name', '')
         if name:
@@ -1461,6 +1471,7 @@ class NeedScreen(View):
             need_dic['number'] = n.number
             need_dic['icon_url'] = n.team.icon
             need_dic['status'] = n.status
+            need_dic['type'] = n.type
             need_dic['title'] = n.title
             need_dic['degree'] = n.degree
             need_dic['members'] = members
