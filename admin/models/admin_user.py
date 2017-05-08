@@ -17,19 +17,16 @@ class AdminUser(models.Model):
     username = models.CharField(max_length=20, unique=True, db_index=True)
     password = models.CharField(max_length=128)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
-    # a - 竞赛, b - 活动, y - 运维, z - 管理
+    # a - 竞赛, b - 活动, c - 广告, x - 运营 , y - 管理, z - 超级管理
     role = models.CharField(default='', max_length=26)
 
     name = models.CharField(max_length=15, default='', db_index=True)
-    description = models.CharField(max_length=100, default='')
     icon = models.CharField(max_length=100, default='')
     gender = models.CharField(max_length=1, default='')
     email = models.EmailField(default='')
     phone_number = models.CharField(max_length=11, default='')
-
-    is_verified = models.BooleanField(default=False, db_index=True)
-    real_name = models.CharField(max_length=20, default='', db_index=True)
-    id_number = models.CharField(max_length=18, default='', db_index=True)
+    qq = models.CharField(max_length=20, default='')
+    wechat = models.CharField(max_length=20, default='')
 
     objects = models.Manager()
     enabled = EnabledManager()
@@ -56,3 +53,32 @@ class AdminUser(models.Model):
         self.save()
         self.name = '创易汇后台用户 #{}'.format(self.id)
         self.save()
+
+    def can_a(self):
+        return self.premission_chk('a')
+    def can_b(self):
+        return self.premission_chk('b')
+    def can_x(self):
+        return self.premission_chk('x')
+    def can_y(self):
+        return self.premission_chk('y')
+    def can_z(self):
+        return self.premission_chk('z')
+
+    def premission_chk(self, target):
+        """ 检查权限 """
+        if target == "z":
+            if 'z' in self.role:
+                return True
+        elif target == 'y':
+            if 'y' in self.role or 'z' in self.role:
+                return True
+        elif target == 'x':
+            if 'x' in self.role or 'y' in self.role or 'z' in self.role:
+                return True
+        else:
+            if 'x' in self.role or 'y' in self.role or 'z' in self.role:
+                return True
+            elif target in self.role:
+                return True
+        return False

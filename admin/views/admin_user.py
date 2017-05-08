@@ -10,7 +10,7 @@ from admin.utils.decorators import *
 class AdminUserView(View):
     @fetch_record(AdminUser.objects, 'mod', 'id')
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("admin_user/admin_user.html")
         context = Context({'mod': mod, 'user': request.user})
@@ -35,7 +35,7 @@ class AdminUserView(View):
 
 class AdminUserList(View):
     @require_cookie
-    @require_role('z')
+    @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
     })

@@ -43,14 +43,14 @@ class Login(View):
 
 class Register(View):
     @require_cookie
-    @require_role('yz')
+    @require_role('xyz')
     def get(self, request):
         template = loader.get_template("register.html")
         context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
-    @require_role('yz')
+    @require_role('xyz')
     @validate_args({
         'username': forms.CharField(),
         'password': forms.CharField(min_length=6, max_length=20, strip=False),

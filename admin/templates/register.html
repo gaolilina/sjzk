@@ -5,6 +5,16 @@
     <img src="{% static 'img/user.png' %}" /><br/>
     <input placeholder="用户名" name="username" type="text" maxlength="20" autofocus required><br/>
     <input placeholder="密码" name="password" type="password" value="" minlength="6" maxlength="20" required><br/>
+    用户类型：<select name="role" required>
+        <option value="a" checked="checked">活动</option>
+        <option value="b">竞赛</option>
+        {% if user.can_y %}
+            <option value="x">运维</option>
+        {% endif %}
+        {% if user.can_z %}
+            <option value="y">管理员</option>
+        {% endif %}
+    </select><br/>
     {{ msg }}<br/>
     <input type="submit" value="注册" />
 </form>

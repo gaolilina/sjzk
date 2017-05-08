@@ -12,14 +12,14 @@ from admin.utils.decorators import *
 
 class AdminCompetitionAdd(View):
     @require_cookie
-    @require_role('yz')
+    @require_role('xyz')
     def get(self, request):
         template = loader.get_template("admin_competition/add.html")
         context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
     @require_cookie
-    @require_role('yz')
+    @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
@@ -58,7 +58,7 @@ class AdminCompetitionAdd(View):
 class AdminCompetitionEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
-    @require_role('yz')
+    @require_role('xyz')
     def get(self, request, model):
         if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
             return HttpResponseForbidden()
@@ -69,7 +69,7 @@ class AdminCompetitionEdit(View):
 
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
-    @require_role('yz')
+    @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
@@ -111,7 +111,7 @@ class AdminCompetitionEdit(View):
 
 class AdminCompetitionList(View):
     @require_cookie
-    @require_role('ayz')
+    @require_role('axyz')
     def get(self, request):
         try:
             template = loader.get_template("admin_competition/list.html")
@@ -125,7 +125,7 @@ class AdminCompetitionList(View):
 class AdminCompetitionView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
-    @require_role('ayz')
+    @require_role('axyz')
     def get(self, request, model):
         if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
             return HttpResponseForbidden()
@@ -137,7 +137,7 @@ class AdminCompetitionView(View):
 class AdminCompetitionFilesView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
-    @require_role('ayz')
+    @require_role('axyz')
     def get(self, request, model, status):
         if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
             return HttpResponseForbidden()
@@ -149,7 +149,7 @@ class AdminCompetitionFilesView(View):
 class AdminCompetitionExcelView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
-    @require_role('az')
+    @require_role('axyz')
     def get(self, request, model):
         if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
             return HttpResponseForbidden()
