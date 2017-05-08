@@ -25,7 +25,7 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'InvitationList', 'Invitation', 'IdentityVerification',
            'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
            'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification',
-           'OtherIdentityVerification']
+           'OtherIdentityVerification', 'Inviter']
 
 
 class Username(View):
@@ -1234,6 +1234,52 @@ class InvitationCode(View):
         """
         invitation_code = request.user.invitation_code
         return JsonResponse({'invitation_code': invitation_code})
+
+
+class Inviter(View):
+    @require_token
+    def get(self, request):
+        """获取用户自己的邀请者信息
+
+        """
+        used_invitation_code = request.user.used_invitation_code
+        if not used_invitation_code:
+            abort(403, '你没有邀请人')
+        try:
+            user = User.enabled.get(invitation_code=used_invitation_code)
+        except IntegrityError:
+            abort(404, '该用户已不存在')
+        else:
+            r = {'id': user.id,
+                 'time_created': user.time_created,
+                 'name': user.name,
+                 'icon_url': user.icon,
+                 'description': user.description,
+                 'gender': user.gender,
+                 'birthday': user.birthday,
+                 'province': user.province,
+                 'city': user.city,
+                 'county': user.county,
+                 'tags': [tag.name for tag in user.tags.all()],
+                 'follower_count': user.followers.count(),
+                 'followed_count': user.followed_users.count() +
+                                   user.followed_teams.count(),
+                 'friend_count': user.friends.count(),
+                 'liker_count': user.likers.count(),
+                 'visitor_count': user.visitors.count(),
+                 'is_verified': user.is_verified,
+                 'is_role_verified': user.is_role_verified,
+                 'role': user.role,
+                 'adept_field': user.adept_field,
+                 'adept_skill': user.adept_skill,
+                 'expect_role': user.expect_role,
+                 'follow_field': user.follow_field,
+                 'follow_skill': user.follow_skill,
+                 'unit1': user.unit1,
+                 'unit2': user.unit2,
+                 'profession': user.profession,
+                 'score': user.score}
+            return JsonResponse(r)
 
 
 class BindPhoneNumber(View):

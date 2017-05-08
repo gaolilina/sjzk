@@ -332,6 +332,11 @@ class Profile(View):
             liker_count: 点赞数
             fan_count: 粉丝数
             visitor_count: 最近访客数
+            advantage: 团队优势
+            business_stage: 工商阶段
+            financing_stage: 融资阶段
+            valuation: 团队估值
+            valuation_unit: 团队估值单位
             province:
             city:
             county:
@@ -356,6 +361,11 @@ class Profile(View):
         r['fan_count'] = team.followers.count()
         r['visitor_count'] = team.visitors.count()
         r['fields'] = [team.field1, team.field2]
+        r['advantage'] = team.advantage
+        r['business_stage'] = team.business_stage
+        r['financing_stage'] = team.financing_stage
+        r['valuation'] = team.valuation
+        r['valuation_unit'] = team.valuation_unit
         r['province'] = team.province
         r['city'] = team.city
         r['county'] = team.county
@@ -376,6 +386,11 @@ class Profile(View):
         'county': forms.CharField(required=False, max_length=20),
         'fields': forms.CharField(required=False, max_length=100),
         'tags': forms.CharField(required=False, max_length=100),
+        'advantage': forms.CharField(required=False, max_length=100),
+        'business_stage': forms.IntegerField(required=False),
+        'financing_stage': forms.CharField(required=False, max_length=10),
+        'valuation': forms.IntegerField(required=False),
+        'valuation_unit': forms.CharField(required=False, max_length=5),
     })
     def post(self, request, team, **kwargs):
         """修改团队资料
@@ -386,6 +401,11 @@ class Profile(View):
             description: 团队简介
             is_recruiting：是否招募新成员
             url: 团队链接
+            advantage: 团队优势
+            business_stage: 工商阶段
+            financing_stage: 融资阶段
+            valuation: 团队估值
+            valuation_unit: 团队估值单位
             province:
             city:
             county:
@@ -1328,8 +1348,8 @@ class NeedSearch(View):
 
         :param offset: 偏移量
         :param name: 标题包含字段
-        :param type: 需求的类型
-        :param status: 需求状态，默认为0:发布中
+        :param type: 需求的类型，默认为获取全部
+        :param status: 需求状态，默认为获取全部
         :return:
             count: 需求总数
             list: 需求列表
@@ -1398,13 +1418,19 @@ class NeedScreen(View):
     def get(self, request, type=None, status=None, offset=0, limit=10,
             **kwargs):
         """
-        搜索发布中的需求列表
+        筛选发布中的需求列表
 
         :param offset: 起始量
         :param limit: 偏移量
-        :param name: 标题包含字段
-        :param type: 需求的类型
-        :param status: 需求状态，默认为0:发布中
+        :param type: 需求的类型，默认为获取全部
+        :param status: 需求状态，默认为获取全部
+        :param kwargs:
+                    name: 标题包含字段
+                    province: 省
+                    city: 市
+                    county: 区\县
+                    number: 需要人数
+                    degree: 学历
         :return:
             count: 需求总数
             list: 需求列表
