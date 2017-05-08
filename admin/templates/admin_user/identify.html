@@ -5,7 +5,7 @@
 <table>
     <tr>
         <td>手机号码：</td>
-        <td><input name="phone_number" type="text" value="{{ u.phone_number }}" maxlength="11"/></td>
+        <td><input name="phone_number" type="text" value="{{ u.phone_number }}" maxlength="11" required/></td>
     </tr>
     <tr>
         <td>旧密码：</td>
@@ -13,11 +13,11 @@
     </tr>
     <tr>
         <td>新密码：</td>
-        <td><input name="new_pass" type="password" value="" maxlength="18" required/></td>
+        <td><input name="new_pass" type="password" value="" maxlength="18"/></td>
     </tr>
     <tr>
         <td>确认新密码：</td>
-        <td><input class="pass2" type="password" value="" maxlength="18" required/></td>
+        <td><input class="pass2" type="password" value="" maxlength="18"/></td>
     </tr>
     <tr>
         <td>短信验证码</td>
@@ -36,13 +36,14 @@
 </form>
 
 <script>
-$('button').click(function() {
-    $.get("http://www.chuangyh.com:8000/user/validation_code/?phone_number" + $("input[name=phone_number]").val())
+$('button').click(function(e) {
+    e.preventDefault();
+    $.get("http://www.chuangyh.com:8000/users/validation_code/?phone_number=" + $("input[name=phone_number]").val())
         .then(function() {
-            $("button").prop("enabled", false);
+            $("button").prop("disabled", true);
 
             setTimeout(function() {
-                $("button").prop("enabled", true);
+                $("button").prop("disabled", false);
             }, 60000);
         })
         .fail(function() {
@@ -77,7 +78,7 @@ $('form').submit(function(e) {
         vertical-align: top;
     }
 
-    input[type=text], input[type=email], textarea {
+    input[type=text], input[type=password], input[type=email], textarea {
         border: 2px solid #C5DBAD;
     }
 

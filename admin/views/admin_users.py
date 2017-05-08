@@ -67,12 +67,12 @@ class AdminUsersIndentify(View):
         'new_pass': forms.CharField(min_length=6, max_length=20, strip=False, required=False),
         'valid_code': forms.CharField(required=False),
     })
-    def post(self, request, **kwargs):
+    def post(self, request, phone_number, old_pass, new_pass, valid_code):
         if request.user.check_password(old_pass):
-            if not UserValidationCode.verify(phone_number, validation_code):
+            if not UserValidationCode.verify(phone_number, valid_code):
                 return HttpResponseForbidden('验证码与手机不匹配')
             request.user.phone_number = phone_number
-            if new_pass is not None:
+            if new_pass != '':
                 request.user.set_password(new_pass)
             request.user.save()
             template = loader.get_template("admin_user/identify.html")

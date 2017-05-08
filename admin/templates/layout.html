@@ -48,6 +48,12 @@
     <script>
         $(document).ready(function() {
             setDateTimePicker();
+
+            $('.dir_warn').click(function(e) {
+                if (!confirm($(this).data('warn-text'))) {
+                    e.preventDefault();
+                }
+            });
         });
         function displayPopup() {
             if ($(document).width() >= 768) return false;
