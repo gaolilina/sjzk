@@ -15,4 +15,4 @@ def get_score_stage(stage=1):
     elif stage == 5:
         return system.SCORE_STAGE_FIVE
     else:
-        abort(400, 'wrong score stage')
+        abort(400, '积分阶段错误')

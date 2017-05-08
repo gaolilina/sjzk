@@ -183,7 +183,7 @@ class OtherCard(View):
                 request.user.score += get_score_stage(5)
                 request.user.score_records.create(
                     score=get_score_stage(5), type="初始数据",
-                    description="首次学生认证")
+                    description="首次身份认证")
             request.user.other_card = filename
             request.user.save()
             abort(200)
@@ -206,6 +206,11 @@ class Profile(Profile_):
         'county': forms.CharField(required=False, max_length=20),
         'tags': forms.CharField(required=False, max_length=100),
         'role': forms.CharField(required=False, max_length=20),
+        'adept_field': forms.CharField(required=False, max_length=20),
+        'adept_skill': forms.CharField(required=False, max_length=20),
+        'expect_role': forms.CharField(required=False, max_length=20),
+        'follow_field': forms.CharField(required=False, max_length=20),
+        'follow_skill': forms.CharField(required=False, max_length=20),
         'other_number': forms.CharField(required=False, max_length=20),
         'unit1': forms.CharField(required=False, max_length=20),
         'unit2': forms.CharField(required=False, max_length=20),
@@ -227,6 +232,11 @@ class Profile(Profile_):
             county:
             tags: 标签，格式：'tag1|tag2|...'，最多5个
             role:
+            adept_field: 擅长领域
+            adept_skill: 擅长技能
+            expect_role: 期望角色
+            follow_field: 关注领域
+            follow_skill: 关注技能
             other_number:
             unit1:
             unit2:
@@ -263,7 +273,9 @@ class Profile(Profile_):
                 name=request.user.name,
                 portraitUri=portraitUri)
         normal_keys = ('description', 'qq', 'wechat', 'email', 'gender',
-                       'birthday', 'province', 'city', 'county')
+                       'birthday', 'province', 'city', 'county', 'adept_field',
+                       'adept_skill', 'expect_role', 'follow_field',
+                       'follow_skill')
         for k in normal_keys:
             if k in kwargs:
                 setattr(request.user, k, kwargs[k])
@@ -373,6 +385,13 @@ class EidIdentityVerification(Profile_):
             for k in id_keys:
                 if k in kwargs:
                     setattr(request.user, k, kwargs[k])
+
+        # 积分相关
+        if not request.user.id_card:
+            request.user.score += get_score_stage(5)
+            request.user.score_records.create(
+                score=get_score_stage(5), type="初始数据",
+                description="首次Eid认证")
         # 将实名认证状态码改为4表示EID认证通过
         request.user.is_verified = 4
         request.user.save()
@@ -638,7 +657,7 @@ class FollowedTeam(View):
 # noinspection PyClassHasNoInit
 class Friend(Friend_):
     @fetch_object(User.enabled, 'other_user')
-    @require_token
+    @require_verification_token
     def post(self, request, other_user):
         """将目标用户添加为自己的好友（对方需发送过好友请求）"""
 
@@ -664,7 +683,7 @@ class Friend(Friend_):
         abort(200)
 
     @fetch_object(User.enabled, 'other_user')
-    @require_token
+    @require_verification_token
     def delete(self, request, other_user):
         """删除好友"""
 
@@ -727,7 +746,7 @@ class FriendRequestList(View):
 
 
 class FriendRequest(View):
-    @require_token
+    @require_verification_token
     def delete(self, request, req_id):
         """忽略某条好友请求"""
 
@@ -1134,7 +1153,7 @@ class Invitation(View):
     from ..models import TeamInvitation
 
     @fetch_object(TeamInvitation.objects, 'invitation')
-    @require_token
+    @require_verification_token
     def post(self, request, invitation):
         """同意团队的加入邀请并成为团队成员（需收到过加入团队邀请）"""
 
@@ -1174,7 +1193,7 @@ class Invitation(View):
         abort(200)
 
     @fetch_object(TeamInvitation.objects, 'invitation')
-    @require_token
+    @require_verification_token
     def delete(self, request, invitation):
         """忽略某邀请"""
 

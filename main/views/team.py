@@ -25,7 +25,7 @@ __all__ = ('List', 'Search', 'Screen', 'Profile', 'Icon', 'MemberList',
            'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
            'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
            'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList',
-           'CompetitionList', 'TeamScoreRecord', 'NeedSearch')
+           'CompetitionList', 'TeamScoreRecord', 'NeedSearch', 'NeedScreen')
 
 
 class List(View):
@@ -77,7 +77,7 @@ class List(View):
               'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
-    @require_token
+    @require_verification_token
     @validate_args({
         'name': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=100),
@@ -191,7 +191,7 @@ class Search(View):
         i, j = offset, offset + limit
         if by_tag == 0:
             # 按团队名称段检索
-            teams = Team.enabled.filter(name__contains=name)
+            teams = Team.enabled.filter(name__icontains=name)
         else:
             # 按标签检索
             teams = Team.enabled.filter(tags__name=name)
@@ -270,7 +270,7 @@ class Screen(View):
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称段检索
-            teams = teams.filter(name__contains=name)
+            teams = teams.filter(name__icontains=name)
 
         province = kwargs.pop('province', '')
         if province:
@@ -365,7 +365,7 @@ class Profile(View):
         return JsonResponse(r)
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'name': forms.CharField(required=False, max_length=20),
         'description': forms.CharField(required=False, max_length=100),
@@ -450,7 +450,7 @@ class Icon(View):
         abort(404, '未设置头像')
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, team):
         """设置团队的头像"""
 
@@ -529,7 +529,7 @@ class Member(View):
 
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def post(self, request, team, user):
         """将目标用户添加为自己的团队成员（对方需发送过加入团队申请）"""
 
@@ -561,7 +561,7 @@ class Member(View):
 
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def delete(self, request, team, user):
         """退出团队(默认)/删除成员"""
         if user == team.owner:
@@ -623,7 +623,7 @@ class MemberRequestList(View):
             return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100),
     })
@@ -672,7 +672,7 @@ class MemberRequest(View):
 class Invitation(View):
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100),
     })
@@ -749,7 +749,7 @@ class AllAchievementList(View):
 # noinspection PyUnusedLocal
 class AllAchievement(View):
     @fetch_object(TeamAchievement.objects, 'achievement')
-    @require_token
+    @require_verification_token
     def delete(self, request, team, achievement):
         """删除成果"""
 
@@ -796,7 +796,7 @@ class AchievementList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(min_length=1, max_length=100),
     })
@@ -813,7 +813,7 @@ class AchievementList(View):
         if achievement_num == 0:
             team.score += get_score_stage(2)
             team.score_records.create(
-                score=get_score_stage(2), type="能力",
+                score=get_score_stage(2), type="初始数据",
                 description="首次发布团队成果")
 
         achievement = TeamAchievement(team=team, description=description)
@@ -932,7 +932,7 @@ class NeedList(View):
         qs = team.needs
         if type is not None:
             qs = qs.filter(type=type)
-        if request.user == team.owner and status:
+        if status is not None:
             qs = qs.filter(status=status)
         else:
             qs = qs.filter(status=0)
@@ -965,7 +965,7 @@ class NeedList(View):
 
     # noinspection PyShadowingBuiltins
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, team, type):
         """发布需求
 
@@ -1005,10 +1005,8 @@ class NeedList(View):
         承接需求：
             deadline: 截止时间
             description: 需求描述
-            number: 团队人数
             field: 领域
             skill: 技能
-            degree: 学历
             major: 专业
             province: 省
             city: 市
@@ -1020,10 +1018,6 @@ class NeedList(View):
         """
         if request.user != team.owner:
             abort(403, '只有队长可以操作')
-
-        # 检查是否实名
-        if request.user.is_verified not in [2, 4]:
-            abort(400, 'you must verified firstly!')
 
         if type == 0:
             self.create_member_need(request, team)
@@ -1039,7 +1033,7 @@ class NeedList(View):
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
-        'gender': forms.CharField(required=False, max_length=1),
+        'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
         'field': forms.CharField(required=False, max_length=20),
         'skill': forms.CharField(required=False, max_length=20),
         'degree': forms.CharField(required=False, max_length=20),
@@ -1086,11 +1080,11 @@ class NeedList(View):
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
         'number': forms.IntegerField(min_value=1),
-        'gender': forms.CharField(required=False, max_length=1),
+        'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
         'field': forms.CharField(required=False, max_length=20),
         'skill': forms.CharField(required=False, max_length=20),
-        'degree': forms.CharField(required=False, max_length=20),
         'major': forms.CharField(required=False, max_length=20),
+        'degree': forms.CharField(required=False, max_length=20),
         'age_min': forms.IntegerField(
             required=False, min_value=0, max_value=99),
         'age_max': forms.IntegerField(
@@ -1135,13 +1129,11 @@ class NeedList(View):
         'deadline': forms.DateField(),
         'title': forms.CharField(max_length=20),
         'description': forms.CharField(required=False, max_length=200),
-        'number': forms.IntegerField(min_value=1),
         'field': forms.CharField(required=False, max_length=20),
         'skill': forms.CharField(required=False, max_length=20),
         'province': forms.CharField(required=False, max_length=20),
         'city': forms.CharField(required=False, max_length=20),
         'county': forms.CharField(required=False, max_length=20),
-        'degree': forms.CharField(required=False, max_length=20),
         'major': forms.CharField(required=False, max_length=20),
         'cost': forms.IntegerField(required=False),
         'cost_unit': forms.CharField(required=False, max_length=1),
@@ -1182,13 +1174,12 @@ class Need(View):
                    'age_max', 'gender', 'field', 'skill', 'degree', 'major',
                    'time_graduated', 'deadline', 'province', 'city', 'county')
     outsource_keys = ('id', 'title', 'description', 'number', 'age_min',
-                      'age_max', 'gender', 'field', 'skill', 'degree', 'major',
+                      'age_max', 'gender', 'degree', 'field', 'skill', 'major',
                       'cost', 'cost_unit', 'time_started', 'time_ended',
                       'deadline', 'province', 'city', 'county')
-    undertake_keys = ('id', 'title', 'description', 'number', 'field', 'skill',
-                      'degree', 'major', 'cost', 'cost_unit',
-                      'time_started', 'time_ended', 'deadline',
-                      'province', 'city', 'county')
+    undertake_keys = ('id', 'title', 'description', 'field', 'skill', 'major',
+                      'cost', 'cost_unit', 'time_started', 'time_ended',
+                      'deadline', 'province', 'city', 'county')
 
     @fetch_object(TeamNeed.objects, 'need')
     @require_token
@@ -1249,10 +1240,8 @@ class Need(View):
                 team_id: 团队ID
                 team_name: 团队名称
                 icon_url: 团队头像
-                number: 团队人数
                 field: 领域
                 skill: 技能
-                degree: 学历
                 major: 专业
                 cost: 费用
                 province: 省
@@ -1292,7 +1281,7 @@ class Need(View):
         return JsonResponse(d)
 
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @require_verification_token
     def post(self, request, need):
         """将需求标记成已满足"""
 
@@ -1313,7 +1302,7 @@ class Need(View):
         abort(200)
 
     @fetch_object(TeamNeed, 'need')
-    @require_token
+    @require_verification_token
     def delete(self, request, need):
         """将需求标记成已删除"""
 
@@ -1324,9 +1313,7 @@ class Need(View):
         abort(200)
 
 
-# noinspection PyUnusedLocal
 class NeedSearch(View):
-    # noinspection PyShadowingBuiltins
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1335,7 +1322,7 @@ class NeedSearch(View):
         'type': forms.IntegerField(required=False, min_value=0, max_value=2),
         'name': forms.CharField(max_length=20),
     })
-    def get(self, request, name, type=None, status=0, offset=0, limit=10):
+    def get(self, request, name, type=None, status=None, offset=0, limit=10):
         """
         搜索发布中的需求列表
 
@@ -1351,14 +1338,19 @@ class NeedSearch(View):
                 team_name: 团队名称
                 icon_url: 团队头像
                 status: 需求状态
+                type: 需求类型
                 title: 需求标题
                 number: 所需人数/团队人数
                 degree: 需求学历
                 members: 需求的加入者
                 time_created: 发布时间
         """
-        qs = TeamNeed.objects.filter(status=status, title__contains=name)
+        qs = TeamNeed.objects.filter(title__icontains=name)
+        if status is not None:
+            # 按需求状态搜索
+            qs = qs.filter(status=status)
         if type is not None:
+            # 按需求类别搜索
             qs = qs.filter(type=type)
         c = qs.count()
         needs = qs[offset:offset + limit]
@@ -1380,6 +1372,108 @@ class NeedSearch(View):
             need_dic['number'] = n.number
             need_dic['icon_url'] = n.team.icon
             need_dic['status'] = n.status
+            need_dic['type'] = n.type
+            need_dic['title'] = n.title
+            need_dic['degree'] = n.degree
+            need_dic['members'] = members
+            need_dic['time_created'] = n.time_created
+            l.append(need_dic)
+        return JsonResponse({'count': c, 'list': l})
+
+
+class NeedScreen(View):
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'type': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'name': forms.CharField(required=False, max_length=20),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'county': forms.CharField(required=False, max_length=20),
+        'number': forms.IntegerField(required=False, min_value=0),
+        'degree': forms.CharField(required=False, max_length=20),
+    })
+    def get(self, request, type=None, status=None, offset=0, limit=10,
+            **kwargs):
+        """
+        搜索发布中的需求列表
+
+        :param offset: 起始量
+        :param limit: 偏移量
+        :param name: 标题包含字段
+        :param type: 需求的类型
+        :param status: 需求状态，默认为0:发布中
+        :return:
+            count: 需求总数
+            list: 需求列表
+                need_id: 需求ID
+                team_id: 团队ID
+                team_name: 团队名称
+                icon_url: 团队头像
+                status: 需求状态
+                type: 需求类别
+                title: 需求标题
+                number: 所需人数/团队人数
+                degree: 需求学历
+                members: 需求的加入者
+                time_created: 发布时间
+        """
+        qs = TeamNeed.objects.all()
+        if status is not None:
+            # 按需求状态筛选
+            qs = qs.filter(status=status)
+        if type is not None:
+            # 按需求类别筛选
+            qs = qs.filter(type=type)
+        name = kwargs.pop('name', '')
+        if name:
+            # 按标题检索
+            qs = qs.filter(title__icontains=name)
+
+        province = kwargs.pop('province', '')
+        if province:
+            # 按省会筛选
+            qs = qs.filter(province=province)
+        city = kwargs.pop('city', '')
+        if city:
+            # 按城市筛选
+            qs = qs.filter(city=city)
+        county = kwargs.pop('county', '')
+        if county:
+            # 按区/县筛选
+            qs = qs.filter(county=county)
+        number = kwargs.pop('number', '')
+        if number:
+            # 按需求所需最多人数筛选
+            qs = qs.filter(number__lte=number)
+        degree = kwargs.pop('number', '')
+        if degree:
+            # 按学历筛选
+            qs = qs.filter(degree=degree)
+
+        c = qs.count()
+        needs = qs[offset:offset + limit]
+        l = list()
+        for n in needs:
+            need_dic = dict()
+            members = dict()
+            if n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
+            need_dic['id'] = n.id
+            need_dic['team_id'] = n.team.id
+            need_dic['team_name'] = n.team.name
+            need_dic['number'] = n.number
+            need_dic['icon_url'] = n.team.icon
+            need_dic['status'] = n.status
+            need_dic['type'] = n.type
             need_dic['title'] = n.title
             need_dic['degree'] = n.degree
             need_dic['members'] = members
@@ -1551,7 +1645,7 @@ class MemberNeedRequestList(View):
         abort(404, '只有队长可以操作')
 
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100),
     })
@@ -1562,10 +1656,6 @@ class MemberNeedRequestList(View):
         """
         if request.user == need.team.owner:
             abort(403, '队长不能操作')
-
-        # 是否实名认证
-        if request.user.is_verified not in [2, 4]:
-            abort(400, 'you must verified firstly!')
 
         if need.team.members.filter(user=request.user).exists():
             abort(403, '已经是对方团队成员')
@@ -1584,7 +1674,7 @@ class MemberNeedRequestList(View):
 class MemberNeedRequest(View):
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def post(self, request, need, user):
         """将目标用户添加为自己的团队成员（对方需发送过人员需求下的加入团队申请）"""
 
@@ -1623,7 +1713,7 @@ class MemberNeedRequest(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def delete(self, request, need, user):
         """忽略某用户人员需求下的加团队请求"""
 
@@ -1674,15 +1764,11 @@ class NeedRequestList(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, need, team):
         """向需求发出合作申请
 
         """
-        # 检查是否实名
-        if request.user.is_verified not in [2, 4]:
-            abort(400, 'you must verified firstly!')
-
         if need.cooperation_requests.filter(sender=team).exists():
             abort(404, '合作申请已经发送过')
         if need.cooperation_invitations.filter(invitee=team).exists():
@@ -1731,7 +1817,7 @@ class NeedRequest(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, need, team):
         """同意加入申请并将创始人加入自己团队（对方需发送过合作申请）"""
 
@@ -1768,7 +1854,7 @@ class NeedRequest(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def delete(self, request, need, team):
         """忽略某团队的合作申请"""
 
@@ -1817,7 +1903,7 @@ class NeedInvitationList(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, need, team):
         """向团队发出合作邀请
 
@@ -1870,7 +1956,7 @@ class NeedInvitation(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, need, team):
         """同意邀请并将加入他人的团队（对方需发送过合作邀请）"""
 
@@ -1906,7 +1992,7 @@ class NeedInvitation(View):
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def delete(self, request, need, team):
         """忽略某来自需求的合作邀请"""
 
@@ -1968,7 +2054,7 @@ class InternalTaskList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'executor_id': forms.IntegerField(),
         'title': forms.CharField(max_length=20),
@@ -2060,7 +2146,7 @@ class InternalTasks(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(InternalTask.objects, 'task')
-    @require_token
+    @require_verification_token
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
         'content': forms.CharField(required=False, max_length=200),
@@ -2127,7 +2213,7 @@ class TeamInternalTask(View):
         return JsonResponse(d)
 
     @fetch_object(InternalTask.objects, 'task')
-    @require_token
+    @require_verification_token
     @validate_args({
         'status': forms.IntegerField(required=False, min_value=0, max_value=7),
     })
@@ -2159,11 +2245,11 @@ class TeamInternalTask(View):
             task.executor.score += get_score_stage(1)
             task.executor.score_records.create(
                 score=get_score_stage(1), type="能力",
-                description="完成一个外部任务")
+                description="完成一个内部任务")
             task.team.score += get_score_stage(1)
             task.team.score_records.create(
                 score=get_score_stage(1), type="能力",
-                description="队友完成一个外部任务")
+                description="队友完成一个内部任务")
             task.executor.save()
             task.team.save()
             task.save()
@@ -2281,7 +2367,7 @@ class ExternalTaskList(View):
             return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     @validate_args({
         'executor_id': forms.IntegerField(),
         'title': forms.CharField(max_length=20),
@@ -2329,7 +2415,7 @@ class ExternalTaskList(View):
 
 class ExternalTasks(View):
     @fetch_object(ExternalTask.objects, 'task')
-    @require_token
+    @require_verification_token
     @validate_args({
         'title': forms.CharField(required=False, max_length=20),
         'content': forms.CharField(required=False, max_length=200),
@@ -2402,7 +2488,7 @@ class TeamExternalTask(View):
         return JsonResponse(d)
 
     @fetch_object(ExternalTask.objects, 'task')
-    @require_token
+    @require_verification_token
     @validate_args({
         'expend_actual': forms.IntegerField(required=False, min_value=0),
         'pay_time': forms.DateField(required=False),

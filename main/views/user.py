@@ -192,10 +192,14 @@ class Profile(View):
                 x: follower | followed | friend | liker | visitor
             is_verified: 是否实名，0：未提交，1：待审核，2：身份认证通过，
                 3：审核未通过，请重新提交，4：通过Eid认证
-            real_name: 真实名
             is_role_verified: 是否实名，
                 0：未提交，1：待审核，2：审核通过，3：审核未通过，请重新提交
             role: 角色
+            adept_field: 擅长领域
+            adept_skill: 擅长技能
+            expect_role: 期望角色
+            follow_field: 关注领域
+            follow_skill: 关注技能
             unit1: 机构名（学校或公司等）
             unit2: 二级机构名（学院或部门等）
             profession: 专业
@@ -227,9 +231,13 @@ class Profile(View):
              'liker_count': user.likers.count(),
              'visitor_count': user.visitors.count(),
              'is_verified': user.is_verified,
-             'real_name': user.real_name,
              'is_role_verified': user.is_role_verified,
              'role': user.role,
+             'adept_field': user.adept_field,
+             'adept_skill': user.adept_skill,
+             'expect_role': user.expect_role,
+             'follow_field': user.follow_field,
+             'follow_skill': user.follow_skill,
              'unit1': user.unit1,
              'unit2': user.unit2,
              'profession': user.profession,
@@ -362,7 +370,7 @@ class Friend(View):
 
 class FriendRequestList(View):
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     @validate_args({
         'description': forms.CharField(required=False, max_length=100)
     })
@@ -429,7 +437,7 @@ class Search(View):
         i, j = offset, offset + limit
         if by_tag == 0:
             # 按用户昵称段检索
-            users = User.enabled.filter(name__contains=name)
+            users = User.enabled.filter(name__icontains=name)
         else:
             # 按标签检索
             users = User.enabled.filter(tags__name=name)
@@ -516,7 +524,7 @@ class Screen(View):
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称段检索
-            users = users.filter(name__contains=name)
+            users = users.filter(name__icontains=name)
 
         gender = kwargs.pop('gender', None)
         if gender is not None:

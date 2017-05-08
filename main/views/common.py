@@ -347,8 +347,8 @@ class SearchUserActionList(View):
                 time_created: 创建时间
         """
 
-        r = UserAction.objects.filter(Q(entity__name__contains=kwargs['name']) |
-                                      Q(action__contains=kwargs['name']))
+        r = UserAction.objects.filter(Q(entity__name__icontains=kwargs['name'])
+                                      | Q(action__icontains=kwargs['name']))
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
@@ -423,8 +423,8 @@ class ScreenUserActionList(View):
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称或动态名检索
-            r = r.filter(Q(entity__name__contains=name) |
-                         Q(action__contains=name))
+            r = r.filter(Q(entity__name__icontains=name) |
+                         Q(action__icontains=name))
         gender = kwargs.pop('gender', None)
         if gender is not None:
             # 按性别筛选
@@ -451,8 +451,8 @@ class ScreenUserActionList(View):
             r = r.filter(entity__unit1=unit1)
         act = kwargs.pop('action', '')
         if act:
-            # 按机构筛选
-            r = r.filter(action__contains=act)
+            # 按动作筛选
+            r = r.filter(action__icontains=act)
 
         r = r.all()
         c = r.count()
@@ -511,8 +511,8 @@ class SearchTeamActionList(View):
                 time_created: 创建时间
         """
 
-        r = TeamAction.objects.filter(Q(entity__name__contains=kwargs['name']) |
-                                      Q(action__contains=kwargs['name']))
+        r = TeamAction.objects.filter(Q(entity__name__icontains=kwargs['name'])
+                                      | Q(action__icontains=kwargs['name']))
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
@@ -583,8 +583,8 @@ class ScreenTeamActionList(View):
         name = kwargs.pop('name', '')
         if name:
             # 按用户昵称或动态名检索
-            r = r.filter(Q(entity__name__contains=name) |
-                         Q(action__contains=name))
+            r = r.filter(Q(entity__name__icontains=name) |
+                         Q(action__icontains=name))
         province = kwargs.pop('province', '')
         if province:
             # 按省会筛选
@@ -603,8 +603,8 @@ class ScreenTeamActionList(View):
             r = r.filter(entity__field=field)
         act = kwargs.pop('action', '')
         if act:
-            # 按机构筛选
-            r = r.filter(action__contains=act)
+            # 按动作筛选
+            r = r.filter(action__icontains=act)
 
         r = r.all()
         c = r.count()
@@ -683,7 +683,7 @@ class UserCommentList(CommentList):
         return super().get(request, user)
 
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @require_verification_token
     def post(self, request, user=None):
         user = user or request.user
         return super().post(request, user)
@@ -709,7 +709,7 @@ class TeamCommentList(CommentList):
         return super().get(request, team)
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @require_verification_token
     def post(self, request, team):
         """当前用户对团队进行评论"""
 
@@ -736,7 +736,7 @@ class ActivityCommentList(CommentList):
         return super().get(request, activity)
 
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @require_verification_token
     def post(self, request, activity):
         """当前用户对活动进行评论"""
 
@@ -763,7 +763,7 @@ class CompetitionCommentList(CommentList):
         return super().get(request, competition)
 
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @require_verification_token
     def post(self, request, competition):
         """当前用户对竞赛进行评论"""
 
@@ -790,7 +790,7 @@ class UserActionCommentList(CommentList):
         return super().get(request, action)
 
     @fetch_object(UserAction.objects, 'action')
-    @require_token
+    @require_verification_token
     def post(self, request, action):
         """当前用户对用户动态进行评论"""
 
@@ -817,7 +817,7 @@ class TeamActionCommentList(CommentList):
         return super().get(request, action)
 
     @fetch_object(TeamAction.objects, 'action')
-    @require_token
+    @require_verification_token
     def post(self, request, action):
         """当前用户对团队动态进行评论"""
 
@@ -826,7 +826,7 @@ class TeamActionCommentList(CommentList):
 
 class UserComment(View):
     @fetch_object(UserCommentModel.objects, 'comment')
-    @require_token
+    @require_verification_token
     def delete(self, request, comment):
         """删除用户评论"""
 
@@ -838,7 +838,7 @@ class UserComment(View):
 
 class TeamComment(View):
     @fetch_object(TeamCommentModel.objects, 'comment')
-    @require_token
+    @require_verification_token
     def delete(self, request, comment):
         """删除团队评论"""
 
@@ -851,7 +851,7 @@ class TeamComment(View):
 
 class ActivityComment(View):
     @fetch_object(ActivityCommentModel.objects, 'comment')
-    @require_token
+    @require_verification_token
     def delete(self, request, comment):
         """删除活动评论"""
 
@@ -863,7 +863,7 @@ class ActivityComment(View):
 
 class CompetitionComment(View):
     @fetch_object(CompetitionCommentModel.objects, 'comment')
-    @require_token
+    @require_verification_token
     def delete(self, request, comment):
         """删除竞赛评论"""
 
