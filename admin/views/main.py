@@ -54,12 +54,16 @@ class Register(View):
     @validate_args({
         'username': forms.CharField(),
         'password': forms.CharField(min_length=6, max_length=20, strip=False),
+        'phone_number': forms.CharField(max_length=11),
+        'role': forms.CharField()
     })
-    def post(self, request, username, password):
+    def post(self, request, username, password, phone_number, role):
         with transaction.atomic():
             try:
                 user = AdminUser(username=username)
                 user.set_password(password)
+                user.phone_number = phone_number
+                user.role = role
                 user.save_and_generate_name()
 
                 response = HttpResponseRedirect(reverse("admin:admin_users:info"))

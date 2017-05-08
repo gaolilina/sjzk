@@ -5,24 +5,24 @@
 <table>
     <tr>
         <td rowspan="5">{% ifequal u.icon '' %}<img src="{% static 'img/user.png' %}" />{% else %}<img src="{{ u.icon }}" />{% endifequal %}</td>
-        <td>昵　　称：</td>
+        <td>昵称：</td>
         <td><input name="name" type="text" value="{{ u.name }}" maxlength="15"/></td>
     </tr>
     <tr>
-        <td>性　　别：</td>
+        <td>性别：</td>
         <td><input name="gender" type="radio" value="男" {% ifequal u.gender '男' %}checked="checked" {% endifequal %}/>男 <input name="gender" type="radio" value="女" {% ifequal u.gender '女' %}checked="checked" {% endifequal %}/>女</td>
-    </tr>
-    <tr>
-        <td>手机号码：</td>
-        <td><input name="phone_number" type="text" value="{{ u.phone_number }}" maxlength="11"/></td>
     </tr>
     <tr>
         <td>电子邮箱：</td>
         <td><input name="email" type="email" value="{{ u.email }}"/></td>
     </tr>
     <tr>
-        <td>个人简介：</td>
-        <td><textarea name="description" maxlength="100">{{ u.description }}</textarea></td>
+        <td>QQ：</td>
+        <td><input name="qq" type="text" value="{{ u.qq }}"/></td>
+    </tr>
+    <tr>
+        <td>微信：</td>
+        <td><input name="wechat" type="text" value="{{ u.wechat }}"/></td>
     </tr>
     <tr>
         <td colspan="2">{{ msg }}</td>

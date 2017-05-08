@@ -4,7 +4,8 @@ from django.template import loader, Context
 from django.views.generic import View
 
 from main.utils.decorators import validate_args
-from main.utils import identity_verify, save_uploaded_image
+from main.utils import save_uploaded_image
+from main.models import UserValidationCode
 
 from admin.utils.decorators import require_cookie
 
@@ -19,9 +20,9 @@ class AdminUsersInfo(View):
     @validate_args({
         'name': forms.CharField(max_length=15, required=False),
         'gender': forms.CharField(max_length=1, required=False),
-        'phone_number': forms.CharField(max_length=11, required=False),
         'email': forms.CharField(required=False),
-        'description': forms.CharField(max_length=100, required=False),
+        'qq': forms.CharField(required=False),
+        'wechat': forms.CharField(required=False),
     })
     def post(self, request, **kwargs):
         user = request.user
@@ -61,23 +62,20 @@ class AdminUsersIndentify(View):
 
     @require_cookie
     @validate_args({
-        'real_name': forms.CharField(max_length=20, required=False),
-        'id_number': forms.CharField(max_length=18, required=False),
+        'phone_number': forms.CharField(max_length=11),
+        'old_pass': forms.CharField(min_length=6, max_length=20, strip=False),
+        'new_pass': forms.CharField(min_length=6, max_length=20, strip=False, required=False),
+        'valid_code': forms.CharField(required=False),
     })
     def post(self, request, **kwargs):
-        id_keys = ('real_name', 'id_number')
-        # 调用第三方接口验证身份证的正确性
-        res = identity_verify(kwargs['id_number'])
-        error_code = res["error_code"]
-        if error_code != 0:
-            HttpResponseForbidden(res["reason"])
-        
-        user = request.user
-        if not user.is_verified:
-            for k in id_keys:
-                setattr(user, k, kwargs[k])
-            user.save()
-
-        template = loader.get_template("admin_user/identify.html")
-        context = Context({'u': user, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        if request.user.check_password(old_pass):
+            if not UserValidationCode.verify(phone_number, validation_code):
+                return HttpResponseForbidden('验证码与手机不匹配')
+            request.user.phone_number = phone_number
+            if new_pass is not None:
+                request.user.set_password(new_pass)
+            request.user.save()
+            template = loader.get_template("admin_user/identify.html")
+            context = Context({'u': request.user, 'msg': '保存成功', 'user': request.user})
+            return HttpResponse(template.render(context))
+        return HttpResponseForbidden('旧密码错误')

@@ -3,6 +3,7 @@
     <li{% if lb == 1 %} class="active"{% endif %}><a href="{% url 'admin:login' %}">登录注销</a></li>
     {% if user is not None %}
         <li{% if lb == 2 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:info' %}">个人信息修改</a></li>
+        <li{% if lb == 3 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:identify' %}">修改手机号、密码</a></li>
         {% if user.can_x %}
             <li{% if lb == 4 %} class="active"{% endif %}><a href="{% url 'admin:register' %}">注册</a></li>
         {% endif %}
