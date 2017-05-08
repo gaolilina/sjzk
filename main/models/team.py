@@ -25,6 +25,15 @@ class Team(models.Model):
     province = models.CharField(max_length=20, default='')
     city = models.CharField(max_length=20, default='')
     county = models.CharField(max_length=20, default='')
+    advantage = models.CharField(max_length=100, default='')
+    # 工商阶段：0:未注册、1:注册未满3年、2:注册3年以上
+    business_stage = models.IntegerField(default=0)
+    # 融资阶段：等待投资、天使、A轮、B轮、C轮、D轮、E轮、F轮
+    financing_stage = models.CharField(max_length=10, default='')
+    # 团队估值
+    valuation = models.IntegerField(default=0)
+    # 团队估值单位
+    valuation_unit = models.CharField(max_length=5, default='')
     is_recruiting = models.BooleanField(default=True, db_index=True)
     is_enabled = models.BooleanField(default=True, db_index=True)
 

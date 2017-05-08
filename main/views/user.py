@@ -707,6 +707,7 @@ class ActivityList(View):
                 id: 活动ID
                 name: 活动名
                 liker_count: 点赞数
+                status: 竞赛当前阶段
                 time_started: 开始时间
                 time_ended: 结束时间
                 deadline: 截止时间
@@ -720,6 +721,7 @@ class ActivityList(View):
         l = [{'id': a.activity.id,
               'name': a.activity.name,
               'liker_count': a.activity.likers.count(),
+              'status': a.activity.status,
               'time_started': a.activity.time_started,
               'time_ended': a.activity.time_ended,
               'deadline': a.activity.deadline,
@@ -740,7 +742,7 @@ class CompetitionList(View):
                                     max_value=3),
     })
     def get(self, request, user, offset=0, limit=10, order=1):
-        """获取竞赛列表
+        """获取用户参加的竞赛列表
 
         :param offset: 偏移量
         :param limit: 数量上限
@@ -756,6 +758,7 @@ class CompetitionList(View):
                 id: 竞赛ID
                 name: 竞赛名
                 liker_count: 点赞数
+                status: 竞赛当前阶段
                 time_started: 开始时间
                 time_ended: 结束时间
                 deadline: 截止时间
@@ -771,6 +774,7 @@ class CompetitionList(View):
         l = [{'id': a.competition.id,
               'name': a.competition.name,
               'liker_count': a.competition.likers.count(),
+              'status': a.competition.status,
               'time_started': a.competition.time_started,
               'time_ended': a.competition.time_ended,
               'deadline': a.competition.deadline,
