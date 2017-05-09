@@ -8,7 +8,7 @@ from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
 from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
     Activity, Competition, UserAction, TeamAction, CompetitionTeamParticipator,\
-    IllegalWord
+    IllegalWord, TeamNeed
 from ..utils import abort, action, save_uploaded_image, identity_verify, \
     get_score_stage, eid_verify
 from ..utils.decorators import *
@@ -25,7 +25,9 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'InvitationList', 'Invitation', 'IdentityVerification',
            'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
            'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification',
-           'OtherIdentityVerification', 'Inviter']
+           'OtherIdentityVerification', 'Inviter', 'FollowedTeamNeedList',
+           'FollowedTeamNeed', 'FollowedActivityList', 'FollowedActivity',
+           'FollowedCompetitionList', 'FollowedCompetition']
 
 
 class Username(View):
@@ -636,7 +638,7 @@ class FollowedTeam(View):
     def delete(self, request, team):
         """令当前用户取消关注team"""
 
-        qs = request.user.followed_users.filter(followed=team)
+        qs = request.user.followed_teams.filter(followed=team)
         if qs.exists():
             # 积分
             request.user.score -= get_score_stage(1)
@@ -652,6 +654,294 @@ class FollowedTeam(View):
             qs.delete()
             abort(200)
         abort(403, '未关注过该团队')
+
+
+class FollowedTeamNeedList(View):
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'status': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'type': forms.IntegerField(required=False, min_value=0, max_value=2)
+    })
+    def get(self, request, type=None, status=None, offset=0, limit=10, ):
+        """获取用户的关注需求列表
+
+        :param offset: 起始量
+        :param limit: 偏移量
+        :param type: 需求类型
+        :param status: 需求状态
+        :return:
+            count: 需求总数
+            list: 需求列表
+                need_id: 需求ID
+                team_id: 团队ID
+                team_name: 团队名称
+                icon_url: 团队头像
+                status: 需求状态
+                title: 需求标题
+                number: 所需人数/团队人数
+                degree: 需求学历
+                members: 需求的加入者
+                time_created: 发布时间
+        """
+        c = request.user.followed_needs.count()
+        qs = request.user.followed_needs.all()
+
+        if type is not None:
+            qs = qs.filter(type=type)
+        if status is not None:
+            qs = qs.filter(status=status)
+        needs = qs[offset:offset + limit]
+        l = list()
+        for n in needs:
+            need_dic = dict()
+            members = dict()
+            if n.members:
+                ids = n.members.split("|")
+                for id in ids:
+                    id = int(id)
+                    if n.type == 0:
+                        members[id] = User.enabled.get(id=id).name
+                    else:
+                        members[id] = Team.enabled.get(id=id).name
+            need_dic['id'] = n.id
+            need_dic['team_id'] = n.team.id
+            need_dic['team_name'] = n.team.name
+            need_dic['number'] = n.number
+            need_dic['icon_url'] = n.team.icon
+            need_dic['status'] = n.status
+            need_dic['title'] = n.title
+            need_dic['degree'] = n.degree
+            need_dic['members'] = members
+            need_dic['time_created'] = n.time_created
+            l.append(need_dic)
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FollowedTeamNeed(View):
+    @fetch_object(TeamNeed.objects, 'need')
+    @require_token
+    def get(self, request, need):
+        """判断当前用户是否关注了need"""
+
+        if request.user.followed_needs.filter(followed=need).exists():
+            abort(200)
+        abort(404, '未关注该需求')
+
+    @fetch_object(TeamNeed.objects, 'need')
+    @require_token
+    def post(self, request, need):
+        """令当前用户关注need"""
+
+        if request.user.followed_needs.filter(followed=need).exists():
+            abort(403, '已经关注过该需求')
+        request.user.followed_needs.create(followed=need)
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="活跃度", description="增加一个关注")
+        request.user.save()
+        abort(200)
+
+    @fetch_object(TeamNeed.objects, 'need')
+    @require_token
+    def delete(self, request, need):
+        """令当前用户取消关注need"""
+
+        qs = request.user.followed_needs.filter(followed=need)
+        if qs.exists():
+            # 积分
+            request.user.score -= get_score_stage(1)
+            request.user.score_records.create(
+                score=-get_score_stage(1), type="活跃度",
+                description="取消关注")
+            qs.delete()
+            abort(200)
+        abort(403, '未关注过该需求')
+
+
+class FollowedActivityList(View):
+    ORDERS = ['time_created', '-time_created', 'name', '-name']
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0,
+                                    max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取用户的关注活动列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+
+        :return:
+            count: 活动总数
+            list: 活动列表
+                id: 活动ID
+                name: 活动名
+                liker_count: 点赞数
+                status: 竞赛当前阶段
+                time_started: 开始时间
+                time_ended: 结束时间
+                deadline: 截止时间
+                user_participator_count: 已报名人数
+                time_created: 创建时间
+        """
+        c = request.user.followed_activities.count()
+        qs = request.user.followed_activities.order_by(
+            self.ORDERS[order])[offset:offset + limit]
+        l = [{'id': a.id,
+              'name': a.name,
+              'liker_count': a.likers.count(),
+              'status': a.status,
+              'time_started': a.time_started,
+              'time_ended': a.time_ended,
+              'deadline': a.deadline,
+              'user_participator_count': a.user_participators.count(),
+              'time_created': a.time_created} for a in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FollowedActivity(View):
+    @fetch_object(Activity.enabled, 'activity')
+    @require_token
+    def get(self, request, activity):
+        """判断当前用户是否关注了activity"""
+
+        if request.user.followed_activities.filter(
+                followed=activity).exists():
+            abort(200)
+        abort(404, '未关注该活动')
+
+    @fetch_object(Activity.enabled, 'activity')
+    @require_token
+    def post(self, request, activity):
+        """令当前用户关注activity"""
+
+        if request.user.followed_activities.filter(
+                followed=activity).exists():
+            abort(403, '已经关注过该活动')
+        request.user.followed_activities.create(followed=activity)
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="活跃度", description="增加一个关注")
+        request.user.save()
+        abort(200)
+
+    @fetch_object(Activity.enabled, 'activity')
+    @require_token
+    def delete(self, request, activity):
+        """令当前用户取消关注activity"""
+
+        qs = request.user.followed_activities.filter(followed=activity)
+        if qs.exists():
+            # 积分
+            request.user.score -= get_score_stage(1)
+            request.user.score_records.create(
+                score=-get_score_stage(1), type="活跃度",
+                description="取消关注")
+            qs.delete()
+            abort(200)
+        abort(403, '未关注过该活动')
+
+
+class FollowedCompetitionList(View):
+    ORDERS = ['time_created', '-time_created', 'name', '-name']
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0,
+                                    max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取用户的关注竞赛列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+
+        :return:
+            count: 竞赛总数
+            list: 竞赛列表
+                id: 竞赛ID
+                name: 竞赛名
+                liker_count: 点赞数
+                status: 竞赛当前阶段
+                time_started: 开始时间
+                time_ended: 结束时间
+                deadline: 截止时间
+                team_participator_count: 已报名人数
+                time_created: 创建时间
+        """
+        c = request.user.followed_competitions.count()
+        qs = request.user.followed_competitions.order_by(
+            self.ORDERS[order])[offset:offset + limit]
+        l = [{'id': a.id,
+              'name': a.name,
+              'liker_count': a.likers.count(),
+              'status': a.status,
+              'time_started': a.time_started,
+              'time_ended': a.time_ended,
+              'deadline': a.deadline,
+              'team_participator_count': a.team_participators.count(),
+              'time_created': a.time_created} for a in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FollowedCompetition(View):
+    @fetch_object(Competition.enabled, 'competition')
+    @require_token
+    def get(self, request, competition):
+        """判断当前用户是否关注了competition"""
+
+        if request.user.followed_competitions.filter(
+                followed=competition).exists():
+            abort(200)
+        abort(404, '未关注该竞赛')
+
+    @fetch_object(Competition.enabled, 'competition')
+    @require_token
+    def post(self, request, competition):
+        """令当前用户关注competition"""
+
+        if request.user.followed_competitions.filter(
+                followed=competition).exists():
+            abort(403, '已经关注过该竞赛')
+        request.user.followed_competitions.create(followed=competition)
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="活跃度", description="增加一个关注")
+        request.user.save()
+        abort(200)
+
+    @fetch_object(Competition.enabled, 'competition')
+    @require_token
+    def delete(self, request, competition):
+        """令当前用户取消关注competition"""
+
+        qs = request.user.followed_competitions.filter(followed=competition)
+        if qs.exists():
+            # 积分
+            request.user.score -= get_score_stage(1)
+            request.user.score_records.create(
+                score=-get_score_stage(1), type="活跃度",
+                description="取消关注")
+            qs.delete()
+            abort(200)
+        abort(403, '未关注过该竞赛')
 
 
 # noinspection PyClassHasNoInit

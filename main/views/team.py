@@ -871,7 +871,10 @@ class AllNeedList(View):
         """
         获取发布中的需求列表
 
-        :param offset: 偏移量
+        :param offset: 起始量
+        :param limit: 偏移量
+        :param type: 需求类型 - 0: member, 1: outsource, 2: undertake
+        :param status: 需求状态 - 0: pending, 1: completed, 2: removed
         :return:
             count: 需求总数
             list: 需求列表
@@ -889,7 +892,7 @@ class AllNeedList(View):
         qs = TeamNeed.objects
         if type is not None:
             qs = qs.filter(type=type)
-        if status:
+        if status is not None:
             qs = qs.filter(status=status)
         else:
             qs = qs.filter(status=0)
@@ -933,7 +936,8 @@ class NeedList(View):
     })
     def get(self, request, team, type=None, status=None, offset=0, limit=10):
         """
-        :param offset: 偏移量
+        :param offset: 起始量
+        :param limit: 偏移量
         :param type: 需求类型 - 0: member, 1: outsource, 2: undertake
         :param status: 需求状态 - 0: pending, 1: completed, 2: removed
         :return:

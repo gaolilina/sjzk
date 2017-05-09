@@ -1,7 +1,8 @@
 from django.conf.urls import url
 
 from ..views.activity import *
-from ..views.common import ActivityCommentList, ActivityComment
+from ..views.common import ActivityCommentList, ActivityComment, \
+    ActivityFollowerList
 
 
 urls = [
@@ -19,4 +20,7 @@ urls = [
     url(r'^screen/$', Screen.as_view(), name='screen'),
     # 活动的阶段
     url(r'^stage/$', ActivityStage.as_view(), name='stage'),
+    # 粉丝
+    url(r'^(?P<activity_id>[0-9]+)/followers/$',
+        ActivityFollowerList.as_view(), name='followers'),
 ]

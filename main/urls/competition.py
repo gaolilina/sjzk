@@ -1,7 +1,8 @@
 from django.conf.urls import url
 
 from ..views.competition import *
-from ..views.common import CompetitionCommentList, CompetitionComment
+from ..views.common import CompetitionCommentList, CompetitionComment, \
+    CompetitionFollowerList
 
 
 urls = [
@@ -27,4 +28,7 @@ urls = [
     url(r'(?P<team_id>[0-9]+)/files/$', CompetitionFile.as_view(), name='files'),
     url(r'(?P<team_id>[0-9]+)/file/(?P<competition_id>[0-9]+)/$',
         CompetitionFile.as_view(), name='file'),
+    # 粉丝
+    url(r'^(?P<competition_id>[0-9]+)/followers/$',
+        CompetitionFollowerList.as_view(), name='followers'),
 ]

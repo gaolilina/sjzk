@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic import View
 
-from ..models import User, Team, UserComment as UserCommentModel, \
+from ..models import User, Team, TeamNeed, UserComment as UserCommentModel, \
     TeamComment as TeamCommentModel, \
     Activity, ActivityComment as ActivityCommentModel, \
     Competition, CompetitionComment as CompetitionCommentModel, \
@@ -20,10 +20,11 @@ __all__ = ['UserActionList', 'TeamActionList', 'ActionsList',
            'TeamCommentList', 'UserComment', 'TeamComment', 'UserFollowerList',
            'TeamFollowerList', 'UserFollower', 'TeamFollower',
            'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker',
-           'UserVisitorList', 'TeamVisitorList',
-           'ActivityCommentList', 'ActivityComment',
+           'UserVisitorList', 'TeamVisitorList', 'CompetitionFollowerList',
+           'ActivityCommentList', 'ActivityComment', 'ActivityFollowerList',
            'CompetitionCommentList', 'CompetitionComment',
-           'UserActionCommentList', 'TeamActionCommentList']
+           'UserActionCommentList', 'TeamActionCommentList',
+           'TeamNeedFollowerList']
 
 
 class ActionList(View):
@@ -926,6 +927,30 @@ class TeamFollowerList(FollowerList):
     @require_token
     def get(self, request, team):
         return super().get(request, team)
+
+
+# noinspection PyMethodOverriding
+class TeamNeedFollowerList(FollowerList):
+    @fetch_object(TeamNeed.objects, 'need')
+    @require_token
+    def get(self, request, need):
+        return super().get(request, need)
+
+
+# noinspection PyMethodOverriding
+class ActivityFollowerList(FollowerList):
+    @fetch_object(Activity.enabled, 'activity')
+    @require_token
+    def get(self, request, activity):
+        return super().get(request, activity)
+
+
+# noinspection PyMethodOverriding
+class CompetitionFollowerList(FollowerList):
+    @fetch_object(Competition, 'competition')
+    @require_token
+    def get(self, request, competition):
+        return super().get(request, competition)
 
 
 class Follower(View):
