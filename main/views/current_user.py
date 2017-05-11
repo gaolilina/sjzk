@@ -8,7 +8,7 @@ from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
 from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
     Activity, Competition, UserAction, TeamAction, CompetitionTeamParticipator,\
-    IllegalWord, TeamNeed
+    IllegalWord, TeamNeed, SystemAction
 from ..utils import abort, action, save_uploaded_image, identity_verify, \
     get_score_stage, eid_verify
 from ..utils.decorators import *
@@ -27,7 +27,8 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification',
            'OtherIdentityVerification', 'Inviter', 'FollowedTeamNeedList',
            'FollowedTeamNeed', 'FollowedActivityList', 'FollowedActivity',
-           'FollowedCompetitionList', 'FollowedCompetition']
+           'FollowedCompetitionList', 'FollowedCompetition', 'LikedSystemAction'
+           ]
 
 
 class Username(View):
@@ -1199,6 +1200,21 @@ class LikedTeamAction(LikedEntity):
         return super().post(request, action)
 
     @fetch_object(TeamAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
+
+
+# noinspection PyMethodOverriding
+class LikedSystemAction(LikedEntity):
+    @fetch_object(SystemAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(SystemAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(SystemAction.objects, 'action')
     def delete(self, request, action):
         return super().delete(request, action)
 

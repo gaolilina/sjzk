@@ -2561,6 +2561,8 @@ class TeamExternalTask(View):
             task.executor.save()
             task.team.save()
             task.save()
+            # 发动态
+            action.finish_external_task(task.executor, task)
             abort(200)
         elif status == 0:
             if request.user != task.team.owner or task.status != 1:

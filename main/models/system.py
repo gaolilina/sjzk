@@ -1,7 +1,9 @@
 from django.db import models
 
+from . import Action, Liker, Comment
 
-__all__ = ['System', 'IllegalWord']
+__all__ = ['System', 'IllegalWord', 'SystemAction', 'SystemActionLiker',
+           'SystemActionComment']
 
 
 class System(models.Model):
@@ -34,3 +36,31 @@ class IllegalWord(models.Model):
 
     class Meta:
         db_table = 'illegal_word'
+
+
+class SystemAction(Action):
+    """系统动态"""
+
+    entity = models.CharField(max_length=10, default='system')
+
+    class Meta:
+        db_table = 'system_action'
+
+
+class SystemActionLiker(Liker):
+    """系统动态点赞记录"""
+
+    liked = models.ForeignKey('SystemAction', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_system_actions')
+
+    class Meta:
+        db_table = 'system_action_liker'
+
+
+class SystemActionComment(Comment):
+    """系统动态评论记录"""
+
+    entity = models.ForeignKey('SystemAction', models.CASCADE, 'comments')
+
+    class Meta:
+        db_table = 'system_action_comment'

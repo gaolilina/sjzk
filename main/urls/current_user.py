@@ -4,7 +4,7 @@ from ..views.current_user import *
 from ..views.common import UserActionsList, TeamActionsList, UserActionList, \
     UserCommentList, UserFollowerList, UserLikerList, UserLiker, \
     UserVisitorList, FollowedUserActionList, FollowedTeamActionList, \
-    UserActionCommentList, TeamActionCommentList
+    UserActionCommentList, TeamActionCommentList, SystemActionCommentList
 from ..views.forum import BoardList
 from ..views.report import Report
 
@@ -39,6 +39,8 @@ urls = [
         UserActionCommentList.as_view(), name='user_action_comments'),
     url(r'^team_action/(?P<action_id>[0-9]+)/comments/$',
         TeamActionCommentList.as_view(), name='team_action_comments'),
+    url(r'^system_action/(?P<action_id>[0-9]+)/comments/$',
+        SystemActionCommentList.as_view(), name='system_action_comments'),
     # 经历
     url(r'^experiences/education/$',
         ExperienceList.as_view(), name='education_experiences',
@@ -95,6 +97,8 @@ urls = [
         LikedUserAction.as_view(), name='liked_user_action'),
     url(r'liked/team_actions/(?P<action_id>[0-9]+)/$',
         LikedTeamAction.as_view(), name='liked_team_action'),
+    url(r'liked/system_actions/(?P<action_id>[0-9]+)/$',
+        LikedSystemAction.as_view(), name='liked_system_action'),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view(), name='visitors'),
     # 与当前用户相关的团队

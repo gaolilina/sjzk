@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from ..models import ForumBoard, ForumPost
-from ..utils import abort
+from ..utils import abort, action
 from ..utils.decorators import *
 
 
@@ -80,6 +80,8 @@ class BoardList(View):
             abort(403, '板块已存在')
 
         b = request.user.forum_boards.create(name=name, description=description)
+        # 发动态
+        action.send_forum(request.user, b)
         return JsonResponse({'board_id': b.id})
 
 
