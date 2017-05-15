@@ -20,7 +20,10 @@ urls = [
     url(r'^screen/$', Screen.as_view(), name='screen'),
     # 竞赛的阶段
     url(r'^(?P<competition_id>[0-9]+)/stage/$',
-        CompetitionStage.as_view(), name='stage'),
+        CompetitionStageList.as_view(), name='stages'),
+    # 竞赛的评比列表
+    url(r'^(?P<competition_id>[0-9]+)/awards/$',
+        CompetitionAwardList.as_view(), name='awards'),
     # 竞赛的通知
     url(r'^(?P<competition_id>[0-9]+)/notifications/$',
         CompetitionNotification.as_view(), name='notifications'),

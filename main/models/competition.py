@@ -6,7 +6,7 @@ from . import EnabledManager, Comment, Liker, Follower
 
 __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
            'CompetitionComment', 'CompetitionLiker', 'CompetitionFile',
-           'CompetitionNotification', 'CompetitionFollower']
+           'CompetitionNotification', 'CompetitionFollower', 'CompetitionAward']
 
 
 class Competition(models.Model):
@@ -124,3 +124,17 @@ class CompetitionFollower(Follower):
 
     class Meta:
         db_table = 'competition_follower'
+
+
+class CompetitionAward(models.Model):
+    """竞赛评比"""
+
+    competition = models.ForeignKey('Competition', models.CASCADE, 'awards')
+    team = models.ForeignKey('Team', models.CASCADE, 'awards')
+    award = models.CharField(max_length=50)
+
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'competition_award'
+        ordering = ['-time_created']

@@ -25,7 +25,8 @@ __all__ = ('List', 'Search', 'Screen', 'Profile', 'Icon', 'MemberList',
            'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
            'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
            'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList',
-           'CompetitionList', 'TeamScoreRecord', 'NeedSearch', 'NeedScreen')
+           'CompetitionList', 'TeamScoreRecord', 'NeedSearch', 'NeedScreen',
+           'TeamAwardList')
 
 
 class List(View):
@@ -2667,4 +2668,36 @@ class TeamScoreRecord(View):
               'score': s.score,
               'type': s.type,
               'time_created': s.time_created} for s in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class TeamAwardList(View):
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, team, offset=0, limit=10):
+        """获取团队参加的竞赛评比列表
+        :param offset: 偏移量
+        :param limit: 数量上限
+
+        :return:
+            count: 评比总数
+            list: 评比列表
+                id: 评比ID
+                competition_id: 竞赛ID
+                competition_name: 竞赛名称
+                award: 获奖情况
+                time_created: 创建时间
+        """
+
+        c = team.awards.count()
+        qs = team.awards.all()[offset: offset + limit]
+        l = [{'id': p.id,
+              'competition_id': p.competition.id,
+              'competition_name': p.competition.name,
+              'award': p.award,
+              'time_started': p.time_started} for p in qs]
         return JsonResponse({'count': c, 'list': l})

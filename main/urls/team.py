@@ -130,4 +130,7 @@ urls = [
     # 积分明细
     url(r'^(?P<team_id>[0-9]+)/score_records/$', TeamScoreRecord.as_view(),
         name='score_records'),
+    # 团队参加的竞赛评比列表
+    url(r'^(?P<team_id>[0-9]+)/awards/$',TeamAwardList.as_view(),
+        name='awards'),
 ]
