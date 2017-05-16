@@ -25,7 +25,8 @@ __all__ = ('List', 'Search', 'Screen', 'Profile', 'Icon', 'MemberList',
            'NeedInvitationList', 'NeedInvitation', 'InternalTaskList',
            'InternalTasks', 'TeamInternalTask', 'ExternalTaskList',
            'ExternalTasks', 'TeamExternalTask', 'NeedUserList', 'NeedTeamList',
-           'CompetitionList', 'TeamScoreRecord', 'NeedSearch', 'NeedScreen')
+           'CompetitionList', 'TeamScoreRecord', 'NeedSearch', 'NeedScreen',
+           'TeamAwardList')
 
 
 class List(View):
@@ -871,7 +872,10 @@ class AllNeedList(View):
         """
         获取发布中的需求列表
 
-        :param offset: 偏移量
+        :param offset: 起始量
+        :param limit: 偏移量
+        :param type: 需求类型 - 0: member, 1: outsource, 2: undertake
+        :param status: 需求状态 - 0: pending, 1: completed, 2: removed
         :return:
             count: 需求总数
             list: 需求列表
@@ -889,7 +893,7 @@ class AllNeedList(View):
         qs = TeamNeed.objects
         if type is not None:
             qs = qs.filter(type=type)
-        if status:
+        if status is not None:
             qs = qs.filter(status=status)
         else:
             qs = qs.filter(status=0)
@@ -933,7 +937,8 @@ class NeedList(View):
     })
     def get(self, request, team, type=None, status=None, offset=0, limit=10):
         """
-        :param offset: 偏移量
+        :param offset: 起始量
+        :param limit: 偏移量
         :param type: 需求类型 - 0: member, 1: outsource, 2: undertake
         :param status: 需求状态 - 0: pending, 1: completed, 2: removed
         :return:
@@ -2557,6 +2562,8 @@ class TeamExternalTask(View):
             task.executor.save()
             task.team.save()
             task.save()
+            # 发动态
+            action.finish_external_task(task.executor, task)
             abort(200)
         elif status == 0:
             if request.user != task.team.owner or task.status != 1:
@@ -2661,4 +2668,36 @@ class TeamScoreRecord(View):
               'score': s.score,
               'type': s.type,
               'time_created': s.time_created} for s in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class TeamAwardList(View):
+    @fetch_object(Team.enabled, 'team')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, team, offset=0, limit=10):
+        """获取团队参加的竞赛评比列表
+        :param offset: 偏移量
+        :param limit: 数量上限
+
+        :return:
+            count: 评比总数
+            list: 评比列表
+                id: 评比ID
+                competition_id: 竞赛ID
+                competition_name: 竞赛名称
+                award: 获奖情况
+                time_created: 创建时间
+        """
+
+        c = team.awards.count()
+        qs = team.awards.all()[offset: offset + limit]
+        l = [{'id': p.id,
+              'competition_id': p.competition.id,
+              'competition_name': p.competition.name,
+              'award': p.award,
+              'time_started': p.time_started} for p in qs]
         return JsonResponse({'count': c, 'list': l})

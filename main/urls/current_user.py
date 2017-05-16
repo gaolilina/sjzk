@@ -4,7 +4,7 @@ from ..views.current_user import *
 from ..views.common import UserActionsList, TeamActionsList, UserActionList, \
     UserCommentList, UserFollowerList, UserLikerList, UserLiker, \
     UserVisitorList, FollowedUserActionList, FollowedTeamActionList, \
-    UserActionCommentList, TeamActionCommentList
+    UserActionCommentList, TeamActionCommentList, SystemActionCommentList
 from ..views.forum import BoardList
 from ..views.report import Report
 
@@ -39,6 +39,8 @@ urls = [
         UserActionCommentList.as_view(), name='user_action_comments'),
     url(r'^team_action/(?P<action_id>[0-9]+)/comments/$',
         TeamActionCommentList.as_view(), name='team_action_comments'),
+    url(r'^system_action/(?P<action_id>[0-9]+)/comments/$',
+        SystemActionCommentList.as_view(), name='system_action_comments'),
     # 经历
     url(r'^experiences/education/$',
         ExperienceList.as_view(), name='education_experiences',
@@ -59,6 +61,18 @@ urls = [
         FollowedTeamList.as_view(), name='followed_teams'),
     url(r'^followed/teams/(?P<team_id>[0-9]+)/$',
         FollowedTeam.as_view(), name='followed_team'),
+    url(r'^followed/needs/$',
+        FollowedTeamNeedList.as_view(), name='followed_needs'),
+    url(r'^followed/needs/(?P<need_id>[0-9]+)/$',
+        FollowedTeamNeed.as_view(), name='followed_need'),
+    url(r'^followed/activities/$',
+        FollowedActivityList.as_view(), name='followed_activities'),
+    url(r'^followed/activities/(?P<activity_id>[0-9]+)/$',
+        FollowedActivity.as_view(), name='followed_activity'),
+    url(r'^followed/competitions/$',
+        FollowedCompetitionList.as_view(), name='followed_competitions'),
+    url(r'^followed/competitions/(?P<competition_id>[0-9]+)/$',
+        FollowedCompetition.as_view(), name='followed_competition'),
     # 好友
     url(r'^friends/$', FriendList.as_view(), name='friends'),
     url(r'^friends/(?P<other_user_id>[0-9]+)/$', Friend.as_view(),
@@ -83,6 +97,8 @@ urls = [
         LikedUserAction.as_view(), name='liked_user_action'),
     url(r'liked/team_actions/(?P<action_id>[0-9]+)/$',
         LikedTeamAction.as_view(), name='liked_team_action'),
+    url(r'liked/system_actions/(?P<action_id>[0-9]+)/$',
+        LikedSystemAction.as_view(), name='liked_system_action'),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view(), name='visitors'),
     # 与当前用户相关的团队

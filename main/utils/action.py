@@ -1,45 +1,73 @@
 # todo 完善事件记录辅助函数与其他相关说明
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 
-from main.models import User, Team, TeamNeed
+from main.models import User, Team, TeamNeed, SystemAction, Activity, \
+    Competition, ForumBoard, InternalTask, ExternalTask
 
 
 @transaction.atomic
 def get_object_name(action):
     """ 获取对象的名称（或者标题）"""
 
-    if action.object_type == "user":
-        name = User.enabled.get(id=action.object_id).name
-    elif action.object_type == "team":
-        name = Team.enabled.get(id=action.object_id).name
-    elif action.object_type == "member_need":
-        name = TeamNeed.objects.get(id=action.object_id).title
-    elif action.object_type == "outsource_need":
-        name = TeamNeed.objects.get(id=action.object_id).title
-    elif action.object_type == "undertake_need":
-        name = TeamNeed.objects.get(id=action.object_id).title
-    else:
-        name = ""
-    return name
+    try:
+        if action.object_type == "user":
+            name = User.enabled.get(id=action.object_id).name
+        elif action.object_type == "team":
+            name = Team.enabled.get(id=action.object_id).name
+        elif action.object_type == "member_need":
+            name = TeamNeed.objects.get(id=action.object_id).title
+        elif action.object_type == "outsource_need":
+            name = TeamNeed.objects.get(id=action.object_id).title
+        elif action.object_type == "undertake_need":
+            name = TeamNeed.objects.get(id=action.object_id).title
+        elif action.object_type == "internal_task":
+            name = InternalTask.objects.get(id=action.object_id).title
+        elif action.object_type == "external_task":
+            name = ExternalTask.objects.get(id=action.object_id).title
+        elif action.related_object_type == "activity":
+            name = Activity.enabled.get(id=action.related_object_id).name
+        elif action.related_object_type == "competition":
+            name = Competition.enabled.get(id=action.related_object_id).name
+        elif action.related_object_type == "forum":
+            name = ForumBoard.enabled.get(id=action.related_object_id).name
+        else:
+            name = ""
+        return name
+    except ObjectDoesNotExist:
+        return ""
 
 
 @transaction.atomic
 def get_related_object_name(action):
     """ 获取相关对象的名称（或者标题）"""
 
-    if action.related_object_type == "user":
-        name = User.enabled.get(id=action.related_object_id).name
-    elif action.related_object_type == "team":
-        name = Team.enabled.get(id=action.related_object_id).name
-    elif action.related_object_type == "member_need":
-        name = TeamNeed.objects.get(id=action.related_object_id).title
-    elif action.related_object_type == "outsource_need":
-        name = TeamNeed.objects.get(id=action.related_object_id).title
-    elif action.related_object_type == "undertake_need":
-        name = TeamNeed.objects.get(id=action.related_object_id).title
-    else:
-        name = ""
-    return name
+    try:
+        if action.related_object_type == "user":
+            name = User.enabled.get(id=action.related_object_id).name
+        elif action.related_object_type == "team":
+            name = Team.enabled.get(id=action.related_object_id).name
+        elif action.related_object_type == "member_need":
+            name = TeamNeed.objects.get(id=action.related_object_id).title
+        elif action.related_object_type == "outsource_need":
+            name = TeamNeed.objects.get(id=action.related_object_id).title
+        elif action.related_object_type == "undertake_need":
+            name = TeamNeed.objects.get(id=action.related_object_id).title
+        elif action.object_type == "internal_task":
+            name = InternalTask.objects.get(id=action.object_id).title
+        elif action.object_type == "external_task":
+            name = ExternalTask.objects.get(id=action.object_id).title
+        elif action.related_object_type == "activity":
+            name = Activity.enabled.get(id=action.related_object_id).name
+        elif action.related_object_type == "competition":
+            name = Competition.enabled.get(id=action.related_object_id).name
+        elif action.related_object_type == "forum":
+            name = ForumBoard.enabled.get(id=action.related_object_id).name
+        else:
+            name = ""
+        return name
+    except ObjectDoesNotExist:
+        return ""
 
 
 @transaction.atomic
@@ -66,6 +94,14 @@ def create_team(user, team):
 
 
 @transaction.atomic
+def send_forum(user, forum):
+    """记录创建论坛事件"""
+
+    user.actions.create(action='create',
+                        object_type='forum', object_id=forum.id)
+
+
+@transaction.atomic
 def join_team(user, team):
     """记录参加团队事件"""
 
@@ -83,6 +119,20 @@ def leave_team(user, team):
                         object_type='team', object_id=team.id)
     team.actions.create(action='leave',
                         object_type='user', object_id=user.id)
+
+
+@transaction.atomic
+def finish_external_task(team, task):
+    """记录团队完成外包及外包团队完成支付事件"""
+
+    team.actions.create(action='finish',
+                        object_type='external_task', object_id=task.id,
+                        related_object_type='team',
+                        related_object_id=task.team.id)
+    task.team.actions.create(action='pay',
+                             object_type='team', object_id=team.id,
+                             related_object_type='external_task',
+                             related_object_id=task.id)
 
 
 @transaction.atomic
@@ -107,3 +157,19 @@ def send_undertake_need(team, need):
 
     team.actions.create(action='send',
                         object_type='undertake_need', object_id=need.id)
+
+
+@transaction.atomic
+def send_activity(activity):
+    """记录系统发布活动事件"""
+
+    SystemAction.objects.create(action='send', object_type='activity',
+                                object_id=activity.id)
+
+
+@transaction.atomic
+def send_competition(competition):
+    """记录系统发布竞赛事件"""
+
+    SystemAction.objects.create(action='send', object_type='competition',
+                                object_id=competition.id)

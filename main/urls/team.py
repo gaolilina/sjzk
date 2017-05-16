@@ -3,7 +3,7 @@ from django.conf.urls import url
 from ..views.team import *
 from ..views.common import TeamActionList, TeamCommentList, TeamComment, \
     TeamFollowerList, TeamFollower, TeamLikerList, TeamLiker, \
-    TeamVisitorList
+    TeamVisitorList, TeamNeedFollowerList
 from ..views.recommend import TeamRecommend, OutsourceNeedTeamRecommend, \
     UndertakeNeedTeamRecommend
 
@@ -98,6 +98,9 @@ urls = [
     # 需求搜索
     url(r'^needs/search/$', NeedSearch.as_view(), name='need_search'),
     url(r'^needs/screen/$', NeedScreen.as_view(), name='need_screen'),
+    # 需求的粉丝
+    url(r'^needs/(?P<need_id>[0-9]+)/followers/$',
+        TeamNeedFollowerList.as_view(), name='followers'),
     # 任务
     url(r'^(?P<team_id>[0-9]+)/internal_tasks/$', InternalTaskList.as_view(),
         name='team_internal_tasks'),
@@ -127,4 +130,7 @@ urls = [
     # 积分明细
     url(r'^(?P<team_id>[0-9]+)/score_records/$', TeamScoreRecord.as_view(),
         name='score_records'),
+    # 团队参加的竞赛评比列表
+    url(r'^(?P<team_id>[0-9]+)/awards/$',TeamAwardList.as_view(),
+        name='awards'),
 ]

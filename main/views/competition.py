@@ -8,9 +8,9 @@ from ..utils import abort, save_uploaded_file
 from ..utils.decorators import *
 
 
-__all__ = ['List', 'Detail', 'CompetitionStage', 'CompetitionFile',
+__all__ = ['List', 'Detail', 'CompetitionStageList', 'CompetitionFile',
            'TeamParticipatorList', 'Search', 'Screen',
-           'CompetitionNotification']
+           'CompetitionNotification', 'CompetitionAwardList']
 
 
 class List(View):
@@ -103,7 +103,7 @@ class Detail(View):
         })
 
 
-class CompetitionStage(View):
+class CompetitionStageList(View):
     @fetch_object(Competition.enabled, 'competition')
     @require_token
     @validate_args({
@@ -132,6 +132,40 @@ class CompetitionStage(View):
               'time_started': p.time_started,
               'time_ended': p.time_ended,
               'time_created': p.time_created} for p in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class CompetitionAwardList(View):
+    @fetch_object(Competition.enabled, 'competition')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, competition, offset=0, limit=10):
+        """获取竞赛的评比列表
+        :param offset: 偏移量
+        :param limit: 数量上限
+
+        :return:
+            count: 评比总数
+            list: 评比列表
+                id: 评比ID
+                team_id: 团队ID
+                team_name: 团队名称
+                icon: 团队头像
+                award: 获奖情况
+                time_created: 创建时间
+        """
+
+        c = competition.awards.count()
+        qs = competition.awards.all()[offset: offset + limit]
+        l = [{'id': p.id,
+              'team_id': p.team.id,
+              'team_name': p.team.name,
+              'icon': p.team.icon,
+              'award': p.award,
+              'time_started': p.time_started} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
 

@@ -21,12 +21,13 @@ class List(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
-    def get(self, request, offset=0, limit=10, order=1):
+    def get(self, request, offset=0, limit=10, order=1, history=False):
         """获取活动列表
 
         :param offset: 偏移量
         :param limit: 数量上限
         :param order: 排序方式
+        :param history: 是否往期活动（默认否）
             0: 注册时间升序
             1: 注册时间降序（默认值）
             2: 昵称升序
@@ -47,8 +48,14 @@ class List(View):
         """
 
         k = self.ORDERS[order]
-        c = Activity.enabled.count()
-        qs = Activity.enabled.all().order_by(k)[offset: offset + limit]
+        if history is None:
+            c = Activity.enabled.exclude(status=2).count()
+            qs = Activity.enabled.exclude(
+                status=2).order_by(k)[offset: offset + limit]
+        else:
+            c = Activity.enabled.filter(status=2).count()
+            qs = Activity.enabled.filter(
+                status=2).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
               'liker_count': a.likers.count(),

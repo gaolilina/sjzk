@@ -9,7 +9,7 @@ __all__ = ['Team', 'TeamAction', 'TeamActionLiker', 'TeamActionComment',
            'TeamAchievement', 'TeamComment', 'TeamFollower', 'TeamInvitation',
            'TeamLiker', 'TeamMember', 'TeamMemberRequest', 'TeamNeed',
            'TeamTag', 'TeamVisitor', 'InternalTask', 'ExternalTask',
-           'TeamFeature', 'TeamScore']
+           'TeamFeature', 'TeamScore', 'TeamNeedFollower']
 
 
 class Team(models.Model):
@@ -197,6 +197,16 @@ class TeamNeed(models.Model):
     class Meta:
         db_table = 'team_need'
         ordering = ['-time_created']
+
+
+class TeamNeedFollower(Follower):
+    """团队需求关注记录"""
+
+    followed = models.ForeignKey('TeamNeed', models.CASCADE, 'followers')
+    follower = models.ForeignKey('User', models.CASCADE, 'followed_needs')
+
+    class Meta:
+        db_table = 'team_need_follower'
 
 
 class MemberNeedRequest(models.Model):
