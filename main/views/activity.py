@@ -48,7 +48,7 @@ class List(View):
         """
 
         k = self.ORDERS[order]
-        if history is None:
+        if history is False:
             c = Activity.enabled.exclude(status=2).count()
             qs = Activity.enabled.exclude(
                 status=2).order_by(k)[offset: offset + limit]
