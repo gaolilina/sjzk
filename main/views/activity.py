@@ -8,7 +8,7 @@ from ..utils import abort
 from ..utils.decorators import *
 
 
-__all__ = ['List', 'Detail', 'ActivityStage','UserParticipatorList', 'Search',
+__all__ = ['List', 'Detail', 'ActivityStage', 'UserParticipatorList', 'Search',
            'Screen']
 
 
@@ -20,6 +20,7 @@ class List(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'history': forms.BooleanField(required=False),
     })
     def get(self, request, offset=0, limit=10, order=1, history=False):
         """获取活动列表
