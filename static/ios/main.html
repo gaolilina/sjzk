@@ -137,6 +137,10 @@
                     offset: 0,
                     limit: 999
                 });
+            }).fail(function(code) {
+                if (code == 404) {
+                    location.href = "login.html";
+                }
             }).then(function(data) {
                 var list = data.list.map(function(d) {
                     return {
