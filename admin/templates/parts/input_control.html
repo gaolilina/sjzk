@@ -22,8 +22,8 @@
     <option value="2" {% ifequal mod.is_verified 2 %}checked="checked"{% endifequal %}>审核通过</option>
     <option value="3" {% ifequal mod.is_verified 3 %}checked="checked"{% endifequal %}>未通过</option>
   </select></td></tr>
-{% elif name == 'province' %}
-  <tr><td>{{ text }}：</td><td></td></tr>
+{% elif name == 'province' or name == 'county' or name == 'city' %}
+  <tr><td>{{ text }}：</td><td><select name="{{ name }}"></select></td></tr>
 {% elif type == 'checkbox' %}
  <tr><td>{{ text }}：</td><td><input
   name="{{ name }}" type="checkbox"
