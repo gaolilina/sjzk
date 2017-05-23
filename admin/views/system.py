@@ -21,12 +21,11 @@ class Setting(View):
     @require_role('yz')
     @validate_args({
         'version_number': forms.FloatField(required=False),
-        'recent_visitor_time': forms.IntegerField(required=False),
-        'score_stage_one': forms.IntegerField(required=False),
-        'score_stage_two': forms.IntegerField(required=False),
-        'score_stage_three': forms.IntegerField(required=False),
-        'score_stage_four': forms.IntegerField(required=False),
-        'score_stage_five': forms.IntegerField(required=False),
+        'score_value_one': forms.IntegerField(required=False),
+        'score_value_two': forms.IntegerField(required=False),
+        'score_value_three': forms.IntegerField(required=False),
+        'score_value_four': forms.IntegerField(required=False),
+        'score_value_five': forms.IntegerField(required=False),
     })
     def post(self, request, **kwargs):
         model = SystemModel.objects.get(id=1)

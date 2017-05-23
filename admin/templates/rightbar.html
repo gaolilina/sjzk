@@ -68,24 +68,13 @@
             <li{% if rb == 'user' %} class="active"{% endif %}><a href="{% url 'admin:user:user_list' %}">用户信息</a></li>
             <li{% if rb == 'user_comment' %} class="active"{% endif %}><a href="{% url 'admin:user:user_comment_list' %}">用户评论</a></li>
             <li{% if rb == 'user_action_comment' %} class="active"{% endif %}><a href="{% url 'admin:user:user_action_comment_list' %}">用户动态评论</a></li>
-            <li{% if rb == 'user_experience' %} class="active"{% endif %}><a href="{% url 'admin:user:user_experience_list' %}">用户经历</a></li>
-            <li{% if rb == 'user_tag' %} class="active"{% endif %}><a href="{% url 'admin:user:user_tag_list' %}">用户标签</a></li>
-            <li{% if rb == 'user_feedback' %} class="active"{% endif %}><a href="{% url 'admin:user:user_feedback_list' %}">用户意见反馈</a></li>
-            <li{% if rb == 'user_score_record' %} class="active"{% endif %}><a href="{% url 'admin:user:user_score_record_list' %}">用户积分明细</a></li>
         </ul>
     {% endif %}
     {% if lb == 'team' %}
         <ul>
             <li{% if rb == 'team' %} class="active"{% endif %}><a href="{% url 'admin:team:team_list' %}">团队信息</a></li>
-            <li{% if rb == 'team_achievement' %} class="active"{% endif %}><a href="{% url 'admin:team:team_achievement_list' %}">团队成果</a></li>
             <li{% if rb == 'team_comment' %} class="active"{% endif %}><a href="{% url 'admin:team:team_comment_list' %}">团队评论</a></li>
             <li{% if rb == 'team_action_comment' %} class="active"{% endif %}><a href="{% url 'admin:team:team_action_comment_list' %}">团队动态评论</a></li>
-            <li{% if rb == 'team_invitation' %} class="active"{% endif %}><a href="{% url 'admin:team:team_invitation_list' %}">团队邀请</a></li>
-            <li{% if rb == 'team_member' %} class="active"{% endif %}><a href="{% url 'admin:team:team_member_list' %}">团队成员</a></li>
-            <li{% if rb == 'team_member_request' %} class="active"{% endif %}><a href="{% url 'admin:team:team_member_request_list' %}">团队申请</a></li>
-            <li{% if rb == 'team_need' %} class="active"{% endif %}><a href="{% url 'admin:team:team_need_list' %}">团队需求</a></li>
-            <li{% if rb == 'team_tag' %} class="active"{% endif %}><a href="{% url 'admin:team:team_tag_list' %}">团队标签</a></li>
-            <li{% if rb == 'team_score_record' %} class="active"{% endif %}><a href="{% url 'admin:team:team_score_record_list' %}">团队积分明细</a></li>
         </ul>
     {% endif %}
 {% endif %}
@@ -94,19 +83,14 @@
     {% if lb == 'activity' %}
         <ul>
             <li{% if rb == 'activity' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动信息</a></li>
-            <li{% if rb == 'activity_stage' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_stage_list' %}">活动阶段</a></li>
-            <li{% if rb == 'activity_user_participator' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_user_participator_list' %}">活动参与者</a></li>
             <li{% if rb == 'activity_comment' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_comment_list' %}">活动评论</a></li>
         </ul>
     {% endif %}
     {% if lb == 'competition' %}
         <ul>
             <li{% if rb == 'competition' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_list' %}">竞赛信息</a></li>
-            <li{% if rb == 'competition_stage' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_stage_list' %}">竞赛阶段</a></li>
             <li{% if rb == 'competition_notification' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_notification_list' %}">竞赛通知</a></li>
-            <li{% if rb == 'competition_team_participator' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_team_participator_list' %}">竞赛参与者</a></li>
             <li{% if rb == 'competition_comment' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_comment_list' %}">竞赛评论</a></li>
-            <li{% if rb == 'competition_file' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_file_list' %}">竞赛文件</a></li>
         </ul>
     {% endif %}
 {% endif %}
