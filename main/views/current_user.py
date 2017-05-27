@@ -11,6 +11,7 @@ from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
     IllegalWord, TeamNeed, SystemAction
 from ..utils import abort, action, save_uploaded_image, identity_verify, \
     get_score_stage, eid_verify
+from ..utils import action
 from ..utils.decorators import *
 from ..utils.recommender import record_like_user, record_like_team
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
@@ -27,7 +28,9 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification',
            'OtherIdentityVerification', 'Inviter', 'FollowedTeamNeedList',
            'FollowedTeamNeed', 'FollowedActivityList', 'FollowedActivity',
-           'FollowedCompetitionList', 'FollowedCompetition', 'LikedSystemAction'
+           'FollowedCompetitionList', 'FollowedCompetition', 'LikedSystemAction',
+           'FavoredActivity', 'FavoredCompetition', 'FavoredUserAction',
+           'FavoredTeamAction', 'FavoredSystemAction'
            ]
 
 
@@ -1650,3 +1653,107 @@ class UserScoreRecord(View):
               'type': s.type,
               'time_created': s.time_created} for s in qs]
         return JsonResponse({'count': c, 'list': l})
+
+
+class FavoredEntity(View):
+    """与当前用户收藏行为相关的View"""
+
+    @require_token
+    def get(self, request, entity):
+        """判断当前用户是否收藏过某个对象"""
+
+        if entity.favorers.filter(favorer=request.user).exists():
+            abort(200)
+        abort(200, '已收藏过')
+
+    @require_token
+    def post(self, request, entity):
+        """收藏某个对象"""
+
+        if not entity.favorers.filter(favorer=request.user).exists():
+            entity.favorers.filter(favorer=request.user)
+
+            request.user.save()
+        abort(200)
+
+    @require_token
+    def delete(self, request, entity):
+        """对某个对象取消点赞"""
+
+        entity.favorers.filter(favorer=request.user).delete()
+        abort(200)
+
+
+# noinspection PyMethodOverriding
+class FavoredActivity(FavoredEntity):
+    @fetch_object(Activity.objects, 'activity')
+    def get(self, request, activity):
+        return super().get(request, activity)
+
+    @fetch_object(Activity.objects, 'activity')
+    def post(self, request, activity):
+        return super().post(request, activity)
+
+    @fetch_object(Activity.objects, 'activity')
+    def delete(self, request, activity):
+        return super().delete(request, activity)
+
+
+# noinspection PyMethodOverriding
+class FavoredCompetition(FavoredEntity):
+    @fetch_object(Competition.objects, 'competition')
+    def get(self, request, competition):
+        return super().get(request, competition)
+
+    @fetch_object(Competition.objects, 'competition')
+    def post(self, request, competition):
+        return super().post(request, competition)
+
+    @fetch_object(Competition.objects, 'competition')
+    def delete(self, request, competition):
+        return super().delete(request, competition)
+
+
+# noinspection PyMethodOverriding
+class FavoredUserAction(FavoredEntity):
+    @fetch_object(UserAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(UserAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(UserAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
+
+
+# noinspection PyMethodOverriding
+class FavoredTeamAction(FavoredEntity):
+    @fetch_object(TeamAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(TeamAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(TeamAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
+
+
+# noinspection PyMethodOverriding
+class FavoredSystemAction(FavoredEntity):
+    @fetch_object(SystemAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(SystemAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(SystemAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)

@@ -98,7 +98,7 @@ class ActivityFavorer(Favorer):
     """活动收藏记录"""
 
     favored = models.ForeignKey('Activity', models.CASCADE, 'favorers')
-    favorer = models.ForeignKey('User', models.CASCADE, 'favored_activity')
+    favorer = models.ForeignKey('User', models.CASCADE, 'favored_activities')
 
     class Meta:
         db_table = 'activity_favorer'

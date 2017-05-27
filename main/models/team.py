@@ -2,14 +2,14 @@ from django.db import models
 from django.utils import timezone
 
 from . import EnabledManager, Action, Comment, Follower, Liker, Tag, \
-    Visitor
+    Visitor, Favorer
 
 
 __all__ = ['Team', 'TeamAction', 'TeamActionLiker', 'TeamActionComment',
            'TeamAchievement', 'TeamComment', 'TeamFollower', 'TeamInvitation',
            'TeamLiker', 'TeamMember', 'TeamMemberRequest', 'TeamNeed',
            'TeamTag', 'TeamVisitor', 'InternalTask', 'ExternalTask',
-           'TeamFeature', 'TeamScore', 'TeamNeedFollower']
+           'TeamFeature', 'TeamScore', 'TeamNeedFollower', 'TeamActionFavorer']
 
 
 class Team(models.Model):
@@ -352,3 +352,12 @@ class TeamFeature(models.Model):
 
     class Meta:
         db_table = 'team_feature'
+
+class TeamActionFavorer(Favorer):
+    """团队动态收藏记录"""
+
+    favored = models.ForeignKey('TeamAction', models.CASCADE, 'favorers')
+    favorer = models.ForeignKey('User', models.CASCADE, 'favored_team_actions')
+
+    class Meta:
+        db_table = 'team_action_favorer'

@@ -7,7 +7,9 @@ from ..models import User, Team, TeamNeed, UserComment as UserCommentModel, \
     TeamComment as TeamCommentModel, \
     Activity, ActivityComment as ActivityCommentModel, \
     Competition, CompetitionComment as CompetitionCommentModel, \
-    UserAction, TeamAction, SystemAction
+    UserAction, TeamAction, SystemAction, \
+    UserActionFavorer, TeamActionFavorer, SystemActionFavorer, \
+    ActivityFavorer, CompetitionFavorer
 
 from ..utils import abort, action
 from ..utils.decorators import *
@@ -25,7 +27,9 @@ __all__ = ['UserActionList', 'TeamActionList', 'ActionsList',
            'CompetitionCommentList', 'CompetitionComment',
            'UserActionCommentList', 'TeamActionCommentList',
            'TeamNeedFollowerList', 'SearchSystemActionList', 'SystemActionsList'
-           , 'SystemActionCommentList', 'SystemActionComment']
+           , 'SystemActionCommentList', 'SystemActionComment',
+           'FavoredUserActionList', 'FavoredTeamActionList', 'FavoredSystemActionList',
+           'FavoredActivityList', 'FavoredCompetitionList']
 
 
 class ActionList(View):
@@ -1245,3 +1249,165 @@ class TeamVisitorList(VisitorList):
     @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         return super().get(request, team)
+
+
+class FavoredActionList(View):
+    get_dict = {
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=1),
+    }
+    ORDERS = ('time_created', '-time_created')
+
+    @validate_args(get_dict)
+    def get(self, request, obj, offset=0, limit=10, order=1):
+        """获取动态收藏列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 收藏时间升序
+            1: 收藏时间降序（默认值）
+        :return:
+            count: 收藏总数
+            list: 收藏列表
+                action_id: 动态id
+                id: 主语的id
+                name: 主语的名称
+                icon: 主语的头像
+                action: 相关动作
+                object_type: 相关对象的类型
+                object_id: 相关对象的ID
+                object_name: 相关对象名称
+                icon_url: 头像
+                related_object_type: 额外相关对象的类型
+                related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
+                comment_count: 评论数
+                time_created: 创建时间
+        """
+        c = obj.count()
+        qs = obj.order_by(self.ORDERS[order])[offset:offset + limit]
+        
+        l = [{'id': i.entity.id,
+              'action_id': i.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
+              'object_type': i.object_type,
+              'object_id': i.object_id,
+              'object_name': action.get_object_name(i),
+              'icon_url': action.get_object_icon(i),
+              'related_object_type': i.related_object_type,
+              'related_object_id': i.related_object_id,
+              'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
+              'time_created': i.time_created,
+              } for i in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+# noinspection PyMethodOverriding
+class FavoredUserActionList(FavoredActionList):
+    @require_token
+    def get(self, request):
+        return super().get(request, request.user.favored_user_actions)
+
+# noinspection PyMethodOverriding
+class FavoredTeamActionList(FavoredActionList):
+    @require_token
+    def get(self, request):
+        return super().get(request, request.user.favored_team_actions)
+
+# noinspection PyMethodOverriding
+class FavoredSystemActionList(FavoredActionList):
+    @require_token
+    def get(self, request):
+        return super().get(request, request.user.favored_system_actions)
+
+class FavoredActivityList(View):
+    get_dict = {
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=1),
+    }
+    ORDERS = ('time_created', '-time_created')
+
+    @validate_args(get_dict)
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取活动收藏列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 收藏时间升序
+            1: 收藏时间降序（默认值）
+        :return:
+            count: 收藏总数
+            list: 收藏列表
+                id: 活动ID
+                name: 活动名
+                liker_count: 点赞数
+                status: 竞赛当前阶段
+                time_started: 开始时间
+                time_ended: 结束时间
+                deadline: 截止时间
+                user_participator_count: 已报名人数
+                time_created: 创建时间
+        """
+        c = request.user.favored_activities.count()
+        qs = request.user.favored_activities.order_by(self.ORDERS[order])[offset:offset + limit]
+        
+        l = [{'id': a.id,
+              'name': a.name,
+              'liker_count': a.likers.count(),
+              'status': a.status,
+              'time_started': a.time_started,
+              'time_ended': a.time_ended,
+              'deadline': a.deadline,
+              'user_participator_count': a.user_participators.count(),
+              'time_created': a.time_created} for a in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FavoredCompetitionList(View):
+    get_dict = {
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=1),
+    }
+    ORDERS = ('time_created', '-time_created')
+
+    @validate_args(get_dict)
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取竞赛收藏列表
+
+        :param offset: 偏移量
+        :param order: 排序方式
+            0: 收藏时间升序
+            1: 收藏时间降序（默认值）
+        :return:
+            count: 收藏总数
+            list: 收藏列表
+                id: 竞赛ID
+                name: 竞赛名
+                liker_count: 点赞数
+                status: 竞赛当前阶段
+                time_started: 开始时间
+                time_ended: 结束时间
+                deadline: 截止时间
+                team_participator_count: 已报名人数
+                time_created: 创建时间
+        """
+        c = request.user.favored_competitions.count()
+        qs = request.user.favored_competitions.order_by(self.ORDERS[order])[offset:offset + limit]
+        
+        l = [{'id': a.id,
+              'name': a.name,
+              'liker_count': a.likers.count(),
+              'status': a.status,
+              'time_started': a.time_started,
+              'time_ended': a.time_ended,
+              'deadline': a.deadline,
+              'team_participator_count': a.team_participators.count(),
+              'time_created': a.time_created} for a in qs]
+        return JsonResponse({'count': c, 'list': l})

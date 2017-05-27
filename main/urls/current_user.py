@@ -4,7 +4,9 @@ from ..views.current_user import *
 from ..views.common import UserActionsList, TeamActionsList, UserActionList, \
     UserCommentList, UserFollowerList, UserLikerList, UserLiker, \
     UserVisitorList, FollowedUserActionList, FollowedTeamActionList, \
-    UserActionCommentList, TeamActionCommentList, SystemActionCommentList
+    UserActionCommentList, TeamActionCommentList, SystemActionCommentList, \
+    FavoredUserActionList, FavoredTeamActionList, FavoredSystemActionList, \
+    FavoredActivityList, FavoredCompetitionList
 from ..views.forum import BoardList
 from ..views.report import Report
 
@@ -130,4 +132,25 @@ urls = [
     url(r'^report/$', Report.as_view(), name='report'),
     # 积分明细
     url(r'^score_records/$', UserScoreRecord.as_view(), name='score_records'),
+    # 收藏
+    url(r'favored/activities/$', FavoredActivityList.as_view(),
+        name='favored_activities'),
+    url(r'favored/competitions/$', FavoredCompetitionList.as_view(),
+        name='favored_competitions'),
+    url(r'favored/user_actions/$', FavoredUserActionList.as_view(),
+        name='favored_user_actions'),
+    url(r'favored/team_actions/$', FavoredTeamActionList.as_view(),
+        name='favored_team_actions'),
+    url(r'favored/system_actions/$', FavoredSystemActionList.as_view(),
+        name='favored_system_actions'),
+    url(r'favored/activities/(?P<activity_id>[0-9]+)/$',
+        FavoredActivity.as_view(), name='favored_activity'),
+    url(r'favored/competitions/(?P<competition_id>[0-9]+)/$',
+        FavoredCompetition.as_view(), name='favored_competition'),
+    url(r'favored/user_actions/(?P<action_id>[0-9]+)/$',
+        FavoredUserAction.as_view(), name='favored_user_action'),
+    url(r'favored/team_actions/(?P<action_id>[0-9]+)/$',
+        FavoredTeamAction.as_view(), name='favored_team_action'),
+    url(r'favored/system_actions/(?P<action_id>[0-9]+)/$',
+        FavoredSystemAction.as_view(), name='favored_system_action'),
 ]

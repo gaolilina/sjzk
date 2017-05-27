@@ -4,14 +4,14 @@ from django.db import models
 from django.utils import timezone
 
 from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
-    Visitor
+    Visitor, Favorer
 
 
 __all__ = ['User', 'UserAction', 'UserActionLiker', 'UserActionComment',
            'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
            'UserFriendRequest', 'UserLiker', 'UserTag', 'UserValidationCode',
            'UserVisitor', 'UserFeedback', 'UserFeature', 'UserBehavior',
-           'UserScore']
+           'UserScore', 'UserActionFavorer']
 
 
 class User(models.Model):
@@ -349,3 +349,12 @@ class UserBehavior(models.Model):
     class Meta:
         db_table = 'user_behavior'
         ordering = ['-time_created']
+
+class UserActionFavorer(Favorer):
+    """用户动态收藏记录"""
+
+    favored = models.ForeignKey('UserAction', models.CASCADE, 'favorers')
+    favorer = models.ForeignKey('User', models.CASCADE, 'favored_user_actions')
+
+    class Meta:
+        db_table = 'user_action_favorer'

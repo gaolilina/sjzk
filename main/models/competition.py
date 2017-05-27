@@ -144,7 +144,7 @@ class CompetitionFavorer(Favorer):
     """活动收藏记录"""
 
     favored = models.ForeignKey('Competition', models.CASCADE, 'favorers')
-    favorer = models.ForeignKey('User', models.CASCADE, 'favored_competition')
+    favorer = models.ForeignKey('User', models.CASCADE, 'favored_competitions')
 
     class Meta:
         db_table = 'competition_favorer'

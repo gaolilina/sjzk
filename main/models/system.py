@@ -1,9 +1,9 @@
 from django.db import models
 
-from . import Action, Liker, Comment
+from . import Action, Liker, Comment, Favorer
 
 __all__ = ['System', 'IllegalWord', 'SystemAction', 'SystemActionLiker',
-           'SystemActionComment']
+           'SystemActionComment', 'SystemActionFavorer']
 
 
 class System(models.Model):
@@ -62,3 +62,12 @@ class SystemActionComment(Comment):
 
     class Meta:
         db_table = 'system_action_comment'
+
+class SystemActionFavorer(Favorer):
+    """系统动态收藏记录"""
+
+    favored = models.ForeignKey('SystemAction', models.CASCADE, 'favorers')
+    favorer = models.ForeignKey('User', models.CASCADE, 'favored_system_actions')
+
+    class Meta:
+        db_table = 'system_action_favorer'
