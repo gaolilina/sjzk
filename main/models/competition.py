@@ -1,12 +1,13 @@
 from django.db import models
 from django.utils import timezone
 
-from . import EnabledManager, Comment, Liker, Follower
+from . import EnabledManager, Comment, Liker, Follower, Favorer
 
 
 __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
            'CompetitionComment', 'CompetitionLiker', 'CompetitionFile',
-           'CompetitionNotification', 'CompetitionFollower', 'CompetitionAward']
+           'CompetitionNotification', 'CompetitionFollower', 'CompetitionAward',
+           'CompetitionFavorer']
 
 
 class Competition(models.Model):
@@ -138,3 +139,12 @@ class CompetitionAward(models.Model):
     class Meta:
         db_table = 'competition_award'
         ordering = ['-time_created']
+
+class CompetitionFavorer(Favorer):
+    """活动收藏记录"""
+
+    favored = models.ForeignKey('Competition', models.CASCADE, 'favorers')
+    favorer = models.ForeignKey('User', models.CASCADE, 'favored_competition')
+
+    class Meta:
+        db_table = 'competition_favorer'

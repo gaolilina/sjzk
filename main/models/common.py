@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 
-__all__ = ['Action', 'Comment', 'Follower', 'Liker', 'Tag', 'Visitor']
+__all__ = ['Action', 'Comment', 'Follower', 'Liker', 'Tag', 'Visitor', 'Favorer']
 
 
 class Action(models.Model):
@@ -84,3 +84,14 @@ class Visitor(models.Model):
     class Meta:
         abstract = True
         ordering = ['-time_updated']
+
+class Favorer(models.Model):
+    """收藏"""
+
+    favored = None
+    favorer = None
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        abstract = True
+        ordering = ['-time_created']
