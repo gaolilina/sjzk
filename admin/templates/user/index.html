@@ -8,6 +8,13 @@
     所在省：<input type="text" name="province" value="{{province}}" />
     所在市：<input type="text" name="city" value="{{city}}" />
     所在区/县：<input type="text" name="county" value="{{county}}" />
+    审核状态：<select name="is_verified">
+    <option value="0" {% ifequal is_verified 0 %}checked="checked"{% endifequal %}>未提交</option>
+    <option value="1" {% ifequal is_verified 1 %}checked="checked"{% endifequal %}>待审核</option>
+    <option value="2" {% ifequal is_verified 2 %}checked="checked"{% endifequal %}>身份证审核通过</option>
+    <option value="3" {% ifequal is_verified 3 %}checked="checked"{% endifequal %}>未通过</option>
+    <option value="4" {% ifequal is_verified 3 %}checked="checked"{% endifequal %}>eid审核通过</option>
+    </select>
     <input type="submit" value="搜索" />
 </form>
 {% if list %}

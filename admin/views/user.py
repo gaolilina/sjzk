@@ -52,6 +52,7 @@ class UserList(View):
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
+            is_verified = request.GET.get("is_verified")
 
             template = loader.get_template("user/index.html")
             if User == User:
@@ -65,13 +66,15 @@ class UserList(View):
                 'province': province,
                 'city': city,
                 'county': county,
+                'is_verified': is_verified,
                 'list': User.objects.filter(
                     name__contains=name,
                     phone_number__contains=phone,
                     unit1__contains=unit1,
                     province__contains=province,
                     city__contains=city,
-                    county__contains=county), 'redir': redir, 'rb': 'user', 'user': request.user})
+                    county__contains=county,
+                    is_verified=is_verified), 'redir': redir, 'rb': 'user', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("user/index.html")
