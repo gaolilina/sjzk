@@ -21,6 +21,7 @@ class List(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'history': forms.BooleanField(required=False),
     })
     def get(self, request, offset=0, limit=10, order=1):
         """获取竞赛列表
@@ -32,6 +33,7 @@ class List(View):
             1: 注册时间降序（默认值）
             2: 昵称升序
             3: 昵称降序
+        :param history: 是否往期活动（默认否）
 
         :return:
             count: 竞赛总数
@@ -48,8 +50,14 @@ class List(View):
         """
 
         k = self.ORDERS[order]
-        c = Competition.enabled.count()
-        qs = Competition.enabled.all().order_by(k)[offset: offset + limit]
+        if history is False:
+            c = Competition.enabled.exclude(status=2).count()
+            qs = Competition.enabled.exclude(
+                status=2).order_by(k)[offset: offset + limit]
+        else:
+            c = Competition.enabled.filter(status=2).count()
+            qs = Competition.enabled.filter(
+                status=2).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
               'liker_count': a.likers.count(),
