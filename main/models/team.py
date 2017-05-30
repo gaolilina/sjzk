@@ -9,7 +9,8 @@ __all__ = ['Team', 'TeamAction', 'TeamActionLiker', 'TeamActionComment',
            'TeamAchievement', 'TeamComment', 'TeamFollower', 'TeamInvitation',
            'TeamLiker', 'TeamMember', 'TeamMemberRequest', 'TeamNeed',
            'TeamTag', 'TeamVisitor', 'InternalTask', 'ExternalTask',
-           'TeamFeature', 'TeamScore', 'TeamNeedFollower', 'TeamActionFavorer']
+           'TeamFeature', 'TeamScore', 'TeamNeedFollower', 'TeamActionFavorer',
+           'TeamTagLiker']
 
 
 class Team(models.Model):
@@ -361,3 +362,12 @@ class TeamActionFavorer(Favorer):
 
     class Meta:
         db_table = 'team_action_favorer'
+
+class TeamTagLiker(Liker):
+    """团队标签点赞记录"""
+
+    liked = models.ForeignKey('TeamTag', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
+
+    class Meta:
+        db_table = 'team_tag_liker'

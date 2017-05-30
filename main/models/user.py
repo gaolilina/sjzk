@@ -11,7 +11,7 @@ __all__ = ['User', 'UserAction', 'UserActionLiker', 'UserActionComment',
            'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
            'UserFriendRequest', 'UserLiker', 'UserTag', 'UserValidationCode',
            'UserVisitor', 'UserFeedback', 'UserFeature', 'UserBehavior',
-           'UserScore', 'UserActionFavorer']
+           'UserScore', 'UserActionFavorer', 'UserTagLiker']
 
 
 class User(models.Model):
@@ -358,3 +358,12 @@ class UserActionFavorer(Favorer):
 
     class Meta:
         db_table = 'user_action_favorer'
+
+class UserTagLiker(Liker):
+    """用户标签点赞记录"""
+
+    liked = models.ForeignKey('UserTag', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
+
+    class Meta:
+        db_table = 'user_tag_liker'

@@ -22,7 +22,8 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
            'LikedActivity', 'LikedCompetition', 'LikedUserAction',
-           'LikedTeamAction', 'RelatedTeamList', 'OwnedTeamList',
+           'LikedTeamAction', 'LikedUserTag', 'LikedTeamTag',
+           'RelatedTeamList', 'OwnedTeamList',
            'InvitationList', 'Invitation', 'IdentityVerification',
            'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
            'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification',
@@ -1221,6 +1222,33 @@ class LikedSystemAction(LikedEntity):
     def delete(self, request, action):
         return super().delete(request, action)
 
+# noinspection PyMethodOverriding
+class LikedUserTag(LikedEntity):
+    def get(self, request, tag):
+        entity = UserTag.objects.filter(name=tag)[:1].get()
+        return super().get(request, entity)
+
+    def post(self, request, tag):
+        entity = UserTag.objects.filter(name=tag)[:1].get()
+        return super().post(request, entity)
+
+    def delete(self, request, tag):
+        entity = UserTag.objects.filter(name=tag)[:1].get()
+        return super().delete(request, entity)
+
+# noinspection PyMethodOverriding
+class LikedTeamTag(LikedEntity):
+    def get(self, request, tag):
+        entity = TeamTag.objects.filter(name=tag)[:1].get()
+        return super().get(request, entity)
+
+    def post(self, request, tag):
+        entity = TeamTag.objects.filter(name=tag)[:1].get()
+        return super().post(request, entity)
+
+    def delete(self, request, tag):
+        entity = TeamTag.objects.filter(name=tag)[:1].get()
+        return super().delete(request, entity)
 
 class RelatedTeamList(View):
     ORDERS = ('team__time_created', '-team__time_created',
