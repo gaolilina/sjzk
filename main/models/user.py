@@ -75,6 +75,9 @@ class User(models.Model):
     invitation_code = models.CharField(max_length=8)
     used_invitation_code = models.CharField(max_length=8, default='')
 
+    # 被举报次数
+    reported_count = models.IntegerField(default=0)
+
     objects = models.Manager()
     enabled = EnabledManager()
 

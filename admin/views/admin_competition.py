@@ -120,7 +120,7 @@ class AdminCompetitionList(View):
             return HttpResponse(template.render(context))
         except CompetitionOwner.DoesNotExist:
             template = loader.get_template("admin_competition/add.html")
-            context = Context()
+            context = Context({'user': request.user})
             return HttpResponse(template.render(context))
 
 class AdminCompetitionView(View):

@@ -21,6 +21,8 @@ class System(models.Model):
     SCORE_VALUE_FOUR = models.IntegerField(default=100)
     # 积分分值5
     SCORE_VALUE_FIVE = models.IntegerField(default=200)
+    # 举报封号次数阈值
+    MAX_REPORTED = models.IntegerField(default=10)
 
     class Meta:
         db_table = 'system'

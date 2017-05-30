@@ -26,6 +26,7 @@ class Setting(View):
         'score_value_three': forms.IntegerField(required=False),
         'score_value_four': forms.IntegerField(required=False),
         'score_value_five': forms.IntegerField(required=False),
+        'max_reported': forms.IntegerField(required=False),
     })
     def post(self, request, **kwargs):
         model = SystemModel.objects.get(id=1)
