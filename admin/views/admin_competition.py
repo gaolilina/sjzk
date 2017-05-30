@@ -169,7 +169,7 @@ class AdminCompetitionAwardEdit(View):
             return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/award.html")
-        context = Context({'model': model})
+        context = Context({'model': model, 'user': request.user})
         return HttpResponse(template.render(context))
 
     @fetch_record(Competition.enabled, 'model', 'id')
