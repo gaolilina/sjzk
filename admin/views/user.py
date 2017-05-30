@@ -20,7 +20,32 @@ class UserView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'is_enabled': forms.BooleanField(required=False),'username': forms.CharField(max_length=20,required=False,),'password': forms.CharField(max_length=128,),'phone_number': forms.CharField(max_length=11,),'token': forms.CharField(max_length=256,),'time_created': forms.DateTimeField(required=False,),'name': forms.CharField(max_length=15,),'description': forms.CharField(max_length=100,required=False,),'icon': forms.CharField(max_length=100,required=False,),'gender': forms.IntegerField(required=False,),'qq': forms.CharField(max_length=20,required=False,),'wechat': forms.CharField(max_length=20,required=False,),'email': forms.CharField(max_length=254,required=False,),'birthday': forms.DateField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'county': forms.CharField(max_length=20,required=False,),'is_verified': forms.IntegerField(required=False,),'real_name': forms.CharField(max_length=20,required=False,),'id_number': forms.CharField(max_length=18,required=False,),'id_card': forms.CharField(max_length=100,required=False,),'is_role_verified': forms.BooleanField(required=False),'role': forms.CharField(max_length=20,required=False,),'other_number': forms.CharField(max_length=20,required=False,),'other_card': forms.CharField(max_length=100,required=False,),'unit1': forms.CharField(max_length=20,required=False,),'unit2': forms.CharField(max_length=20,required=False,),'profession': forms.CharField(max_length=20,required=False,),'score': forms.IntegerField(required=False,),'invitation_code': forms.CharField(max_length=8,),'used_invitation_code': forms.CharField(max_length=8,required=False,),
+        'is_enabled': forms.BooleanField(required=False),
+        'username': forms.CharField(max_length=20,required=False,),
+        'phone_number': forms.CharField(max_length=11,),
+        'name': forms.CharField(max_length=15,),
+        'description': forms.CharField(max_length=100,required=False,),
+        'icon': forms.CharField(max_length=100,required=False,),
+        'gender': forms.IntegerField(required=False,),
+        'qq': forms.CharField(max_length=20,required=False,),
+        'wechat': forms.CharField(max_length=20,required=False,),
+        'email': forms.CharField(max_length=254,required=False,),
+        'birthday': forms.DateField(required=False,),
+        'province': forms.CharField(max_length=20,required=False,),
+        'city': forms.CharField(max_length=20,required=False,),
+        'county': forms.CharField(max_length=20,required=False,),
+        'is_verified': forms.IntegerField(required=False,),
+        'real_name': forms.CharField(max_length=20,required=False,),
+        'id_number': forms.CharField(max_length=18,required=False,),
+        'id_card': forms.CharField(max_length=100,required=False,),
+        'is_role_verified': forms.BooleanField(required=False),
+        'role': forms.CharField(max_length=20,required=False,),
+        'other_number': forms.CharField(max_length=20,required=False,),
+        'other_card': forms.CharField(max_length=100,required=False,),
+        'unit1': forms.CharField(max_length=20,required=False,),
+        'unit2': forms.CharField(max_length=20,required=False,),
+        'profession': forms.CharField(max_length=20,required=False,),
+        'score': forms.IntegerField(required=False,),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:

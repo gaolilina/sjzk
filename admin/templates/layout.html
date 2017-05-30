@@ -90,6 +90,12 @@
                 }
             }
         });
+
+        $('input[name=is_enabled]').click(function(e) {
+            if(!$(this).prop('checked') && !confirm('此操作具有一定危险性，是否继续')){
+                e.preventDefault();
+            }
+        });
     </script>
     <script src="/baoming/js/place.js"></script>
 </body>
