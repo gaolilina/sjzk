@@ -6,6 +6,7 @@ import json
 
 from main.utils.decorators import validate_args
 from main.models.competition import *
+from main.models.team import Team
 from admin.models.competition_owner import *
 
 from admin.utils.decorators import *
@@ -158,3 +159,37 @@ class AdminCompetitionExcelView(View):
         context = Context({'model': model})
         return HttpResponse(template.render(context),
             content_type="text/csv")
+
+class AdminCompetitionAwardEdit(View):
+    @fetch_record(Competition.enabled, 'model', 'id')
+    @require_cookie
+    @require_role('axyz')
+    def get(self, request, model):
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+
+        template = loader.get_template("admin_competition/award.html")
+        context = Context({'model': model})
+        return HttpResponse(template.render(context))
+
+    @fetch_record(Competition.enabled, 'model', 'id')
+    @require_cookie
+    @require_role('axyz')
+    @validate_args2({
+        'awards': forms.CharField(),
+    })
+    def post(self, request, **kwargs):
+        user = request.user
+        model = kwargs["model"]
+
+        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+            return HttpResponseForbidden()
+        
+        awards = json.loads(kwargs['awards'])
+        for a in awards:
+            for id in awards[a]:
+                model.awards.create(award=a, team=Team.objects.filter(id=int(id))[0])
+
+        template = loader.get_template("admin_competition/award.html")
+        context = Context({'model': model, 'msg': '保存成功', 'user': request.user})
+        return HttpResponse(template.render(context))

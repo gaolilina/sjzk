@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="{% url 'admin:admin_competition:award' model.id %}" method="post" style="padding:0">
+  <input type="hidden" name="awards" />
+</form>
+<table style="min-width:300px">
+    <tr>
+        <td>奖项</td>
+        <td><button onclick="javascript:add()">添加</button><button onclick="javascript:exportCSV()">导出excel</button></td>
+    </tr>
+    <tr id="target">
+        <td colspan="2" style="border-left:none;border-right:none;border-bottom:none;">
+            {{ msg }}
+            <div class="buttons">
+                <input type="submit" onclick="javascript:submit()" value="保存" />
+            </div>
+        </td>
+    </tr>
+</table>
+<script>
+    var result = {
+      {% for a in model.awards.all %}"{{ a.team.id }}":"{{ a.award }}",{% endfor %}
+    };
+    var result2 = {};
+    var team = {
+      {% for team in model.team_participators.all %}"{{ team.team.id }}":"{{ team.team.name }}",{% endfor %}
+    };
+
+    function add(_name) {
+        var name = _name || prompt("请输入奖项名");
+        if (name != '' && name != null) {
+          $("#target").before("<tr class='a'><td>" + name + "</td><td><select data-name='" + name + "'></select><button onclick='javascript:addTeam(\"" + name + "\")'>添加团队</button></td></tr>");
+          genOption();
+          result2[name] = [];
+        }
+   }
+
+    function genOption() {
+      var o = "";
+      for (var key in team) {
+        if(result[key]) continue;
+        o += "<option value='" + key + "'>" + team[key] + "</option>";
+      }
+      $('select').html(o);
+    }
+
+    function addTeam(r, _team) {
+      var t = _team || $('select[data-name=' + r + ']').val();
+      if (t != '' && t != null) {
+        if(!_team) result[t] = r;
+        result2[r].push(t);
+        $('input[name=awards]').val(JSON.stringify(result2));
+        $('select[data-name=' + r + ']').siblings().last().after("<div>" + (team[_team] || $('select[data-name=' + r + '] option:selected').text()) + "</div>");
+        genOption();
+      }
+    }
+
+    function submit() {
+      $('form').submit();
+    }
+
+    function exportCSV() {
+      var csv = "{{ model.name }} 获奖名单\n奖项,团队\n";
+      for(var a in result2) {
+        for(var t in result2[a]) {
+          csv += a + "," + team[result2[a][t]] + "\n";
+        }
+      }
+      var blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      if (navigator.msSaveBlob) { // IE 10+
+           navigator.msSaveBlob(blob, "award.csv");
+      } else {
+          var link = document.createElement("a");
+          if (link.download !== undefined) { // feature detection
+                // Browsers that support HTML5 download attribute
+                var url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "award.csv");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+          } else {
+            var url = URL.createObjectURL(blob);
+            window.open(url);
+          }
+        }
+    }
+
+    if(Object.keys(result).length > 0) {
+      for(var id in result) {
+        if(!result2[result[id]]) {
+          add(result[id]);
+        }
+        addTeam(result[id], id);
+      }
+    }
+</script>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='admin_competition' lb=1 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='admin_competition' lb=1 rb='view' %}{% endblock %}
+
+{% block css %}
+<style>
+table {
+    border-collapse: collapse;
+    margin: 30px;
+}
+table td {
+    border: 1px solid #999;
+}
+</style>
+{% include 'parts/input_style.html' %}
+{% endblock %}

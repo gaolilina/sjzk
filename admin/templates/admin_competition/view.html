@@ -77,7 +77,12 @@
             </td>
         </tr>
     {% endfor %}
+    <tr>
+        <td>获奖名单：</td>
+        <td><a href="{% url 'admin:admin_competition:award' model.id %}">设置</a></td>
+    </tr>
 </table>
+<br>
 报名者：<a href="{% url 'admin:admin_competition:excel' model.id %}">导出Excel</a>
 <table>
     <tr>
@@ -85,7 +90,7 @@
         <td>报名时间</td>
         <td>队长</td>
         <td>队长联系方式</td>
-        <td>省 市 区</td>
+        <td>地区</td>
     </tr>
     {% for team in model.team_participators.all %}
     <tr>
