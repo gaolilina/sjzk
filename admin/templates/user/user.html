@@ -30,6 +30,7 @@
     {% include "parts/input_control.html" with text="机构2" name="unit2" type="text" maxlen="20" value=mod.unit2 %}
     {% include "parts/input_control.html" with text="专业或职业" name="profession" type="text" maxlen="20" value=mod.profession %}
     {% include "parts/input_control.html" with text="积分" name="score" type="number" maxlen="{{maxlen}}" value=mod.score %}
+    {% include "parts/input_control.html" with text="被举报次数" name="reported_count" type="number" maxlen="{{maxlen}}" value=mod.reported_count %}
     <tr>
         <td>eid信息：</td>
         <td>{{ mod.eid_issuer }}<br>{{ mod.eid_issuer_sn }}<br>{{ mod.eid_sn }}</td>

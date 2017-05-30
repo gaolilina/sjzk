@@ -7,6 +7,7 @@
         <td style="min-width: 450px">内容</td>
         <td>举报对象</td>
         <td>时间</td>
+        <td>操作</td>
     </tr>
     {% for item in list %}
         <tr>
@@ -39,9 +40,19 @@
                 {% endif %}
             </td>
             <td>{{ item.time_created }}</td>
+            <td><button onclick="javascript:deal({{ item.id }}, true, '{{ item.type }}')">处理</button> <button onclick="javascript:deal({{ item.id }}, false)">忽略</button></td>
         </tr>
     {% endfor %}
 </table>
+<script>
+    function deal(id, ban, type) {
+        $.post("report/" + id, {
+            ban: ban && type == 'user'
+        }).done(function() {
+            location.reload();
+        });
+    }
+</script>
 {% endblock %}
 
 {% block topbar %}{% include 'topbar.html' with tb='feedback' %}{% endblock %}
