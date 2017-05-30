@@ -1222,8 +1222,36 @@ class LikedSystemAction(LikedEntity):
     def delete(self, request, action):
         return super().delete(request, action)
 
+class LikedTagEntity(View):
+    """与当前用户标签点赞行为相关的View"""
+
+    @require_token
+    def get(self, request, entity):
+        """判断当前用户是否对某个对象点过赞"""
+
+        if entity.tag_likers.filter(liker=request.user).exists():
+            abort(200)
+        abort(404, '未点过赞')
+
+    @require_token
+    def post(self, request, entity):
+        """对某个对象点赞"""
+
+        if not entity.tag_likers.filter(liker=request.user).exists():
+            entity.tag_likers.create(liker=request.user)
+
+            request.user.save()
+        abort(200)
+
+    @require_token
+    def delete(self, request, entity):
+        """对某个对象取消点赞"""
+
+        entity.tag_likers.filter(liker=request.user).delete()
+        abort(200)
+
 # noinspection PyMethodOverriding
-class LikedUserTag(LikedEntity):
+class LikedUserTag(LikedTagEntity):
     def get(self, request, tag):
         entity = UserTag.objects.filter(name=tag)[:1].get()
         return super().get(request, entity)
@@ -1237,7 +1265,7 @@ class LikedUserTag(LikedEntity):
         return super().delete(request, entity)
 
 # noinspection PyMethodOverriding
-class LikedTeamTag(LikedEntity):
+class LikedTeamTag(LikedTagEntity):
     def get(self, request, tag):
         entity = TeamTag.objects.filter(name=tag)[:1].get()
         return super().get(request, entity)

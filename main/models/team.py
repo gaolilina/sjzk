@@ -366,7 +366,7 @@ class TeamActionFavorer(Favorer):
 class TeamTagLiker(Liker):
     """团队标签点赞记录"""
 
-    liked = models.ForeignKey('TeamTag', models.CASCADE, 'likers')
+    liked = models.ForeignKey('TeamTag', models.CASCADE, 'tag_likers')
     liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
 
     class Meta:
