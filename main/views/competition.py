@@ -23,7 +23,7 @@ class List(View):
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
         'history': forms.BooleanField(required=False),
     })
-    def get(self, request, offset=0, limit=10, order=1):
+    def get(self, request, offset=0, limit=10, order=1, history=False):
         """获取竞赛列表
 
         :param offset: 偏移量
