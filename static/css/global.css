@@ -161,7 +161,7 @@ footer a {
     display: inline-block;
 }
 
-table td a {
+.content table td a {
     color: blue;
     text-decoration: underline;
 }
