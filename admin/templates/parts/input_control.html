@@ -9,18 +9,18 @@
     <img class="ext" src="http://www.chuangyh.com/{{ value }}" /></a></td></tr>
 {% elif name == 'is_verified' %}
   <tr><td>{{ text }}：</td><td><select name="{{ name }}">
-    <option value="0" {% ifequal mod.is_verified 0 %}checked="checked"{% endifequal %}>未提交</option>
-    <option value="1" {% ifequal mod.is_verified 1 %}checked="checked"{% endifequal %}>待审核</option>
-    <option value="2" {% ifequal mod.is_verified 2 %}checked="checked"{% endifequal %}>身份证审核通过</option>
-    <option value="3" {% ifequal mod.is_verified 3 %}checked="checked"{% endifequal %}>未通过</option>
-    <option value="4" {% ifequal mod.is_verified 3 %}checked="checked"{% endifequal %}>eid审核通过</option>
+    <option value="0" {% ifequal mod.is_verified 0 %}selected="selected"{% endifequal %}>未提交</option>
+    <option value="1" {% ifequal mod.is_verified 1 %}selected="selected"{% endifequal %}>待审核</option>
+    <option value="2" {% ifequal mod.is_verified 2 %}selected="selected"{% endifequal %}>身份证审核通过</option>
+    <option value="3" {% ifequal mod.is_verified 3 %}selected="selected"{% endifequal %}>未通过</option>
+    <option value="4" {% ifequal mod.is_verified 3 %}selected="selected"{% endifequal %}>eid审核通过</option>
   </select></td></tr>
 {% elif name == 'is_role_verified' %}
   <tr><td>{{ text }}：</td><td><select name="{{ name }}">
-    <option value="0" {% ifequal mod.is_verified 0 %}checked="checked"{% endifequal %}>未提交</option>
-    <option value="1" {% ifequal mod.is_verified 1 %}checked="checked"{% endifequal %}>待审核</option>
-    <option value="2" {% ifequal mod.is_verified 2 %}checked="checked"{% endifequal %}>审核通过</option>
-    <option value="3" {% ifequal mod.is_verified 3 %}checked="checked"{% endifequal %}>未通过</option>
+    <option value="0" {% ifequal mod.is_verified 0 %}selected="selected"{% endifequal %}>未提交</option>
+    <option value="1" {% ifequal mod.is_verified 1 %}selected="selected"{% endifequal %}>待审核</option>
+    <option value="2" {% ifequal mod.is_verified 2 %}selected="selected"{% endifequal %}>审核通过</option>
+    <option value="3" {% ifequal mod.is_verified 3 %}selected="selected"{% endifequal %}>未通过</option>
   </select></td></tr>
 {% elif name == 'province' or name == 'county' or name == 'city' %}
   <tr><td>{{ text }}：</td><td><select name="{{ name }}"></select></td></tr>
