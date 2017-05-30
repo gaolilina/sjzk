@@ -367,7 +367,7 @@ class TeamTagLiker(Liker):
     """团队标签点赞记录"""
 
     liked = models.ForeignKey('TeamTag', models.CASCADE, 'tag_likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_team_tags')
 
     class Meta:
         db_table = 'team_tag_liker'

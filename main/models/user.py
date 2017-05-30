@@ -362,8 +362,8 @@ class UserActionFavorer(Favorer):
 class UserTagLiker(Liker):
     """用户标签点赞记录"""
 
-    liked = models.ForeignKey('UserTag', models.CASCADE, 'tag_likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
+    liked = models.ForeignKey('UserTag', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_user_tags')
 
     class Meta:
         db_table = 'user_tag_liker'
