@@ -13,6 +13,7 @@ from ..utils import abort, action, save_uploaded_image, identity_verify, \
     get_score_stage, eid_verify
 from ..utils import action
 from ..utils.decorators import *
+from ..utils.dfa import check_bad_words
 from ..utils.recommender import record_like_user, record_like_team
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
     ExperienceList_, FriendList, Friend as Friend_
@@ -257,10 +258,8 @@ class Profile(Profile_):
                     id=request.user.id).count() != 0:
                 abort(403, '昵称已存在')
             # 昵称非法词验证
-            illegal_words = IllegalWord.objects.all()
-            for illegal_word in illegal_words:
-                if illegal_word.word in name:
-                    abort(403, '昵称含非法词汇')
+            if check_bad_words(name):
+                abort(403, '昵称含非法词汇')
             # 首次修改昵称增加积分
             if (request.user.name == "创易汇用户 #" + str(request.user.id)) and \
                     (request.user.name != name):
