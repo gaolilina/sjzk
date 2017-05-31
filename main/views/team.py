@@ -16,6 +16,7 @@ from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
 from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
 from main.utils.recommender import record_view_team
+from main.utils.dfa import check_bad_words
 
 __all__ = ('List', 'Search', 'Screen', 'Profile', 'Icon', 'MemberList',
            'Member', 'MemberRequestList', 'MemberRequest', 'Invitation',
@@ -111,10 +112,8 @@ class List(View):
         if Team.enabled.filter(name=name).count() != 0:
             abort(403, '团队名已被注册')
         # 昵称非法词验证
-        illegal_words = IllegalWord.objects.all()
-        for illegal_word in illegal_words:
-            if illegal_word.word in name:
-                abort(403, '团队名含非法词汇')
+        if check_bad_words(name):
+            abort(403, '团队名含非法词汇')
 
         team = Team(owner=request.user, name=name)
         team.save()
@@ -427,16 +426,17 @@ class Profile(View):
                         id=team.id).count() != 0:
                     abort(403, '团队名已被注册')
                 # 昵称非法词验证
-                illegal_words = IllegalWord.objects.all()
-                for illegal_word in illegal_words:
-                    if illegal_word.word in name:
-                        abort(403, '团队名含非法词汇')
+                if check_bad_words(name):
+                    abort(403, '团队名含非法词汇')
                 # 更新容云上的信息
                 rcloud = RongCloud()
                 r = rcloud.Group.refresh(
                     groupId=str(team.id), groupName=name)
                 if r.result['code'] != 200:
                     abort(404, '更新群聊信息失败')
+            if k == "description":
+                if check_bad_words(kwargs['description']):
+                    abort(403, '含有非法词汇')
             setattr(team, k, kwargs[k])
 
         if fields:
@@ -830,6 +830,9 @@ class AchievementList(View):
         if request.user != team.owner:
             abort(403, '只有队长可以操作')
 
+        if check_bad_words(description):
+            abort(403, '含有非法词汇')
+
         achievement_num = team.achievements.count()
         if achievement_num == 0:
             team.score += get_score_stage(2)
@@ -1073,6 +1076,9 @@ class NeedList(View):
         'time_graduated': forms.DateField(required=False),
     })
     def create_member_need(self, request, team, **kwargs):
+        if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["description"]):
+            abort(403, '含有非法词汇')
+
         team_needs = TeamNeed.objects.filter(team=team, type=0)
         if team_needs.count() == 0:
             team.score += get_score_stage(2)
@@ -1123,6 +1129,9 @@ class NeedList(View):
         'time_ended': forms.DateField(),
     })
     def create_outsource_need(self, request, team, **kwargs):
+        if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["description"]):
+            abort(403, '含有非法词汇')
+
         team_needs = TeamNeed.objects.filter(team=team, type=1)
         if team_needs.count() == 0:
             team.score += get_score_stage(2)
@@ -1166,6 +1175,9 @@ class NeedList(View):
         'time_ended': forms.DateField(),
     })
     def create_undertake_need(self, request, team, **kwargs):
+        if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["description"]):
+            abort(403, '含有非法词汇')
+
         team_needs = TeamNeed.objects.filter(team=team, type=2)
         if team_needs.count() == 0:
             team.score += get_score_stage(2)
@@ -2100,6 +2112,8 @@ class InternalTaskList(View):
         :param: content: 内容
         :param；deadline: 截止时间
         """
+        if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["content"]):
+            abort(403, '含有非法词汇')
         if request.user != team.owner:
             abort(403, '只有队长可以操作')
         executor_id = kwargs.pop('executor_id')
@@ -2191,6 +2205,8 @@ class InternalTasks(View):
         :param deadline: 任务期限
 
         """
+        if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["content"]):
+            abort(403, '含有非法词汇')
         if request.user != task.team.owner:
             abort(403, '不能给自己发送任务')
         if task.status != 1:
@@ -2415,6 +2431,8 @@ class ExternalTaskList(View):
         :param: expend: 预计费用
         :param；deadline: 截止时间
         """
+        if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["content"]):
+            abort(403, '含有非法词汇')
         if request.user != team.owner:
             abort(403, '只有队长可以操作')
         executor_id = kwargs.pop('executor_id')
@@ -2461,6 +2479,8 @@ class ExternalTasks(View):
         :param deadline: 任务期限
 
         """
+        if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["content"]):
+            abort(403, '含有非法词汇')
         if request.user != task.team.owner:
             abort(403, '只有队长可以操作')
         if task.status != 1:

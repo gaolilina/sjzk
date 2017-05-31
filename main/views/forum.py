@@ -5,6 +5,7 @@ from django.views.generic import View
 
 from ..models import ForumBoard, ForumPost
 from ..utils import abort, action
+from ..utils.dfa import check_bad_words
 from ..utils.decorators import *
 
 
@@ -78,6 +79,9 @@ class BoardList(View):
 
         if ForumBoard.enabled.filter(name=name).exists():
             abort(403, '板块已存在')
+        
+        if check_bad_words(name) or check_bad_words(description):
+            abort(403, '含有非法词汇')
 
         b = request.user.forum_boards.create(name=name, description=description)
         # 发动态
@@ -141,6 +145,9 @@ class PostList(View):
     })
     def post(self, request, board, title, content):
         """发主题帖"""
+        
+        if check_bad_words(title) or check_bad_words(content):
+            abort(403, '含有非法词汇')
 
         p = board.posts.create(author=request.user, title=title, content=content)
         return JsonResponse({'post_id': p.id})
@@ -192,6 +199,9 @@ class Post(View):
     })
     def post(self, request, post, title, content):
         """回主题帖"""
+
+        if check_bad_words(title) or check_bad_words(content):
+            abort(403, '含有非法词汇')
 
         p = post.posts.create(main_post=post, board=post.board,
                               author=request.user, title=title, content=content)

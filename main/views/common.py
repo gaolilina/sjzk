@@ -13,6 +13,7 @@ from ..models import User, Team, TeamNeed, UserComment as UserCommentModel, \
 
 from ..utils import abort, action
 from ..utils.decorators import *
+from ..utils.dfa import check_bad_words
 
 
 __all__ = ['UserActionList', 'TeamActionList', 'ActionsList',
@@ -784,6 +785,8 @@ class CommentList(View):
     def post(self, request, obj, content):
         """评论某个对象"""
 
+        if check_bad_words(content):
+            abort(403, '含有非法词汇')
         obj.comments.create(author=request.user, content=content)
         request.user.score += 10
         request.user.save()

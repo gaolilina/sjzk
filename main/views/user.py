@@ -8,6 +8,7 @@ from rongcloud import RongCloud
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
 from ..utils import abort, get_score_stage, send_message
 from ..utils.decorators import *
+from ..utils.dfa import check_bad_words
 from ..utils.recommender import calculate_ranking_score, record_view_user
 from ..models import User, UserVisitor, UserExperience, UserValidationCode, \
     Team, CompetitionTeamParticipator
@@ -291,6 +292,8 @@ class Experience(View):
     def post(self, request, exp, **kwargs):
         """修改用户的某条经历"""
 
+        if check_bad_words(kwargs["description"]):
+            abort(403, '含有非法词汇')
         if exp.user != request.user:
             abort(403, '只能修改自己的经历')
         for k in kwargs:
