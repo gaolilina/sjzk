@@ -459,6 +459,8 @@ class ExperienceList(ExperienceList_):
     def post(self, request, type, **kwargs):
         """增加一条经历"""
 
+        if check_bad_words(kwargs['description']):
+            abort(403, '含有非法词汇')
         request.user.experiences.create(
             type=type, description=kwargs['description'], unit=kwargs['unit'],
             profession=kwargs['profession'], degree=kwargs['degree'],
