@@ -1336,6 +1336,7 @@ class FavoredActivityList(View):
     }
     ORDERS = ('time_created', '-time_created')
 
+    @require_token
     @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """获取活动收藏列表
@@ -1380,6 +1381,7 @@ class FavoredCompetitionList(View):
     }
     ORDERS = ('time_created', '-time_created')
 
+    @require_token
     @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """获取竞赛收藏列表
