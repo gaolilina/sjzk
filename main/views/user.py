@@ -131,9 +131,9 @@ class Token(View):
 
         try:
             if username.isdigit():
-                user = User.enabled.get(phone_number=username)
+                user = User.objects.get(phone_number=username)
             else:
-                user = User.enabled.get(username=username.lower())
+                user = User.objects.get(username=username.lower())
         except User.DoesNotExist:
             abort(401, '用户不存在')
         else:
