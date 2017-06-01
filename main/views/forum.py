@@ -16,7 +16,6 @@ __all__ = [
 class BoardList(View):
     available_orders = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -46,6 +45,9 @@ class BoardList(View):
                 time_created: 创建时间
         """
         i, j, k = offset, offset + limit, self.available_orders[order]
+
+        if owned_only:
+            fetch_user_by_token(request, True)
 
         qs = request.user.forum_boards.filter(enabled=True) if owned_only \
             else ForumBoard.enabled
@@ -103,7 +105,6 @@ class Board(View):
 
 
 class PostList(View):
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -154,7 +155,6 @@ class PostList(View):
 
 
 class Post(View):
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -221,7 +221,6 @@ class Post(View):
 class SearchBoard(View):
     available_orders = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -263,7 +262,6 @@ class SearchBoard(View):
 class SearchPost(View):
     available_orders = ('time_created', '-time_created', 'title', '-title')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

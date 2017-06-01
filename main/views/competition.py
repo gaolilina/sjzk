@@ -16,7 +16,6 @@ __all__ = ['List', 'Detail', 'CompetitionStageList', 'CompetitionFile',
 class List(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -343,7 +342,6 @@ class TeamParticipatorList(View):
 class Search(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -393,7 +391,6 @@ class Search(View):
 class Screen(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

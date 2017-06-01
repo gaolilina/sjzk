@@ -8,7 +8,8 @@ from ..models.user import User
 
 
 __all__ = ['require_token', 'require_verification', 'validate_args',
-           'fetch_object', 'require_verification_token']
+           'fetch_object', 'require_verification_token',
+           'fetch_user_by_token']
 
 
 def require_token(function):
@@ -111,3 +112,23 @@ def fetch_object(model, object_name):
             return function(*args, **kwargs)
         return inner
     return decorator
+
+
+def fetch_user_by_token(request, force = False):
+    token = request.META.get('HTTP_X_USER_TOKEN')
+    if not token:
+        if force:
+            abort(401, '缺少参数token')
+        return False
+    try:
+        user = User.objects.get(token=token)
+        if user.is_enabled:
+            request.user = user
+            return True
+        if force:
+            abort(403, '用户已删除')
+        return False
+    except User.DoesNotExist:
+        if force:
+            abort(404, '用户不存在')
+        return False
