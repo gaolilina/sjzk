@@ -1700,7 +1700,7 @@ class FavoredEntity(View):
         """收藏某个对象"""
 
         if not entity.favorers.filter(favorer=request.user).exists():
-            entity.favorers.filter(favorer=request.user)
+            entity.favorers.create(favorer=request.user)
 
             request.user.save()
         abort(200)
