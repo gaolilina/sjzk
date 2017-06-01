@@ -1361,15 +1361,15 @@ class FavoredActivityList(View):
         c = request.user.favored_activities.count()
         qs = request.user.favored_activities.order_by(self.ORDERS[order])[offset:offset + limit]
         
-        l = [{'id': a.id,
-              'name': a.name,
-              'liker_count': a.likers.count(),
-              'status': a.status,
-              'time_started': a.time_started,
-              'time_ended': a.time_ended,
-              'deadline': a.deadline,
-              'user_participator_count': a.user_participators.count(),
-              'time_created': a.time_created} for a in qs]
+        l = [{'id': a.favored.id,
+              'name': a.favored.name,
+              'liker_count': a.favored.likers.count(),
+              'status': a.favored.status,
+              'time_started': a.favored.time_started,
+              'time_ended': a.favored.time_ended,
+              'deadline': a.favored.deadline,
+              'user_participator_count': a.favored.user_participators.count(),
+              'time_created': a.favored.time_created} for a in qs]
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -1406,13 +1406,13 @@ class FavoredCompetitionList(View):
         c = request.user.favored_competitions.count()
         qs = request.user.favored_competitions.order_by(self.ORDERS[order])[offset:offset + limit]
         
-        l = [{'id': a.id,
-              'name': a.name,
-              'liker_count': a.likers.count(),
-              'status': a.status,
-              'time_started': a.time_started,
-              'time_ended': a.time_ended,
-              'deadline': a.deadline,
-              'team_participator_count': a.team_participators.count(),
-              'time_created': a.time_created} for a in qs]
+        l = [{'id': a.favored.id,
+              'name': a.favored.name,
+              'liker_count': a.favored.likers.count(),
+              'status': a.favored.status,
+              'time_started': a.favored.time_started,
+              'time_ended': a.favored.time_ended,
+              'deadline': a.favored.deadline,
+              'team_participator_count': a.favored.team_participators.count(),
+              'time_created': a.favored.time_created} for a in qs]
         return JsonResponse({'count': c, 'list': l})
