@@ -1292,21 +1292,21 @@ class FavoredActionList(View):
         c = obj.count()
         qs = obj.order_by(self.ORDERS[order])[offset:offset + limit]
         
-        l = [{'id': i.entity.id,
-              'action_id': i.id,
-              'name': i.entity.name,
-              'icon': i.entity.icon,
-              'action': i.action,
-              'object_type': i.object_type,
-              'object_id': i.object_id,
-              'object_name': action.get_object_name(i),
-              'icon_url': action.get_object_icon(i),
-              'related_object_type': i.related_object_type,
-              'related_object_id': i.related_object_id,
-              'related_object_name': action.get_related_object_name(i),
-              'liker_count': i.likers.count(),
-              'comment_count': i.comments.count(),
-              'time_created': i.time_created,
+        l = [{'id': i.favored.entity.id,
+              'action_id': i.favored.id,
+              'name': i.favored.entity.name,
+              'icon': i.favored.entity.icon,
+              'action': i.favored.action,
+              'object_type': i.favored.object_type,
+              'object_id': i.favored.object_id,
+              'object_name': action.get_object_name(i.favored),
+              'icon_url': action.get_object_icon(i.favored),
+              'related_object_type': i.favored.related_object_type,
+              'related_object_id': i.favored.related_object_id,
+              'related_object_name': action.get_related_object_name(i.favored),
+              'liker_count': i.favored.likers.count(),
+              'comment_count': i.favored.comments.count(),
+              'time_created': i.favored.time_created,
               } for i in qs]
         return JsonResponse({'count': c, 'list': l})
 
