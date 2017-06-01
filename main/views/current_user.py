@@ -1693,7 +1693,7 @@ class FavoredEntity(View):
 
         if entity.favorers.filter(favorer=request.user).exists():
             abort(200)
-        abort(200, '已收藏过')
+        abort(404, '未收藏过')
 
     @require_token
     def post(self, request, entity):
