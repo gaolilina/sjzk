@@ -8,7 +8,7 @@ from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
 from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
     Activity, Competition, UserAction, TeamAction, CompetitionTeamParticipator,\
-    IllegalWord, TeamNeed, SystemAction
+    IllegalWord, TeamNeed, SystemAction, UserTag, TeamTag
 from ..utils import abort, action, save_uploaded_image, identity_verify, \
     get_score_stage, eid_verify
 from ..utils import action
