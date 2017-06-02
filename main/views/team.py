@@ -12,7 +12,7 @@ from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL
 from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
-    ExternalTask, CompetitionTeamParticipator, IllegalWord, TeamTag
+    ExternalTask, CompetitionTeamParticipator, IllegalWord
 from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
 from main.utils.recommender import record_view_team
