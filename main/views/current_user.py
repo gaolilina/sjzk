@@ -1225,31 +1225,31 @@ class LikedSystemAction(LikedEntity):
 
 # noinspection PyMethodOverriding
 class LikedUserTag(LikedEntity):
+    @fetch_object(UserTag.objects, 'tag')
     def get(self, request, tag):
-        entity = UserTag.objects.filter(name=tag)[:1].get()
-        return super().get(request, entity)
+        return super().get(request, tag)
 
+    @fetch_object(UserTag.objects, 'tag')
     def post(self, request, tag):
-        entity = UserTag.objects.filter(name=tag)[:1].get()
-        return super().post(request, entity)
+        return super().post(request, tag)
 
+    @fetch_object(UserTag.objects, 'tag')
     def delete(self, request, tag):
-        entity = UserTag.objects.filter(name=tag)[:1].get()
-        return super().delete(request, entity)
+        return super().delete(request, tag)
 
 # noinspection PyMethodOverriding
 class LikedTeamTag(LikedEntity):
+    @fetch_object(TeamTag.objects, 'tag')
     def get(self, request, tag):
-        entity = TeamTag.objects.filter(name=tag)[:1].get()
-        return super().get(request, entity)
+        return super().get(request, tag)
 
+    @fetch_object(TeamTag.objects, 'tag')
     def post(self, request, tag):
-        entity = TeamTag.objects.filter(name=tag)[:1].get()
-        return super().post(request, entity)
+        return super().post(request, tag)
 
+    @fetch_object(TeamTag.objects, 'tag')
     def delete(self, request, tag):
-        entity = TeamTag.objects.filter(name=tag)[:1].get()
-        return super().delete(request, entity)
+        return super().delete(request, tag)
 
 class RelatedTeamList(View):
     ORDERS = ('team__time_created', '-team__time_created',

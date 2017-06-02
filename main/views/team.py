@@ -341,6 +341,7 @@ class Profile(View):
             city:
             county:
             fields: 所属领域，格式：['field1', 'field2']
+            tag_ids: 标签id，格式：[id1, id2, ...]
             tags: 标签，格式：['tag1', 'tag2', ...]
             score: 积分
         """
@@ -370,7 +371,11 @@ class Profile(View):
         r['city'] = team.city
         r['county'] = team.county
         r['score'] = team.score
-        r['tags'] = [tag.name for tag in team.tags.all()]
+        r['tag_ids'] = []
+        r['tags'] = []
+        for t in team.tags.all():
+            r['tag_ids'].append(t.id)
+            r['tags'].append(t.name)
 
         return JsonResponse(r)
 

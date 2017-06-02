@@ -101,9 +101,9 @@ urls = [
         LikedTeamAction.as_view(), name='liked_team_action'),
     url(r'liked/system_actions/(?P<action_id>[0-9]+)/$',
         LikedSystemAction.as_view(), name='liked_system_action'),
-    url(r'liked/user_tags/(?P<tag>.+?)/$',
+    url(r'liked/user_tags/(?P<tag_id>.+?)/$',
         LikedUserTag.as_view(), name='liked_user_tag'),
-    url(r'liked/team_tags/(?P<tag>.+?)/$',
+    url(r'liked/team_tags/(?P<tag_id>.+?)/$',
         LikedTeamTag.as_view(), name='liked_team_tag'),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view(), name='visitors'),

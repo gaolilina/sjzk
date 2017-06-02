@@ -188,6 +188,7 @@ class Profile(View):
             province: 所在省
             city: 所在市
             county: 所在区/县
+            tag_ids: 标签id，格式：[id1, id2, ...]
             tags: 标签，格式：['tag1', 'tag2', ...]
             x_counts 各种计数
                 x: follower | followed | friend | liker | visitor
@@ -214,6 +215,11 @@ class Profile(View):
                 .update_or_create(visited=user, visitor=request.user)
             record_view_user(request.user, user)
 
+        arr1 = []
+        arr2 = []
+        for t in user.tags.all():
+            arr1.append(t.id)
+            arr2.append(t.name)
         r = {'id': user.id,
              'time_created': user.time_created,
              'name': user.name,
@@ -225,7 +231,8 @@ class Profile(View):
              'province': user.province,
              'city': user.city,
              'county': user.county,
-             'tags': [tag.name for tag in user.tags.all()],
+             'tag_ids': arr1,
+             'tags': arr2,
              'follower_count': user.followers.count(),
              'followed_count': user.followed_users.count() + user.followed_teams.count(),
              'friend_count': user.friends.count(),
