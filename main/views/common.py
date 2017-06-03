@@ -1371,7 +1371,7 @@ class FavoredActivityList(View):
               'deadline': a.favored.deadline,
               'user_participator_count': a.favored.user_participators.count(),
               'time_created': a.favored.time_created,
-              'province': a.province} for a in qs]
+              'province': a.favored.province} for a in qs]
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -1418,5 +1418,5 @@ class FavoredCompetitionList(View):
               'deadline': a.favored.deadline,
               'team_participator_count': a.favored.team_participators.count(),
               'time_created': a.favored.time_created,
-              'province': a.province} for a in qs]
+              'province': a.favored.province} for a in qs]
         return JsonResponse({'count': c, 'list': l})
