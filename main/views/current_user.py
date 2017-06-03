@@ -197,6 +197,17 @@ class OtherCard(View):
             abort(200)
         abort(400, '图片保存失败')
 
+class Getui(View):
+    @require_token
+    @validate_args({
+        'client_id': forms.CharField(max_length=50),
+    })
+    def post(self, request, client_id):
+        """上传个推ID"""
+        request.user.getui_id = client_id
+        request.user.save()
+        abort(200)
+
 
 # noinspection PyClassHasNoInit
 class Profile(Profile_):

@@ -121,3 +121,12 @@ def eid_verify(data):
         return 1
     else:
         return int(res['result_detail'])
+
+def notify_user(user, msg):
+    """调用个推通知"""
+    if user.getui_id != "":
+        url = "127.0.0.1"
+        data = "client=" + user.getui_id + "&msg=" + msg
+        conn = http.client.HTTPConnection(url, 7999)
+        conn.request('POST', '/index.php', data)
+        response = conn.getresponse()

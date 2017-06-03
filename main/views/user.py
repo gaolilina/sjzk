@@ -4,6 +4,8 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.db import transaction
 from django.views.generic import View
 from rongcloud import RongCloud
+import json
+from main.utils.http import notify_user
 
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
 from ..utils import abort, get_score_stage, send_message
@@ -400,6 +402,10 @@ class FriendRequestList(View):
 
         user.friend_requests.create(other_user=request.user,
                                     description=description)
+        
+        notify_user(user, json.dumps({
+            'type': 'friend_request'
+        }))
         abort(200)
 
 

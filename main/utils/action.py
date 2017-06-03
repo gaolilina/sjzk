@@ -2,6 +2,9 @@
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 
+import json
+from main.utils.http import notify_user
+
 from main.models import User, Team, TeamNeed, SystemAction, Activity, \
     Competition, ForumBoard, InternalTask, ExternalTask
 
@@ -91,6 +94,14 @@ def create_team(user, team):
                         object_type='team', object_id=team.id)
     team.actions.create(action='create_team',
                         object_type='user', object_id=user.id)
+    for u in user.followers:
+        notify_user(u.follower, json.dumps({
+            'type': 'user_action'
+        }))
+    for t in team.followers:
+        notify_user(t.follower, json.dumps({
+            'type': 'team_action'
+        }))
 
 
 @transaction.atomic
@@ -99,6 +110,10 @@ def send_forum(user, forum):
 
     user.actions.create(action='create',
                         object_type='forum', object_id=forum.id)
+    for u in user.followers:
+        notify_user(u.follower, json.dumps({
+            'type': 'user_action'
+        }))
 
 
 @transaction.atomic
@@ -109,6 +124,14 @@ def join_team(user, team):
                         object_type='team', object_id=team.id)
     team.actions.create(action='join',
                         object_type='user', object_id=user.id)
+    for u in user.followers:
+        notify_user(u.follower, json.dumps({
+            'type': 'user_action'
+        }))
+    for t in team.followers:
+        notify_user(t.follower, json.dumps({
+            'type': 'team_action'
+        }))
 
 
 @transaction.atomic
@@ -119,6 +142,14 @@ def leave_team(user, team):
                         object_type='team', object_id=team.id)
     team.actions.create(action='leave',
                         object_type='user', object_id=user.id)
+    for u in user.followers:
+        notify_user(u.follower, json.dumps({
+            'type': 'user_action'
+        }))
+    for t in team.followers:
+        notify_user(t.follower, json.dumps({
+            'type': 'team_action'
+        }))
 
 
 @transaction.atomic
@@ -133,6 +164,10 @@ def finish_external_task(team, task):
                              object_type='team', object_id=team.id,
                              related_object_type='external_task',
                              related_object_id=task.id)
+    for t in team.followers:
+        notify_user(t.follower, json.dumps({
+            'type': 'team_action'
+        }))
 
 
 @transaction.atomic
@@ -141,6 +176,10 @@ def send_member_need(team, need):
 
     team.actions.create(action='send',
                         object_type='member_need', object_id=need.id)
+    for t in team.followers:
+        notify_user(t.follower, json.dumps({
+            'type': 'team_action'
+        }))
 
 
 @transaction.atomic
@@ -149,6 +188,10 @@ def send_outsource_need(team, need):
 
     team.actions.create(action='send',
                         object_type='outsource_need', object_id=need.id)
+    for t in team.followers:
+        notify_user(t.follower, json.dumps({
+            'type': 'team_action'
+        }))
 
 
 @transaction.atomic
@@ -157,6 +200,10 @@ def send_undertake_need(team, need):
 
     team.actions.create(action='send',
                         object_type='undertake_need', object_id=need.id)
+    for t in team.followers:
+        notify_user(t.follower, json.dumps({
+            'type': 'team_action'
+        }))
 
 
 @transaction.atomic

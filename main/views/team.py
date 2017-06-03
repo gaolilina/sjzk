@@ -17,6 +17,8 @@ from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
 from main.utils.recommender import record_view_team
 from main.utils.dfa import check_bad_words
+import json
+from main.utils.http import notify_user
 
 __all__ = ('List', 'Search', 'Screen', 'Profile', 'Icon', 'MemberList',
            'Member', 'MemberRequestList', 'MemberRequest', 'Invitation',
@@ -727,6 +729,9 @@ class Invitation(View):
                 abort(403, '对方已经发送过申请')
 
         team.invitations.create(user=user, description=description)
+        notify_user(user, json.dumps({
+            'type': 'invitation'
+        }))
         abort(200)
 
 

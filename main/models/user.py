@@ -78,6 +78,9 @@ class User(models.Model):
     # 被举报次数
     reported_count = models.IntegerField(default=0)
 
+    # 个推id
+    getui_id = models.CharField(max_length=50, default='')
+
     objects = models.Manager()
     enabled = EnabledManager()
 

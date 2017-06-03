@@ -18,6 +18,7 @@ urls = [
     url(r'^id_card/$', IDCard.as_view(), name='id_card'),
     url(r'^other_card/$', OtherCard.as_view(), name='other_card'),
     url(r'^profile/$', Profile.as_view(), name='profile'),
+    url(r'^getui/$', Getui.as_view(), name='getui'),
     # 实名认证
     url(r'^identity_verification/$',
         IdentityVerification.as_view(), name='identity_verification'),
