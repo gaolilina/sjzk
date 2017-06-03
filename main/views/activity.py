@@ -243,6 +243,8 @@ class Search(View):
                 deadline: 截止时间
                 user_participator_count: 已报名人数
                 time_created: 创建时间
+                status:
+                province:
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
         qs = Activity.enabled.filter(name__icontains=kwargs['name'])
@@ -254,7 +256,9 @@ class Search(View):
               'time_ended': a.time_ended,
               'deadline': a.deadline,
               'user_participator_count': a.user_participators.count(),
-              'time_created': a.time_created} for a in qs.order_by(k)[i:j]]
+              'time_created': a.time_created,
+              'status': a.status,
+              'province': a.province} for a in qs.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
 
 
