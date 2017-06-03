@@ -52,13 +52,13 @@ class List(View):
 
         k = self.ORDERS[order]
         if history is False:
-            c = Competition.enabled.exclude(status=2).count()
+            c = Competition.enabled.exclude(status=6).count()
             qs = Competition.enabled.exclude(
                 status=2).order_by(k)[offset: offset + limit]
         else:
-            c = Competition.enabled.filter(status=2).count()
+            c = Competition.enabled.filter(status=6).count()
             qs = Competition.enabled.filter(
-                status=2).order_by(k)[offset: offset + limit]
+                status=6).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
               'liker_count': a.likers.count(),
