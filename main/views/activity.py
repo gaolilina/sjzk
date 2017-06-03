@@ -46,6 +46,7 @@ class List(View):
                 deadline: 截止时间
                 user_participator_count: 已报名人数
                 time_created: 创建时间
+                province:
         """
 
         k = self.ORDERS[order]
@@ -65,7 +66,8 @@ class List(View):
               'time_ended': a.time_ended,
               'deadline': a.deadline,
               'user_participator_count': a.user_participators.count(),
-              'time_created': a.time_created} for a in qs]
+              'time_created': a.time_created,
+              'province': a.province} for a in qs]
         return JsonResponse({'count': c, 'list': l})
 
 
