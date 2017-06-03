@@ -1357,6 +1357,7 @@ class FavoredActivityList(View):
                 deadline: 截止时间
                 user_participator_count: 已报名人数
                 time_created: 创建时间
+                province:
         """
         c = request.user.favored_activities.count()
         qs = request.user.favored_activities.order_by(self.ORDERS[order])[offset:offset + limit]
@@ -1369,7 +1370,8 @@ class FavoredActivityList(View):
               'time_ended': a.favored.time_ended,
               'deadline': a.favored.deadline,
               'user_participator_count': a.favored.user_participators.count(),
-              'time_created': a.favored.time_created} for a in qs]
+              'time_created': a.favored.time_created,
+              'province': a.province} for a in qs]
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -1402,6 +1404,7 @@ class FavoredCompetitionList(View):
                 deadline: 截止时间
                 team_participator_count: 已报名人数
                 time_created: 创建时间
+                province:
         """
         c = request.user.favored_competitions.count()
         qs = request.user.favored_competitions.order_by(self.ORDERS[order])[offset:offset + limit]
@@ -1414,5 +1417,6 @@ class FavoredCompetitionList(View):
               'time_ended': a.favored.time_ended,
               'deadline': a.favored.deadline,
               'team_participator_count': a.favored.team_participators.count(),
-              'time_created': a.favored.time_created} for a in qs]
+              'time_created': a.favored.time_created,
+              'province': a.province} for a in qs]
         return JsonResponse({'count': c, 'list': l})
