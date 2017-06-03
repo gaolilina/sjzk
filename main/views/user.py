@@ -564,7 +564,7 @@ class Screen(View):
                 if fetch_user_by_token(request):
                     user_list.append((u, calculate_ranking_score(request.user, u)))
                 else:
-                    user_list.append((u, 0)
+                    user_list.append((u, 0))
             user_list = sorted(user_list, key=lambda x: x[1], reverse=True)
             users = (u[0] for u in user_list[i:j])
         l = [{'id': u.id,
