@@ -54,7 +54,7 @@ class List(View):
         if history is False:
             c = Competition.enabled.exclude(status=6).count()
             qs = Competition.enabled.exclude(
-                status=2).order_by(k)[offset: offset + limit]
+                status=6).order_by(k)[offset: offset + limit]
         else:
             c = Competition.enabled.filter(status=6).count()
             qs = Competition.enabled.filter(
