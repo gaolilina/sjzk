@@ -25,7 +25,6 @@ __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
 class List(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -160,7 +159,6 @@ class Token(View):
 
 class Icon(View):
     @fetch_object(User.enabled, 'user')
-    @require_token
     def get(self, request, user=None):
         """获取用户头像"""
 
@@ -412,7 +410,6 @@ class FriendRequestList(View):
 class Search(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -464,7 +461,10 @@ class Search(View):
             # 将结果进行个性化排序
             user_list = list()
             for u in users:
-                user_list.append((u, calculate_ranking_score(request.user, u)))
+                if fetch_user_by_token(request):
+                    user_list.append((u, calculate_ranking_score(request.user, u)))
+                else:
+                    user_list.append((u, 0))
             user_list = sorted(user_list, key=lambda x: x[1], reverse=True)
             users = (u[0] for u in user_list[i:j])
         l = [{'id': u.id,
@@ -485,7 +485,6 @@ class Search(View):
 class Screen(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -575,7 +574,10 @@ class Screen(View):
             # 将结果进行个性化排序
             user_list = list()
             for u in users:
-                user_list.append((u, calculate_ranking_score(request.user, u)))
+                if fetch_user_by_token(request):
+                    user_list.append((u, calculate_ranking_score(request.user, u)))
+                else:
+                    user_list.append((u, 0))
             user_list = sorted(user_list, key=lambda x: x[1], reverse=True)
             users = (u[0] for u in user_list[i:j])
         l = [{'id': u.id,

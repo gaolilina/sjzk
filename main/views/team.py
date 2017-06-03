@@ -36,7 +36,6 @@ class List(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     # noinspection PyUnusedLocal
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -156,7 +155,6 @@ class List(View):
 class Search(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -204,7 +202,10 @@ class Search(View):
             # 将结果进行个性化排序
             team_list = list()
             for t in teams:
-                team_list.append((t, calculate_ranking_score(request.user, t)))
+                if fetch_user_by_token(request):
+                    team_list.append((t, calculate_ranking_score(request.user, t)))
+                else:
+                    team_list.append((t, 0))
             team_list = sorted(team_list, key=lambda x: x[1], reverse=True)
             teams = (t[0] for t in team_list[i:j])
         l = [{'id': t.id,
@@ -223,7 +224,6 @@ class Search(View):
 class Screen(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -299,7 +299,10 @@ class Screen(View):
             # 将结果进行个性化排序
             team_list = list()
             for t in teams:
-                team_list.append((t, calculate_ranking_score(request.user, t)))
+                if fetch_user_by_token(request):
+                    team_list.append((t, calculate_ranking_score(request.user, t)))
+                else:
+                    team_list.append((t, 0))
             team_list = sorted(team_list, key=lambda x: x[1], reverse=True)
             teams = (t[0] for t in team_list[i:j])
         l = [{'id': t.id,
@@ -469,7 +472,6 @@ class Profile(View):
 # noinspection PyUnusedLocal
 class Icon(View):
     @fetch_object(Team.enabled, 'team')
-    @require_token
     def get(self, request, team):
         """获取团队头像"""
 
@@ -874,7 +876,6 @@ class AchievementList(View):
 # noinspection PyUnusedLocal
 class AllNeedList(View):
     # noinspection PyShadowingBuiltins
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -941,7 +942,6 @@ class AllNeedList(View):
 class NeedList(View):
     # noinspection PyShadowingBuiltins
     @fetch_object(Team.enabled, 'team')
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1361,7 +1361,6 @@ class Need(View):
 
 
 class NeedSearch(View):
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1429,7 +1428,6 @@ class NeedSearch(View):
 
 
 class NeedScreen(View):
-    @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
