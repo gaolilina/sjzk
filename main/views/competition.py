@@ -174,7 +174,7 @@ class CompetitionAwardList(View):
               'team_name': p.team.name,
               'icon': p.team.icon,
               'award': p.award,
-              'time_started': p.time_started} for p in qs]
+              'time_created': p.time_created} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
 
