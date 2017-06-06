@@ -4,6 +4,7 @@ from django.http import JsonResponse
 
 from ..models import System as SystemModel, SystemNotification
 from ..utils import abort
+from ..utils.decorators import *
 
 
 __all__ = ['VersionNumber', 'SystemNotificationList']
