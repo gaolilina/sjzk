@@ -3,7 +3,7 @@ from django.db import models
 from . import Action, Liker, Comment, Favorer
 
 __all__ = ['System', 'IllegalWord', 'SystemAction', 'SystemActionLiker',
-           'SystemActionComment', 'SystemActionFavorer']
+           'SystemActionComment', 'SystemActionFavorer', 'SystemNotification']
 
 
 class System(models.Model):
@@ -73,3 +73,12 @@ class SystemActionFavorer(Favorer):
 
     class Meta:
         db_table = 'system_action_favorer'
+
+class SystemNotification(models.Model):
+    """系统通知"""
+
+    content = models.CharField(max_length=500)
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        db_table = 'system_notification'

@@ -8,4 +8,6 @@ urls = [
     url(r'^version_number/$', VersionNumber.as_view(), name='version_number'),
     # 系统动态
     url(r'actions/$', SystemActionsList.as_view(), name='actions'),
+    # 系统通知
+    url(r'notifications/$', SystemNotificationList.as_view(), name='actions'),
 ]
