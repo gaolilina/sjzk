@@ -1460,7 +1460,22 @@ class CompetitionList(View):
                   a.competition.team_participators.count(),
               'time_created': a.competition.time_created
               } for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+
+        ctp2 = CompetitionTeamParticipator.objects.filter(
+                team__owner=request.user).distinct()
+        qs2 = ctp2.order_by(k)[offset: offset + limit]
+        c2 = ctp2.count()
+        l2 = [{'id': a.competition.id,
+              'name': a.competition.name,
+              'liker_count': a.competition.likers.count(),
+              'time_started': a.competition.time_started,
+              'time_ended': a.competition.time_ended,
+              'deadline': a.competition.deadline,
+              'team_participator_count':
+                  a.competition.team_participators.count(),
+              'time_created': a.competition.time_created
+              } for a in qs2]
+        return JsonResponse({'count': c + c2, 'list': l + l2})
 
 
 # noinspection PyClassHasNoInit
