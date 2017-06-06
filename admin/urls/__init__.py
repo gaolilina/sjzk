@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from . import admin_users, admin_activity, admin_competition, feedback, user, team, activity, competition, forum, admin_user
 
 from admin.views.main import Login, Register, Main
-from admin.views.system import Setting
+from admin.views.system import Setting, Notification
 from admin.views.op_log import OpLog
 
 urlpatterns = [
@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^competition_admin/', include(competition.urls, namespace="competition")),
     url(r'^forum_admin/', include(forum.urls, namespace="forum")),
     url(r'^system_admin/', Setting.as_view(), name='system'),
+    url(r'^system_notification/', Notification.as_view(), name='notification'),
     url(r'^admin_user/', include(admin_user.urls, namespace='admin_user')),
     url(r'^op_log/', OpLog.as_view(), name='op_log'),
 ]

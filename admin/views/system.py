@@ -6,7 +6,7 @@ from django.template import loader, Context
 from django.views.generic import View
 
 from main.utils.decorators import validate_args
-from main.models import System as SystemModel
+from main.models import System as SystemModel, SystemNotification
 from admin.utils.decorators import *
 
 class Setting(View):
@@ -35,4 +35,25 @@ class Setting(View):
         model.save()
         template = loader.get_template("system.html")
         context = Context({'m': model, 'msg': '保存成功', 'user': request.user})
+        return HttpResponse(template.render(context))
+
+class Notification(View):
+    @require_cookie
+    @require_role('yz')
+    def get(self, request):
+        template = loader.get_template("notification.html")
+        context = Context({'user': request.user})
+        return HttpResponse(template.render(context))
+
+    @require_cookie
+    @require_role('yz')
+    @validate_args({
+        'content': forms.CharField(max_length=500),
+    })
+    def post(self, request, content):
+        n = SystemNotification(content=content)
+        n.save()
+
+        template = loader.get_template("notification.html")
+        context = Context({'msg': '发送成功', 'user': request.user})
         return HttpResponse(template.render(context))

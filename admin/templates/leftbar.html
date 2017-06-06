@@ -22,7 +22,8 @@
 {% endif %}
 {% if tb == 'system_admin' %}
 <ul>
-    <li class="active"><a href="{% url 'admin:system' %}">系统参数</a></li>
+    <li{% if lb == 'setting' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">系统参数</a></li>
+    <li{% if lb == 'notification' %} class="active"{% endif %}><a href="{% url 'admin:notification' %}">系统通知</a></li>
 </ul>
 {% endif %}
 {% if tb == 'feedback' %}
