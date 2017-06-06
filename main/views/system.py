@@ -1,3 +1,4 @@
+from django import forms
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
