@@ -40,11 +40,12 @@ class SystemNotificationList(View):
             else:
                 record = SystemNotificationRecord.objects.filter(user=request.user)[0]
 
-            r = SystemNotification.objects.filter(id__gt=record.last_id)
+            r = SystemNotification.objects.filter(id__gt=record.last_id).order_by('-time_created')
             c = r.count()
 
-            record.last_id = r[0].id
-            record.save()
+            if c > 0:
+                record.last_id = r[0].id
+                record.save()
         else:
             r = SystemNotification.objects.all()
             c = r.count()
