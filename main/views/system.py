@@ -34,7 +34,7 @@ class SystemNotificationList(View):
             history = True
 
         if history is False:
-            r = SystemNotification.objects.filter(last__gt=request.user.system_notification_record.last)
+            r = SystemNotification.objects.filter(id__gt=request.user.system_notification_record.last)
             c = r.count()
 
             request.user.system_notification_record.last = c[0].id
