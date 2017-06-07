@@ -4,7 +4,8 @@ from django.utils import timezone
 from . import Action, Liker, Comment, Favorer
 
 __all__ = ['System', 'IllegalWord', 'SystemAction', 'SystemActionLiker',
-           'SystemActionComment', 'SystemActionFavorer', 'SystemNotification']
+           'SystemActionComment', 'SystemActionFavorer', 'SystemNotification',
+           'SystemNotificationRecord']
 
 
 class System(models.Model):
@@ -83,3 +84,13 @@ class SystemNotification(models.Model):
 
     class Meta:
         db_table = 'system_notification'
+        ordering = ['-time_created']
+
+class SystemNotificationRecord(models.Model):
+    """系统通知未读记录"""
+
+    last = models.IntegerField(default=0)
+    user = models.ForeignKey('User', models.CASCADE, 'system_notification_record')
+
+    class Meta:
+        db_table = 'system_notification_record'

@@ -25,12 +25,23 @@ class SystemNotificationList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
+        'history': forms.BooleanField(required=False),
     })
-    def get(self, request, offset=0, limit=10):
+    def get(self, request, offset=0, limit=10, history=False):
         """获取系统通知"""
 
-        r = SystemNotification.objects.all()
-        c = r.count()
+        if fetch_user_by_token(request) is False:
+            history = True
+
+        if history is False:
+            r = SystemNotification.objects.filter(last__gt=request.user.system_notification_record.last)
+            c = r.count()
+
+            request.user.system_notification_record.last = c[0].id
+            request.user.system_notification_record.save()
+        else:
+            r = SystemNotification.objects.all()
+            c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.id,
               'content': i.content,

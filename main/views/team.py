@@ -1499,7 +1499,7 @@ class NeedScreen(View):
         if number:
             # 按需求所需最多人数筛选
             qs = qs.filter(number__lte=number)
-        degree = kwargs.pop('number', '')
+        degree = kwargs.pop('degree', '')
         if degree:
             # 按学历筛选
             qs = qs.filter(degree=degree)
