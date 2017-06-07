@@ -43,7 +43,7 @@ class SystemNotificationList(View):
             r = SystemNotification.objects.filter(id__gt=record.last_id)
             c = r.count()
 
-            record.last_id = c[0].id
+            record.last_id = r[0].id
             record.save()
         else:
             r = SystemNotification.objects.all()
