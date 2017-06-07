@@ -89,7 +89,7 @@ class SystemNotification(models.Model):
 class SystemNotificationRecord(models.Model):
     """系统通知未读记录"""
 
-    last = models.IntegerField(default=0)
+    last_id = models.IntegerField(default=0)
     user = models.ForeignKey('User', models.CASCADE, 'system_notification_record')
 
     class Meta:
