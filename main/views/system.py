@@ -3,7 +3,7 @@ from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 
-from ..models import System as SystemModel, SystemNotification
+from ..models import System as SystemModel, SystemNotification, SystemNotificationRecord
 from ..utils import abort
 from ..utils.decorators import *
 
@@ -34,11 +34,15 @@ class SystemNotificationList(View):
             history = True
 
         if history is False:
-            r = SystemNotification.objects.filter(id__gt=request.user.system_notification_record.last_id)
+            last_id = 0
+            if SystemNotificationRecord.filter(user=request.user).count() == 0:
+                SystemNotificationRecord(user=request.user, last_id=0)
+
+            r = SystemNotification.objects.filter(id__gt=request.user.system_notification_record[0].last_id)
             c = r.count()
 
-            request.user.system_notification_record.last_id = c[0].id
-            request.user.system_notification_record.save()
+            request.user.system_notification_record[0].last_id = c[0].id
+            request.user.system_notification_record[0].save()
         else:
             r = SystemNotification.objects.all()
             c = r.count()
