@@ -96,11 +96,13 @@ def create_team(user, team):
                         object_type='user', object_id=user.id)
     for u in user.followers:
         notify_user(u.follower, json.dumps({
-            'type': 'user_action'
+            'type': 'user_action',
+            'content': user.name + '创建了团队' + team.name
         }))
     for t in team.followers:
         notify_user(t.follower, json.dumps({
-            'type': 'team_action'
+            'type': 'team_action',
+            'content': user.name + '创建了团队' + team.name
         }))
 
 
@@ -112,7 +114,8 @@ def send_forum(user, forum):
                         object_type='forum', object_id=forum.id)
     for u in user.followers:
         notify_user(u.follower, json.dumps({
-            'type': 'user_action'
+            'type': 'user_action',
+            'content': user.name + '创建了论坛' + forum.name
         }))
 
 
@@ -126,11 +129,13 @@ def join_team(user, team):
                         object_type='user', object_id=user.id)
     for u in user.followers:
         notify_user(u.follower, json.dumps({
-            'type': 'user_action'
+            'type': 'user_action',
+            'content': user.name + '加入了团队' + team.name
         }))
     for t in team.followers:
         notify_user(t.follower, json.dumps({
-            'type': 'team_action'
+            'type': 'team_action',
+            'content': user.name + '加入了团队' + team.name
         }))
 
 
@@ -144,11 +149,13 @@ def leave_team(user, team):
                         object_type='user', object_id=user.id)
     for u in user.followers:
         notify_user(u.follower, json.dumps({
-            'type': 'user_action'
+            'type': 'user_action',
+            'content': user.name + '退出了团队' + team.name
         }))
     for t in team.followers:
         notify_user(t.follower, json.dumps({
-            'type': 'team_action'
+            'type': 'team_action',
+            'content': user.name + '退出了团队' + team.name
         }))
 
 
@@ -166,7 +173,8 @@ def finish_external_task(team, task):
                              related_object_id=task.id)
     for t in team.followers:
         notify_user(t.follower, json.dumps({
-            'type': 'team_action'
+            'type': 'team_action',
+            'content': team.name + '完成了任务' + task.title
         }))
 
 
@@ -178,7 +186,8 @@ def send_member_need(team, need):
                         object_type='member_need', object_id=need.id)
     for t in team.followers:
         notify_user(t.follower, json.dumps({
-            'type': 'team_action'
+            'type': 'team_action',
+            'content': team.name + '发布了需求' + need.title
         }))
 
 
@@ -190,7 +199,8 @@ def send_outsource_need(team, need):
                         object_type='outsource_need', object_id=need.id)
     for t in team.followers:
         notify_user(t.follower, json.dumps({
-            'type': 'team_action'
+            'type': 'team_action',
+            'content': team.name + '发布了需求' + need.title
         }))
 
 
@@ -202,7 +212,8 @@ def send_undertake_need(team, need):
                         object_type='undertake_need', object_id=need.id)
     for t in team.followers:
         notify_user(t.follower, json.dumps({
-            'type': 'team_action'
+            'type': 'team_action',
+            'content': team.name + '发布了需求' + need.title
         }))
 
 
