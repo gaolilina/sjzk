@@ -347,6 +347,7 @@ class Profile(View):
             county:
             fields: 所属领域，格式：['field1', 'field2']
             tag_ids: 标签id，格式：[id1, id2, ...]
+            tag_likers: 标签点赞数，格式：[count1, count2, ...]
             tags: 标签，格式：['tag1', 'tag2', ...]
             score: 积分
         """
@@ -377,10 +378,12 @@ class Profile(View):
         r['county'] = team.county
         r['score'] = team.score
         r['tag_ids'] = []
+        r['tag_likers'] = []
         r['tags'] = []
         for t in team.tags.all():
             r['tag_ids'].append(t.id)
             r['tags'].append(t.name)
+            r['tag_likers'].append(t.likers.count())
 
         return JsonResponse(r)
 
