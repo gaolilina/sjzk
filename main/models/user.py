@@ -144,6 +144,7 @@ class UserComment(Comment):
 
     class Meta:
         db_table = 'user_comment'
+        ordering = ['-time_created']
 
 
 class UserAction(Action):
@@ -172,6 +173,7 @@ class UserActionComment(Comment):
 
     class Meta:
         db_table = 'user_action_comment'
+        ordering = ['-time_created']
 
 
 class UserExperience(models.Model):

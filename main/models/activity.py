@@ -72,6 +72,7 @@ class ActivityComment(Comment):
 
     class Meta:
         db_table = 'activity_comment'
+        ordering = ['-time_created']
 
 
 class ActivityLiker(Liker):
