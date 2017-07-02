@@ -77,7 +77,7 @@ class TeamActionComment(Comment):
 
     class Meta:
         db_table = 'team_action_comment'
-        ordering = ['-time_created']
+        ordering = ['time_created']
 
 
 class TeamAchievement(models.Model):
@@ -100,7 +100,7 @@ class TeamComment(Comment):
 
     class Meta:
         db_table = 'team_comment'
-        ordering = ['-time_created']
+        ordering = ['time_created']
 
 
 class TeamFollower(Follower):

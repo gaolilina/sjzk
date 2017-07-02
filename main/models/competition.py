@@ -104,7 +104,7 @@ class CompetitionComment(Comment):
 
     class Meta:
         db_table = 'competition_comment'
-        ordering = ['-time_created']
+        ordering = ['time_created']
 
 
 class CompetitionLiker(Liker):
