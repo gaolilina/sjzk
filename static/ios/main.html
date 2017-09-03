@@ -32,6 +32,7 @@
     <div class="container">
         <ul class="nav nav-pills nav-justified">
             <li role="presentation" class="active"><a href="#competiton" data-toggle="tab">竞赛</a></li>
+            <li role="presentation"><a href="#activity" data-toggle="tab">竞赛</a></li>
             <li role="presentation"><a href="#team" data-toggle="tab">团队</a></li>
             <li><a href="info.html">个人信息</a></li>
             <li><a href="verify.html">实名认证</a></li>
@@ -63,6 +64,12 @@
             <div class="tab-pane active" id="competiton">
                 <div>
                     <ul class="list-group" id="competition_list"></ul>
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+            <div class="tab-pane" id="activity">
+                <div>
+                    <ul class="list-group" id="activity_list"></ul>
                     <ul class="pagination"></ul>
                 </div>
             </div>
@@ -103,10 +110,12 @@
         var msgPage = 0;
         var teamPage = 0;
         var competitonPage = 0;
+        var activityPage = 0;
 
         var msgTotalPage = 0;
         var teamTotalPage = 0;
         var competitionTotalPage = 0;
+        var activityTotalPage = 0;
 
         function jumpToTeamEdit() {
             var team_id = +window.localStorage.getItem("team_id");
@@ -276,6 +285,31 @@
             }).fail(errorHandler);
         }
 
+        function fetchActivity(page) {
+            get('/activity/', {
+                offset: (page - 1) * 10,
+                limit: 10
+            }).then(function(data) {
+                activityTotalPage = Math.ceil(data.count / 10);
+
+                var str1 = "";
+                for (var i = 0; i < data.list.length; i++) {
+                    str1 += '<li class="list-group-item"><a href="javascript:participateActivity(' + data.list[i].id + ')">参加</a>' + data.list[i].name + '</li>';
+                    
+                }
+                document.querySelector("#activity_list").innerHTML = str1;
+
+                var str3 = '<li class="page-item active"><a class="page-link" href="javascript:fetchActivity(' + activityPage + ')">' + activityPage + '</a></li>';
+                for (var i = activityPage - 1; i > 0 && i > activityPage - 3; i--) {
+                    str3 = '<li class="page-item"><a class="page-link" href="javascript:fetchActivity(' + i + ')">' + i + '</a></li>' + str3;
+                }
+                for (var i = activityPage + 1; i <= activityTotalPage && i < activityPage + 3; i++) {
+                    str3 += '<li class="page-item"><a class="page-link" href="javascript:fetchActivity(' + i + ')">' + i + '</a></li>';
+                }
+                document.querySelector("#activity_list ~ ul").innerHTML = str3;
+            }).fail(errorHandler);
+        }
+
         function joinTeam(id) {
             post('/teams/' + id + '/member_requests/', {
             }).then(function() {
@@ -301,11 +335,20 @@
             }).fail(errorHandler);
         }
 
+        function participateActivity(id) {
+            post('/activity/' + id + '/user_participators/', {}).then(function() {
+                BootstrapDialog.show({
+                    message: '报名成功'
+                });
+            }).fail(errorHandler);
+        }
+
         $(function() {
             fetchOwnedTeamList().then(function() {
                 fetchMsg(1);
                 fetchTeam(1);
                 fetchCompetition(1);
+                fetchActivity(1);
             });
         });
     </script>
