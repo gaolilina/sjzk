@@ -11,7 +11,7 @@ function ajax(method, url, params) {
     }).done(function(data) {
         dtd.resolve(data);
     }).fail(function(jqXHR, textStatus, errorThrown) {
-        dtd.reject(jqXHR.status, errorThrown);
+        dtd.reject(jqXHR.status, errorThrown, jqXHR);
     });
     return dtd;
 }
@@ -36,7 +36,7 @@ function deleteAjax(url, params) {
     }).done(function(data) {
         dtd.resolve(data);
     }).fail(function(jqXHR, textStatus, errorThrown) {
-        dtd.reject(jqXHR.status, errorThrown);
+        dtd.reject(jqXHR.status, errorThrown, jqXHR);
     });
     return dtd;
 }
@@ -56,7 +56,7 @@ function upload(url, file) {
     }).done(function(data) {
         dtd.resolve(data);
     }).fail(function(jqXHR, textStatus, errorThrown) {
-        dtd.reject(jqXHR.status, errorThrown);
+        dtd.reject(jqXHR.status, errorThrown, jqXHR);
     });
     return dtd;
 }
@@ -85,16 +85,16 @@ window.alert = function(msg) {
     });
 }
 
-function errorHandler(code, msg) {
+function errorHandler(code, msg, xhr) {
     switch (code) {
         case 400:
-            alert(msg || '输入有误');
+            alert(xhr.responseText || msg || '输入有误');
             break;
         case 403:
-            alert(msg || '用户权限不足');
+            alert(xhr.responseText || msg || '用户权限不足');
             break;
         default:
-            alert(msg || '发生未知错误，请尝试注销后重新登陆');
+            alert(xhr.responseText || msg || '发生未知错误，请尝试注销后重新登陆');
             break;
     }
 }
