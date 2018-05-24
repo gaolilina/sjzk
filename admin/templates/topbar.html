@@ -1,5 +1,5 @@
 <ul>
-    {% if user is not None %}
+    {% if user != None %}
         <li{% if tb == 1 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:info' %}">个人信息</a></li>
         {% if user.can_a %}
             <li{% if tb == 'admin_competition' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:list' %}">竞赛</a></li>
