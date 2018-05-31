@@ -33,6 +33,8 @@ class Competition(models.Model):
 
     is_enabled = models.BooleanField(default=True)
 
+    experts = models.ManyToManyField('User', related_name='scored_competitions')
+
     objects = models.Manager()
     enabled = EnabledManager()
 
@@ -78,6 +80,10 @@ class CompetitionFile(models.Model):
     status = models.IntegerField(default=0, db_index=True)
     file = models.CharField(max_length=100, default='')
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
+    # 评分
+    score = models.CharField(max_length=100, default='')
+    comment = models.TextField(default='')
 
     class Meta:
         db_table = 'competition_file'

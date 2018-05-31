@@ -3,13 +3,13 @@ from django.http import JsonResponse
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
 
-from ..models import Competition, Team
+from ..models import Competition, Team, CompetitionFile as File
 from ..utils import abort, save_uploaded_file
 from ..utils.decorators import *
 
 
-__all__ = ['List', 'Detail', 'CompetitionStageList', 'CompetitionFile',
-           'TeamParticipatorList', 'Search', 'Screen',
+__all__ = ['List', 'Detail', 'CompetitionStageList', 'CompetitionFile', 'CompetitionFileScore',
+           'CompetitionFileList', 'TeamParticipatorList', 'Search', 'Screen',
            'CompetitionNotification', 'CompetitionAwardList']
 
 
@@ -207,6 +207,25 @@ class CompetitionNotification(View):
               'notification': p.notification,
               'time_created': p.time_created} for p in qs]
         return JsonResponse({'count': c, 'list': l})
+    
+
+class CompetitionFileList(View):
+    @fetch_object(Competition.enabled, 'competition')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, competition, offset=0, limit=10):
+        c = CompetitionFile.objects.filter(competition=competition, status=competition.status).count()
+        qs = CompetitionFile.objects.filter(competition=competition, status=competition.status).order_by(
+            "-time_created")[offset: offset + limit]
+        l = [{'id': p.id,
+              'team': p.team.name,
+              'file': p.file,
+              'time_created': p.time_created,
+              'score': p.score} for p in qs]
+        return JsonResponse({'count': c, 'list': l})
 
 
 class CompetitionFile(View):
@@ -247,6 +266,9 @@ class CompetitionFile(View):
                 t['file'] = ""
             else:
                 t['file'] = file.file
+                t['file_id'] = file.id
+                t['score'] = file.score
+                t['comment'] = file.comment
             l.append(t)
         return JsonResponse({'count': c, 'list': l})
 
@@ -279,6 +301,18 @@ class CompetitionFile(View):
             abort(200)
         abort(400, '文件保存失败')
 
+
+class CompetitionFileScore(View):
+    @fetch_object(File.enabled, 'file')
+    @require_verification_token
+    @validate_args({
+        'score': forms.CharField(),
+        'comment': forms.CharField(required=False),
+    })
+    def post(self, request, file, score='', comment=''):
+        file.score = score
+        file.comment = comment
+        abort(200)
 
 class TeamParticipatorList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')

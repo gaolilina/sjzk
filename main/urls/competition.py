@@ -27,10 +27,15 @@ urls = [
     # 竞赛的通知
     url(r'^(?P<competition_id>[0-9]+)/notifications/$',
         CompetitionNotification.as_view(), name='notifications'),
+    # 竞赛的文件
+    url(r'^(?P<competition_id>[0-9]+)/files/$',
+        CompetitionFileList.as_view()),
     # 竞赛文件上传
     url(r'(?P<team_id>[0-9]+)/files/$', CompetitionFile.as_view(), name='files'),
     url(r'(?P<team_id>[0-9]+)/file/(?P<competition_id>[0-9]+)/$',
         CompetitionFile.as_view(), name='file'),
+    # 评委打分
+    url(r'file/(?P<file_id>[0-9]+)/score/$', CompetitionFileScore.as_view()),
     # 粉丝
     url(r'^(?P<competition_id>[0-9]+)/followers/$',
         CompetitionFollowerList.as_view(), name='followers'),

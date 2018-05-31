@@ -1444,6 +1444,21 @@ class CompetitionList(View):
                 team_participator_count: 已报名人数
                 time_created: 创建时间
         """
+        if request.user.role == '专家':
+            ctp = request.user.scored_competitions.all()
+            qs = ctp.order_by(k)[offset: offset + limit]
+            c = ctp.count()
+            l = [{'id': a.id,
+                  'name': a.name,
+                  'liker_count': a.likers.count(),
+                  'status': a.status,
+                  'time_started': a.time_started,
+                  'time_ended': a.time_ended,
+                  'deadline': a.deadline,
+                  'team_participator_count': a.team_participators.count(),
+                  'time_created': a.time_created,
+                  'province': a.province} for a in qs]
+            return JsonResponse({'count': c, 'list': l})
 
         k = self.ORDERS[order]
         ctp = CompetitionTeamParticipator.objects.filter(
