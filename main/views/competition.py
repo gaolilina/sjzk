@@ -217,8 +217,8 @@ class CompetitionFileList(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, competition, offset=0, limit=10):
-        c = CompetitionFile.objects.filter(competition=competition, status=competition.status).count()
-        qs = CompetitionFile.objects.filter(competition=competition, status=competition.status).order_by(
+        c = File.objects.filter(competition=competition, status=competition.status).count()
+        qs = File.objects.filter(competition=competition, status=competition.status).order_by(
             "-time_created")[offset: offset + limit]
         l = [{'id': p.id,
               'team': p.team.name,
