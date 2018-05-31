@@ -85,6 +85,8 @@ class CompetitionFile(models.Model):
     score = models.CharField(max_length=100, default='')
     comment = models.TextField(default='')
 
+    objects = models.Manager()
+    
     class Meta:
         db_table = 'competition_file'
 
