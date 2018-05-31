@@ -88,7 +88,7 @@
                 for (var i = 0; i < data.list.length; i++) {
                     var str2 = "";
                     if (data.list[i].status > 1 && data.list[i].status < 6) {
-                        var str3 = "?competition_id=" + data.list[i].id;
+                        var str3 = data.list[i].id;
                         str2 = '<a href="score.html?' + str3 + '" target="_blank">打分</a>';
                     }
                 }
