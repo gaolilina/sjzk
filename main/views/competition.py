@@ -303,7 +303,7 @@ class CompetitionFile(View):
 
 
 class CompetitionFileScore(View):
-    @fetch_object(File.enabled, 'file')
+    @fetch_object(File.objects, 'file')
     @require_verification_token
     @validate_args({
         'score': forms.CharField(),
