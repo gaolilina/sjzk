@@ -1473,7 +1473,9 @@ class CompetitionList(View):
               'deadline': a.competition.deadline,
               'team_participator_count':
                   a.competition.team_participators.count(),
-              'time_created': a.competition.time_created
+              'time_created': a.competition.time_created,
+              'team_id': a.team.id,
+              'team_name': a.team.name,
               } for a in qs]
 
         ctp2 = CompetitionTeamParticipator.objects.filter(
@@ -1488,7 +1490,9 @@ class CompetitionList(View):
               'deadline': a.competition.deadline,
               'team_participator_count':
                   a.competition.team_participators.count(),
-              'time_created': a.competition.time_created
+              'time_created': a.competition.time_created,
+              'team_id': a.team.id,
+              'team_name': a.team.name,
               } for a in qs2]
         return JsonResponse({'count': c + c2, 'list': l + l2})
 
