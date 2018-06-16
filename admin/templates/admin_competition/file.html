@@ -24,6 +24,11 @@
             <td>{{ file.team.name }}</td>
             <td>{{ file.time_created }}</td>
             <td><a href="http://www.chuangyh.com/{{ file.file }}">下载</a></td>
+            <td>
+                <input id="{{ file.id }}"/> </td>
+                <td>
+                    <input type="button" onclick="rank({{ file.id }})">评分</a>
+                </td>
         </tr>
     {% endfor %}
 </table>
@@ -44,4 +49,16 @@ table td {
     border: 1px solid #999;
 }
 </style>
+{% endblock %}
+{% block js %}
+<script src="{% static 'js/lib.js' %}"></script>
+<script>
+    function rank(fileId) {
+        score = $('#' + fileId).val()
+        post('competition/file/' + fileId + '/score/', { score: score }).then(function(params) {
+            alert('评分成功');
+        }).fail(errorHandler);
+
+    }
+</script> 
 {% endblock %}
