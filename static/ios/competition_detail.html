@@ -31,28 +31,28 @@
     <h3 id="cTitle">竞赛标题</h3>
     <div class="form-group">
       <label for="cHost">举办方</label>
-      <div id="cHost">中国XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div>
+      <div id="cHost"></div>
     </div>
     <div class="form-group">
       <label for="competition_introduction">竞赛介绍</label>
-      <div id="cContent">该比赛XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div>
+      <div id="cContent"></div>
     </div>
 
     <div class="form-group">
       <label for="competition_introduction">竞赛时间</label>
-      <div id="cTime">2018年6月7日至2018年6月8日</div>
+      <div id="cTime"></div>
     </div>
-    <!-- <div class="form-group">
-      <label for="competition_introduction">竞赛时间</label>
+    <div class="form-group">
+      <label for="competition_introduction">竞赛赛程</label>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>时间</th>
               <th>竞赛安排</th>
+              <th>时间</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="timeTable">
             <tr>
               <td>2018年6月7日至2018年6月7日</td>
               <td>提交作品</td>
@@ -64,10 +64,10 @@
           </tbody>
         </table>
       </div>
-    </div> -->
-    <button id="cButton" type="button" class="btn btn-primary">报名或提交初赛资料（如果您未报名此竞赛，则显示报名。如果已经参加，则显示提交初赛资料。如果比赛已经结束，则没有这个按钮。）</button>
+    </div>
+    <button id="cButton" type="button" class="btn btn-primary"></button>
     <div class="form-group" style="visibility: hidden;" id="cReward">
-      <label for="competition_introduction">获奖名单（如果当前比赛尚未结束，则没有获奖信息）</label>
+      <label for="competition_introduction">获奖名单</label>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
@@ -78,16 +78,6 @@
             </tr>
           </thead>
           <tbody id="rewards">
-            <tr>
-              <td>特等奖</td>
-              <td>创易</td>
-              <td>创意团队</td>
-            </tr>
-            <tr>
-              <td>一等奖</td>
-              <td>创易1</td>
-              <td>创意1团队</td>
-            </tr>
           </tbody>
         </table>
       </div>
@@ -101,32 +91,40 @@
   <script src="js/lib.js"></script>
   <script>
     //# 竞赛当前阶段0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
-    competitionId = location.search.substring(1);
-    get('/competition/' + competitionId + '/').then(function (data) {
-      console.log(data);
-      $('#cTitle').text(data.name);
-      $('#cHost').text(data.unit);
-      $('#cContent').text(data.content);
-      start = new Date(data.time_started);
-      end = new Date(data.time_ended);
-      $('#cTime').text(start.toLocaleDateString() + "至" + end.toLocaleDateString());
-      state = data.status;
-      button = $('#cButton');
-      reward = $('#cReward');
-      if (state == 0) {
-        button.css('visibility', 'hidden');
-      } else if (state == 1) {
-        button.text('报名');
-        button.click(()=>register(competitionId));
-      } else if (state == 6) {
-        button.css('visibility', 'hidden');
-        reward.css('visibility', 'visible');
-      } else {
-        button.text('提交材料');
-        button.click(()=>submitRes());
-      }
-    }).fail(errorHandler);
     var team_id = +window.localStorage.getItem("team_id");
+    competitionId = location.search.substring(1);
+    states = ['前期宣传', '报名', '预赛', '周赛', '月赛', '中间赛', '结束'];
+    getDetail();
+    getStates();
+
+    function getDetail(params) {
+      get('/competition/' + competitionId + '/').then(function (data) {
+        console.log(data);
+        $('#cTitle').text(data.name);
+        $('#cHost').text(data.unit);
+        $('#cContent').text(data.content);
+        start = new Date(data.time_started);
+        end = new Date(data.time_ended);
+        $('#cTime').text(start.toLocaleDateString() + " 至 " + end.toLocaleDateString());
+        state = data.status;
+        button = $('#cButton');
+        reward = $('#cReward');
+        if (state == 0) {
+          button.css('visibility', 'hidden');
+        } else if (state == 1) {
+          button.text('报名');
+          button.click(() => register(competitionId));
+        } else if (state == 6) {
+          button.css('visibility', 'hidden');
+          reward.css('visibility', 'visible');
+        } else {
+          button.text('提交' + states[state] + '材料');
+          button.click(() => submitRes());
+        }
+      }).fail(errorHandler);
+    }
+
+
     function register(id) {
 
       if (isNaN(team_id) || team_id == 0) {
@@ -155,10 +153,30 @@
           data.list.map((v, i) => {
             rewards.append(`
               <tr>
-                <td>`+v.award+`</td>
-                <td>`+v.id+`</td>
-                <td>`+v.team_name+`</td>
+                <td>`+ v.award + `</td>
+                <td>`+ v.id + `</td>
+                <td>`+ v.team_name + `</td>
               </tr>`)
+          })
+
+        }
+      }).fail(errorHandler);
+    }
+
+    function getStates(params) {
+      get('/competition/' + competitionId + '/stage/').then(function (data) {
+        console.log(data);
+        if (data.count != 0) {
+          rewards = $('#timeTable')
+          data.list.map((v, i) => {
+            start = new Date(v.time_started);
+            end = new Date(v.time_ended);
+            $('#cTime').text();
+            rewards.append(`
+            <tr>
+              <td>`+ states[v.stage] + `</td>
+              <td>`+ start.toLocaleDateString() + " 至 " + end.toLocaleDateString() + `</td>
+            </tr>`)
           })
 
         }
