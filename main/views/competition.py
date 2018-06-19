@@ -355,7 +355,7 @@ class TeamParticipatorList(View):
         else:
             if competition.province and competition.province != team.province:
                 abort(403, '团队所在地区不符')
-            if competition.city and competition.city != team.city:
+            if competition.city and (competition.city != team.city and competition.city.replace('市', '') != team.city.replace('市', '')):
                 abort(403, '团队所在地区不符')
             for m in team.members.all():
                 if m.user.is_verified not in [2, 4]:
