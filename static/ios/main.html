@@ -272,7 +272,7 @@
                         var str3 = "token=" + localStorage.getItem("token") + "?team_id=" + team_id + "?competition_id=" + data.list[i].id;
                         str2 = '<a href="/static/upload/?' + str3 + '" target="_blank">上传</a>';
                     }
-                    str1 += '<li class="list-group-item">' + str2 + '<a href="javascript:jumpToNotification(' + data.list[i].id + ')">通知</a><a href="javascript:participateCompetition(' + data.list[i].id + ')">参加</a>' + data.list[i].name + '</li>';
+                    str1 += '<li class="list-group-item">' + str2 + '<a href="javascript:jumpToNotification(' + data.list[i].id + ')">通知</a><a href="javascript:participateCompetition(' + data.list[i].id + ')">参加</a><a href="javascript:detailCompetition(' + data.list[i].id + ')">查看</a>' + data.list[i].name + '</li>';
                     
                 }
                 document.querySelector("#competition_list").innerHTML = str1;
@@ -286,6 +286,10 @@
                 }
                 document.querySelector("#competition_list ~ ul").innerHTML = str3;
             }).fail(errorHandler);
+        }
+
+        function detailCompetition(id) {
+            location.href = "competition_detail.html?" + id;
         }
 
         function fetchActivity(page) {
