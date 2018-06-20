@@ -48,19 +48,11 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>竞赛安排</th>
               <th>时间</th>
+              <th>竞赛安排</th>
             </tr>
           </thead>
           <tbody id="timeTable">
-            <tr>
-              <td>2018年6月7日至2018年6月7日</td>
-              <td>提交作品</td>
-            </tr>
-            <tr>
-              <td>2018年6月8日至2018年6月8日</td>
-              <td>决赛答辩</td>
-            </tr>
           </tbody>
         </table>
       </div>
@@ -171,11 +163,10 @@
           data.list.map((v, i) => {
             start = new Date(v.time_started);
             end = new Date(v.time_ended);
-            $('#cTime').text();
             rewards.append(`
             <tr>
-              <td>`+ states[v.stage] + `</td>
               <td>`+ start.toLocaleDateString() + " 至 " + end.toLocaleDateString() + `</td>
+              <td>`+ states[v.status] + `</td>
             </tr>`)
           })
 
