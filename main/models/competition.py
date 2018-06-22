@@ -98,7 +98,7 @@ class CompetitionTeamParticipator(models.Model):
     competition = models.ForeignKey(
         'Competition', models.CASCADE, 'team_participators')
     team = models.ForeignKey('Team', models.CASCADE, 'competitions')
-    rater = models.ForeignKey('User', related_name='rated_team_participators')
+    rater = models.ForeignKey('User', related_name='rated_team_participators', null=True)
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
