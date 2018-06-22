@@ -4,8 +4,7 @@ from ..views.user import *
 from ..views.common import UserActionList, SearchUserActionList, \
     SearchTeamActionList, UserCommentList, UserComment,UserFollowerList, \
     UserFollower, UserLikerList, UserLiker, UserVisitorList, \
-    ScreenUserActionList, ScreenTeamActionList, AllAchievementList, \
-    AllAchievement, AchievementList
+    ScreenUserActionList, ScreenTeamActionList
 from ..views.recommend import UserRecommend
 
 urls = [
