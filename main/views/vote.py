@@ -52,7 +52,7 @@ class UserList(View):
         abort(200)
 
 class UserDetail(View):
-    @fetch_object(UserVote.enabled, 'vote')
+    @fetch_object(UserVote.objects, 'vote')
     @require_token
     def get(self, request, vote):
         c = vote.options.count()
@@ -62,7 +62,7 @@ class UserDetail(View):
               'chooser': p.advocators.count()} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(UserVote.enabled, 'vote')
+    @fetch_object(UserVote.objects, 'vote')
     @require_token
     @validate_args({
         'content': forms.CharField(required=False),
@@ -85,7 +85,7 @@ class UserDetail(View):
 
 
 class UserOption(View):
-    @fetch_object(UserVoteOption.enabled, 'option')
+    @fetch_object(UserVoteOption.objects, 'option')
     @require_token
     def get(self, request, option):
         c = option.advocators.count()
@@ -96,7 +96,7 @@ class UserOption(View):
               'time_created': p.time_created} for p in qs]
         return JsonResponse({'count': c, 'list': l})
     
-    @fetch_object(UserVoteOption.enabled, 'option')
+    @fetch_object(UserVoteOption.objects, 'option')
     @require_token
     @validate_args({
         'content': forms.CharField(required=False),
@@ -155,7 +155,7 @@ class LabList(View):
         abort(200)
 
 class LabDetail(View):
-    @fetch_object(LabVote.enabled, 'vote')
+    @fetch_object(LabVote.objects, 'vote')
     @require_token
     def get(self, request, vote):
         c = vote.options.count()
@@ -165,7 +165,7 @@ class LabDetail(View):
               'chooser': p.advocators.count()} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(LabVote.enabled, 'vote')
+    @fetch_object(LabVote.objects, 'vote')
     @require_token
     @validate_args({
         'content': forms.CharField(required=False),
@@ -188,7 +188,7 @@ class LabDetail(View):
 
 
 class LabOption(View):
-    @fetch_object(LabVoteOption.enabled, 'option')
+    @fetch_object(LabVoteOption.objects, 'option')
     @require_token
     def get(self, request, option):
         c = option.advocators.count()
@@ -199,7 +199,7 @@ class LabOption(View):
               'time_created': p.time_created} for p in qs]
         return JsonResponse({'count': c, 'list': l})
     
-    @fetch_object(LabVoteOption.enabled, 'option')
+    @fetch_object(LabVoteOption.objects, 'option')
     @require_token
     @validate_args({
         'content': forms.CharField(required=False),
