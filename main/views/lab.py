@@ -12,7 +12,7 @@ from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL
 from main.models import Lab, User, LabAchievement, LabNeed, InternalTask,\
-    ExternalTask, CompetitionLabParticipator, IllegalWord
+    ExternalTask, IllegalWord
 from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
 #from main.utils.recommender import record_view_lab
@@ -2653,7 +2653,7 @@ class CompetitionList(View):
     })
     def get(self, request, lab, offset=0, limit=10):
         """获取实验室的竞赛列表"""
-
+        '''
         r = CompetitionLabParticipator.objects.filter(lab=lab)
         c = r.count()
         qs = r[offset: offset + limit]
@@ -2666,6 +2666,8 @@ class CompetitionList(View):
                   a.competition.lab_participators.count(),
               'time_created': a.competition.time_created} for a in qs]
         return JsonResponse({'count': c, 'list': l})
+        '''
+        pass
 
 
 class LabScoreRecord(View):
