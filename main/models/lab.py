@@ -115,7 +115,7 @@ class LabInvitation(models.Model):
     """团队邀请"""
 
     lab = models.ForeignKey('Lab', models.CASCADE, 'invitations')
-    user = models.ForeignKey('User', models.CASCADE, 'invitations')
+    user = models.ForeignKey('User', models.CASCADE, 'lab_invitations')
     description = models.CharField(max_length=100)
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
@@ -204,7 +204,7 @@ class LabNeedFollower(Follower):
     """团队需求关注记录"""
 
     followed = models.ForeignKey('LabNeed', models.CASCADE, 'followers')
-    follower = models.ForeignKey('User', models.CASCADE, 'followed_needs')
+    follower = models.ForeignKey('User', models.CASCADE, 'lab_followed_needs')
 
     class Meta:
         db_table = 'lab_need_follower'
