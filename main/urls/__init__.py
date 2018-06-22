@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 
-from . import user, current_user, team, forum, activity, competition, system
+from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote
 from admin.urls import urlpatterns as admin_urls
 
 urlpatterns = [
@@ -12,4 +12,7 @@ urlpatterns = [
     url(r'^activity/', include(activity.urls, namespace='activity')),
     url(r'^competition/', include(competition.urls, namespace='competition')),
     url(r'^system/', include(system.urls, namespace='system')),
+    url(r'^labs/', include(lab.urls, namespace='lab')),
+    url(r'^topic/', include(topic.urls, namespace='topic')),
+    url(r'^vote/', include(vote.urls, namespace='vote')),
 ]

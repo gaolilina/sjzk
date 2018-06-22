@@ -14,3 +14,6 @@ from .activity import *
 from .competition import *
 from .system import *
 from .report import *
+from .lab import *
+from .topic import *
+from .vote import *

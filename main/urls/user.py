@@ -4,7 +4,8 @@ from ..views.user import *
 from ..views.common import UserActionList, SearchUserActionList, \
     SearchTeamActionList, UserCommentList, UserComment,UserFollowerList, \
     UserFollower, UserLikerList, UserLiker, UserVisitorList, \
-    ScreenUserActionList, ScreenTeamActionList
+    ScreenUserActionList, ScreenTeamActionList, AllAchievementList, \
+    AllAchievement, AchievementList
 from ..views.recommend import UserRecommend
 
 urls = [
@@ -82,4 +83,11 @@ urls = [
         UserVisitorList.as_view(), name='visitors'),
     # 推荐
     url(r'^recommend/', UserRecommend.as_view(), name='recommend_users'),
+    # 成果
+    url(r'^achievements/$', AllAchievementList.as_view(),
+        name='all_achievements'),
+    url(r'^achievement/(?P<achievement_id>[0-9]+)/$',
+        AllAchievement.as_view(), name='achievement'),
+    url(r'^(?P<user_id>[0-9]+)/achievements/$', AchievementList.as_view(),
+        name='achievements'),
 ]

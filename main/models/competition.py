@@ -34,6 +34,7 @@ class Competition(models.Model):
     is_enabled = models.BooleanField(default=True)
 
     experts = models.ManyToManyField('User', related_name='scored_competitions')
+    sponsor = models.ForeignKey('Lab', related_name='sponsored_competitions', null=True)
 
     objects = models.Manager()
     enabled = EnabledManager()
@@ -97,6 +98,7 @@ class CompetitionTeamParticipator(models.Model):
     competition = models.ForeignKey(
         'Competition', models.CASCADE, 'team_participators')
     team = models.ForeignKey('Team', models.CASCADE, 'competitions')
+    rater = models.ForeignKey('User', related_name='rated_team_participators')
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
