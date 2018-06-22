@@ -8,7 +8,7 @@ from . import EnabledManager, Action, Comment, Follower, Liker, Tag, \
 __all__ = ['Lab', 'LabAction', 'LabActionLiker', 'LabActionComment',
            'LabAchievement', 'LabComment', 'LabFollower', 'LabInvitation',
            'LabLiker', 'LabMember', 'LabMemberRequest', 'LabNeed',
-           'LabTag', 'LabVisitor', 'InternalTask', 'ExternalTask',
+           'LabTag', 'LabVisitor', #'InternalTask', 'ExternalTask',
            'LabFeature', 'LabScore', 'LabNeedFollower', 'LabActionFavorer',
            'LabTagLiker']
 
@@ -209,7 +209,7 @@ class LabNeedFollower(Follower):
     class Meta:
         db_table = 'lab_need_follower'
 
-
+'''
 class MemberNeedRequest(models.Model):
     """人员需求的申请加入记录"""
 
@@ -310,7 +310,7 @@ class ExternalTask(models.Model):
     class Meta:
         db_table = 'external_task'
         ordering = ['-time_created']
-
+'''
 
 class LabTag(Tag):
     """团队标签"""
