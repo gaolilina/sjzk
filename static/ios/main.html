@@ -50,7 +50,7 @@
                     <button class="btn btn-default" type="button" onclick="javascript:location.href='create_team.html';">创建团队</button>
                 </span>
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" onclick="javascript:jumpToTeamEdit();">修改团队信息</button>
+                    <button class="btn btn-default" type="button" onclick="javascript:jumpToMyTeam();">我的团队</button>
                 </span>
             </div>
         </div>
@@ -125,6 +125,10 @@
             }
 
             location.href = "edit_team.html?" + team_id;
+        }
+
+        function jumpToMyTeam() {
+            location.href = "my_team.html";
         }
 
         function jumpToNotification(id) {
@@ -268,11 +272,12 @@
                 var str1 = "";
                 for (var i = 0; i < data.list.length; i++) {
                     var str2 = "";
-                    if (data.list[i].status > 1 && data.list[i].status < 6) {
-                        var str3 = "token=" + localStorage.getItem("token") + "?team_id=" + team_id + "?competition_id=" + data.list[i].id;
-                        str2 = '<a href="/static/upload/?' + str3 + '" target="_blank">上传</a>';
-                    }
-                    str1 += '<li class="list-group-item">' + str2 + '<a href="javascript:jumpToNotification(' + data.list[i].id + ')">通知</a><a href="javascript:participateCompetition(' + data.list[i].id + ')">参加</a><a href="javascript:detailCompetition(' + data.list[i].id + ')">查看</a>' + data.list[i].name + '</li>';
+                    // if (data.list[i].status > 1 && data.list[i].status < 6) {
+                    //     var str3 = "token=" + localStorage.getItem("token") + "?team_id=" + team_id + "?competition_id=" + data.list[i].id;
+                    //     str2 = '<a href="/static/upload/?' + str3 + '" target="_blank">上传</a>';
+                    // }
+                    str1 += '<li class="list-group-item">' + str2 + '<a href="javascript:detailCompetition(' + data.list[i].id + ')">查看</a>' + data.list[i].name + '</li>';
+                    // str1 += '<li class="list-group-item">' + str2 + '<a href="javascript:jumpToNotification(' + data.list[i].id + ')">通知</a><a href="javascript:participateCompetition(' + data.list[i].id + ')">参加</a><a href="javascript:detailCompetition(' + data.list[i].id + ')">查看</a>' + data.list[i].name + '</li>';
                     
                 }
                 document.querySelector("#competition_list").innerHTML = str1;
