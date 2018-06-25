@@ -144,7 +144,14 @@ class AdminCompetitionFilesView(View):
             return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/file.html")
-        context = Context({'model': model, 'user': request.user, 'files': CompetitionFile.objects.filter(competition=model, status=status)})
+        context = Context({'model': model, 'user': request.user,
+            'files': [{
+                'team': file.team,
+                'file': file.file,
+                'id': file.id,
+                'time_created': file.time_created,
+                'participator': CompetitionTeamParticipator.objects.filter(competition=model, team=file.team).get(),
+            } for file in CompetitionFile.objects.filter(competition=model, status=status)]})
         return HttpResponse(template.render(context))
 
 class AdminCompetitionExcelView(View):
