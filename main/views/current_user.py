@@ -1444,6 +1444,7 @@ class CompetitionList(View):
                 team_participator_count: 已报名人数
                 time_created: 创建时间
         """
+        k = self.ORDERS[order]
         if request.user.role == '专家':
             ctp = request.user.scored_competitions.all()
             qs = ctp.order_by(k)[offset: offset + limit]
@@ -1459,8 +1460,7 @@ class CompetitionList(View):
                   'time_created': a.time_created,
                   'province': a.province} for a in qs]
             return JsonResponse({'count': c, 'list': l})
-
-        k = self.ORDERS[order]
+        
         ctp = CompetitionTeamParticipator.objects.filter(
                 team__members__user=request.user).distinct()
         qs = ctp.order_by(k)[offset: offset + limit]
