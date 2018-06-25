@@ -72,9 +72,9 @@
 </style>
 {% endblock %} 
 {% block js %}
-<script src="{% static 'ios/js/lib.js' %}"></script>
-<script src="{% static 'ios/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'ios/js/bootstrap-dialog.min.js' %}"></script>
+<script src="{% static 'js/lib.js' %}"></script>
+<!-- <script src="{% static 'ios/js/bootstrap.min.js' %}"></script> -->
+<!-- <script src="{% static 'ios/js/bootstrap-dialog.min.js' %}"></script> -->
 <script>
 
     competitionId = location.pathname.split('/')[4];
@@ -97,6 +97,10 @@
 
     function setExpert(teamId, fileId) {
         expertId = $('#select'+fileId).val();
+        if(expertId==null || expertId==''){
+            alert('请选择评委');
+            return;
+        }
         post('/admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/',{
             expert_id:expertId
         }).then(function(params) {
