@@ -89,22 +89,6 @@ function readToken() {
     return localStorage.getItem("token");
 }
 
-window.alertInfo = function(msg) {
-    BootstrapDialog.show({
-        title: 'Info',
-        message: msg,
-        type: 'type-info'
-    });
-}
-
-window.alert = function(msg) {
-    BootstrapDialog.show({
-        title: 'Error',
-        message: msg,
-        type: 'type-danger'
-    });
-}
-
 function errorHandler(code, msg, xhr) {
     switch (code) {
         case 400:

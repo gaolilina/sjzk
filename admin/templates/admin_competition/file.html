@@ -72,7 +72,7 @@
 </style>
 {% endblock %} 
 {% block js %}
-<script src="{% static 'js/lib.js' %}"></script>
+<script src="{% static 'ios/js/lib.js' %}"></script>
 <script src="{% static 'ios/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'ios/js/bootstrap-dialog.min.js' %}"></script>
 <script>
@@ -97,7 +97,9 @@
 
     function setExpert(teamId, fileId) {
         expertId = $('#select'+fileId).val();
-        post('/admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/').then(function(params) {
+        post('/admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/',{
+            expert_id:expertId
+        }).then(function(params) {
             alert('设定成功');
         }).fail(errorHandler);
     }
