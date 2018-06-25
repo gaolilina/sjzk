@@ -10,7 +10,7 @@ from ..utils.decorators import *
 
 __all__ = ['List', 'Detail', 'CompetitionStageList', 'CompetitionFile', 'CompetitionFileScore',
            'CompetitionFileList', 'TeamParticipatorList', 'Search', 'Screen',
-           'CompetitionNotification', 'CompetitionAwardList']
+           'CompetitionNotification', 'CompetitionAwardList', 'CompetitionFileExpert']
 
 
 class List(View):
