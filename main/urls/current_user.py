@@ -158,4 +158,6 @@ urls = [
         FavoredTeamAction.as_view(), name='favored_team_action'),
     url(r'^favored/system_actions/(?P<action_id>[0-9]+)/$',
         FavoredSystemAction.as_view(), name='favored_system_action'),
+    url(r'^achievements/$', AchievementList.as_view(),
+        name='achievements'),
 ]
