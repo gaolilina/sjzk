@@ -32,7 +32,7 @@ __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
            'FollowedTeamNeed', 'FollowedActivityList', 'FollowedActivity',
            'FollowedCompetitionList', 'FollowedCompetition', 'LikedSystemAction',
            'FavoredActivity', 'FavoredCompetition', 'FavoredUserAction',
-           'FavoredTeamAction', 'FavoredSystemAction'
+           'FavoredTeamAction', 'FavoredSystemAction', 'AchievementList'
            ]
 
 
