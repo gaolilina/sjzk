@@ -860,7 +860,16 @@ class CompetitionJoinedList(View):
               'time_created': a.time_created
               } for a in qs]
         return JsonResponse({'count': c, 'list': l})
-
+    
+    @fetch_object(User.enabled, 'user')
+    @require_token
+    @validate_args({
+        'competition_id': forms.IntegerField(),
+    })
+    def post(self, request, user, competition_id):
+        ctp = Compentition.objects.filter(pk=competition_id).get()
+        ctp.experts.add(user)
+        abort(200)
 
 class ValidationCode(View):
     @validate_args({
