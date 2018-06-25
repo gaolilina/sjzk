@@ -83,33 +83,13 @@
       if (file == null) {
         alert("请选择文件");
       } else {
-        uploadFile('competition/' + team + '/file/' + competition + '/', 'file', file).then(function (params) {
-          alert('上传成功');
-        }).fail(errorHandler);
+        uploadFile('competition/' + team + '/file/' + competition + '/', 'file', file)
+          .then(function (params) {
+            alert('上传成功');
+          }).fail(errorHandler);
       }
 
     });
-
-
-    function getStates(params) {
-      get('/competition/' + competitionId + '/stage/').then(function (data) {
-        console.log(data);
-        if (data.count != 0) {
-          rewards = $('#timeTable')
-          data.list.map((v, i) => {
-            start = new Date(v.time_started);
-            end = new Date(v.time_ended);
-            rewards.append(`
-            <tr>
-              <td>`+ start.toLocaleDateString() + " 至 " + end.toLocaleDateString() + `</td>
-              <td>`+ states[v.status] + `</td>
-            </tr>`)
-          })
-
-        }
-      }).fail(errorHandler);
-    }
-
   </script>
 </body>
 

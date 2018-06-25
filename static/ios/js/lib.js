@@ -61,6 +61,26 @@ function upload(url, file) {
     return dtd;
 }
 
+function uploadFile(url,  fileName, file) {
+    var dtd = $.Deferred();
+    var data = new FormData();
+    data.append(fileName, file);
+    $.post({
+        url: HOST + url,
+        data: data,
+        contentType: false,
+        processData: false,
+        headers: readToken() == "" || readToken() == null ? undefined : {
+            "X-User-Token": readToken()
+        }
+    }).done(function(data) {
+        dtd.resolve(data);
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        dtd.reject(jqXHR.status, errorThrown, jqXHR);
+    });
+    return dtd;
+}
+
 function saveToken(token) {
     localStorage.setItem("token", token);
 }
