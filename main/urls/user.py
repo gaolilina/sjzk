@@ -24,6 +24,7 @@ urls = [
     # 竞赛
     url(r'^(?P<user_id>[0-9]+)/competition/$', CompetitionList.as_view(),
         name='competition'),
+    url(r'^(?P<user_id>[0-9]+)/joined_competition/$', CompetitionJoinedList.as_view()),
     # 动态
     url(r'^(?P<user_id>[0-9]+)/actions/$', UserActionList.as_view(),
         name='actions'),

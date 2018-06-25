@@ -20,7 +20,7 @@ __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
            'FriendList', 'Friend', 'FriendRequestList', 'Search', 'Screen',
            'TeamOwnedList', 'TeamJoinedList', 'ValidationCode',
            'PasswordForgotten', 'ActivityList', 'CompetitionList', 'AllAchievementList',
-           'AllAchievement', 'AchievementList']
+           'AllAchievement', 'AchievementList', 'CompetitionJoinedList']
 
 
 class List(View):
@@ -804,6 +804,60 @@ class CompetitionList(View):
               'team_participator_count':
                   a.competition.team_participators.count(),
               'time_created': a.competition.time_created
+              } for a in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class CompetitionJoinedList(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
+
+    @fetch_object(User.enabled, 'user')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0,
+                                    max_value=3),
+    })
+    def get(self, request, user, offset=0, limit=10, order=1):
+        """获取用户参加的竞赛列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+
+        :return:
+            count: 竞赛总数
+            list: 竞赛列表
+                id: 竞赛ID
+                name: 竞赛名
+                liker_count: 点赞数
+                status: 竞赛当前阶段
+                time_started: 开始时间
+                time_ended: 结束时间
+                deadline: 截止时间
+                team_participator_count: 已报名人数
+                time_created: 创建时间
+        """
+
+        k = self.ORDERS[order]
+        ctp = Competition.objects.filter(experts=user)
+        qs = ctp.order_by(k)[offset: offset + limit]
+        c = ctp.count()
+        l = [{'id': a.id,
+              'name': a.name,
+              'liker_count': a.likers.count(),
+              'status': a.status,
+              'time_started': a.time_started,
+              'time_ended': a.time_ended,
+              'deadline': a.deadline,
+              'team_participator_count':
+                  a.team_participators.count(),
+              'time_created': a.time_created
               } for a in qs]
         return JsonResponse({'count': c, 'list': l})
 
