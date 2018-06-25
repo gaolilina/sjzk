@@ -26,8 +26,8 @@
     <tr>
         <td>{{ file.team.name }}</td>
         <td>{{ file.time_created }}</td>
-        {% if file.participator %}
-            <td>{{ file.participator.name }}</td>
+        {% if file.participator.rater %}
+            <td>{{ file.participator.rater.name }}</td>
             <td>
                 <button disabled>设定评委</button>
             </td>
@@ -72,7 +72,9 @@
 </style>
 {% endblock %} 
 {% block js %}
-<script src="{% static 'js/lib.js' %}"></script>
+<script src="{% static 'ios/js/lib.js' %}"></script>
+<script src="{% static 'ios/js/bootstrap-min.js' %}"></script>
+<script src="{% static 'ios/js/bootstrap-dialog.min.js' %}"></script>
 <script>
 
     competitionId = location.pathname.split('/')[4];
@@ -89,7 +91,7 @@
             });
 
             $('select').html(t);
-        })
+        }).fail(errorHandler);
     }
 
     function setExpert(teamId, fileId) {
