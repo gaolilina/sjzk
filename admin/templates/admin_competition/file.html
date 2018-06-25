@@ -1,68 +1,91 @@
-{% extends "layout.html" %}
-{% load staticfiles %}
-{% block content %}
-<h3 style="text-align: center;margin-top: 30px">{{ model.name }}
--
-{% if model.status == 0 %}前期宣传{% endif %}
-{% if model.status == 1 %}报名{% endif %}
-{% if model.status == 2 %}预赛{% endif %}
-{% if model.status == 3 %}周赛{% endif %}
-{% if model.status == 4 %}月赛{% endif %}
-{% if model.status == 5 %}中间赛{% endif %}
-{% if model.status == 6 %}结束{% endif %}
--
-提交列表
+{% extends "layout.html" %} {% load staticfiles %} {% block content %}
+<h3 style="text-align: center;margin-top: 30px">{{ model.name }} - {% if model.status == 0 %}前期宣传{% endif %} {% if model.status == 1 %}报名{% endif %} {% if model.status ==
+    2 %}预赛{% endif %} {% if model.status == 3 %}周赛{% endif %} {% if model.status == 4 %}月赛{% endif %} {% if model.status
+    == 5 %}中间赛{% endif %} {% if model.status == 6 %}结束{% endif %} - 提交列表
 </h3>
 <table>
     <tr>
         <td width="100px">团队名</td>
         <td width="200px">上传时间</td>
         <td width="100">评委</td>
-        <td width="50px">下载</td>
-        <td width="150px">评分</td>
-        <td width="100px">提交评分</td>
+        <td width="100px">设定评委</td>
+        <!-- <td width="50px">下载</td> -->
+        <!-- <td width="150px">评分</td>
+        <td width="100px">提交评分</td> -->
     </tr>
     {% for file in files %}
-        <tr>
-            <td>{{ file.team.name }}</td>
-            <td>{{ file.time_created }}</td>
-            <td>{{ file.participator.name }}</td>
-            <td><a href="http://www.chuangyh.com/{{ file.file }}">下载</a></td>
-            <td>
+    <tr>
+        <td>{{ file.team.name }}</td>
+        <td>{{ file.time_created }}</td>
+        {% if file.participator %}
+        <td>{{ file.participator.name }}</td>
+        <td>
+            <button disabled>设定评委</button>
+        </td>
+        {% else %}
+        <td>
+            <select id="select{{file.id}}"></select>
+        </td>
+        <td>
+            <button onclick="setExpert({{ file.team.id }},{{ file.id }})">设定评委</button>
+        </td>
+
+        {% endif %}
+        <!-- <td><a href="http://www.chuangyh.com/{{ file.file }}">下载</a></td> -->
+        <!-- <td>
                 <input id="{{ file.id }}"/> </td>
                 <td>
                     <input type="button" onclick="rank({{ file.id }})">提交评分</a>
-                </td>
-        </tr>
+                </td> -->
+    </tr>
     {% endfor %}
 </table>
-{% endblock %}
-
-{% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %}
-{% block leftbar %}{% include 'leftbar.html' with tb='admin_competition' lb=1 %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb='admin_competition' lb=1 rb='' %}{% endblock %}
-
-{% block css %}
-{% include 'parts/input_style.html' %}
+{% endblock %} {% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %} {% block leftbar %}{%
+include 'leftbar.html' with tb='admin_competition' lb=1 %}{% endblock %} {% block rightbar %}{% include 'rightbar.html' with
+tb='admin_competition' lb=1 rb='' %}{% endblock %} {% block css %} {% include 'parts/input_style.html' %}
 <style>
-table {
-    border-collapse: collapse;
-    margin: 30px;
-}
-table td {
-    border: 1px solid #999;
-}
+    table {
+        border-collapse: collapse;
+        margin: 30px;
+    }
+
+    table td {
+        border: 1px solid #999;
+    }
 </style>
-{% endblock %}
-{% block js %}
+{% endblock %} {% block js %}
 <script src="{% static 'js/lib.js' %}"></script>
 <script>
+
+    competitionId = location.pathname.split('/')[4];
+    getExperts();
+
+    function getExperts(params) {
+        get('/admin/admin_competition/' + competitionId + '/experts/').then(function (data) {
+            if (data.count == 0) {
+                return;
+            }
+            t = '';
+            data.list.map((v, i) => {
+                t += '<option value="' + v.id + '">' + v.name + '</option>'
+            });
+
+            $('select').html(t);
+        })
+    }
+
+    function setExpert(teamId, fileId) {
+        expertId = $('#select'+fileId).val();
+        post('/admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/').then(function(params) {
+            alert('设定成功');
+        }).fail(errorHandler);
+    }
+
     function rank(fileId) {
         score = $('#' + fileId).val()
-        post('competition/file/' + fileId + '/score/', { score: score }).then(function(params) {
+        post('/competition/file/' + fileId + '/score/', { score: score }).then(function (params) {
             alert('评分成功');
         }).fail(errorHandler);
 
     }
-</script> 
-{% endblock %}
+</script> {% endblock %}

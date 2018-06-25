@@ -40,7 +40,7 @@
     <form>
       <div class="form-group">
         <h4>选择文件</h4>
-        <input type="file" id="inputfile">
+        <input type="file" id="inputfile" multiple="multiple" name="file">
       </div>
       <button id="cButton" type="submit" class="btn btn-primary">上传</button>
     </form>
@@ -83,7 +83,7 @@
       if (file == null) {
         alert("请选择文件");
       } else {
-        uploadFile('competition/' + team + '/file/' + competition + '/', 'file', file)
+        uploadFile('/competition/' + team + '/file/' + competition + '/', 'file', file)
           .then(function (params) {
             alert('上传成功');
           }).fail(errorHandler);
