@@ -72,8 +72,8 @@
 </style>
 {% endblock %} 
 {% block js %}
-<script src="{% static 'ios/js/lib.js' %}"></script>
-<script src="{% static 'ios/js/bootstrap-min.js' %}"></script>
+<script src="{% static 'js/lib.js' %}"></script>
+<script src="{% static 'ios/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'ios/js/bootstrap-dialog.min.js' %}"></script>
 <script>
 
@@ -82,6 +82,7 @@
 
     function getExperts(params) {
         get('/admin/admin_competition/' + competitionId + '/experts/').then(function (data) {
+            console.log(data);
             if (data.count == 0) {
                 return;
             }
