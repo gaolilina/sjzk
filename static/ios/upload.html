@@ -4,16 +4,22 @@
 <head>
     <title>创易汇-上传页面</title>
     <meta charset="utf-8" />
-    <script src="/static/js/jquery-3.1.1.min.js"></script>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-dialog.min.js"></script>
+    <script src="js/lib.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
         }
-        html, body {
+
+        html,
+        body {
             height: 100%;
             background: #E2E2CD;
         }
+
         .content {
             position: absolute;
             width: 400px;
@@ -27,21 +33,26 @@
             padding: 20px;
             box-sizing: border-box;
         }
+
         .logo {
             margin-bottom: 10px;
         }
+
         .logo img {
             width: 158.6px;
             height: 59.4px;
         }
+
         .upload * {
             display: inline-block;
             box-sizing: border-box;
             height: 41px;
         }
+
         .upload input {
             text-indent: 10px;
         }
+
         .upload button {
             background: #34B891;
             border: 1px solid #34A391;
@@ -52,12 +63,14 @@
             font-size: 16px;
             font-weight: bold;
         }
+
         footer {
             position: fixed;
             width: 100%;
             bottom: 5px;
             text-align: center;
         }
+
         footer a {
             text-decoration: none;
             color: black;
@@ -67,24 +80,27 @@
 
 <body>
     <div class="content">
-        <div class="logo"><img src="/static/img/logo.png" /></div>
+        <div class="logo">
+            <img src="/static/img/logo.png" />
+        </div>
         <form class="upload">
             <span>竞赛文件提交&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <input type="file" style="display:none" id="file" name="file" />
-            <input type="text" id="box" readonly><button>上传</button>
+            <input type="text" id="box" readonly>
+            <button>上传</button>
         </form>
     </div>
     <footer>
         <a href="http://www.miitbeian.gov.cn/">京ICP备16066333号</a>
     </footer>
     <script>
-        $("#file").change(function(e) {
+        $("#file").change(function (e) {
             $("#box").val(e.target.files[0].name);
         });
-        $("#box").click(function() {
+        $("#box").click(function () {
             $("#file").click();
         });
-        
+
         var token, team, competition;
         var params = location.search.substring(1).split('?');
         for (var p in params) {
@@ -105,24 +121,11 @@
             }
         }
 
-        $('form').submit(function(e) {
-            e.preventDefault();
-
-            $.post({
-                url: 'http://www.chuangyh.com:8000/competition/'+team+'/file/'+competition+'/',
-                data: new FormData(this),
-                processData: false,
-                contentType: false,
-                headers: {
-                    "X-User-Token": token
-                },
-                success: function(data, textStatus, jqXHR) {
-                    alert('上传成功');
-                },
-                error: function(data, textStatus, jqXHR) {
-                    alert('上传失败');
-                }
-            })
+        $('form').submit(function (e) {
+            // e.preventDefault();
+            uploadFile('competition/' + team + '/file/' + competition + '/', 'file', e.target[0].files[0]).then(function (params) {
+                alert('上传成功');
+            }).fail(errorHandler);
         });
     </script>
 </body>

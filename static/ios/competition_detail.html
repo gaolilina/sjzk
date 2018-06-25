@@ -118,23 +118,11 @@
 
 
     function register(id) {
-
-      if (isNaN(team_id) || team_id == 0) {
-        alert('not a team owner');
-        return;
-      }
-
-      post('/competition/' + id + '/team_participators/', {
-        team_id: team_id
-      }).then(function () {
-        BootstrapDialog.show({
-          message: '报名成功'
-        });
-      }).fail(errorHandler);
+      location.href = "baoming.html?" + competitionId;
     }
 
     function submitRes(params) {
-      window.location = "/static/upload/?token=" + readToken() + "?team_id=" + team_id + "?competition_id=" + competitionId
+      window.location = "my_upload.html?token=" + readToken() + "?team_id=" + team_id + "?competition_id=" + competitionId
     }
 
     function getRewards(params) {
