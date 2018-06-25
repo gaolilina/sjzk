@@ -34,6 +34,8 @@ urls = [
     url(r'(?P<team_id>[0-9]+)/files/$', CompetitionFile.as_view(), name='files'),
     url(r'(?P<team_id>[0-9]+)/file/(?P<competition_id>[0-9]+)/$',
         CompetitionFile.as_view(), name='file'),
+    url(r'(?P<team_id>[0-9]+)/file/(?P<competition_id>[0-9]+)/expert/$',
+        CompetitionFileExpert.as_view()),
     # 评委打分
     url(r'file/(?P<file_id>[0-9]+)/score/$', CompetitionFileScore.as_view()),
     # 粉丝

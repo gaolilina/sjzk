@@ -302,6 +302,22 @@ class CompetitionFile(View):
         abort(400, '文件保存失败')
 
 
+class CompetitionFileExpert(View):
+    @fetch_object(Competition.enabled, 'competition')
+    @fetch_object(Team.enabled, 'team')
+    @require_verification_token
+    @validate_args({
+        'expert_id': forms.IntegerField(),
+    })
+    def post(self, request, competition, team, expert_id):
+        expert = User.objects.filter(pk=expert_id).get()
+        CompetitionTeamParticipator.objects.filter(
+            competition=competition,
+            team=team,
+        ).update(rater=expert)
+        abort(200)
+
+
 class CompetitionFileScore(View):
     @fetch_object(File.objects, 'file')
     @require_verification_token
