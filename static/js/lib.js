@@ -1,4 +1,4 @@
-var HOST = 'http://www.chuangyh.com:80';
+var HOST = 'http://chuangyh.com:80';
 
 function ajax(method, url, params) {
     var dtd = $.Deferred();
