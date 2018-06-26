@@ -222,7 +222,7 @@ class CompetitionExpertList(View):
     @require_cookie
     def get(self, request, competition):
         c = competition.experts.all().count()
-        qs = competition.experts.all()[offset: offset + limit]
+        qs = competition.experts.all()
         l = [{'id': user.id,
               'time_created': user.time_created,
               'name': user.name,
