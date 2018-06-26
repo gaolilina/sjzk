@@ -1,0 +1,56 @@
+{% extends "layout.html" %} 
+{% load staticfiles %}
+ {% block content %}
+<h3 style="text-align: center;margin-top: 30px">
+    设定评委
+</h3>
+<table>
+    <tr>
+        <td width="100px">团队名</td>
+        <td width="100px">设定评委</td>
+        <!-- <td width="50px">下载</td> -->
+        <!-- <td width="150px">评分</td>
+        <td width="100px">提交评分</td> -->
+    </tr>
+    {% for file in files %}
+    <tr>
+        <td>评委名称</td>
+        <td><button onclick="setExpert()">设定评委</button></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %} 
+{% block topbar %}
+{% include 'topbar.html' with tb='admin_competition' %}
+{% endblock %} 
+{% block leftbar %}
+{% include 'leftbar.html' with tb='admin_competition' lb=1 %}
+{% endblock %}
+ {% block rightbar %}
+ {% include 'rightbar.html' with tb='admin_competition' lb=1 rb='' %}
+ {% endblock %} 
+ {% block css %}
+ {% include 'parts/input_style.html' %}
+<style>
+    table {
+        border-collapse: collapse;
+        margin: 30px;
+    }
+
+    table td {
+        border: 1px solid #999;
+    }
+</style>
+{% endblock %} 
+{% block js %}
+<script src="{% static 'js/lib.js' %}"></script>
+<!-- <script src="{% static 'ios/js/bootstrap.min.js' %}"></script> -->
+<!-- <script src="{% static 'ios/js/bootstrap-dialog.min.js' %}"></script> -->
+<script>
+
+    function setExpert(teamId, fileId) {
+        // 为竞赛设定评委
+    }
+
+</script> 
+{% endblock %}
