@@ -43,6 +43,23 @@
 </style>
 {% endblock %} 
 {% block js %}
+<script>
+    var experts = [
+        {% for p in experts %}
+        "{{ p.name }}",
+        {% endfor %}
+    ];
+    var participators = [
+        {% for p in participators %}
+        "{{ p.team.name }}",
+        {% endfor %}
+    ];
+    var all_experts = [
+        {% for p in all_experts %}
+        "{{ p.name }}",
+        {% endfor %}
+    ];
+</script>
 <script src="{% static 'js/lib.js' %}"></script>
 <!-- <script src="{% static 'ios/js/bootstrap.min.js' %}"></script> -->
 <!-- <script src="{% static 'ios/js/bootstrap-dialog.min.js' %}"></script> -->

@@ -7,9 +7,11 @@ import json
 from main.utils.decorators import *
 from main.models.competition import *
 from main.models.team import *
+from main.models.user import *
 from admin.models.competition_owner import *
 
 from admin.utils.decorators import *
+from main.utils import *
 
 class AdminCompetitionAdd(View):
     @require_cookie
@@ -221,34 +223,22 @@ class CompetitionExpertList(View):
     @fetch_object(Competition.enabled, 'competition')
     @require_cookie
     def get(self, request, competition):
-        c = competition.experts.all().count()
-        qs = competition.experts.all()
-        l = [{'id': user.id,
-              'time_created': user.time_created,
-              'name': user.name,
-              'icon_url': user.icon,
-              'description': user.description,
-              'email': user.email,
-              'gender': user.gender,
-              'birthday': user.birthday,
-              'province': user.province,
-              'city': user.city,
-              'county': user.county,
-              'follower_count': user.followers.count(),
-              'followed_count': user.followed_users.count() + user.followed_teams.count(),
-              'friend_count': user.friends.count(),
-              'liker_count': user.likers.count(),
-              'visitor_count': user.visitors.count(),
-              'is_verified': user.is_verified,
-              'is_role_verified': user.is_role_verified,
-              'role': user.role,
-              'adept_field': user.adept_field,
-              'adept_skill': user.adept_skill,
-              'expect_role': user.expect_role,
-              'follow_field': user.follow_field,
-              'follow_skill': user.follow_skill,
-              'unit1': user.unit1,
-              'unit2': user.unit2,
-              'profession': user.profession,
-              'score': user.score} for user in qs]
-        return JsonResponse({'count': c, 'list': l})
+        template = loader.get_template("admin_competition/add_expert.html")
+        context = Context({
+            'model': model,
+            'user': request.user,
+            'experts': competition.experts.all(),
+            'all_experts': User.enabled.filter(role='专家').all(),
+            'participators': competition.team_participators.all(),
+        })
+        return HttpResponse(template.render(context))
+    
+    @fetch_object(Competition.enabled, 'competition')
+    @require_cookie
+    @validate_args({
+        'expert_id': forms.IntegerField(),
+    })
+    def post(self, request, competition, expert_id):
+        expert = User.objects.filter(pk=expert_id).get()
+        competition.experts.add(expert)
+        abort(200)
