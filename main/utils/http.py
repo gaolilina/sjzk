@@ -2,6 +2,8 @@ import urllib.parse, http.client
 import urllib.request
 import json
 import tencentyun
+from qcloud_image import Client
+from qcloud_image import CIUrl, CIFile, CIBuffer, CIUrls, CIFiles, CIBuffers
 
 from PIL import Image
 
@@ -97,10 +99,10 @@ def picture_verify(picture):
             fileid = obj["data"]["fileid"]
             download_url = obj["data"]["download_url"]
             # 图片检测
-            imageprocess = tencentyun.ImageProcess(
-                appid,secret_id,secret_key,bucket)
-            pornUrl = download_url
-            pornRet = imageprocess.porn_detect(pornUrl)
+            client = Client(appid, secret_id, secret_key, bucket)
+            client.use_http()
+            client.set_timeout(30)
+            pornRet = client.porn_detect(CIUrls([download_url]))
             image.delete(bucket, fileid)
             return pornRet["data"]["result"]
     except IOError:
