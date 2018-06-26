@@ -104,7 +104,7 @@ def picture_verify(picture):
             client.set_timeout(30)
             pornRet = client.porn_detect(CIUrls([download_url]))
             image.delete(bucket, fileid)
-            return pornRet["data"]["result"]
+            return pornRet["result_list"][0]["data"]["result"]
     except IOError:
         return None
 
