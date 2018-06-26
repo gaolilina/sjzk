@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
     <meta charset="UTF-8">
     <title>创易汇</title>
@@ -21,6 +22,7 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
@@ -31,24 +33,34 @@
     </nav>
     <div class="container">
         <ul class="nav nav-pills nav-justified">
-            <li role="presentation" class="active"><a href="#competiton" data-toggle="tab">竞赛</a></li>
-            <li role="presentation" class="active"><a href="#competiton" data-toggle="tab">竞赛</a></li>
-            <li><a href="info.html">个人信息</a></li>
-            <!-- <li><a href="verify.html">实名认证</a></li> -->
-            <li><a href="login.html">注销</a></li>
+            <li role="presentation" class="active">
+                <a href="#achievement" data-toggle="tab">成就</a>
+            </li>
+            <li>
+                <a href="publish_achievement.html">发布成就</a>
+            </li>
+            <li role="presentation">
+                <a href="#competiton" data-toggle="tab">竞赛</a>
+            </li>
+            <li>
+                <a href="info.html">个人信息</a>
+            </li>
+            <li><a href="verify.html">实名认证</a></li>
+            <li>
+                <a href="login.html">注销</a>
+            </li>
         </ul>
-        <div class="tab-content clearfix">
-            <div class="tab-pane active" id="competiton">
-                <div>
-                    <ul class="list-group" id="competition_list"></ul>
-                    <ul class="pagination"></ul>
-                </div>
-            </div>
-        </div>
+        
         <div class="tab-content clearfix">
             <div class="tab-pane active" id="achievement">
                 <div>
                     <ul class="list-group" id="achievement_list"></ul>
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+            <div class="tab-pane" id="competiton">
+                <div>
+                    <ul class="list-group" id="competition_list"></ul>
                     <ul class="pagination"></ul>
                 </div>
             </div>
@@ -68,9 +80,12 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap-dialog.min.js"></script>
@@ -90,18 +105,18 @@
             get('/users/current/competition/', {
                 offset: (page - 1) * 10,
                 limit: 10
-            }).then(function(data) {
+            }).then(function (data) {
                 competitionTotalPage = Math.ceil(data.count / 10);
 
                 var str1 = "";
                 for (var i = 0; i < data.list.length; i++) {
-                    var str2 = "";
                     if (data.list[i].status > 1 && data.list[i].status < 6) {
                         var str3 = data.list[i].id;
-                        str2 = '<a href="score.html?' + str3 + '" target="_blank">打分</a>';
+                        // str1 = '<a href="score.html?' + str3 + '" target="_blank">打分</a>';
+                        str1 += '<li class="list-group-item"><a href="javascript:detailCompetition(' + data.list[i].id + ')">查看</a>' + data.list[i].name + '</li>';
                     }
                 }
-                document.querySelector("#competition_list").innerHTML = str1;
+                $("#competition_list").html(str1);
 
                 var str3 = '<li class="page-item active"><a class="page-link" href="javascript:fetchCompetition(' + competitonPage + ')">' + competitonPage + '</a></li>';
                 for (var i = competitonPage - 1; i > 0 && i > competitonPage - 3; i--) {
@@ -114,9 +129,49 @@
             }).fail(errorHandler);
         }
 
-        $(function() {
+        function fetchAchievements(page, owned) {
+            var team_id = +window.localStorage.getItem("team_id");
+            competitonPage = page;
+            get('/users/current/achievements/', {
+                offset: (page - 1) * 10,
+                limit: 10
+            }).then(function (data) {
+                competitionTotalPage = Math.ceil(data.count / 10);
+
+                var str1 = "";
+                for (var i = 0; i < data.list.length; i++) {
+                    if (data.list[i].status > 1 && data.list[i].status < 6) {
+                        var str3 = data.list[i].id;
+                        // str1 = '<a href="score.html?' + str3 + '" target="_blank">打分</a>';
+                        str1 += '<li class="list-group-item"><a href="javascript:detailAchievement(' + data.list[i].id + ')">查看</a>' + data.list[i].name + '</li>';
+                    }
+                }
+                $("#achievement_list").html(str1);
+
+                var str3 = '<li class="page-item active"><a class="page-link" href="javascript:fetchCompetition(' + competitonPage + ')">' + competitonPage + '</a></li>';
+                for (var i = competitonPage - 1; i > 0 && i > competitonPage - 3; i--) {
+                    str3 = '<li class="page-item"><a class="page-link" href="javascript:fetchCompetition(' + i + ')">' + i + '</a></li>' + str3;
+                }
+                for (var i = competitonPage + 1; i <= competitionTotalPage && i < competitonPage + 3; i++) {
+                    str3 += '<li class="page-item"><a class="page-link" href="javascript:fetchCompetition(' + i + ')">' + i + '</a></li>';
+                }
+                document.querySelector("#competition_list ~ ul").innerHTML = str3;
+            }).fail(errorHandler);
+        }
+
+        function detailCompetition(competitionId) {
+            location.href = 'rank_competition.html?'+competitionId;
+        }
+
+        function detailAchievement(achievementId) {
+            location.href = 'achievement.html?'+achievementId;
+        }
+
+        $(function () {
             fetchCompetition(1);
+            fetchAchievements(1);
         });
     </script>
 </body>
+
 </html>

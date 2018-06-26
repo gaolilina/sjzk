@@ -1,16 +1,17 @@
 var HOST = 'http://www.chuangyh.com:8000';
 
-function ajax(method, url, params) {
+function ajax(method, url, params, other) {
     var dtd = $.Deferred();
     method({
         url: HOST + url,
         data: params,
         headers: readToken() == "" || readToken() == null ? undefined : {
             "X-User-Token": readToken()
-        }
-    }).done(function(data) {
+        },
+        ...other
+    }).done(function (data) {
         dtd.resolve(data);
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         dtd.reject(jqXHR.status, errorThrown, jqXHR);
     });
     return dtd;
@@ -24,6 +25,14 @@ function post(url, params) {
     return ajax($.post, url, params);
 }
 
+function postWithFile(url, formSelector) {
+    return ajax($.post, url, new FormData(formSelector), {
+        contentType: false,
+        cache: false,
+        processData: false,
+    });
+}
+
 function deleteAjax(url, params) {
     var dtd = $.Deferred();
     $.ajax({
@@ -33,9 +42,9 @@ function deleteAjax(url, params) {
         headers: readToken() == "" || readToken() == null ? undefined : {
             "X-User-Token": readToken()
         }
-    }).done(function(data) {
+    }).done(function (data) {
         dtd.resolve(data);
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         dtd.reject(jqXHR.status, errorThrown, jqXHR);
     });
     return dtd;
@@ -53,15 +62,15 @@ function upload(url, file) {
         headers: readToken() == "" || readToken() == null ? undefined : {
             "X-User-Token": readToken()
         }
-    }).done(function(data) {
+    }).done(function (data) {
         dtd.resolve(data);
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         dtd.reject(jqXHR.status, errorThrown, jqXHR);
     });
     return dtd;
 }
 
-function uploadFile(url,  fileName, file) {
+function uploadFile(url, fileName, file) {
     var dtd = $.Deferred();
     var data = new FormData();
     data.append(fileName, file);
@@ -73,9 +82,9 @@ function uploadFile(url,  fileName, file) {
         headers: readToken() == "" || readToken() == null ? undefined : {
             "X-User-Token": readToken()
         }
-    }).done(function(data) {
+    }).done(function (data) {
         dtd.resolve(data);
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         dtd.reject(jqXHR.status, errorThrown, jqXHR);
     });
     return dtd;
@@ -89,7 +98,7 @@ function readToken() {
     return localStorage.getItem("token");
 }
 
-window.alertInfo = function(msg) {
+window.alertInfo = function (msg) {
     BootstrapDialog.show({
         title: 'Info',
         message: msg,
@@ -97,7 +106,7 @@ window.alertInfo = function(msg) {
     });
 }
 
-window.alert = function(msg) {
+window.alert = function (msg) {
     BootstrapDialog.show({
         title: 'Error',
         message: msg,
