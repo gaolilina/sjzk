@@ -1,5 +1,5 @@
 from django import forms
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.template import loader, Context
 from django.views.generic import View
 import json
