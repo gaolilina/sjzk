@@ -225,7 +225,7 @@ class CompetitionExpertList(View):
     def get(self, request, competition):
         template = loader.get_template("admin_competition/add_expert.html")
         context = Context({
-            'model': model,
+            'model': competition,
             'user': request.user,
             'experts': competition.experts.all(),
             'all_experts': User.enabled.filter(role='专家').all(),
