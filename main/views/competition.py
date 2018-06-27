@@ -333,6 +333,7 @@ class CompetitionFileScore(View):
     def post(self, request, file, score='', comment=''):
         file.score = score
         file.comment = comment
+        file.save()
         abort(200)
 
 class CompetitionExpertList(View):
