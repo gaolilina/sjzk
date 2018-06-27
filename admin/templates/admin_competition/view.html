@@ -78,6 +78,10 @@
         </tr>
     {% endfor %}
     <tr>
+        <td>设定评委：</td>
+        <td><a href="/admin/admin_competition/{{ model.id }}/experts/">设定评委</a></td>
+    </tr>
+    <tr>
         <td>获奖名单：</td>
         <td><a href="{% url 'admin:admin_competition:award' model.id %}">设置</a></td>
     </tr>

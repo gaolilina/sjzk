@@ -64,9 +64,14 @@
 <!-- <script src="{% static 'ios/js/bootstrap.min.js' %}"></script> -->
 <!-- <script src="{% static 'ios/js/bootstrap-dialog.min.js' %}"></script> -->
 <script>
-
-    function setExpert(teamId, fileId) {
+    competitionId = location.pathname.split('/')[3]
+    function setExpert(expertId) {
         // 为竞赛设定评委
+        post('/admin/admin_competition/'+competitionId+'/experts/',{
+            expert_id:expertId
+        }).then(function(params) {
+            alert('设定成功！')
+        }).fail(errorHandler);
     }
 
 </script> 
