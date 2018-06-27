@@ -218,8 +218,12 @@ class CompetitionFileList(View):
         'limit': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, competition, offset=0, limit=10):
-        c = File.objects.filter(competition=competition, status=competition.status).count()
-        qs = File.objects.filter(competition=competition, status=competition.status).order_by(
+        if not hasattr(request.user, 'rated_team_participators'):
+            abort(403)
+            return
+        teams = request.user.rated_team_participators.values_list('team_id', flat=True)
+        c = File.objects.filter(competition=competition, status=competition.status, team_id__in=teams).count()
+        qs = File.objects.filter(competition=competition, status=competition.status, team_id__in=teams).order_by(
             "-time_created")[offset: offset + limit]
         l = [{'id': p.id,
               'team': p.team.name,
