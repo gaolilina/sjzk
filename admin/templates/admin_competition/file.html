@@ -82,7 +82,6 @@
 
     function getExperts(params) {
         get('/admin/admin_competition/' + competitionId + '/experts/').then(function (data) {
-            console.log(data);
             if (data.count == 0) {
                 return;
             }
