@@ -33,10 +33,10 @@
     <div class="container">
         <form>
             <div class="form-group">
-                <label for="role">* 角色</label>
-                <input type="radio" name="gender" id="role0" value="团队用户"/> 团队用户
-                <input type="radio" name="gender" id="role1" value="专家" style="margin-left:20px" /> 专家
-                <input type="radio" name="gender" id="role2" value="实验室" style="margin-left:20px"/> 实验室
+                <label for="role">* 角色</label><br/>
+                <input type="radio" name="role" id="role0" value="团队用户"/> 团队用户
+                <input type="radio" name="role" id="role1" value="专家" style="margin-left:20px" /> 专家
+                <input type="radio" name="role" id="role2" value="实验室" style="margin-left:20px"/> 实验室
             </div>
             <div class="form-group">
                 <label for="name">昵称</label>
@@ -133,9 +133,7 @@
         isFirst = location.search.substring(1);
 
         if(isFirst!='0'){
-            $('#role0').prop('disable', true);
-            $('#role1').prop('disable', true);
-            $('#role2').prop('disable', true);
+            $('input[name="role"]').prop('disabled', true);
         }
 
         $(function() {
@@ -155,13 +153,13 @@
                 if (data.province != "" && data.city != "")
                     $('#city').change();
                 $('#county').val(data.county);
-                $('#role').val(data.role);
+                $('input[name=role][value=' + data.role + ']').prop('checked',true);
                 $('#other_number').val(data.other_number);
                 $('#unit1').val(data.unit1);
                 $('#unit2').val(data.unit2);
                 $('#profession').val(data.profession);
 
-                $('input[name=gender][value=' + data.gender + ']').click();
+                $('input[name=gender][value=' + data.gender + ']').prop('checked',true);
             }).fail(errorHandler);
 
             $("form").submit(function(e) {
@@ -171,8 +169,8 @@
                     alert('生日错误');
                     return;
                 } 
-                if($('#role0').checked ||$('#role1').checked ||$('#role2').checked)   {
-                    roleS = $('#role0').checked?"团队用户":$('#role1').checked?'专家':$('#role2').checked?'实验室':'';
+                if($('#role0')[0].checked ||$('#role1')[0].checked ||$('#role2')[0].checked)   {
+                    roleS = $('#role0')[0].checked?"团队用户":$('#role1')[0].checked?'专家':$('#role2')[0].checked?'实验室':'';
                 }   else{
                     alert('角色必须选择，且确定后不能更改');
                     return;
