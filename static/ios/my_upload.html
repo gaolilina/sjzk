@@ -30,17 +30,19 @@
   <div class="container">
     <h3 id="cTitle">文件上传</h3>
     <br/>
-    <h4>选择上传文件类型</h4>
-    <div class="btn-group btn-group-sm">
-      <button type="button" class="btn btn-default" onclick="selectFileType('doc')">文档</button>
-      <button type="button" class="btn btn-default" onclick="selectFileType('video')">视频</button>
-      <button type="button" class="btn btn-default" onclick="selectFileType('code')">代码</button>
-    </div>
-    <br/>
     <form>
       <div class="form-group">
-        <h4>选择文件</h4>
-        <input type="file" id="inputfile" multiple="multiple" name="file">
+        <label for="role">* 选择上传文件类型</label>
+        <br/>
+        <input type="radio" name="type" id="role0" value="0" /> 文档
+        <input type="radio" name="type" id="role1" value="1" style="margin-left:20px" /> 视频
+        <input type="radio" name="type" id="role2" value="2" style="margin-left:20px" /> 代码
+        <p>说明：文档、视频和代码均要求是 zip 格式的压缩包</p>
+      </div>
+      <div class="form-group">
+        <label for="role">* 选择文件</label>
+        <br/>
+        <input type="file" id="inputfile" name="file">
       </div>
       <button id="cButton" type="submit" class="btn btn-primary">上传</button>
     </form>
@@ -55,6 +57,7 @@
   <script>
     var token, team, competition;
     var params = location.search.substring(1).split('?');
+    localStorage.fileType = '';
     for (var p in params) {
       var i = params[p].indexOf('=');
       var str = [];
@@ -79,14 +82,22 @@
 
     $('form').submit(function (e) {
       e.preventDefault();
-      file = e.target[0].files[0];
+      if (e.target[0].checked || e.target[1].checked || e.target[2].checked) {
+        fileType = e.target[0].checked ? 0 : e.target[1].checked ? 1 : e.target[2].checked ? 2 : -1;
+      } else {
+        alert('请选择文件类型');
+        return;
+      }
+      file = e.target[3].files[0];
+
       if (file == null) {
         alert("请选择文件");
+      } else if (!file.name.endsWith('.zip')) {
+        alert('上传的文件必须是zip格式的压缩包。')
       } else {
-        uploadFile('/competition/' + team + '/file/' + competition + '/', 'file', file)
-          .then(function (params) {
-            alert('上传成功');
-          }).fail(errorHandler);
+        postWithFile('/competition/' + team + '/file/' + competition + '/', e.target).then(function (params) {
+          alert('上传成功');
+        }).fail(errorHandler);
       }
 
     });
