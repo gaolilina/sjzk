@@ -264,23 +264,31 @@ class CompetitionFile(View):
             t['name'] = r.competition.name
             t['team_id'] = team.id
             t['status'] = r.competition.status
+            t['file'] = []
             try:
-                file = r.competition.team_files.get(
+                files = r.competition.team_files.filter(
                     team=team, status=r.competition.status)
             except ObjectDoesNotExist:
-                t['file'] = ""
+                pass
             else:
-                t['file'] = file.file
-                t['file_id'] = file.id
-                t['score'] = file.score
-                t['comment'] = file.comment
+                for f in files:
+                    t['file'].append({
+                        'file': f.file,
+                        'file_id': f.id,
+                        'score': f.score,
+                        'comment': f.comment,
+                        'type': f.type,
+                    })
             l.append(t)
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Competition.enabled, 'competition')
     @fetch_object(Team.enabled, 'team')
     @require_verification_token
-    def post(self, request, competition, team):
+    @validate_args({
+        'type': forms.IntegerField(required=False),
+    })
+    def post(self, request, competition, team, **kwargs):
         """上传文件"""
 
         if request.user != team.owner:
@@ -297,12 +305,12 @@ class CompetitionFile(View):
         if filename:
             try:
                 competition_file = competition.team_files.get(
-                    status=competition.status, team=team)
+                    status=competition.status, team=team, type=kwargs['type'])
                 competition_file.file = filename
                 competition_file.save()
             except ObjectDoesNotExist:
                 competition.team_files.create(
-                    file=filename,status=competition.status, team=team)
+                    file=filename,status=competition.status, team=team, type=kwargs['type'])
             abort(200)
         abort(400, '文件保存失败')
 
@@ -331,9 +339,10 @@ class CompetitionFileScore(View):
         'comment': forms.CharField(required=False),
     })
     def post(self, request, file, score='', comment=''):
-        file.score = score
-        file.comment = comment
-        file.save()
+        File.objects.filter(competition=file.competition, team=file.team, status=file.status).update(
+            score=score,
+            comment=comment,
+        )
         abort(200)
 
 class CompetitionExpertList(View):

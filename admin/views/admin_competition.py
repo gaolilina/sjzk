@@ -153,6 +153,9 @@ class AdminCompetitionFilesView(View):
                 'id': file.id,
                 'time_created': file.time_created,
                 'participator': CompetitionTeamParticipator.objects.filter(competition=model, team=file.team).get(),
+                'type': file.type,
+                'score': file.score,
+                'comment': file.comment,
             } for file in CompetitionFile.objects.filter(competition=model, status=status)]})
         return HttpResponse(template.render(context))
 

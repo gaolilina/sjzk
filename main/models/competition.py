@@ -81,6 +81,8 @@ class CompetitionFile(models.Model):
     status = models.IntegerField(default=0, db_index=True)
     file = models.CharField(max_length=100, default='')
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
+    # 0:文档，1:视频，2:代码
+    type = models.IntegerField(default=2)
 
     # 评分
     score = models.CharField(max_length=100, default='')
