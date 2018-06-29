@@ -90,7 +90,7 @@
                     validation_code: $('#validation_code').val()
                 }).then(function(data) {
                     saveToken(data.token);
-                    location.href = 'info.html';
+                    location.href = 'info.html?0';
                 }).fail(errorHandler);
             });
         });

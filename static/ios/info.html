@@ -33,6 +33,12 @@
     <div class="container">
         <form>
             <div class="form-group">
+                <label for="role">* 角色</label><br/>
+                <input type="radio" name="role" id="role0" value="团队用户"/> 团队用户
+                <input type="radio" name="role" id="role1" value="专家" style="margin-left:20px" /> 专家
+                <input type="radio" name="role" id="role2" value="实验室" style="margin-left:20px"/> 实验室
+            </div>
+            <div class="form-group">
                 <label for="name">昵称</label>
                 <input type="text" class="form-control" id="name" placeholder=""/>
             </div>
@@ -78,10 +84,7 @@
                 <label for="county">所在区/县</label>
                 <select class="form-control" id="county" name="county"></select>
             </div>
-            <div class="form-group">
-                <label for="role">角色</label>
-                <input type="text" class="form-control" id="role" placeholder=""/>
-            </div>
+            
             <div class="form-group">
                 <label for="other_number">其他证件号码</label>
                 <input type="text" class="form-control" id="other_number" placeholder=""/>
@@ -127,6 +130,11 @@
         if (readToken() == null || readToken() == "") {
             location.href = "register.html";
         }
+        isFirst = location.search.substring(1);
+
+        if(isFirst!='0'){
+            $('input[name="role"]').prop('disabled', true);
+        }
 
         $(function() {
             get('/users/current/profile/', {
@@ -145,13 +153,13 @@
                 if (data.province != "" && data.city != "")
                     $('#city').change();
                 $('#county').val(data.county);
-                $('#role').val(data.role);
+                $('input[name=role][value=' + data.role + ']').prop('checked',true);
                 $('#other_number').val(data.other_number);
                 $('#unit1').val(data.unit1);
                 $('#unit2').val(data.unit2);
                 $('#profession').val(data.profession);
 
-                $('input[name=gender][value=' + data.gender + ']').click();
+                $('input[name=gender][value=' + data.gender + ']').prop('checked',true);
             }).fail(errorHandler);
 
             $("form").submit(function(e) {
@@ -160,7 +168,13 @@
                 if (Date.parse($('#birthday').val()) >= new Date()) {
                     alert('生日错误');
                     return;
-                }                
+                } 
+                if($('#role0')[0].checked ||$('#role1')[0].checked ||$('#role2')[0].checked)   {
+                    roleS = $('#role0')[0].checked?"团队用户":$('#role1')[0].checked?'专家':$('#role2')[0].checked?'实验室':'';
+                }   else{
+                    alert('角色必须选择，且确定后不能更改');
+                    return;
+                }         
 
                 post('/users/current/profile/', {
                     name: $('#name').val(),
@@ -174,7 +188,7 @@
                     province: $('#province').val(),
                     city: $('#city').val(),
                     county: $('#county').val(),
-                    role: $('#role').val(),
+                    role: roleS,
                     other_number: $('#other_number').val(),
                     unit1: $('#unit1').val(),
                     unit2: $('#unit2').val(),
