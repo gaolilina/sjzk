@@ -86,12 +86,14 @@
     var team_id = +window.localStorage.getItem("team_id");
     competitionId = location.search.substring(1);
     states = ['前期宣传', '报名', '预赛', '周赛', '月赛', '中间赛', '结束'];
+    joined = null
+    state = null
     getDetail();
     getStates();
+    getAllCompetitionJoined();
 
     function getDetail(params) {
       get('/competition/' + competitionId + '/').then(function (data) {
-        console.log(data);
         $('#cTitle').text(data.name);
         $('#cHost').text(data.unit);
         $('#cContent').text(data.content);
@@ -99,23 +101,61 @@
         end = new Date(data.time_ended);
         $('#cTime').text(start.toLocaleDateString() + " 至 " + end.toLocaleDateString());
         state = data.status;
-        button = $('#cButton');
-        reward = $('#cReward');
-        if (state == 0) {
-          button.css('visibility', 'hidden');
-        } else if (state == 1) {
-          button.text('报名');
-          button.click(() => register(competitionId));
-        } else if (state == 6) {
-          button.css('visibility', 'hidden');
-          reward.css('visibility', 'visible');
-        } else {
-          button.text('提交' + states[state] + '材料');
-          button.click(() => submitRes());
-        }
+        initButton()
       }).fail(errorHandler);
     }
 
+    function initButton(params) {
+      if (joined == null || state == null) {
+        return;
+      }
+      button = $('#cButton');
+      reward = $('#cReward');
+      if (state == 0) {
+        button.css('visibility', 'hidden');
+      } else if (state == 1) {
+        if (joined) {
+          button.text('已报名');
+          button.prop('disabled', true);
+        } else {
+          button.text('报名');
+          button.click(() => register(competitionId));
+        }
+      } else if (state == 6) {
+        button.css('visibility', 'hidden');
+        reward.css('visibility', 'visible');
+      } else {
+        if (joined) {
+          button.text('提交' + states[state] + '材料');
+          button.click(() => submitRes());
+        } else {
+          button.text('未参加比赛');
+          button.prop('disabled', true);
+        }
+      }
+    }
+
+
+    function getAllCompetitionJoined(params) {
+      get('/users/current/competition/', {
+        offset: 0,
+        limit: 1000,
+      }).then(function (data) {
+        console.log(data);
+        if (data.count == 0) {
+          joined = false;
+        }
+        for (i = 0; i < data.count; i++) {
+          if (data.list[i].id == competitionId) {
+            joined = true;
+            initButton();
+            return;
+          }
+        }
+        joined = false;
+        initButton();
+      }).fail(errorHandler);
+    }
 
     function register(id) {
       location.href = "baoming.html?" + competitionId;
@@ -145,7 +185,6 @@
 
     function getStates(params) {
       get('/competition/' + competitionId + '/stage/').then(function (data) {
-        console.log(data);
         if (data.count != 0) {
           rewards = $('#timeTable')
           data.list.map((v, i) => {
