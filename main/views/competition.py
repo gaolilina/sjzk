@@ -339,10 +339,13 @@ class CompetitionFileScore(View):
         'comment': forms.CharField(required=False),
     })
     def post(self, request, file, score='', comment=''):
-        File.objects.filter(competition=file.competition, team=file.team, status=file.status).update(
-            score=score,
-            comment=comment,
-        )
+        file.score=score
+        file.comment=comment
+        file.save()
+        sum = 0
+        for f in File.objects.filter(competition=file.competition, team=file.team, status=file.status):
+            sum += int(f.score)
+        CompetitionTeamParticipator.objects.filter(competition=file.competition, team=file.team).update(score=sum)
         abort(200)
 
 class CompetitionExpertList(View):
@@ -382,7 +385,7 @@ class CompetitionExpertList(View):
         return JsonResponse({'count': c, 'list': l})
 
 class TeamParticipatorList(View):
-    ORDERS = ('time_created', '-time_created', 'name', '-name')
+    ORDERS = ('time_created', '-time_created', 'name', '-name', '-score')
 
     @fetch_object(Competition.enabled, 'competition')
     @require_token
