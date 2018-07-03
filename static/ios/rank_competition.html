@@ -29,6 +29,7 @@
   </nav>
   <div class="container">
     <h3 id="cTitle">打分</h3>
+    <div>提示：每一项评分的满分为100分。</div>
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
@@ -87,16 +88,17 @@
     }
 
     function setScore(fileId) {
-      scoreNum = $('#score' + fileId).val();
-      if (scoreNum == null || scoreNum == '') {
-        alert('输入评分有误')
+      scoreStr = $('#score' + fileId).val();
+      scoreNum = new Number(scoreStr);
+      if (scoreStr == null || scoreStr == '' || isNaN(scoreNum) || scoreNum > 100) {
+        alert('输入评分有误，请重新输入。')
         return;
       }
       post('/competition/file/' + fileId + '/score/', {
-        'score': scoreNum
+        score: scoreNum.valueOf()
       }).then(function (data) {
         alert('评分成功');
-        $('#score' + fileId).prop('disabled',true)
+        $('#score' + fileId).prop('disabled', true)
         $('#button' + fileId).prop('disabled', true)
       }).fail(errorHandler);
     }

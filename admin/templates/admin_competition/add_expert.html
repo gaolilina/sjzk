@@ -18,7 +18,7 @@
         {% if e in experts %}
             <td><button disabled>设定评委</button></td>
         {% else %}
-            <td><button onclick="setExpert({{ e.id }})">设定评委</button></td>
+            <td><button id="button{{ e.id }}" onclick="setExpert({{ e.id }})">设定评委</button></td>
         {% endif %}
         
     </tr>
@@ -58,7 +58,8 @@
         post('/admin/admin_competition/'+competitionId+'/experts/',{
             expert_id:expertId
         }).then(function(params) {
-            alert('设定成功！')
+            alert('设定成功！');
+            $('#button'+expertId).prop('disabled', true);
         }).fail(errorHandler);
     }
 
