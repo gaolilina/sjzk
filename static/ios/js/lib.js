@@ -100,7 +100,7 @@ function readToken() {
 
 window.alertInfo = function (msg) {
     BootstrapDialog.show({
-        title: 'Info',
+        title: '提示',
         message: msg,
         type: 'type-info'
     });
@@ -108,7 +108,7 @@ window.alertInfo = function (msg) {
 
 window.alert = function (msg) {
     BootstrapDialog.show({
-        title: 'Error',
+        title: '提示',
         message: msg,
         type: 'type-danger'
     });

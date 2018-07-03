@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
 
-from ..models import Competition, Team, CompetitionFile as File
+from ..models import Competition, Team, CompetitionFile as File, CompetitionTeamParticipator
 from ..utils import abort, save_uploaded_file
 from ..utils.decorators import *
 
