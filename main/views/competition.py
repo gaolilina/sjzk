@@ -228,6 +228,7 @@ class CompetitionFileList(View):
         l = [{'id': p.id,
               'team': p.team.name,
               'file': p.file,
+              'type': p.type,
               'time_created': p.time_created,
               'score': p.score} for p in qs]
         return JsonResponse({'count': c, 'list': l})
