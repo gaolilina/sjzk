@@ -7,8 +7,8 @@
     <input placeholder="密码" name="password" type="password" value="" minlength="6" maxlength="20" required><br/>
     <input placeholder="手机号" name="phone_number" type="text" maxlength="11" required><br/>
     用户类型：<select name="role" required>
-        <option value="a" checked="checked">活动</option>
-        <option value="b">竞赛</option>
+        <option value="b" checked="checked">活动</option>
+        <option value="a">竞赛</option>
         {% if user.can_y %}
             <option value="x">运维</option>
         {% endif %}
