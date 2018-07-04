@@ -81,7 +81,7 @@
     getExperts();
 
     function getExperts(params) {
-        get('/admin/admin_competition/' + competitionId + '/experts/').then(function (data) {
+        get('/admin/admin_competition/' + competitionId + '/experts/?api=1').then(function (data) {
             if (data.count == 0) {
                 return;
             }

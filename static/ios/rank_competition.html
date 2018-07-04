@@ -30,6 +30,7 @@
   <div class="container">
     <h3 id="cTitle">打分</h3>
     <div>提示：每一项评分的满分为100分。</div>
+    <h3 id="cTitle">文档</h3>
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
@@ -40,7 +41,37 @@
             <th>打分</th>
           </tr>
         </thead>
-        <tbody id="files">
+        <tbody id="dFiles">
+        </tbody>
+      </table>
+    </div>
+    <h3 id="cTitle">视频</h3>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>团队名</th>
+            <th>文件名</th>
+            <th>分数</th>
+            <th>打分</th>
+          </tr>
+        </thead>
+        <tbody id="vFiles">
+        </tbody>
+      </table>
+    </div>
+    <h3 id="cTitle">代码</h3>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>团队名</th>
+            <th>文件名</th>
+            <th>分数</th>
+            <th>打分</th>
+          </tr>
+        </thead>
+        <tbody id="cFiles">
         </tbody>
       </table>
     </div>
@@ -61,7 +92,7 @@
       get('/competition/' + competitionId + '/files/').then(function (data) {
         console.log(data);
         if (data.count != 0) {
-          rewards = $('#files')
+          files = [$('#dFiles'),$('#vFiles'),$('#cFiles')]
           data.list.map((v, i) => {
             if (v.score == null || v.score == '') {
               scoreStr = `
@@ -74,8 +105,7 @@
                 <td><button disabled>评分</button></td>
               `;
             }
-            scoreStr =
-              rewards.append(`
+            files[v.type].append(`
               <tr>
                 <td>`+ v.team + `</td>
                 <td><a href="/`+ v.file + `">` + v.file.split('/')[5] + `</a></td>
