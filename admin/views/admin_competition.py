@@ -129,7 +129,7 @@ class AdminCompetitionList(View):
     def get(self, request):
         try:
             template = loader.get_template("admin_competition/list.html")
-            context = Context({'list': CompetitionOwner.objects.filter(user=request.user), 'user': request.user})
+            context = Context({'list': CompetitionOwner.objects.all(), 'user': request.user})
             return HttpResponse(template.render(context))
         except CompetitionOwner.DoesNotExist:
             template = loader.get_template("admin_competition/add.html")
@@ -141,8 +141,8 @@ class AdminCompetitionView(View):
     @require_cookie
     @require_role('axyz')
     def get(self, request, model):
-        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-            return HttpResponseForbidden()
+        #if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+        #    return HttpResponseForbidden()
             
         template = loader.get_template("admin_competition/view.html")
         context = Context({'model': model, 'user': request.user, 'stages': CompetitionStage.objects.filter(competition=model)})
@@ -153,8 +153,8 @@ class AdminCompetitionFilesView(View):
     @require_cookie
     @require_role('axyz')
     def get(self, request, model, status):
-        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-            return HttpResponseForbidden()
+        #if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+        #    return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/file.html")
         context = Context({'model': model, 'user': request.user,
@@ -175,8 +175,8 @@ class AdminCompetitionExcelView(View):
     @require_cookie
     @require_role('axyz')
     def get(self, request, model):
-        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-            return HttpResponseForbidden()
+        #if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+        #    return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/excel.html")
         context = Context({'model': model})
@@ -188,8 +188,8 @@ class AdminCompetitionAwardEdit(View):
     @require_cookie
     @require_role('axyz')
     def get(self, request, model):
-        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-            return HttpResponseForbidden()
+        #if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+        #    return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/award.html")
         context = Context({'model': model, 'user': request.user})
@@ -205,8 +205,8 @@ class AdminCompetitionAwardEdit(View):
         user = request.user
         model = kwargs["model"]
 
-        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-            return HttpResponseForbidden()
+        #if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+        #    return HttpResponseForbidden()
         
         awards = json.loads(kwargs['awards'])
         for a in awards:
