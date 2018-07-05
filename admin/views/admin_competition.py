@@ -311,10 +311,15 @@ class CompetitionTeamList(View):
         'final': forms.BooleanField(required=False),
     })
     def get(self, request, competition, final=False):
+        template = loader.get_template("admin_competition/promote_team.html")
         c = CompetitionTeamParticipator.objects.filter(competition=competition, final=final).all().count()
         qs = CompetitionTeamParticipator.objects.filter(competition=competition, final=final).all()
-        l = [{'id': user.id,
-            'score': user.score,
-            'rater': user.rater.id,
-            'final': user.final} for user in qs]
-        return JsonResponse({'count': c, 'list': l})
+        context = Context({
+            'teams': qs,
+        })
+        return HttpResponse(template.render(context))
+        # l = [{'id': user.id,
+        #     'score': user.score,
+        #     'rater': user.rater.id,
+        #     'final': user.final} for user in qs]
+        # return JsonResponse({'count': c, 'list': l})
