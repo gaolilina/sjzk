@@ -94,7 +94,7 @@
         <td>
             <select name="owner">
                 {% for p in owners %}
-                <option value="{{ p.id }}" selected="{{ p.id == mod.id and "selected" }}">{{ p.name }}</option>
+                <option value="{{ p.id }}" selected="{% ifequal p.id mod.id %}selected{% endifequal %}">{{ p.name }}</option>
                 {% endfor %}
             </select>
         </td>
