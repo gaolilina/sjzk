@@ -68,6 +68,16 @@
         </td>
     </tr>
     <tr>
+        <td>竞赛负责人：</td>
+        <td>
+            <select name="owner">
+                {% for p in owners %}
+                <option value="{{ p.id }}">{{ p.name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
         <td colspan="2">
             {{ msg }}
             <div class="buttons">

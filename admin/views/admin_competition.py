@@ -38,17 +38,17 @@ class AdminCompetitionAdd(View):
         'max_member': forms.IntegerField(),
         'user_type': forms.IntegerField(),
         'stages': forms.CharField(),
+        'owner': forms.IntegerField(),
     })
     def post(self, request, **kwargs):
         user = request.user
         competition = Competition()
         for k in kwargs:
-            if k != "stages":
+            if k == 'owner':
+                CompetitionOwner.objects.create(competition=competition, user=AdminUser.objects.filter(pk=kwargs['owner']).get())
+            elif k != "stages":
                 setattr(competition, k, kwargs[k])
         competition.save()
-
-        comp_user = CompetitionOwner.objects.create(competition=competition, user=user)
-        comp_user.save()
 
         stages = json.loads(kwargs['stages'])
         for st in stages:
@@ -88,6 +88,7 @@ class AdminCompetitionEdit(View):
         'max_member': forms.IntegerField(required=False),
         'user_type': forms.IntegerField(required=False),
         'stages': forms.CharField(required=False),
+        'owner': forms.IntegerField(required=False),
     })
     def post(self, request, **kwargs):
         user = request.user
@@ -97,7 +98,9 @@ class AdminCompetitionEdit(View):
             return HttpResponseForbidden()
 
         for k in kwargs:
-            if k != "stages":
+            if k == 'owner':
+                CompetitionOwner.objects.filter(competition=competition).update(user=AdminUser.objects.filter(pk=kwargs['owner']).get())
+            elif k != "stages":
                 setattr(model, k, kwargs[k])
         model.save()
         
