@@ -291,3 +291,30 @@ class CompetitionExpertList(View):
         expert = User.objects.filter(pk=expert_id).get()
         competition.experts.add(expert)
         abort(200)
+
+class CompetitionTeamFinal(View):
+    @fetch_object(Competition.enabled, 'competition')
+    @require_cookie
+    @validate_args({
+        'team_id': forms.CharField(),
+    })
+    def post(self, request, competition, team_id):
+        teams = team_id.split(',')
+        for t in teams:
+            CompetitionTeamParticipator.objects.filter(competition=competition, team_id=int(t)).update(final=False)
+        abort(200)
+
+class CompetitionTeamList(View):
+    @fetch_object(Competition.enabled, 'competition')
+    @require_cookie
+    @validate_args({
+        'final': forms.BooleanField(required=False),
+    })
+    def get(self, request, competition, final=False):
+        c = CompetitionTeamParticipator.objects.filter(competition=competition, final=final).all().count()
+        qs = CompetitionTeamParticipator.objects.filter(competition=competition, final=final).all()
+        l = [{'id': user.id,
+            'score': user.score,
+            'rater': user.rater.id,
+            'final': user.final} for user in qs]
+        return JsonResponse({'count': c, 'list': l})

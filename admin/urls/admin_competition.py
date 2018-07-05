@@ -13,4 +13,6 @@ urls = [
     url(r'(?P<team_id>[0-9]+)/file/(?P<competition_id>[0-9]+)/expert/$',
         CompetitionFileExpert.as_view()),
     url(r'^(?P<competition_id>[0-9]+)/experts/$', CompetitionExpertList.as_view()),
+    url(r'^(?P<competition_id>[0-9]+)/final/$', CompetitionTeamFinal.as_view()),
+    url(r'^(?P<competition_id>[0-9]+)/team/$', CompetitionTeamList.as_view()),
 ]
