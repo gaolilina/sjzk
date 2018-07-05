@@ -93,6 +93,7 @@
         <td>竞赛负责人：</td>
         <td>
             <select name="owner">
+                <option value="">(无)</option>
                 {% for p in owners %}
                 <option value="{{ p.id }}" selected="{% ifequal p.id mod.id %}selected{% endifequal %}">{{ p.name }}</option>
                 {% endfor %}

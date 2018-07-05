@@ -105,7 +105,7 @@ class AdminCompetitionEdit(View):
 
         for k in kwargs:
             if k == 'owner':
-                CompetitionOwner.objects.filter(competition=competition).update(user=AdminUser.objects.filter(pk=kwargs['owner']).get())
+                CompetitionOwner.objects.filter(competition=model).update(user=AdminUser.objects.filter(pk=kwargs['owner']).get())
             elif k != "stages":
                 setattr(model, k, kwargs[k])
         model.save()
