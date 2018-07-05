@@ -29,11 +29,13 @@
     </tr>
     <tr>
         <td>省：</td>
-        <td><input name="province" type="text" value="{{ model.province }}" /></td>
+        <!-- <td><input name="province" type="text" value="{{ model.province }}" /></td> -->
+        <td><select id="province" name="province" value="{{ model.province }}" ></select></td>
     </tr>
     <tr>
         <td>市：</td>
-        <td><input name="city" type="text" value="{{ model.city }}" /></td>
+        <!-- <td><input name="city" type="text" value="{{ model.city }}" /></td> -->
+        <td><select id="city" name="city" value="{{ model.city }}" ></select></td>
     </tr>
     <tr>
         <td>机构：</td>
@@ -125,4 +127,5 @@
 
 {% block js %}
 <script src="{% static 'js/competition.js' %}"></script>
+<script src="{% static 'js/ios/js/place.js' %}"></script>
 {% endblock %}
