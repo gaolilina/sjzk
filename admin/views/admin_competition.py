@@ -128,8 +128,11 @@ class AdminCompetitionList(View):
     @require_role('axyz')
     def get(self, request):
         try:
+            filter_param = {} # TODO: same with activity
+            if not request.user.can_x:
+                filter_param['user'] = request.user
             template = loader.get_template("admin_competition/list.html")
-            context = Context({'list': CompetitionOwner.objects.all(), 'user': request.user})
+            context = Context({'list': CompetitionOwner.objects.filter(**filter_param), 'user': request.user})
             return HttpResponse(template.render(context))
         except CompetitionOwner.DoesNotExist:
             template = loader.get_template("admin_competition/add.html")
