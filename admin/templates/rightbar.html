@@ -25,7 +25,7 @@
     {% if lb != 0 %}
         <ul>
             <li{% if rb == 'view' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:list' %}">查看</a></li>
-            {% if 'z' in user.role %}
+            {% if user.can_x %}
             <li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:add' %}">新增</a></li>
             {% endif %}
         </ul>
@@ -36,7 +36,7 @@
     {% if lb != 0 %}
         <ul>
             <li{% if rb == 'view' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">查看</a></li>
-            {% if 'z' in user.role %}
+            {% if user.can_x %}
             <li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:add' %}">新增</a></li>
             {% endif %}
         </ul>
