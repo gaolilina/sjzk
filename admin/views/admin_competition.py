@@ -9,6 +9,7 @@ from main.models.competition import *
 from main.models.team import *
 from main.models.user import *
 from admin.models.competition_owner import *
+from admin.models.admin_user import AdminUser
 
 from admin.utils.decorators import *
 from main.utils import *
