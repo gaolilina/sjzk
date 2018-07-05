@@ -95,7 +95,7 @@
             <select name="owner">
                 <option value="">(无)</option>
                 {% for p in owners %}
-                <option value="{{ p.id }}" {% ifequal p.id mod.id %}selected="selected"{% endifequal %}>{{ p.name }}</option>
+                <option value="{{ p.id }}" {% ifequal p.id ownerid %}selected="selected"{% endifequal %}>{{ p.name }}</option>
                 {% endfor %}
             </select>
         </td>

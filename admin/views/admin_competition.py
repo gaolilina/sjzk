@@ -68,11 +68,13 @@ class AdminCompetitionEdit(View):
             return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/edit.html")
+        owner = CompetitionOwner.objects.filter(competition=competition).all()
         context = Context({
             'model': model,
             'user': request.user,
             'stages': CompetitionStage.objects.filter(competition=model),
             'owners': AdminUser.objects.filter(role__contains='a').all(),
+            'ownerid': owner[0].user.id if len(owner) > 0 else -1,
         })
         return HttpResponse(template.render(context))
 
