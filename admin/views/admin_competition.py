@@ -18,7 +18,7 @@ class AdminCompetitionAdd(View):
     @require_role('xyz')
     def get(self, request):
         template = loader.get_template("admin_competition/add.html")
-        context = Context({'user': request.user})
+        context = Context({'user': request.user, 'owners': AdminUser.objects.filter(role__contains='a').all()})
         return HttpResponse(template.render(context))
 
     @require_cookie
@@ -67,7 +67,12 @@ class AdminCompetitionEdit(View):
             return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/edit.html")
-        context = Context({'model': model, 'user': request.user, 'stages': CompetitionStage.objects.filter(competition=model)})
+        context = Context({
+            'model': model,
+            'user': request.user,
+            'stages': CompetitionStage.objects.filter(competition=model),
+            'owners': AdminUser.objects.filter(role__contains='a').all(),
+        })
         return HttpResponse(template.render(context))
 
     @fetch_record(Competition.enabled, 'model', 'id')
