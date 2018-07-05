@@ -62,13 +62,13 @@ class AdminCompetitionAdd(View):
 class AdminCompetitionEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @require_cookie
-    @require_role('xyz')
+    #@require_role('xyz')
     def get(self, request, model):
         if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
             return HttpResponseForbidden()
 
         template = loader.get_template("admin_competition/edit.html")
-        owner = CompetitionOwner.objects.filter(competition=competition).all()
+        owner = CompetitionOwner.objects.filter(competition=model).all()
         context = Context({
             'model': model,
             'user': request.user,
