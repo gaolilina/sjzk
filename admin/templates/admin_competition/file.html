@@ -22,21 +22,21 @@
         <!-- <td width="150px">评分</td>
         <td width="100px">提交评分</td> -->
     </tr>
-    {% for file in files %}
+    {% for team in teams %}
     <tr>
-        <td>{{ file.team.name }}</td>
-        <td>{{ file.time_created }}</td>
-        {% if file.participator.rater %}
-            <td>{{ file.participator.rater.name }}</td>
+        <td>{{ team.name }}</td>
+        <td></td>
+        {% if team.rater %}
+            <td>{{ team.rater.name }}</td>
             <td>
                 <button disabled>设定评委</button>
             </td>
         {% else %}
             <td>
-                <select id="select{{file.id}}"></select>
+                <select id="select{{team.id}}"></select>
             </td>
             <td>
-                <button onclick="setExpert({{ file.team.id }},{{ file.id }})">设定评委</button>
+                <button onclick="setExpert({{ team.id }},{{ team.id }})">设定评委</button>
             </td>
         {% endif %}
         <!-- <td><a href="http://www.chuangyh.com/{{ file.file }}">下载</a></td> -->

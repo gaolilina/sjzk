@@ -50,7 +50,7 @@ class AdminCompetitionAdd(View):
             for st in stages:
                 if st['time_start'] < kwargs['time_started'] or st['time_ended'] > kwargs['time_ended']:
                     return HttpResponseForbidden('时间输入有误')
-                    
+
         for k in kwargs:
             if k == 'owner':
                 CompetitionOwner.objects.create(competition=competition, user=AdminUser.objects.filter(pk=kwargs['owner']).get())
@@ -183,7 +183,8 @@ class AdminCompetitionFilesView(View):
                 'type': file.type,
                 'score': file.score,
                 'comment': file.comment,
-            } for file in CompetitionFile.objects.filter(competition=model, status=status)]})
+            } for file in CompetitionFile.objects.filter(competition=model, status=status)],
+            'teams': CompetitionTeamParticipator.objects.filter(competition=model, final=True).all()})
         return HttpResponse(template.render(context))
 
 class AdminCompetitionExcelView(View):
