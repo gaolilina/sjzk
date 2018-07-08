@@ -327,7 +327,7 @@ class CompetitionTeamList(View):
     @validate_args({
         'final': forms.BooleanField(required=False),
     })
-    def get(self, request, competition, final=False):
+    def get(self, request, competition, final=True):
         template = loader.get_template("admin_competition/promote_team.html")
         c = CompetitionTeamParticipator.objects.filter(competition=competition, final=final).all().count()
         qs = CompetitionTeamParticipator.objects.filter(competition=competition, final=final).all()
