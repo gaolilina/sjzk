@@ -23,18 +23,18 @@
     </tr>
     {% for team in teams %}
     <tr>
-        <td>{{ team.name }}</td>
-        {% if team.rater %}
-            <td>{{ team.rater.name }}</td>
+        <td>{{ team.team.name }}</td>
+        {% if team.team.rater %}
+            <td>{{ team.team.rater.name }}</td>
             <td>
                 <button disabled>确定</button>
             </td>
         {% else %}
             <td>
-                <select id="select{{team.id}}"></select>
+                <select id="select{{team.team.id}}"></select>
             </td>
             <td>
-                <button id="button{{team.id}}" onclick="setExpert({{ team.id }})">确定</button>
+                <button id="button{{team.team.id}}" onclick="setExpert({{ team.team.id }})">确定</button>
             </td>
         {% endif %}
         <!-- <td><a href="http://www.chuangyh.com/{{ file.file }}">下载</a></td> -->
