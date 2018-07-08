@@ -115,8 +115,8 @@ class AdminCompetitionEdit(View):
                 if st['time_start'] < kwargs['time_started'] or st['time_ended'] > kwargs['time_ended']:
                     return HttpResponseForbidden('时间输入有误')
 
-        if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-            return HttpResponseForbidden()
+        #if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
+        #    return HttpResponseForbidden()
 
         for k in kwargs:
             if k == 'owner':
