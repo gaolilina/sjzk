@@ -7,7 +7,7 @@
             <td>标题： </td>
             <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.competition.name }}</td>
             <td><a href="{% url 'admin:admin_competition:view' item.competition.id %}">查看</a></td>
-            {% if user.can_x %}
+            {% if user.can_a %}
             <td><a href="{% url 'admin:admin_competition:edit' item.competition.id %}">修改</a></td>
             {% endif %}
         </tr>

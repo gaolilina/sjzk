@@ -394,17 +394,19 @@ class TeamParticipatorList(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'final': forms.BooleanField(required=False),
     })
-    def get(self, request, competition, offset=0, limit=10, order=1):
+    def get(self, request, competition, offset=0, limit=10, order=1, final=True):
         """获取报名团队列表"""
 
         k = self.ORDERS[order]
-        c = competition.team_participators.count()
-        qs = competition.team_participators.all().order_by(
+        c = competition.team_participators.filter(final=final).count()
+        qs = competition.team_participators.filter(final=final).all().order_by(
             k)[offset: offset + limit]
         l = [{'id': p.team.id,
               'name': p.team.name,
-              'icon_url': p.team.icon} for p in qs]
+              'icon_url': p.team.icon,
+              'final': p.final} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Competition.enabled, 'competition')
