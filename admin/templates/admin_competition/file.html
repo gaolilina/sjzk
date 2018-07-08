@@ -102,6 +102,7 @@
             expert_id:expertId
         }).then(function(params) {
             $('#button'+teamId).prop('disabled',true);
+            $('#select'+teamId).prop('disabled',true);
             alert('设定成功');
         }).fail(errorHandler);
     }

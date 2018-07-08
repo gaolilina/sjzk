@@ -87,7 +87,11 @@
     </tr>
     <tr>
         <td>负责人</td>
+        {% if model.owner %}
         <td>{{model.owner.name}}</td>
+        {% else %}
+        <td>无，<a href="/admin/admin_competition/edit/{{ model.id }}">请设置负责人</a></td>
+        {% endif %}
     </tr>
     <tr>
         <td>获奖名单：</td>
