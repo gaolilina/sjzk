@@ -34,7 +34,7 @@
                 <select id="select{{team.id}}"></select>
             </td>
             <td>
-                <button onclick="setExpert({{ team.id }})">确定</button>
+                <button id="button{{team.id}}" onclick="setExpert({{ team.id }})">确定</button>
             </td>
         {% endif %}
         <!-- <td><a href="http://www.chuangyh.com/{{ file.file }}">下载</a></td> -->
@@ -101,6 +101,7 @@
         post('/admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/',{
             expert_id:expertId
         }).then(function(params) {
+            $('#button'+teamId).prop('disabled',true);
             alert('设定成功');
         }).fail(errorHandler);
     }
