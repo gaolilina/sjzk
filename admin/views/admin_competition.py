@@ -142,7 +142,7 @@ class AdminCompetitionList(View):
     def get(self, request):
         try:
             filter_param = {} # TODO: same with activity
-            if not request.user.can_x:
+            if not request.user.can_x():
                 filter_param['user'] = request.user
             template = loader.get_template("admin_competition/list.html")
             context = Context({'list': CompetitionOwner.objects.filter(**filter_param), 'user': request.user})

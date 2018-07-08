@@ -14,9 +14,9 @@
     </tr>
     {% for t in teams %}
     <tr>
-        <td>{{ t.name }}</td>
-        <td>{{ t.score }}</td>
-        <td><button id="button{{ t.id }}" onclick="promoteTeam({{ t.id }})">晋级</button></td>
+        <td>{{ t.team.name }}</td>
+        <td>{{ t.team.score }}</td>
+        <td><button id="button{{ t.team.id }}" onclick="promoteTeam({{ t.team.id }})">晋级</button></td>
     </tr>
     {% endfor %}
 </table>
