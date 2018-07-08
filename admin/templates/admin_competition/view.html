@@ -88,7 +88,7 @@
     <tr>
         <td>负责人</td>
         {% if model.owner %}
-        <td>{{model.owner.user.name}}</td>
+        <td>{{model.owner.first.user.name}}</td>
         {% else %}
         <td>无，<a href="/admin/admin_competition/edit/{{ model.id }}">请设置负责人</a></td>
         {% endif %}
