@@ -12,13 +12,13 @@ __all__ = ['Activity', 'ActivityStage', 'ActivityUserParticipator',
 class Activity(models.Model):
     """活动基本信息"""
 
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=True)
     # 活动当前阶段：0:前期宣传, 1:报名, 2:结束
     status = models.IntegerField(default=0, db_index=True)
-    content = models.CharField(max_length=1000)
-    deadline = models.DateTimeField(db_index=True)
-    time_started = models.DateTimeField(db_index=True)
-    time_ended = models.DateTimeField(db_index=True)
+    content = models.CharField(max_length=1000, null=True)
+    deadline = models.DateTimeField(db_index=True, null=True)
+    time_started = models.DateTimeField(db_index=True, null=True)
+    time_ended = models.DateTimeField(db_index=True, null=True)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
     # 活动允许的人数上限，0：不限
     allow_user = models.IntegerField(default=0, db_index=True)

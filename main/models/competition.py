@@ -13,13 +13,13 @@ __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
 class Competition(models.Model):
     """竞赛基本信息"""
 
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=True)
     # 竞赛当前阶段0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
     status = models.IntegerField(default=0, db_index=True)
-    content = models.CharField(max_length=1000)
+    content = models.CharField(max_length=1000, null=True)
     deadline = models.DateTimeField(db_index=True, null=True)
-    time_started = models.DateTimeField(db_index=True)
-    time_ended = models.DateTimeField(db_index=True)
+    time_started = models.DateTimeField(db_index=True, null=True)
+    time_ended = models.DateTimeField(db_index=True, null=True)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
     # 竞赛允许的团队上限，0：不限
     allow_team = models.IntegerField(default=0, db_index=True)
