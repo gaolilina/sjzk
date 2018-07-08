@@ -84,7 +84,9 @@
                     <option value="3"{% if stage.status == 3 %} selected="selected"{% endif %}>周赛</option>
                     <option value="4"{% if stage.status == 4 %} selected="selected"{% endif %}>月赛</option>
                     <option value="5"{% if stage.status == 5 %} selected="selected"{% endif %}>中间赛</option>
-                    <option value="6"{% if stage.status == 6 %} selected="selected"{% endif %}>结束</option>
+                    <option value="6"{% if stage.status == 6 %} selected="selected"{% endif %}>复赛</option>
+                    <option value="6"{% if stage.status == 7 %} selected="selected"{% endif %}>决赛</option>
+                    <option value="6"{% if stage.status == 8 %} selected="selected"{% endif %}>结束</option>
                 </select><input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /><br/>
                 开始时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_started }}" /><br/>
                 结束时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_ended }}" />

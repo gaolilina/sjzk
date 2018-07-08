@@ -8,14 +8,16 @@ var stage_template = '<tr class="stage">\
     <option value="3">周赛</option>\
     <option value="4">月赛</option>\
     <option value="5">中间赛</option>\
-    <option value="6">结束</option>\
+    <option value="6">复赛</option>\
+    <option value="7">决赛</option>\
+    <option value="8">结束</option>\
 </select><input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /><br/>\
 开始时间：<input type="text" data-field="date" readonly onchange="javascript:stage_gen()" /><br/>\
 结束时间：<input type="text" data-field="date" readonly onchange="javascript:stage_gen()" /><br/>\
 </td>\
 </tr>';
 
-var status_arr = ['前期宣传','报名','预赛','周赛','月赛','中间赛','结束'];
+var status_arr = ['前期宣传','报名','预赛','周赛','月赛','中间赛','复赛','决赛','结束'];
 var stage_data = [];
 
 function stage_rerender() {
