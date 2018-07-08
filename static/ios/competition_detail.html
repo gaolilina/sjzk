@@ -82,10 +82,10 @@
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="js/lib.js"></script>
   <script>
-    //# 竞赛当前阶段0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
+    //# 竞赛当前阶段0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:复赛，7决赛，8结束
     var team_id = +window.localStorage.getItem("team_id");
     competitionId = location.search.substring(1);
-    states = ['前期宣传', '报名', '预赛', '周赛', '月赛', '中间赛', '结束'];
+    states = ['前期宣传', '报名', '预赛', '周赛', '月赛', '中间赛', '复赛', '决赛', '结束'];
     joined = null
     state = null
     getDetail();
@@ -121,7 +121,7 @@
           button.text('报名');
           button.click(() => register(competitionId));
         }
-      } else if (state == 6) {
+      } else if (state == 8) {
         button.css('visibility', 'hidden');
         reward.css('visibility', 'visible');
       } else {

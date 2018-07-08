@@ -28,50 +28,18 @@
     </div>
   </nav>
   <div class="container">
-    <h3 id="cTitle">打分</h3>
+    <h3 id="cTitle">决赛现场</h3>
     <div>提示：每一项评分的满分为100分。</div>
-    <h3 id="cTitle">文档</h3>
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
           <tr>
             <th>团队名</th>
-            <th>文件名</th>
             <th>分数</th>
             <th>打分</th>
           </tr>
         </thead>
-        <tbody id="dFiles">
-        </tbody>
-      </table>
-    </div>
-    <h3 id="cTitle">视频</h3>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>团队名</th>
-            <th>文件名</th>
-            <th>分数</th>
-            <th>打分</th>
-          </tr>
-        </thead>
-        <tbody id="vFiles">
-        </tbody>
-      </table>
-    </div>
-    <h3 id="cTitle">代码</h3>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>团队名</th>
-            <th>文件名</th>
-            <th>分数</th>
-            <th>打分</th>
-          </tr>
-        </thead>
-        <tbody id="cFiles">
+        <tbody id="teams">
         </tbody>
       </table>
     </div>
@@ -84,18 +52,15 @@
   <script src="js/lib.js"></script>
   <script src="js/bootstrap-dialog.min.js"></script>
   <script>
-    //# 竞赛当前阶段0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
+    //# 竞赛当前阶段0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:复赛，7决赛，8结束
     competitionId = location.search.substring(1);
-    getFiles();
+    getTeams();
 
-    function getFiles(params) {
-      get('/competition/' + competitionId + '/files/',{
-        offset:0,
-        limit:1000
-      }).then(function (data) {
+    function getTeams(params) {
+      get('/competition/' + competitionId + '/team_participators/').then(function (data) {
         console.log(data);
         if (data.count != 0) {
-          files = [$('#dFiles'),$('#vFiles'),$('#cFiles')]
+          teams = $('#teams');
           data.list.map((v, i) => {
             if (v.score == null || v.score == '') {
               scoreStr = `
@@ -108,10 +73,9 @@
                 <td><button disabled>评分</button></td>
               `;
             }
-            files[v.type].append(`
+            teams.append(`
               <tr>
-                <td>`+ v.team + `</td>
-                <td><a href="/`+ v.file + `">` + v.file.split('/')[5] + `</a></td>
+                <td>`+ v.name + `</td>
                 `+ scoreStr + `
               </tr>`)
           })
