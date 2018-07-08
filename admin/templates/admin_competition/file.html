@@ -29,14 +29,14 @@
         {% if file.participator.rater %}
             <td>{{ file.participator.rater.name }}</td>
             <td>
-                <button disabled>设定评委</button>
+                <button disabled>确定</button>
             </td>
         {% else %}
             <td>
                 <select id="select{{file.id}}"></select>
             </td>
             <td>
-                <button onclick="setExpert({{ file.team.id }},{{ file.id }})">设定评委</button>
+                <button onclick="setExpert({{ file.team.id }},{{ file.id }})">确定</button>
             </td>
         {% endif %}
         <!-- <td><a href="http://www.chuangyh.com/{{ file.file }}">下载</a></td> -->
