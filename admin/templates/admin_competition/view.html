@@ -75,7 +75,7 @@
                 开始时间：{{ stage.time_started }}<br/>
                 结束时间：{{ stage.time_ended }}<br/>
                 {% if model.status > 1 and model.status < 6 and model.status == stage.status %}
-                <a href="{% url 'admin:admin_competition:file' model.id stage.status %}">查看提交文件</a>
+                <a href="{% url 'admin:admin_competition:file' model.id stage.status %}">分配评委</a>
                 <a href="/admin/admin_competition/{{ model.id }}/team/">晋级</a>
                 {% endif %}
             </td>
