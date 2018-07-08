@@ -24,8 +24,8 @@
     {% for team in teams %}
     <tr>
         <td>{{ team.team.name }}</td>
-        {% if team.team.rater %}
-            <td>{{ team.team.rater.name }}</td>
+        {% if team.rater %}
+            <td>{{ team.rater.name }}</td>
             <td>
                 <button disabled>确定</button>
             </td>
@@ -37,12 +37,6 @@
                 <button id="button{{team.team.id}}" onclick="setExpert({{ team.team.id }})">确定</button>
             </td>
         {% endif %}
-        <!-- <td><a href="http://www.chuangyh.com/{{ file.file }}">下载</a></td> -->
-        <!-- <td>
-                <input id="{{ file.id }}"/> </td>
-                <td>
-                    <input type="button" onclick="rank({{ file.id }})">提交评分</a>
-                </td> -->
     </tr>
     {% endfor %}
 </table>
