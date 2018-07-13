@@ -349,6 +349,17 @@ class CompetitionFileScore(View):
         CompetitionTeamParticipator.objects.filter(competition=file.competition, team=file.team).update(score=sum)
         abort(200)
 
+class CompetitionTeamScore(View):
+    @fetch_object(CompetitionTeamParticipator.objects, 'team_participator')
+    @require_verification_token
+    @validate_args({
+        'score': forms.CharField(),
+    })
+    def post(self, request, team_participator, score=''):
+        team_participator.score=score
+        team_participator.save()
+        abort(200)
+
 class CompetitionExpertList(View):
     @fetch_object(Competition.enabled, 'competition')
     @require_verification_token

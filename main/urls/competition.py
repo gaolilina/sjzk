@@ -38,6 +38,7 @@ urls = [
         CompetitionFileExpert.as_view()),
     # 评委打分
     url(r'file/(?P<file_id>[0-9]+)/score/$', CompetitionFileScore.as_view()),
+    url(r'team/(?P<team_participator_id>[0-9]+)/score/$', CompetitionTeamScore.as_view()),
     # 粉丝
     url(r'^(?P<competition_id>[0-9]+)/followers/$',
         CompetitionFollowerList.as_view(), name='followers'),
