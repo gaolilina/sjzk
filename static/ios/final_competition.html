@@ -64,8 +64,8 @@
           data.list.map((v, i) => {
             if (v.score == null || v.score == '') {
               scoreStr = `
-                <td><input type="number " id="score`+ v.id + `" placeholder="请输入分数"></td>
-                <td><button id="button`+ v.id + `"  onclick="setScore(` + v.id + `)">评分</button></td>
+                <td><input type="number " id="score`+ v.participator_id + `" placeholder="请输入分数"></td>
+                <td><button id="button`+ v.participator_id + `"  onclick="setScore(` + v.participator_id + `)">评分</button></td>
               `;
             } else {
               scoreStr = `
@@ -84,19 +84,19 @@
       }).fail(errorHandler);
     }
 
-    function setScore(fileId) {
-      scoreStr = $('#score' + fileId).val();
+    function setScore(teamId) {
+      scoreStr = $('#score' + teamId).val();
       scoreNum = new Number(scoreStr);
       if (scoreStr == null || scoreStr == '' || isNaN(scoreNum) || scoreNum > 100) {
         alert('输入评分有误，请重新输入。')
         return;
       }
-      post('/competition/file/' + fileId + '/score/', {
+      post('/competition/team/' + teamId + '/score/', {
         score: scoreNum.valueOf()
       }).then(function (data) {
         alert('评分成功');
-        $('#score' + fileId).prop('disabled', true)
-        $('#button' + fileId).prop('disabled', true)
+        $('#score' + teamId).prop('disabled', true)
+        $('#button' + teamId).prop('disabled', true)
       }).fail(errorHandler);
     }
 
