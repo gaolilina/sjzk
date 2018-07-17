@@ -417,6 +417,7 @@ class TeamParticipatorList(View):
         l = [{'id': p.team.id,
               'name': p.team.name,
               'icon_url': p.team.icon,
+              'score': p.score,
               'participator_id': p.id,
               'final': p.final} for p in qs]
         return JsonResponse({'count': c, 'list': l})
