@@ -99,7 +99,7 @@ class UserActionsList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'is_expert': forms.IntegerField(requied=False),
+        'is_expert': forms.IntegerField(required=False),
     })
     def get(self, request, entity=None, offset=0, limit=10, is_expert=0):
         """获取用户的动态列表
