@@ -130,9 +130,9 @@ class UserActionsList(View):
         # 获取主语是用户的动态
         obj = UserAction.objects
         if is_expert == 1:
-            obj = obj.filter(role__contains='专家')
+            obj = obj.filter(entity__role__contains='专家')
         else:
-            obj = obj.exclude(role__contains='专家')
+            obj = obj.exclude(entity__role__contains='专家')
         c = obj.count()
         records = (i for i in obj.all()[offset:offset + limit])
         l = [{'id': i.entity.id,
@@ -349,9 +349,9 @@ class FollowedUserActionList(View):
         r = UserAction.objects.filter(Q(
             entity__followers__follower=request.user))
         if is_expert == 1:
-            r = r.filter(role__contains='专家')
+            r = r.filter(entity__role__contains='专家')
         else:
-            r = r.exclude(role__contains='专家')
+            r = r.exclude(entity__role__contains='专家')
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
@@ -1676,9 +1676,9 @@ class FavoredActionList(View):
                 time_created: 创建时间
         """
         if is_expert == 1:
-            obj = obj.filter(role__contains='专家')
+            obj = obj.filter(favored__entity__role__contains='专家')
         elif is_expert == 0:
-            obj = obj.exclude(role__contains='专家')
+            obj = obj.exclude(favored__entity__role__contains='专家')
         c = obj.count()
         qs = obj.order_by(self.ORDERS[order])[offset:offset + limit]
         
