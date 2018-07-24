@@ -99,8 +99,9 @@ class UserActionsList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
+        'is_expert': forms.IntegerField(requied=False),
     })
-    def get(self, request, entity=None, offset=0, limit=10):
+    def get(self, request, entity=None, offset=0, limit=10, is_expert=0):
         """获取用户的动态列表
 
         :param offset: 偏移量
@@ -127,8 +128,13 @@ class UserActionsList(View):
         """
 
         # 获取主语是用户的动态
-        c = UserAction.objects.count()
-        records = (i for i in UserAction.objects.all()[offset:offset + limit])
+        obj = UserAction.objects
+        if is_expert == 1:
+            obj = obj.filter(role__contains='专家')
+        else:
+            obj = obj.exclude(role__contains='专家')
+        c = obj.count()
+        records = (i for i in obj.all()[offset:offset + limit])
         l = [{'id': i.entity.id,
               'action_id': i.id,
               'name': i.entity.name,
@@ -312,8 +318,9 @@ class FollowedUserActionList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
+        'is_expert': forms.IntegerField(required=False),
     })
-    def get(self, request, offset=0, limit=10):
+    def get(self, request, offset=0, limit=10, is_expert=0):
         """获取当前用户所关注的用户的动态列表
 
         :param offset: 偏移量
@@ -341,6 +348,10 @@ class FollowedUserActionList(View):
 
         r = UserAction.objects.filter(Q(
             entity__followers__follower=request.user))
+        if is_expert == 1:
+            r = r.filter(role__contains='专家')
+        else:
+            r = r.exclude(role__contains='专家')
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
