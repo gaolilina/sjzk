@@ -1633,11 +1633,12 @@ class FavoredActionList(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=1),
+        'is_expert': forms.IntegerField(required=False)
     }
     ORDERS = ('time_created', '-time_created')
 
     @validate_args(get_dict)
-    def get(self, request, obj, offset=0, limit=10, order=1):
+    def get(self, request, obj, offset=0, limit=10, order=1, is_expert=None):
         """获取动态收藏列表
 
         :param offset: 偏移量
@@ -1663,6 +1664,10 @@ class FavoredActionList(View):
                 comment_count: 评论数
                 time_created: 创建时间
         """
+        if is_expert == 1:
+            obj = obj.filter(role__contains='专家')
+        elif is_expert == 0:
+            obj = obj.exclude(role__contains='专家')
         c = obj.count()
         qs = obj.order_by(self.ORDERS[order])[offset:offset + limit]
         
