@@ -1,9 +1,9 @@
 from django.conf.urls import url
 
 from ..views.lab import *
-#from ..views.common import LabActionList, LabCommentList, LabComment, \
-#    LabFollowerList, LabFollower, LabLikerList, LabLiker, \
-#    LabVisitorList, LabNeedFollowerList
+from ..views.common import LabActionList, LabCommentList, LabComment, \
+    LabFollowerList, LabFollower, LabLikerList, LabLiker, \
+    LabVisitorList#, LabNeedFollowerList
 #from ..views.recommend import LabRecommend, OutsourceNeedLabRecommend, \
 #    UndertakeNeedLabRecommend
 
@@ -29,8 +29,8 @@ urls = [
     url(r'^(?P<lab_id>[0-9]+)/invitations/(?P<user_id>[0-9]+)/$',
         Invitation.as_view(), name='invitation'),
     # 动态
-    #url(r'^(?P<lab_id>[0-9]+)/actions/$', LabActionList.as_view(),
-    #    name='actions'),
+    url(r'^(?P<lab_id>[0-9]+)/actions/$', LabActionList.as_view(),
+        name='actions'),
     # 成果
     url(r'^achievements/$', AllAchievementList.as_view(),
         name='all_achievements'),
@@ -39,23 +39,23 @@ urls = [
     url(r'^(?P<lab_id>[0-9]+)/achievements/$', AchievementList.as_view(),
         name='achievements'),
     # 点赞
-    #url(r'^(?P<lab_id>[0-9]+)/likers/$', LabLikerList.as_view(),
-    #    name='likers'),
-    #url(r'^(?P<lab_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
-    #    LabLiker.as_view(), name='liker'),
+    url(r'^(?P<lab_id>[0-9]+)/likers/$', LabLikerList.as_view(),
+        name='likers'),
+    url(r'^(?P<lab_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
+        LabLiker.as_view(), name='liker'),
     # 粉丝
-    #url(r'^(?P<lab_id>[0-9]+)/followers/$', LabFollowerList.as_view(),
-    #    name='followers'),
-    #url(r'^(?P<lab_id>[0-9]+)/followers/(?P<other_user_id>[0-9]+)/$',
-    #    LabFollower.as_view(), name='follower'),
+    url(r'^(?P<lab_id>[0-9]+)/followers/$', LabFollowerList.as_view(),
+        name='followers'),
+    url(r'^(?P<lab_id>[0-9]+)/followers/(?P<other_user_id>[0-9]+)/$',
+        LabFollower.as_view(), name='follower'),
     # 评论
-    #url(r'^(?P<lab_id>[0-9]+)/comments/$', LabCommentList.as_view(),
-    #    name='comments'),
-    #url(r'^comments/(?P<comment_id>[0-9]+)/$',
-    #    LabComment.as_view(), name='comment'),
+    url(r'^(?P<lab_id>[0-9]+)/comments/$', LabCommentList.as_view(),
+        name='comments'),
+    url(r'^comments/(?P<comment_id>[0-9]+)/$',
+        LabComment.as_view(), name='comment'),
     # 访客
-    #url(r'^(?P<lab_id>[0-9]+)/visitors/$',
-    #    LabVisitorList.as_view(), name='visitors'),
+    url(r'^(?P<lab_id>[0-9]+)/visitors/$',
+        LabVisitorList.as_view(), name='visitors'),
 
     # 需求
     url(r'^needs/$', AllNeedList.as_view(), name='all_needs'),

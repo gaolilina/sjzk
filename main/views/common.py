@@ -3,12 +3,12 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic import View
 
-from ..models import User, Team, TeamNeed, UserComment as UserCommentModel, \
-    TeamComment as TeamCommentModel, \
+from ..models import User, Team, Lab, TeamNeed, UserComment as UserCommentModel, \
+    TeamComment as TeamCommentModel, LabComment as LabCommentModel, \
     Activity, ActivityComment as ActivityCommentModel, \
     Competition, CompetitionComment as CompetitionCommentModel, \
-    UserAction, TeamAction, SystemAction, \
-    UserActionFavorer, TeamActionFavorer, SystemActionFavorer, \
+    UserAction, TeamAction, LabAction, SystemAction, \
+    UserActionFavorer, TeamActionFavorer, LabActionFavorer, SystemActionFavorer, \
     ActivityFavorer, CompetitionFavorer
 
 from ..utils import abort, action
@@ -17,19 +17,28 @@ from ..utils.dfa import check_bad_words
 
 
 __all__ = ['UserActionList', 'TeamActionList', 'ActionsList',
+           'LabActionList',
            'SearchUserActionList', 'SearchTeamActionList',
-           'ScreenUserActionList', 'ScreenTeamActionList'
+           'SearchLabActionList',
+           'ScreenUserActionList', 'ScreenTeamActionList',
+           'ScreenLabActionList',
            'UserActionsList', 'TeamActionsList', 'UserCommentList',
+           'LabActionsList', 'LabCommentList', 'LabComment',
            'TeamCommentList', 'UserComment', 'TeamComment', 'UserFollowerList',
            'TeamFollowerList', 'UserFollower', 'TeamFollower',
+           'LabFollowerList', 'LabFollower',
            'UserLikerList', 'TeamLikerList', 'UserLiker', 'TeamLiker',
+           'LabLikerList', 'LabLiker',
            'UserVisitorList', 'TeamVisitorList', 'CompetitionFollowerList',
+           'LabVisitorList',
            'ActivityCommentList', 'ActivityComment', 'ActivityFollowerList',
            'CompetitionCommentList', 'CompetitionComment',
            'UserActionCommentList', 'TeamActionCommentList',
+           'LabActionCommentList',
            'TeamNeedFollowerList', 'SearchSystemActionList', 'SystemActionsList'
            , 'SystemActionCommentList', 'SystemActionComment',
            'FavoredUserActionList', 'FavoredTeamActionList', 'FavoredSystemActionList',
+           'FavoredLabActionList',
            'FavoredActivityList', 'FavoredCompetitionList']
 
 
@@ -173,6 +182,59 @@ class TeamActionsList(View):
         # 获取主语是团队的动态
         c = TeamAction.objects.count()
         records = (i for i in TeamAction.objects.all()[offset:offset + limit])
+        l = [{'id': i.entity.id,
+              'action_id': i.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
+              'object_type': i.object_type,
+              'object_id': i.object_id,
+              'object_name': action.get_object_name(i),
+              'icon_url': action.get_object_icon(i),
+              'related_object_type': i.related_object_type,
+              'related_object_id': i.related_object_id,
+              'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
+              'time_created': i.time_created,
+              } for i in records]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class LabActionsList(View):
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, entity=None, offset=0, limit=10):
+        """获取团队的动态列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :return:
+            count: 动态总数（包括标记为disabled的内容）
+            last_time_created: 最近更新时间
+            list: 动态列表
+                id: 主语的id
+                action_id: 动态id
+                name: 主语的名称
+                icon: 主语的头像
+                action: 相关动作
+                object_type: 相关对象的类型
+                object_id: 相关对象的ID
+                object_name: 相关对象名称
+                icon_url: 头像
+                related_object_type: 额外相关对象的类型
+                related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
+                comment_count: 评论数
+                time_created: 创建时间
+        """
+
+        # 获取主语是团队的动态
+        c = LabAction.objects.count()
+        records = (i for i in LabAction.objects.all()[offset:offset + limit])
         l = [{'id': i.entity.id,
               'action_id': i.id,
               'name': i.entity.name,
@@ -355,6 +417,61 @@ class FollowedTeamActionList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
+class FolloweLabActionList(View):
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, offset=0, limit=10):
+        """获取当前用户所关注的团队的动态列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :return:
+            count: 动态总数（包括标记为disabled的内容）
+            last_time_created: 最近更新时间
+            list: 动态列表
+                action_id: 动态id
+                id: 主语的id
+                name: 主语的名称
+                icon: 主语的头像
+                action: 相关动作
+                object_type: 相关对象的类型
+                object_id: 相关对象的ID
+                object_name: 相关对象名称
+                icon_url: 头像
+                related_object_type: 额外相关对象的类型
+                related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
+                comment_count: 评论数
+                time_created: 创建时间
+        """
+
+        r = LabAction.objects.filter(
+            Q(entity__followers__follower=request.user))
+        c = r.count()
+        records = (i for i in r[offset:offset + limit])
+        l = [{'id': i.entity.id,
+              'action_id': i.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
+              'object_type': i.object_type,
+              'object_id': i.object_id,
+              'object_name': action.get_object_name(i),
+              'icon_url': action.get_object_icon(i),
+              'related_object_type': i.related_object_type,
+              'related_object_id': i.related_object_id,
+              'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
+              'time_created': i.time_created,
+              } for i in records]
+        return JsonResponse({'count': c, 'list': l})
+
+
 # noinspection PyMethodOverriding
 class UserActionList(ActionList):
     @fetch_object(User.enabled, 'user')
@@ -370,6 +487,13 @@ class TeamActionList(ActionList):
     @require_token
     def get(self, request, team):
         return super(TeamActionList, self).get(request, team)
+
+# noinspection PyMethodOverriding
+class LabActionList(ActionList):
+    @fetch_object(Lab.enabled, 'lab')
+    @require_token
+    def get(self, request, lab):
+        return super(LabActionList, self).get(request, lab)
 
 
 class SearchUserActionList(View):
@@ -688,6 +812,157 @@ class ScreenTeamActionList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
+class SearchLabActionList(View):
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'name': forms.CharField(max_length=20),
+    })
+    def get(self, request, offset=0, limit=10, **kwargs):
+        """搜索与团队名或者动态名相关的动态列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param kwargs: 搜索条件
+            name: 团队或动态名包含字段
+
+        :return:
+            count: 动态总数（包括标记为disabled的内容）
+            last_time_created: 最近更新时间
+            list: 动态列表
+                action_id: 动态id
+                id: 主语的id
+                name: 主语的名称
+                icon: 主语的头像
+                action: 相关动作
+                object_type: 相关对象的类型
+                object_id: 相关对象的ID
+                object_name: 相关对象名称
+                icon_url: 头像
+                related_object_type: 额外相关对象的类型
+                related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
+                comment_count: 评论数
+                time_created: 创建时间
+        """
+
+        r = LabAction.objects.filter(Q(entity__name__icontains=kwargs['name'])
+                                      | Q(action__icontains=kwargs['name']))
+        c = r.count()
+        records = (i for i in r[offset:offset + limit])
+        l = [{'id': i.entity.id,
+              'action_id': i.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
+              'object_type': i.object_type,
+              'object_id': i.object_id,
+              'object_name': action.get_object_name(i),
+              'icon_url': action.get_object_icon(i),
+              'related_object_type': i.related_object_type,
+              'related_object_id': i.related_object_id,
+              'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
+              'time_created': i.time_created,
+              } for i in records]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class ScreenLabActionList(View):
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'name': forms.CharField(required=False, max_length=20),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'county': forms.CharField(required=False, max_length=20),
+        'field': forms.CharField(required=False, max_length=10),
+        'action': forms.CharField(required=False, max_length=20),
+    })
+    def get(self, request, offset=0, limit=10, **kwargs):
+        """筛选与团队名或者动态名相关的动态列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param kwargs: 筛选条件
+            name: 团队名或动态名包含字段
+            province: 主体的省
+            city: 主体的市
+            county: 主体的区/县
+            field: 领域
+            action: 动态动作
+
+        :return:
+            count: 动态总数（包括标记为disabled的内容）
+            last_time_created: 最近更新时间
+            list: 动态列表
+                action_id: 动态id
+                id: 主语的id
+                name: 主语的名称
+                icon: 主语的头像
+                action: 相关动作
+                object_type: 相关对象的类型
+                object_id: 相关对象的ID
+                object_name: 相关对象名称
+                icon_url: 头像
+                related_object_type: 额外相关对象的类型
+                related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
+                comment_count: 评论数
+                time_created: 创建时间
+        """
+
+        r = Labction.objects
+        name = kwargs.pop('name', '')
+        if name:
+            # 按用户昵称或动态名检索
+            r = r.filter(Q(entity__name__icontains=name) |
+                         Q(action__icontains=name))
+        province = kwargs.pop('province', '')
+        if province:
+            # 按省会筛选
+            r = r.filter(entity__province=province)
+        city = kwargs.pop('city', '')
+        if city:
+            # 按城市筛选
+            r = r.filter(entity__city=city)
+        county = kwargs.pop('county', '')
+        if county:
+            # 按区/县筛选
+            r = r.filter(entity__county=county)
+        field = kwargs.pop('field', '')
+        if field:
+            # 按机构筛选
+            r = r.filter(entity__field=field)
+        act = kwargs.pop('action', '')
+        if act:
+            # 按动作筛选
+            r = r.filter(action__icontains=act)
+
+        r = r.all()
+        c = r.count()
+        records = (i for i in r[offset:offset + limit])
+        l = [{'id': i.entity.id,
+              'action_id': i.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
+              'object_type': i.object_type,
+              'object_id': i.object_id,
+              'object_name': action.get_object_name(i),
+              'icon_url': action.get_object_icon(i),
+              'related_object_type': i.related_object_type,
+              'related_object_id': i.related_object_id,
+              'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
+              'time_created': i.time_created,
+              } for i in records]
+        return JsonResponse({'count': c, 'list': l})
+
 class SearchSystemActionList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -836,6 +1111,32 @@ class TeamCommentList(CommentList):
 
 
 # noinspection PyMethodOverriding
+class LabCommentList(CommentList):
+    @fetch_object(Lab.enabled, 'lab')
+    @require_token
+    def get(self, request, lab):
+        """获取团队的评论信息列表
+
+        :return:
+            count: 评论总数
+            list: 评论列表
+                id: 评论ID
+                author_id: 评论者ID
+                author_name: 评论者昵称
+                icon_url: 头像
+                content: 内容
+                time_created: 发布时间
+        """
+        return super().get(request, lab)
+
+    @fetch_object(Lab.enabled, 'lab')
+    @require_verification_token
+    def post(self, request, team):
+        """当前用户对团队进行评论"""
+
+        return super().post(request, lab)
+
+# noinspection PyMethodOverriding
 class ActivityCommentList(CommentList):
     @fetch_object(Activity.enabled, 'activity')
     @require_token
@@ -944,6 +1245,32 @@ class TeamActionCommentList(CommentList):
 
 
 # noinspection PyMethodOverriding
+class LabActionCommentList(CommentList):
+    @fetch_object(LabAction.objects, 'action')
+    @require_token
+    def get(self, request, action):
+        """获取团队动态的评论信息列表
+
+        :return:
+            count: 评论总数
+            list: 评论列表
+                id: 评论ID
+                author_id: 评论者ID
+                author_name: 评论者昵称
+                icon_url: 头像
+                content: 内容
+                time_created: 发布时间
+        """
+        return super().get(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    @require_verification_token
+    def post(self, request, action):
+        """当前用户对团队动态进行评论"""
+
+        return super().post(request, action)
+
+# noinspection PyMethodOverriding
 class SystemActionCommentList(CommentList):
     @fetch_object(SystemAction.objects, 'action')
     @require_token
@@ -994,6 +1321,18 @@ class TeamComment(View):
             abort(200)
         abort(403, '非法操作')
 
+
+class LabComment(View):
+    @fetch_object(LabCommentModel.objects, 'comment')
+    @require_verification_token
+    def delete(self, request, comment):
+        """删除团队评论"""
+
+        if comment.entity.owner == request.user \
+                or comment.author == request.user:
+            comment.delete()
+            abort(200)
+        abort(403, '非法操作')
 
 class ActivityComment(View):
     @fetch_object(ActivityCommentModel.objects, 'comment')
@@ -1075,6 +1414,13 @@ class TeamFollowerList(FollowerList):
 
 
 # noinspection PyMethodOverriding
+class LabFollowerList(FollowerList):
+    @fetch_object(Lab.enabled, 'lab')
+    @require_token
+    def get(self, request, lab):
+        return super().get(request, lab)
+
+# noinspection PyMethodOverriding
 class TeamNeedFollowerList(FollowerList):
     @fetch_object(TeamNeed.objects, 'need')
     @require_token
@@ -1124,6 +1470,13 @@ class TeamFollower(Follower):
     def get(self, request, team):
         return super().get(request, team)
 
+
+# noinspection PyMethodOverriding
+class LabFollower(Follower):
+    @fetch_object(Lab.enabled, 'lab')
+    @require_token
+    def get(self, request, lab):
+        return super().get(request, lab)
 
 class LikerList(View):
     ORDERS = (
@@ -1182,6 +1535,13 @@ class TeamLikerList(LikerList):
         return super().get(request, team)
 
 
+# noinspection PyMethodOverriding
+class LabLikerList(LikerList):
+    @require_token
+    @fetch_object(Lab.enabled, 'lab')
+    def get(self, request, lab):
+        return super().get(request, lab)
+
 class Liker(View):
     def get(self, request, entity, other_user):
         """判断other_user是否对某个实体点过赞"""
@@ -1207,6 +1567,13 @@ class TeamLiker(Liker):
     def get(self, request, team, other_user):
         return super(TeamLiker, self).get(request, team, other_user)
 
+
+class LabLiker(Liker):
+    @fetch_object(Lab.enabled, 'lab')
+    @fetch_object(User.enabled, 'other_user')
+    @require_token
+    def get(self, request, lab, other_user):
+        return super(LabLiker, self).get(request, lab, other_user)
 
 class VisitorList(View):
     @validate_args({
@@ -1253,6 +1620,13 @@ class TeamVisitorList(VisitorList):
     def get(self, request, team):
         return super().get(request, team)
 
+
+# noinspection PyMethodOverriding
+class LabVisitorList(VisitorList):
+    @require_token
+    @fetch_object(Lab.enabled, 'lab')
+    def get(self, request, lab):
+        return super().get(request, lab)
 
 class FavoredActionList(View):
     get_dict = {
@@ -1321,6 +1695,12 @@ class FavoredTeamActionList(FavoredActionList):
     @require_token
     def get(self, request):
         return super().get(request, request.user.favored_team_actions)
+
+# noinspection PyMethodOverriding
+class FavoredLabActionList(FavoredActionList):
+    @require_token
+    def get(self, request):
+        return super().get(request, request.user.favored_lab_actions)
 
 # noinspection PyMethodOverriding
 class FavoredSystemActionList(FavoredActionList):
