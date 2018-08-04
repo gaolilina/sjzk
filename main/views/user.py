@@ -77,9 +77,10 @@ class List(View):
         'password': forms.CharField(min_length=6, max_length=32),
         'validation_code': forms.CharField(min_length=6, max_length=6),
         'invitation_code': forms.CharField(required=False),
+        'role': forms.CharField(required=False),
     })
     def post(self, request, phone_number, password, validation_code,
-             invitation_code=None):
+             invitation_code=None, role=''):
         """注册，若成功返回用户令牌"""
 
         if not UserValidationCode.verify(phone_number, validation_code):
@@ -87,7 +88,7 @@ class List(View):
 
         with transaction.atomic():
             try:
-                user = User(phone_number=phone_number)
+                user = User(phone_number=phone_number,role=role)
                 user.set_password(password)
                 # user.update_token()
                 user.save_and_generate_name()
