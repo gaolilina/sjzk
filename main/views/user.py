@@ -12,8 +12,7 @@ from ..utils import abort, get_score_stage, send_message, save_uploaded_image
 from ..utils.decorators import *
 from ..utils.dfa import check_bad_words
 from ..utils.recommender import calculate_ranking_score, record_view_user
-from ..models import User, UserVisitor, UserExperience, UserValidationCode, \
-    Team, CompetitionTeamParticipator, UserAchievement
+from ..models import *
 
 
 __all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
