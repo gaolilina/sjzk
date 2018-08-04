@@ -1,10 +1,7 @@
 from django.conf.urls import url
 
 from ..views.user import *
-from ..views.common import UserActionList, SearchUserActionList, \
-    SearchTeamActionList, UserCommentList, UserComment,UserFollowerList, \
-    UserFollower, UserLikerList, UserLiker, UserVisitorList, \
-    ScreenUserActionList, ScreenTeamActionList
+from ..views.common import *
 from ..views.recommend import UserRecommend
 
 urls = [
