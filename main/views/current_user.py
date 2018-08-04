@@ -18,22 +18,22 @@ from ..utils.recommender import record_like_user, record_like_team
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
     ExperienceList_, FriendList, Friend as Friend_
 
-__all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
-           'ExperienceList', 'FollowedUserList', 'FollowedUser',
-           'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
-           'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
-           'LikedActivity', 'LikedCompetition', 'LikedUserAction',
-           'LikedTeamAction', 'LikedUserTag', 'LikedTeamTag',
-           'RelatedTeamList', 'OwnedTeamList', 'Getui',
-           'InvitationList', 'Invitation', 'IdentityVerification',
-           'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
-           'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification',
-           'OtherIdentityVerification', 'Inviter', 'FollowedTeamNeedList',
-           'FollowedTeamNeed', 'FollowedActivityList', 'FollowedActivity',
-           'FollowedCompetitionList', 'FollowedCompetition', 'LikedSystemAction',
-           'FavoredActivity', 'FavoredCompetition', 'FavoredUserAction',
-           'FavoredTeamAction', 'FavoredSystemAction', 'AchievementList'
-           ]
+# __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
+#            'ExperienceList', 'FollowedUserList', 'FollowedUser',
+#            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
+#            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
+#            'LikedActivity', 'LikedCompetition', 'LikedUserAction',
+#            'LikedTeamAction', 'LikedUserTag', 'LikedTeamTag',
+#            'RelatedTeamList', 'OwnedTeamList', 'Getui',
+#            'InvitationList', 'Invitation', 'IdentityVerification',
+#            'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
+#            'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification',
+#            'OtherIdentityVerification', 'Inviter', 'FollowedTeamNeedList',
+#            'FollowedTeamNeed', 'FollowedActivityList', 'FollowedActivity',
+#            'FollowedCompetitionList', 'FollowedCompetition', 'LikedSystemAction',
+#            'FavoredActivity', 'FavoredCompetition', 'FavoredUserAction',
+#            'FavoredTeamAction', 'FavoredSystemAction', 'AchievementList'
+#            ]
 
 
 class Username(View):
@@ -673,6 +673,75 @@ class FollowedTeam(View):
         abort(403, '未关注过该团队')
 
 
+class FollowedLabList(View):
+    ORDERS = [
+        'time_created', '-time_created',
+        'followed__name', '-followed__name',
+    ]
+
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        c = request.user.followed_labs.count()
+        qs = request.user.followed_labs.order_by(
+            self.ORDERS[order])[offset:offset + limit]
+        l = [{'id': r.followed.id,
+              'name': r.followed.name,
+              'icon_url': r.followed.icon,
+              'time_created': r.time_created} for r in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FollowedLab(View):
+    @fetch_object(Lab.enabled, 'Lab')
+    @require_token
+    def get(self, request, lab):
+        """判断当前用户是否关注了team"""
+
+        if request.user.followed_labs.filter(followed=lab).exists():
+            abort(200)
+        abort(404, '未关注该实验室')
+
+    @fetch_object(Lab.enabled, 'lab')
+    @require_token
+    def post(self, request, lab):
+        if request.user.followed_labs.filter(followed=lab).exists():
+            abort(403, '已经关注过该实验室')
+        request.user.followed_labs.create(followed=lab)
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="活跃度", description="增加一个关注")
+        lab.score += get_score_stage(1)
+        lab.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="增加一个关注")
+        request.user.save()
+        lab.save()
+        abort(200)
+
+    @fetch_object(Lab.enabled, 'lab')
+    @require_token
+    def delete(self, request, lab):
+        qs = request.user.followed_labs.filter(followed=lab)
+        if qs.exists():
+            # 积分
+            request.user.score -= get_score_stage(1)
+            request.user.score_records.create(
+                score=-get_score_stage(1), type="活跃度",
+                description="取消关注")
+            lab.score -= get_score_stage(1)
+            lab.score_records.create(
+                score=-get_score_stage(1), type="受欢迎度",
+                description="取消关注")
+            request.user.save()
+            lab.save()
+            qs.delete()
+            abort(200)
+        abort(403, '未关注过该团队')
+
 class FollowedTeamNeedList(View):
     @require_token
     @validate_args({
@@ -1161,6 +1230,30 @@ class LikedTeam(LikedEntity):
 
 
 # noinspection PyMethodOverriding
+class LikedLab(LikedEntity):
+    @fetch_object(Lab.enabled, 'lab')
+    def get(self, request, lab):
+        return super().get(request, lab)
+
+    @fetch_object(Lab.enabled, 'lab')
+    def post(self, request, lab):
+        # 积分
+        lab.score += get_score_stage(1)
+        lab.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="他人点赞")
+        lab.save()
+        return super().post(request, lab)
+
+    @fetch_object(Lab.enabled, 'lab')
+    def delete(self, request, lab):
+        # 积分
+        lab.score -= get_score_stage(1)
+        lab.score_records.create(
+            score=-get_score_stage(1), type="受欢迎度", description="他人取消点赞")
+        lab.save()
+        return super().delete(request, lab)
+
+# noinspection PyMethodOverriding
 class LikedActivity(LikedEntity):
     @fetch_object(Activity.enabled, 'activity')
     def get(self, request, activity):
@@ -1219,6 +1312,20 @@ class LikedTeamAction(LikedEntity):
     def delete(self, request, action):
         return super().delete(request, action)
 
+
+# noinspection PyMethodOverriding
+class LikedLabAction(LikedEntity):
+    @fetch_object(LabAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
 
 # noinspection PyMethodOverriding
 class LikedSystemAction(LikedEntity):
@@ -1360,6 +1467,107 @@ class OwnedTeamList(View):
               'fields': [t.field1, t.field2],
               'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in teams]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class RelatedLabList(View):
+    ORDERS = ('lab__time_created', '-lab__time_created',
+              'lab__name', '-lab__name')
+
+    # noinspection PyUnusedLocal
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取当前用户参与的团队列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 团队总数
+            list: 团队列表
+                id: 团队ID
+                name: 团队名
+                icon_url: 团队头像
+                owner_id: 创建者ID
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                member_count: 团队成员人数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        c = request.user.labs.count()
+        labs = request.user.labs.order_by(k)[i:j]
+        l = [{'id': t.lab.id,
+              'name': t.lab.name,
+              'icon_url': t.lab.icon,
+              'owner_id': t.lab.owner.id,
+              'liker_count': t.lab.likers.count(),
+              'visitor_count': t.lab.visitors.count(),
+              'member_count': t.lab.members.count(),
+              'fields': [t.lab.field1, t.lab.field2],
+              'tags': [tag.name for tag in t.lab.tags.all()],
+              'time_created': t.lab.time_created} for t in labs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class OwnedLabList(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
+
+    # noinspection PyUnusedLocal
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取当前用户创建的团队列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 团队总数
+            list: 团队列表
+                id: 团队ID
+                name: 团队名
+                icon_url: 团队头像
+                owner_id: 创建者ID
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                member_count: 团队成员人数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        c = request.user.owned_labs.count()
+        labs = request.user.owned_labs.order_by(k)[i:j]
+        l = [{'id': t.id,
+              'name': t.name,
+              'icon_url': t.icon,
+              'owner_id': t.owner.id,
+              'liker_count': t.likers.count(),
+              'visitor_count': t.visitors.count(),
+              'member_count': t.members.count(),
+              'fields': [t.field1, t.field2],
+              'tags': [tag.name for tag in t.tags.all()],
+              'time_created': t.time_created} for t in labs]
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -1817,6 +2025,20 @@ class FavoredTeamAction(FavoredEntity):
     def delete(self, request, action):
         return super().delete(request, action)
 
+
+# noinspection PyMethodOverriding
+class FavoredLabAction(FavoredEntity):
+    @fetch_object(LabAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
 
 # noinspection PyMethodOverriding
 class FavoredSystemAction(FavoredEntity):

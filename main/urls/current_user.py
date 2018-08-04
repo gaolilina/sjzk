@@ -1,12 +1,7 @@
 from django.conf.urls import url
 
 from ..views.current_user import *
-from ..views.common import UserActionsList, TeamActionsList, UserActionList, \
-    UserCommentList, UserFollowerList, UserLikerList, UserLiker, \
-    UserVisitorList, FollowedUserActionList, FollowedTeamActionList, \
-    UserActionCommentList, TeamActionCommentList, SystemActionCommentList, \
-    FavoredUserActionList, FavoredTeamActionList, FavoredSystemActionList, \
-    FavoredActivityList, FavoredCompetitionList
+from ..views.common import *
 from ..views.forum import BoardList
 from ..views.report import Report
 
@@ -31,17 +26,22 @@ urls = [
     # 动态
     url(r'^user_actions/$', UserActionsList.as_view(), name='user_actions'),
     url(r'^team_actions/$', TeamActionsList.as_view(), name='team_actions'),
+    url(r'^lab_actions/$', LabActionsList.as_view(), name='lab_actions'),
     url(r'^owned_actions/$', UserActionList.as_view(), name='owned_actions'),
     url(r'^followed_user/actions/$', FollowedUserActionList.as_view(),
         name='followed_actions'),
     url(r'^followed_team/actions/$',
         FollowedTeamActionList.as_view(), name='followers'),
+    url(r'^followed_lab/actions/$',
+        FollowedLabActionList.as_view()),
     # 评论
     url(r'^comments/$', UserCommentList.as_view(), name='comments'),
     url(r'^user_action/(?P<action_id>[0-9]+)/comments/$',
         UserActionCommentList.as_view(), name='user_action_comments'),
     url(r'^team_action/(?P<action_id>[0-9]+)/comments/$',
         TeamActionCommentList.as_view(), name='team_action_comments'),
+    url(r'^lab_action/(?P<action_id>[0-9]+)/comments/$',
+        LabActionCommentList.as_view(), name='lab_action_comments'),
     url(r'^system_action/(?P<action_id>[0-9]+)/comments/$',
         SystemActionCommentList.as_view(), name='system_action_comments'),
     # 经历
@@ -64,6 +64,10 @@ urls = [
         FollowedTeamList.as_view(), name='followed_teams'),
     url(r'^followed/teams/(?P<team_id>[0-9]+)/$',
         FollowedTeam.as_view(), name='followed_team'),
+    url(r'^followed/labs/$',
+        FollowedLabList.as_view()),
+    url(r'^followed/labs/(?P<lab_id>[0-9]+)/$',
+        FollowedLab.as_view()),
     url(r'^followed/needs/$',
         FollowedTeamNeedList.as_view(), name='followed_needs'),
     url(r'^followed/needs/(?P<need_id>[0-9]+)/$',
@@ -92,6 +96,8 @@ urls = [
         LikedUser.as_view(), name='liked_user'),
     url(r'liked/teams/(?P<team_id>[0-9]+)/$',
         LikedTeam.as_view(), name='liked_team'),
+    url(r'liked/labs/(?P<lab_id>[0-9]+)/$',
+        LikedLab.as_view()),
     url(r'liked/activities/(?P<activity_id>[0-9]+)/$',
         LikedActivity.as_view(), name='liked_activity'),
     url(r'liked/competitions/(?P<competition_id>[0-9]+)/$',
@@ -100,6 +106,8 @@ urls = [
         LikedUserAction.as_view(), name='liked_user_action'),
     url(r'liked/team_actions/(?P<action_id>[0-9]+)/$',
         LikedTeamAction.as_view(), name='liked_team_action'),
+    url(r'liked/lab_actions/(?P<action_id>[0-9]+)/$',
+        LikedLabAction.as_view()),
     url(r'liked/system_actions/(?P<action_id>[0-9]+)/$',
         LikedSystemAction.as_view(), name='liked_system_action'),
     url(r'liked/user_tags/(?P<tag_id>.+?)/$',
@@ -111,6 +119,9 @@ urls = [
     # 与当前用户相关的团队
     url(r'^teams/$', RelatedTeamList.as_view(), name='teams'),
     url(r'^teams/owned/$', OwnedTeamList.as_view(), name='owned_teams'),
+    # 与当前用户相关的团队
+    url(r'^labs/$', RelatedLabList.as_view()),
+    url(r'^labs/owned/$', OwnedLabList.as_view()),
     # 团队邀请
     url(r'^invitations/$', InvitationList.as_view(),
         name='invitations'),
@@ -146,6 +157,7 @@ urls = [
         name='favored_user_actions'),
     url(r'^favored/team_actions/$', FavoredTeamActionList.as_view(),
         name='favored_team_actions'),
+    url(r'^favored/lab_actions/$', FavoredLabActionList.as_view()),
     url(r'^favored/system_actions/$', FavoredSystemActionList.as_view(),
         name='favored_system_actions'),
     url(r'^favored/activities/(?P<activity_id>[0-9]+)/$',
@@ -156,6 +168,8 @@ urls = [
         FavoredUserAction.as_view(), name='favored_user_action'),
     url(r'^favored/team_actions/(?P<action_id>[0-9]+)/$',
         FavoredTeamAction.as_view(), name='favored_team_action'),
+    url(r'^favored/lab_actions/(?P<action_id>[0-9]+)/$',
+        FavoredLabAction.as_view()),
     url(r'^favored/system_actions/(?P<action_id>[0-9]+)/$',
         FavoredSystemAction.as_view(), name='favored_system_action'),
     url(r'^achievements/$', AchievementList.as_view(),
