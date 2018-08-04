@@ -428,7 +428,7 @@ class FollowedTeamActionList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-class FolloweLabActionList(View):
+class FollowedLabActionList(View):
     @require_token
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
