@@ -6,9 +6,7 @@ from django.views.generic import View
 
 from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
-from ..models import User, Team, ActivityUserParticipator, UserValidationCode, \
-    Activity, Competition, UserAction, TeamAction, CompetitionTeamParticipator,\
-    IllegalWord, TeamNeed, SystemAction, UserTag, TeamTag, UserAchievement
+from ..models import *
 from ..utils import abort, action, save_uploaded_image, identity_verify, \
     get_score_stage, eid_verify
 from ..utils import action
