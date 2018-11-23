@@ -108,6 +108,8 @@ class Detail(View):
             'unit': activity.unit,
             'user_type': activity.user_type,
             'time_created': activity.time_created,
+            'owner': activity.owner.user.name,
+            'owner_id': activity.owner.user.id,
         })
 
 
