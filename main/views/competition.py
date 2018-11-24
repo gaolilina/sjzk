@@ -94,6 +94,7 @@ class Detail(View):
             time_created: 创建时间
         """
 
+        owner = competition.owner.first()
         return JsonResponse({
             'id': competition.id,
             'name': competition.name,
@@ -110,8 +111,8 @@ class Detail(View):
             'unit': competition.unit,
             'user_type': competition.user_type,
             'time_created': competition.time_created,
-            'owner': competition.owner.first().user.name,
-            'owner_id': competition.owner.first().user.id,
+            'owner': owner.user.name if owner is not None else "",
+            'owner_id': owner.user.id if owner is not None else -1,
         })
 
 
