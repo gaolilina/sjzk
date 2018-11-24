@@ -110,8 +110,8 @@ class Detail(View):
             'unit': competition.unit,
             'user_type': competition.user_type,
             'time_created': competition.time_created,
-            'owner': competition.owner.user.name,
-            'owner_id': competition.owner.user.id,
+            'owner': competition.owner.first().user.name,
+            'owner_id': competition.owner.first().user.id,
         })
 
 
