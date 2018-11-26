@@ -40,6 +40,7 @@ class Competition(models.Model):
 
     is_enabled = models.BooleanField(default=True)
 
+    owner_user = models.ForeignKey('User', related_name='+', null=True)
     experts = models.ManyToManyField('User', related_name='scored_competitions')
     sponsor = models.ForeignKey('Lab', related_name='sponsored_competitions', null=True)
 

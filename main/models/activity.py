@@ -36,6 +36,7 @@ class Activity(models.Model):
     user_type = models.IntegerField(default=0, db_index=True)
     is_enabled = models.BooleanField(default=True)
 
+    owner_user = models.ForeignKey('User', related_name='+', null=True)
     lab_sponsor = models.ForeignKey('Lab', related_name='lab_sponsored_activities', null=True)
     expert_sponsor = models.ForeignKey('User', related_name='expert_sponsored_activities', null=True)
 

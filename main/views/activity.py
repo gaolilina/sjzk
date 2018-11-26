@@ -136,6 +136,7 @@ class Detail(View):
             'time_created': activity.time_created,
             'owner': owner.user.name if owner is not None else "",
             'owner_id': owner.user.id if owner is not None else -1,
+            'owner_user': activity.owner_user.id if activity.owner_user is not None else -1,
         })
 
 
