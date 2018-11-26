@@ -11,8 +11,38 @@ from ..utils.decorators import *
 __all__ = ['List', 'Detail', 'CompetitionStageList', 'CompetitionFile', 'CompetitionFileScore',
            'CompetitionFileList', 'TeamParticipatorList', 'Search', 'Screen',
            'CompetitionNotification', 'CompetitionAwardList', 'CompetitionFileExpert',
-           'CompetitionExpertList', 'CompetitionTeamScore']
+           'CompetitionExpertList', 'CompetitionTeamScore', 'CompetitionSignList']
 
+class CompetitionSignList(View):
+    @fetch_object(Competition.enabled, 'competition')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, competition, offset=0, limit=10):
+        c = competition.signers.count()
+        qs = competition.signers.all()[offset: offset + limit]
+        l = [{'id': p.team.id,
+              'name': p.team.name,
+              'icon_url': p.team.icon,
+              'time': p.time_created} for p in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+    @fetch_object(Competition.enabled, 'competition')
+    @validate_args({'team_id': forms.IntegerField()})
+    @require_verification_token
+    def post(self, request, competition, team_id):
+        try:
+            team = Team.enabled.get(id=team_id)
+        except Team.DoesNotExist:
+            abort(400, '团队不存在')
+        else:
+            if competition.team_participators.filter(team=team).exists():
+                competition.signers.create(team=team)
+            else:
+                abort(403)
+            abort(200)
 
 class List(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')

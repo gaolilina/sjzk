@@ -23,4 +23,5 @@ urls = [
     # 粉丝
     url(r'^(?P<activity_id>[0-9]+)/followers/$',
         ActivityFollowerList.as_view(), name='followers'),
+    url(r'^(?P<activity_id>[0-9]+)/sign/$', ActivitySignList.as_view(), name='sign'),
 ]

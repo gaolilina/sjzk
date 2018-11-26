@@ -44,4 +44,5 @@ urls = [
         CompetitionFollowerList.as_view(), name='followers'),
     url(r'^(?P<competition_id>[0-9]+)/experts/$',
         CompetitionExpertList.as_view()),
+    url(r'^(?P<competition_id>[0-9]+)/sign/$', CompetitionSignList.as_view(), name='sign'),
 ]

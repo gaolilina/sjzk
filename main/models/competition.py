@@ -7,8 +7,15 @@ from . import EnabledManager, Comment, Liker, Follower, Favorer
 __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
            'CompetitionComment', 'CompetitionLiker', 'CompetitionFile',
            'CompetitionNotification', 'CompetitionFollower', 'CompetitionAward',
-           'CompetitionFavorer']
+           'CompetitionFavorer', 'CompetitionSign']
 
+
+class CompetitionSign(models.Model):
+    class Meta:
+        db_table = 'competition_sign'
+    competition = models.ForeignKey('Competition', related_name='signers')
+    team = models.ForeignKey('Team', related_name='+')
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
 class Competition(models.Model):
     """竞赛基本信息"""

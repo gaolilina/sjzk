@@ -9,7 +9,32 @@ from ..utils.decorators import *
 
 
 __all__ = ['List', 'Detail', 'ActivityStage', 'UserParticipatorList', 'Search',
-           'Screen']
+           'Screen', 'ActivitySignList']
+
+class ActivitySignList(View):
+    @fetch_object(Activity.enabled, 'activity')
+    @require_token
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, activity, offset=0, limit=10):
+        c = activity.signers.count()
+        qs = activity.signers.all()[offset: offset + limit]
+        l = [{'id': p.user.id,
+              'name': p.user.name,
+              'icon_url': p.user.icon,
+              'time': p.time_created} for p in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+    @fetch_object(Activity.enabled, 'activity')
+    @require_verification_token
+    def post(self, request, activity):
+        if activity.user_participators.filter(user=request.user).exists():
+            activity.signers.create(user=request.user)
+        else:
+            abort(403)
+        abort(200)
 
 
 class List(View):

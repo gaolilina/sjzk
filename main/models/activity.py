@@ -6,8 +6,15 @@ from . import EnabledManager, Comment, Liker, Follower, Favorer
 
 __all__ = ['Activity', 'ActivityStage', 'ActivityUserParticipator',
            'ActivityComment', 'ActivityLiker', 'ActivityFollower',
-           'ActivityFavorer']
+           'ActivityFavorer', 'ActivitySign']
 
+
+class ActivitySign(models.Model):
+    class Meta:
+        db_table = 'activity_sign'
+    activity = models.ForeignKey('Activity', related_name='signers')
+    user = models.ForeignKey('User', related_name='+')
+    time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
 class Activity(models.Model):
     """活动基本信息"""
