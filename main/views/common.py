@@ -9,7 +9,8 @@ from ..models import User, Team, Lab, TeamNeed, UserComment as UserCommentModel,
     Competition, CompetitionComment as CompetitionCommentModel, \
     UserAction, TeamAction, LabAction, SystemAction, \
     UserActionFavorer, TeamActionFavorer, LabActionFavorer, SystemActionFavorer, \
-    ActivityFavorer, CompetitionFavorer, LabAchievementLiker, UserAchievementLiker
+    ActivityFavorer, CompetitionFavorer, LabAchievementLiker, UserAchievementLiker, \
+    UserAchievement, LabAchievement
 
 from ..utils import abort, action
 from ..utils.decorators import *
