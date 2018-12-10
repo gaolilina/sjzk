@@ -1557,14 +1557,14 @@ class LabLikerList(LikerList):
 # noinspection PyMethodOverriding
 class UserAchievementLikerList(LikerList):
     @require_token
-    @fetch_object(UserAchievement.enabled, 'achievement')
+    @fetch_object(UserAchievement.objects, 'achievement')
     def get(self, request, achievement):
         return super().get(request, achievement)
 
 # noinspection PyMethodOverriding
 class LabAchievementLikerList(LikerList):
     @require_token
-    @fetch_object(LabAchievement.enabled, 'achievement')
+    @fetch_object(LabAchievement.objects, 'achievement')
     def get(self, request, achievement):
         return super().get(request, achievement)
 
@@ -1602,14 +1602,14 @@ class LabLiker(Liker):
         return super(LabLiker, self).get(request, lab, other_user)
 
 class UserAchievementLiker(Liker):
-    @fetch_object(UserAchievement.enabled, 'achievement')
+    @fetch_object(UserAchievement.objects, 'achievement')
     @fetch_object(User.enabled, 'other_user')
     @require_token
     def get(self, request, achievement, other_user):
         return super(UserAchievementLiker, self).get(request, achievement, other_user)
 
 class LabAchievementLiker(Liker):
-    @fetch_object(LabAchievement.enabled, 'achievement')
+    @fetch_object(LabAchievement.objects, 'achievement')
     @fetch_object(User.enabled, 'other_user')
     @require_token
     def get(self, request, achievement, other_user):
