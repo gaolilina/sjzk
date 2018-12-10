@@ -3,7 +3,7 @@ from django.conf.urls import url
 from ..views.lab import *
 from ..views.common import LabActionList, LabCommentList, LabComment, \
     LabFollowerList, LabFollower, LabLikerList, LabLiker, \
-    LabVisitorList#, LabNeedFollowerList
+    LabVisitorList, LabAchievementLikerList, LabAchievementLiker#, LabNeedFollowerList
 #from ..views.recommend import LabRecommend, OutsourceNeedLabRecommend, \
 #    UndertakeNeedLabRecommend
 
@@ -43,6 +43,11 @@ urls = [
         name='likers'),
     url(r'^(?P<lab_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
         LabLiker.as_view(), name='liker'),
+    # 点赞
+    url(r'^(?P<achievement_id>[0-9]+)/likers/$', LabAchievementLikerList.as_view(),
+        name='likers'),
+    url(r'^(?P<achievement_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
+        LabAchievementLiker.as_view(), name='liker'),
     # 粉丝
     url(r'^(?P<lab_id>[0-9]+)/followers/$', LabFollowerList.as_view(),
         name='followers'),

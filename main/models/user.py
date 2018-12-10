@@ -387,3 +387,12 @@ class UserAchievement(models.Model):
     class Meta:
         db_table = 'user_achievement'
         ordering = ['-time_created']
+
+class UserAchievementLiker(Liker):
+    """团队动态点赞记录"""
+
+    liked = models.ForeignKey('UserAchievement', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_lab_achievements')
+
+    class Meta:
+        db_table = 'user_achievement_liker'

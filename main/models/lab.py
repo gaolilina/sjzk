@@ -90,6 +90,14 @@ class LabAchievement(models.Model):
         db_table = 'lab_achievement'
         ordering = ['-time_created']
 
+class LabAchievementLiker(Liker):
+    """团队动态点赞记录"""
+
+    liked = models.ForeignKey('LabAchievement', models.CASCADE, 'likers')
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_lab_achievements')
+
+    class Meta:
+        db_table = 'lab_achievement_liker'
 
 class LabComment(Comment):
     """团队评论"""

@@ -1553,6 +1553,20 @@ class LabLikerList(LikerList):
     def get(self, request, lab):
         return super().get(request, lab)
 
+# noinspection PyMethodOverriding
+class UserAchievementLikerList(LikerList):
+    @require_token
+    @fetch_object(UserAchievement.enabled, 'achievement')
+    def get(self, request, achievement):
+        return super().get(request, achievement)
+
+# noinspection PyMethodOverriding
+class LabAchievementLikerList(LikerList):
+    @require_token
+    @fetch_object(LabAchievement.enabled, 'achievement')
+    def get(self, request, achievement):
+        return super().get(request, achievement)
+
 class Liker(View):
     def get(self, request, entity, other_user):
         """判断other_user是否对某个实体点过赞"""
@@ -1585,6 +1599,20 @@ class LabLiker(Liker):
     @require_token
     def get(self, request, lab, other_user):
         return super(LabLiker, self).get(request, lab, other_user)
+
+class UserAchievementLiker(Liker):
+    @fetch_object(UserAchievement.enabled, 'achievement')
+    @fetch_object(User.enabled, 'other_user')
+    @require_token
+    def get(self, request, achievement, other_user):
+        return super(UserAchievementLiker, self).get(request, achievement, other_user)
+
+class LabAchievementLiker(Liker):
+    @fetch_object(LabAchievement.enabled, 'achievement')
+    @fetch_object(User.enabled, 'other_user')
+    @require_token
+    def get(self, request, achievement, other_user):
+        return super(LabAchievementLiker, self).get(request, achievement, other_user)
 
 class VisitorList(View):
     @validate_args({

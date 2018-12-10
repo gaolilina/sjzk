@@ -955,7 +955,9 @@ class AllAchievementList(View):
               'icon_url': a.user.icon,
               'description': a.description,
               'picture': a.picture,
-              'time_created': a.time_created} for a in achievements]
+              'time_created': a.time_created,
+              'yes_count': a.likers.count(),
+              'is_yes': request.user in a.likers.all()} for a in achievements]
         return JsonResponse({'count': c, 'list': l})
 
 
@@ -1003,7 +1005,9 @@ class AchievementList(View):
         l = [{'id': a.id,
               'description': a.description,
               'picture': a.picture,
-              'time_created': a.time_created} for a in achievements]
+              'time_created': a.time_created,
+              'yes_count': a.likers.count(),
+              'is_yes': request.user in a.likers.all()} for a in achievements]
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(User.enabled, 'user')
