@@ -10,7 +10,7 @@ __all__ = ['Lab', 'LabAction', 'LabActionLiker', 'LabActionComment',
            'LabLiker', 'LabMember', 'LabMemberRequest', 'LabNeed',
            'LabTag', 'LabVisitor', #'InternalTask', 'ExternalTask',
            'LabFeature', 'LabScore', 'LabNeedFollower', 'LabActionFavorer',
-           'LabTagLiker']
+           'LabTagLiker', 'LabAchievementLiker']
 
 
 class Lab(models.Model):

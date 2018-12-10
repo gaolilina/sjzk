@@ -11,7 +11,7 @@ __all__ = ['User', 'UserAction', 'UserActionLiker', 'UserActionComment',
            'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
            'UserFriendRequest', 'UserLiker', 'UserTag', 'UserValidationCode',
            'UserVisitor', 'UserFeedback', 'UserFeature', 'UserBehavior',
-           'UserScore', 'UserActionFavorer', 'UserTagLiker', 'UserAchievement']
+           'UserScore', 'UserActionFavorer', 'UserTagLiker', 'UserAchievement', 'UserAchievementLiker']
 
 
 class User(models.Model):
