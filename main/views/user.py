@@ -917,6 +917,7 @@ class PasswordForgotten(View):
             except IntegrityError:
                 abort(403, '修改密码失败')
 
+
 # noinspection PyUnusedLocal
 class AllAchievementList(View):
     ORDERS = ('time_created', '-time_created')

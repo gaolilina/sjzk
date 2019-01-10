@@ -59,11 +59,6 @@ urls = [
         name='likers'),
     url(r'^(?P<user_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
         UserLiker.as_view(), name='liker'),
-    # 点赞
-    url(r'^(?P<achievement_id>[0-9]+)/likers/$', UserAchievementLikerList.as_view(),
-        name='likers'),
-    url(r'^(?P<achievement_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
-        UserAchievementLiker.as_view(), name='liker'),
     # 搜索
     url(r'^search/$', Search.as_view(), name='search'),
     url(r'^search/user_action/$', SearchUserActionList.as_view(),
