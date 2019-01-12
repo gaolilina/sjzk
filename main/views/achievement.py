@@ -27,6 +27,14 @@ class UserAchievementLiker(Liker):
         return super(UserAchievementLiker, self).get(request, achievement, other_user)
 
 
+class UserAchievementRequire(Liker):
+    @fetch_object(UserAchievement.objects, 'achievement')
+    @fetch_object(User.enabled, 'other_user')
+    @require_token
+    def get(self, request, achievement, other_user):
+        return super(UserAchievementRequire, self).get(request, achievement, other_user)
+
+
 # noinspection PyUnusedLocal
 class AchievementList(View):
     ORDERS = ('time_created', '-time_created')
