@@ -1,6 +1,6 @@
 from django import forms
 from django.http import JsonResponse
-from django.views import View
+from django.views.generic import View
 
 from main.utils import abort, save_uploaded_image
 from main.utils.dfa import check_bad_words
