@@ -144,6 +144,11 @@ class Detail(View):
             'owner': owner.user.name if owner is not None else "",
             'owner_id': owner.user.id if owner is not None else -1,
             'owner_user': competition.owner_user.id if competition.owner_user is not None else -1,
+            'expense': competition.expense,
+            'experts': [{
+                'name': ex.name,
+                'username': ex.username
+            } for ex in competition.experts]
         })
 
 

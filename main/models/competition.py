@@ -43,6 +43,8 @@ class Competition(models.Model):
     owner_user = models.ForeignKey('User', related_name='+', null=True)
     experts = models.ManyToManyField('User', related_name='scored_competitions')
     sponsor = models.ForeignKey('Lab', related_name='sponsored_competitions', null=True)
+    # 费用二维码
+    expense = models.CharField(max_length=100, default='')
 
     objects = models.Manager()
     enabled = EnabledManager()
