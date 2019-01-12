@@ -7,6 +7,8 @@ from django.views.generic import View
 from main.models.activity import *
 
 from admin.utils.decorators import *
+
+
 class ActivityView(View):
     @fetch_record(Activity.objects, 'mod', 'id')
     @require_cookie
@@ -20,7 +22,14 @@ class ActivityView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'name': forms.CharField(max_length=50,),'status': forms.IntegerField(required=False,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_user': forms.IntegerField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'unit': forms.CharField(max_length=20,required=False,),'user_type': forms.IntegerField(required=False,),'is_enabled': forms.BooleanField(required=False),
+        'name': forms.CharField(max_length=50, ), 'status': forms.IntegerField(required=False, ),
+        'content': forms.CharField(max_length=1000, ), 'deadline': forms.DateTimeField(required=False, ),
+        'time_started': forms.DateTimeField(required=False, ), 'time_ended': forms.DateTimeField(required=False, ),
+        'time_created': forms.DateTimeField(required=False, ), 'allow_user': forms.IntegerField(required=False, ),
+        'province': forms.CharField(max_length=20, required=False, ),
+        'city': forms.CharField(max_length=20, required=False, ),
+        'unit': forms.CharField(max_length=20, required=False, ), 'user_type': forms.IntegerField(required=False, ),
+        'is_enabled': forms.BooleanField(required=False),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -32,6 +41,7 @@ class ActivityView(View):
         template = loader.get_template("activity/activity.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class ActivityList(View):
     @require_cookie
@@ -74,6 +84,8 @@ class ActivityList(View):
             template = loader.get_template("activity/index.html")
             context = Context({'rb': 'activity', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class ActivityCommentView(View):
     @fetch_record(ActivityComment.objects, 'mod', 'id')
     @require_cookie
@@ -87,7 +99,7 @@ class ActivityCommentView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'content': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),
+        'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -100,6 +112,7 @@ class ActivityCommentView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class ActivityCommentList(View):
     @require_cookie
     @require_role('yz')
@@ -110,7 +123,8 @@ class ActivityCommentList(View):
         if kwargs["id"] is not None:
             list = ActivityComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("activity/activity_comment_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_comment', 'user': request.user})
+            context = Context(
+                {'page': page, 'list': list, 'redir': 'admin:activity:activity_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -141,6 +155,8 @@ class ActivityCommentList(View):
             template = loader.get_template("activity/index.html")
             context = Context({'rb': 'activity_comment', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class ActivityLikerView(View):
     @fetch_record(ActivityLiker.objects, 'mod', 'id')
     @require_cookie
@@ -154,7 +170,7 @@ class ActivityLikerView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'time_created': forms.DateTimeField(required=False,),
+        'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -167,6 +183,7 @@ class ActivityLikerView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class ActivityLikerList(View):
     @require_cookie
     @require_role('yz')
@@ -177,7 +194,8 @@ class ActivityLikerList(View):
         if kwargs["id"] is not None:
             list = ActivityLiker.objects.filter(activity_id=kwargs["id"])
             template = loader.get_template("activity/activity_liker_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_liker', 'user': request.user})
+            context = Context(
+                {'page': page, 'list': list, 'redir': 'admin:activity:activity_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -208,6 +226,8 @@ class ActivityLikerList(View):
             template = loader.get_template("activity/index.html")
             context = Context({'rb': 'activity_liker', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class ActivityStageView(View):
     @fetch_record(ActivityStage.objects, 'mod', 'id')
     @require_cookie
@@ -221,7 +241,8 @@ class ActivityStageView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'status': forms.IntegerField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
+        'status': forms.IntegerField(required=False, ), 'time_started': forms.DateTimeField(required=False, ),
+        'time_ended': forms.DateTimeField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -234,6 +255,7 @@ class ActivityStageView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class ActivityStageList(View):
     @require_cookie
     @require_role('yz')
@@ -244,7 +266,8 @@ class ActivityStageList(View):
         if kwargs["id"] is not None:
             list = ActivityStage.objects.filter(activity_id=kwargs["id"])
             template = loader.get_template("activity/activity_stage_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_stage', 'user': request.user})
+            context = Context(
+                {'page': page, 'list': list, 'redir': 'admin:activity:activity_stage', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -275,6 +298,8 @@ class ActivityStageList(View):
             template = loader.get_template("activity/index.html")
             context = Context({'rb': 'activity_stage', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class ActivityUserParticipatorView(View):
     @fetch_record(ActivityUserParticipator.objects, 'mod', 'id')
     @require_cookie
@@ -288,7 +313,7 @@ class ActivityUserParticipatorView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'time_created': forms.DateTimeField(required=False,),
+        'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -301,6 +326,7 @@ class ActivityUserParticipatorView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class ActivityUserParticipatorList(View):
     @require_cookie
     @require_role('yz')
@@ -311,7 +337,8 @@ class ActivityUserParticipatorList(View):
         if kwargs["id"] is not None:
             list = ActivityUserParticipator.objects.filter(activity_id=kwargs["id"])
             template = loader.get_template("activity/activity_user_participator_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_user_participator', 'user': request.user})
+            context = Context({'page': page, 'list': list, 'redir': 'admin:activity:activity_user_participator',
+                               'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")

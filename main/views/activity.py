@@ -7,9 +7,9 @@ from ..models import Activity
 from ..utils import abort
 from ..utils.decorators import *
 
-
 __all__ = ['List', 'Detail', 'ActivityStage', 'UserParticipatorList', 'Search',
            'Screen', 'ActivitySignList']
+
 
 class ActivitySignList(View):
     @fetch_object(Activity.enabled, 'activity')
@@ -137,6 +137,11 @@ class Detail(View):
             'owner': owner.user.name if owner is not None else "",
             'owner_id': owner.user.id if owner is not None else -1,
             'owner_user': activity.owner_user.id if activity.owner_user is not None else -1,
+            'expense': activity.expense,
+            'experts': [{
+                'name': ex.name,
+                'username': ex.username
+            } for ex in activity.experts]
         })
 
 
