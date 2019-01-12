@@ -381,7 +381,7 @@ class UserAchievement(models.Model):
 
     user = models.ForeignKey('User', models.CASCADE, 'achievements')
     description = models.CharField(max_length=100, default='')
-    picture = models.CharField(max_length=100, default='')
+    picture = models.CharField(max_length=1000, default='')
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:

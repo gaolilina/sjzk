@@ -6,7 +6,7 @@ from admin.urls import urlpatterns as admin_urls
 urlpatterns = [
     url(r'^admin/', include(admin_urls, namespace='admin')),
     url(r'^users/', include(user.urls, namespace='user')),
-    url(r'^achievement/', include(achievement.urls), namespace='achievement'),
+    url(r'^achievement/', include(achievement.urls, namespace='achievement')),
     url(r'^users/current/', include(current_user.urls, namespace='current_user')),
     url(r'^teams/', include(team.urls, namespace='team')),
     url(r'^forum/', include(forum.urls, namespace='forum')),

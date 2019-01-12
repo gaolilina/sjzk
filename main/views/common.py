@@ -1555,13 +1555,6 @@ class LabLikerList(LikerList):
         return super().get(request, lab)
 
 # noinspection PyMethodOverriding
-class UserAchievementLikerList(LikerList):
-    @require_token
-    @fetch_object(UserAchievement.objects, 'achievement')
-    def get(self, request, achievement):
-        return super().get(request, achievement)
-
-# noinspection PyMethodOverriding
 class LabAchievementLikerList(LikerList):
     @require_token
     @fetch_object(LabAchievement.objects, 'achievement')

@@ -89,6 +89,4 @@ urls = [
         name='all_achievements'),
     url(r'^achievement/(?P<achievement_id>[0-9]+)/$',
         AllAchievement.as_view(), name='achievement'),
-    url(r'^(?P<user_id>[0-9]+)/achievements/$', AchievementList.as_view(),
-        name='achievements'),
 ]
