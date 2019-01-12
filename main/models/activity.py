@@ -41,7 +41,7 @@ class Activity(models.Model):
     expert_sponsor = models.ForeignKey('User', related_name='expert_sponsored_activities', null=True)
 
     # 专家
-    experts = models.ManyToManyField('User', related_name='activities', null=True, default=None)
+    experts = models.ManyToManyField('User', related_name='activities_as_expert', null=True, default=None)
     # 费用二维码
     expense = models.CharField(max_length=100, default='')
 
