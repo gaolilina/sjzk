@@ -31,14 +31,6 @@ class UserAchievementLikerList(LikerList):
         return JsonResponse({})
 
 
-class UserAchievementLiker(Liker):
-    @fetch_object(UserAchievement.objects, 'achievement')
-    @fetch_object(User.enabled, 'other_user')
-    @require_token
-    def get(self, request, achievement, other_user):
-        return super(UserAchievementLiker, self).get(request, achievement, other_user)
-
-
 class UserAchievementRequire(Liker):
     @fetch_object(UserAchievement.objects, 'achievement')
     @fetch_object(User.enabled, 'other_user')
