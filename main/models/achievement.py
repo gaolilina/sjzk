@@ -13,6 +13,8 @@ class UserAchievement(models.Model):
     description = models.CharField(max_length=100, default='')
     picture = models.CharField(max_length=255, default='')
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
+    likers = models.ManyToManyField('User', through='UserAchievementLiker')
+    requirers = models.ManyToManyField('User', related_name='requireAchievements')
 
     class Meta:
         db_table = 'user_achievement'
