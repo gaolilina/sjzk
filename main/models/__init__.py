@@ -17,3 +17,4 @@ from .report import *
 from .lab import *
 from .topic import *
 from .vote import *
+from .achievement import *

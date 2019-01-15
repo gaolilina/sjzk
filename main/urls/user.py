@@ -84,9 +84,4 @@ urls = [
         UserVisitorList.as_view(), name='visitors'),
     # 推荐
     url(r'^recommend/', UserRecommend.as_view(), name='recommend_users'),
-    # 成果
-    url(r'^achievements/$', AllAchievementList.as_view(),
-        name='all_achievements'),
-    url(r'^achievement/(?P<achievement_id>[0-9]+)/$',
-        AllAchievement.as_view(), name='achievement'),
 ]

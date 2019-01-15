@@ -11,7 +11,7 @@ __all__ = ['User', 'UserAction', 'UserActionLiker', 'UserActionComment',
            'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
            'UserFriendRequest', 'UserLiker', 'UserTag', 'UserValidationCode',
            'UserVisitor', 'UserFeedback', 'UserFeature', 'UserBehavior',
-           'UserScore', 'UserActionFavorer', 'UserTagLiker', 'UserAchievement', 'UserAchievementLiker']
+           'UserScore', 'UserActionFavorer', 'UserTagLiker']
 
 
 class User(models.Model):
@@ -375,24 +375,3 @@ class UserTagLiker(Liker):
 
     class Meta:
         db_table = 'user_tag_liker'
-
-class UserAchievement(models.Model):
-    """专家成果"""
-
-    user = models.ForeignKey('User', models.CASCADE, 'achievements')
-    description = models.CharField(max_length=100, default='')
-    picture = models.CharField(max_length=255, default='')
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-
-    class Meta:
-        db_table = 'user_achievement'
-        ordering = ['-time_created']
-
-class UserAchievementLiker(Liker):
-    """团队动态点赞记录"""
-
-    liked = models.ForeignKey('UserAchievement', models.CASCADE, 'likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_user_achievements')
-
-    class Meta:
-        db_table = 'user_achievement_liker'

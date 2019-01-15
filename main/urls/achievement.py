@@ -15,4 +15,10 @@ urls = [
     # 发布/获取成果
     url(r'^(?P<user_id>[0-9]+)/achievements/$', AchievementList.as_view(),
         name='achievements'),
+    # 成果列表
+    url(r'^$', AllAchievementList.as_view(),
+        name='all_achievements'),
+    # 单挑成果
+    url(r'^(?P<achievement_id>[0-9]+)/$',
+        AllAchievement.as_view(), name='achievement'),
 ]
