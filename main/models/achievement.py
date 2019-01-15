@@ -22,7 +22,7 @@ class UserAchievement(models.Model):
 class UserAchievementLiker(Liker):
     """成果点赞记录"""
 
-    liked = models.ForeignKey('UserAchievement', models.CASCADE, 'likers')
+    liked = models.ForeignKey('UserAchievement', models.CASCADE, 'liker')
     liker = models.ForeignKey('User', models.CASCADE, 'liked_user_achievements')
 
     class Meta:

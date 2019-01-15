@@ -18,6 +18,18 @@ class UserAchievementLikerList(LikerList):
     def get(self, request, achievement):
         return super().get(request, achievement)
 
+    @require_token
+    @fetch_object(UserAchievement.objects, 'achievement')
+    def post(self, request, achievement):
+        UserAchievementLiker(liked=achievement, liker=request.user).save()
+        return JsonResponse({})
+
+    @require_token
+    @fetch_object(UserAchievement.objects, 'achievement')
+    def delete(self, request, achievement):
+        UserAchievementLiker.objects.get(liked=achievement, liker=request.user).delete()
+        return JsonResponse({})
+
 
 class UserAchievementLiker(Liker):
     @fetch_object(UserAchievement.objects, 'achievement')
