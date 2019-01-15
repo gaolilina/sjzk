@@ -148,7 +148,7 @@ class Detail(View):
             'experts': [{
                 'name': ex.name,
                 'username': ex.username
-            } for ex in competition.experts]
+            } for ex in competition.experts.all()]
         })
 
 

@@ -141,7 +141,7 @@ class Detail(View):
             'experts': [{
                 'name': ex.name,
                 'username': ex.username
-            } for ex in activity.experts]
+            } for ex in activity.experts.all()]
         })
 
 
