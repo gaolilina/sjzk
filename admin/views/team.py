@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
+from main.models import TeamAchievement
 from main.models.team import *
 
 from admin.utils.decorators import *

@@ -15,6 +15,7 @@ __all__ = ['require_cookie', 'require_role', 'fetch_record', 'validate_args2', '
 def require_cookie(function):
     """验证cookie，对非登陆用户跳转到登陆页面
     """
+
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
         username = request.COOKIES.get('usr')
@@ -32,10 +33,13 @@ def require_cookie(function):
             return HttpResponseRedirect(reverse("admin:login"))
         except AdminUser.DoesNotExist:
             return HttpResponseRedirect(reverse("admin:login"))
+
     return decorator
 
-def require_role(role = None):
+
+def require_role(role=None):
     """验证用户权限"""
+
     def decorator(function):
         @wraps(function)
         def inner(self, request, *args, **kwargs):
@@ -52,12 +56,16 @@ def require_role(role = None):
                     return function(self, request, *args, **kwargs)
                 else:
                     return HttpResponseRedirect(reverse("admin:login"))
+
         return inner
+
     return decorator
+
 
 def fetch_record(model, object_name, col):
     """根据url中的id抓取数据模型
     """
+
     def decorator(function):
         @wraps(function)
         def inner(*args, **kwargs):
@@ -71,14 +79,18 @@ def fetch_record(model, object_name, col):
                 else:
                     kwargs[object_name] = obj
             return function(*args, **kwargs)
+
         return inner
+
     return decorator
+
 
 def validate_args2(d):
     """对被装饰的方法利用 "参数名/表单模型" 字典进行输入数据验证，验证后的数据
     作为关键字参数传入view函数中，若部分数据非法则直接返回400 Bad Request
     同main.util.decorator.vlidate_args，针对checkbox提交有修正
     """
+
     def decorator(function):
         @wraps(function)
         def inner(self, request, *args, **kwargs):
@@ -100,8 +112,11 @@ def validate_args2(d):
                 except ValidationError:
                     abort(400, 'invalid argument "%s"' % k)
             return function(self, request, *args, **kwargs)
+
         return inner
+
     return decorator
+
 
 def admin_log(table, id, type, user):
     """记录操作日志
