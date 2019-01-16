@@ -87,11 +87,10 @@ class AllAchievementList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @require_verification_token
-    @fetch_object(User.enabled, 'user')
     @validate_args({
         'description': forms.CharField(min_length=1, max_length=100),
     })
-    def post(self, request, user, description):
+    def post(self, request, description):
         """发布成果
 
         :param description: 成果描述
@@ -100,7 +99,7 @@ class AllAchievementList(View):
         if check_bad_words(description):
             abort(403, '含有非法词汇')
 
-        achievement = UserAchievement(user=user, description=description)
+        achievement = UserAchievement(user=request.user, description=description)
         pics = [request.FILES.get('image'), request.FILES.get('image2'), request.FILES.get('image3')]
         if len(pics) != 0:
             filenames = []
