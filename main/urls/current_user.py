@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from main.views.auth import IdentityVerificationView
+from main.views.user import FriendList
 from ..views.current_user import *
 from ..views.common import *
 from ..views.forum import BoardList
