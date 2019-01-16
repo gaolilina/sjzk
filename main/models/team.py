@@ -4,7 +4,6 @@ from django.utils import timezone
 from . import EnabledManager, Action, Comment, Follower, Liker, Tag, \
     Visitor, Favorer
 
-
 __all__ = ['Team', 'TeamAction', 'TeamActionLiker', 'TeamActionComment',
            'TeamAchievement', 'TeamComment', 'TeamFollower', 'TeamInvitation',
            'TeamLiker', 'TeamMember', 'TeamMemberRequest', 'TeamNeed',
@@ -78,19 +77,6 @@ class TeamActionComment(Comment):
     class Meta:
         db_table = 'team_action_comment'
         ordering = ['time_created']
-
-
-class TeamAchievement(models.Model):
-    """团队成果"""
-
-    team = models.ForeignKey('Team', models.CASCADE, 'achievements')
-    description = models.CharField(max_length=100, default='')
-    picture = models.CharField(max_length=100, default='')
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-
-    class Meta:
-        db_table = 'team_achievement'
-        ordering = ['-time_created']
 
 
 class TeamComment(Comment):
@@ -296,7 +282,7 @@ class ExternalTask(models.Model):
                  ('等待完成', 2), ('等待验收', 3),
                  ('再次提交', 4), ('等待支付', 6),
                  ('再次支付', 7), ('等待确认', 8),
-                 ('按时结束', 9),('超时结束', 10)))
+                 ('按时结束', 9), ('超时结束', 10)))
     deadline = models.DateField(db_index=True)
     assign_num = models.IntegerField(default=1)
     submit_num = models.IntegerField(default=1)
@@ -356,6 +342,7 @@ class TeamFeature(models.Model):
     class Meta:
         db_table = 'team_feature'
 
+
 class TeamActionFavorer(Favorer):
     """团队动态收藏记录"""
 
@@ -364,6 +351,7 @@ class TeamActionFavorer(Favorer):
 
     class Meta:
         db_table = 'team_action_favorer'
+
 
 class TeamTagLiker(Liker):
     """团队标签点赞记录"""
