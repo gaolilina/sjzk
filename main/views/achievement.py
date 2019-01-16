@@ -4,8 +4,7 @@ from django.views.generic import View
 
 from main.utils import abort, save_uploaded_image
 from main.utils.dfa import check_bad_words
-from ..models import User, UserAchievementLiker, UserAchievement
-
+from ..models import UserAchievementLiker, UserAchievement
 from ..utils.decorators import *
 
 
@@ -30,13 +29,13 @@ class UserAchievementRequireView(View):
     @require_token
     @fetch_object(UserAchievement.objects, 'achievement')
     def post(self, request, achievement):
-        achievement.requires.add(request.user)
+        achievement.requirers.add(request.user)
         return JsonResponse({})
 
     @require_token
     @fetch_object(UserAchievement.objects, 'achievement')
     def delete(self, request, achievement):
-        achievement.requires.remove(request.user)
+        achievement.requirers.remove(request.user)
         return JsonResponse({})
 
 
