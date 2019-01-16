@@ -21,7 +21,7 @@ class UserAchievementLikerView(View):
     @require_token
     @fetch_object(UserAchievement.objects, 'achievement')
     def delete(self, request, achievement):
-        UserAchievementLiker.objects.get(liked=achievement, liker=request.user).delete()
+        UserAchievementLiker.objects.filter(liked=achievement, liker=request.user).delete()
         return JsonResponse({})
 
 
@@ -42,7 +42,7 @@ class UserAchievementRequireView(View):
 
 
 # noinspection PyUnusedLocal
-class AllAchievementList(View):
+class AllUserAchievementListView(View):
     ORDERS = ('time_created', '-time_created')
 
     @require_token
@@ -117,7 +117,7 @@ class AllAchievementList(View):
 
 
 # noinspection PyUnusedLocal
-class AllAchievement(View):
+class AllUserAchievementView(View):
     @fetch_object(UserAchievement.objects, 'achievement')
     @require_verification_token
     def delete(self, request, user, achievement):
