@@ -10,6 +10,7 @@ from ..utils.decorators import *
 
 # noinspection PyMethodOverriding
 class UserAchievementLikerView(View):
+    """点赞和取消点赞"""
 
     @require_token
     @fetch_object(UserAchievement.objects, 'achievement')
@@ -25,6 +26,7 @@ class UserAchievementLikerView(View):
 
 
 class UserAchievementRequireView(View):
+    """需求和取消需求"""
 
     @require_token
     @fetch_object(UserAchievement.objects, 'achievement')

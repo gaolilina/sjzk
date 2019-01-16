@@ -51,7 +51,7 @@ class User(models.Model):
     id_number = models.CharField(max_length=18, default='')
     id_card = models.CharField(max_length=100, default='')
 
-    # 是否通过身份验证，0:未提交, 1:待审核, 2:审核通过, 3:审核未通过,请重新提交
+    # 是否通过资格验证，0:未提交, 1:待审核, 2:审核通过, 3:审核未通过,请重新提交
     is_role_verified = models.IntegerField(default=0, db_index=True)
     role = models.CharField(max_length=20, default='')
     other_number = models.CharField(max_length=20, default='')

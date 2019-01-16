@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.auth import IdentityVerificationView
 from ..views.current_user import *
 from ..views.common import *
 from ..views.forum import BoardList
@@ -15,14 +16,7 @@ urls = [
     url(r'^profile/$', Profile.as_view(), name='profile'),
     url(r'^getui/$', Getui.as_view(), name='getui'),
     # 实名认证
-    url(r'^identity_verification/$',
-        IdentityVerification.as_view(), name='identity_verification'),
-    # eid认证
-    url(r'^eid_identity_verification/$',
-        EidIdentityVerification.as_view(), name='eid_identity_verification'),
-    # 身份认证
-    url(r'^other_identity_verification/$', OtherIdentityVerification.as_view(),
-        name='other_identity_verification'),
+    url(r'^identity_verification/$', IdentityVerificationView.as_view(), name='identity_verification'),
     # 动态
     url(r'^user_actions/$', UserActionsList.as_view(), name='user_actions'),
     url(r'^team_actions/$', TeamActionsList.as_view(), name='team_actions'),

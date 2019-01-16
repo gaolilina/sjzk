@@ -7,31 +7,13 @@ from django.views.generic import View
 from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
 from rongcloud import RongCloud
 from ..models import *
-from ..utils import abort, action, save_uploaded_image, identity_verify, \
-    get_score_stage, eid_verify
+from ..utils import abort, save_uploaded_image, get_score_stage
 from ..utils import action
 from ..utils.decorators import *
 from ..utils.dfa import check_bad_words
 from ..utils.recommender import record_like_user, record_like_team
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
-    ExperienceList_, FriendList, Friend as Friend_
-
-# __all__ = ['Username', 'Password', 'Icon', 'IDCard', 'OtherCard', 'Profile',
-#            'ExperienceList', 'FollowedUserList', 'FollowedUser',
-#            'FollowedTeamList', 'FollowedTeam', 'FriendList', 'Friend',
-#            'FriendRequestList', 'FriendRequest', 'LikedUser', 'LikedTeam',
-#            'LikedActivity', 'LikedCompetition', 'LikedUserAction',
-#            'LikedTeamAction', 'LikedUserTag', 'LikedTeamTag',
-#            'RelatedTeamList', 'OwnedTeamList', 'Getui',
-#            'InvitationList', 'Invitation', 'IdentityVerification',
-#            'ActivityList', 'Feedback', 'InvitationCode', 'BindPhoneNumber',
-#            'UserScoreRecord', 'CompetitionList', 'EidIdentityVerification',
-#            'OtherIdentityVerification', 'Inviter', 'FollowedTeamNeedList',
-#            'FollowedTeamNeed', 'FollowedActivityList', 'FollowedActivity',
-#            'FollowedCompetitionList', 'FollowedCompetition', 'LikedSystemAction',
-#            'FavoredActivity', 'FavoredCompetition', 'FavoredUserAction',
-#            'FavoredTeamAction', 'FavoredSystemAction', 'AchievementList'
-#            ]
+    ExperienceList_, Friend as Friend_
 
 
 class Username(View):
@@ -195,6 +177,7 @@ class OtherCard(View):
             abort(200)
         abort(400, '图片保存失败')
 
+
 class Getui(View):
     @require_token
     @validate_args({
@@ -313,143 +296,6 @@ class Profile(Profile_):
                 if k in kwargs:
                     setattr(request.user, k, kwargs[k])
 
-        request.user.save()
-        abort(200)
-
-
-# noinspection PyClassHasNoInit
-class IdentityVerification(Profile_):
-    @require_token
-    @validate_args({
-        'real_name': forms.CharField(max_length=20),
-        'id_number': forms.CharField(min_length=18, max_length=18),
-    })
-    def post(self, request, **kwargs):
-        """实名认证
-
-        :param kwargs:
-            real_name: 真实姓名
-            id_number: 身份证号码
-        """
-
-        if not request.user.id_card:
-            abort(403, '请先上传身份证照片')
-        id_keys = ('real_name', 'id_number')
-        # 调用第三方接口验证身份证的正确性
-        res = identity_verify(kwargs['id_number'], kwargs['real_name'])
-        if res != 1:
-            abort(404, '身份证号和姓名不匹配')
-
-        # 用户未提交实名信息或者等待重新审核
-        if request.user.is_verified in [0, 3]:
-            for k in id_keys:
-                setattr(request.user, k, kwargs[k])
-        # 将实名认证状态码改为1表示待审核状态
-        request.user.is_verified = 1
-        request.user.save()
-        abort(200)
-
-
-# noinspection PyClassHasNoInit
-class EidIdentityVerification(Profile_):
-    @require_token
-    @validate_args({
-        'real_name': forms.CharField(max_length=20),
-        'id_number': forms.CharField(min_length=18, max_length=18),
-        'eid_issuer': forms.CharField(max_length=20),
-        'eid_issuer_sn': forms.CharField(max_length=20),
-        'eid_sn': forms.CharField(max_length=50),
-        'data_to_sign': forms.CharField(),
-        'eid_sign': forms.CharField(),
-        'eid_sign_algorithm': forms.CharField(),
-    })
-    def post(self, request, **kwargs):
-        """eid实名认证
-
-        :param kwargs:
-            real_name: 真实姓名
-            id_number: 身份证号码
-            eid_issuer: eid相关信息
-            eid_issuer_sn: eid相关信息
-            eid_sn: eid: eid相关信息
-            data_to_sign: 待签原文的base64字符串
-            eid_sign: eid卡对签名原文的签名结果
-            eid_sign_algorithm: eid卡进行签名的类型
-        """
-
-        id_keys = ('real_name', 'id_number', 'eid_issuer', 'eid_issuer_sn',
-                   'eid_sn')
-
-        # 调用eid接口验证用户信息
-        data = {
-            'eidIssuer': kwargs['eid_issuer'],
-            'eidIssuerSn': kwargs['eid_issuer_sn'],
-            'eidSn': kwargs['eid_sn'],
-            'idNum': kwargs['id_number'],
-            'name': kwargs['real_name'],
-            'dataToSign': kwargs['data_to_sign'],
-            'eidSign': kwargs['eid_sign'],
-            'eidSignAlgorithm': kwargs['eid_sign_algorithm'],
-        }
-        res = eid_verify(data)
-        if res != 1:
-            abort(res, 'eid信息与身份证信息不符')
-
-        # 验证成功后，若用户当前的状态时待审核或者审核未通过，则将用户相关信息保存到数据库
-        if request.user.is_verified in [0, 3]:
-            for k in id_keys:
-                if k in kwargs:
-                    setattr(request.user, k, kwargs[k])
-
-        # 积分相关
-        if not request.user.id_card:
-            request.user.score += get_score_stage(5)
-            request.user.score_records.create(
-                score=get_score_stage(5), type="初始数据",
-                description="首次Eid认证")
-        # 将实名认证状态码改为4表示EID认证通过
-        request.user.is_verified = 4
-        request.user.save()
-        abort(200)
-
-
-# noinspection PyClassHasNoInit
-class OtherIdentityVerification(Profile_):
-    @require_token
-    @validate_args({
-        'role': forms.CharField(max_length=20),
-        'unit1': forms.CharField(max_length=20),
-        'unit2': forms.CharField(required=False, max_length=20),
-        'real_name': forms.CharField(required=False, max_length=20),
-        'other_number': forms.CharField(max_length=20),
-        'profession': forms.CharField(required=False, max_length=20),
-    })
-    def post(self, request, **kwargs):
-        """身份认证
-
-        :param kwargs:
-            role: 角色
-            unit1: 机构
-            unit2: 次级机构
-            real_name: 真实姓名
-            other_number: 证件号码
-            profession: 专业
-        """
-
-        if not request.user.other_card:
-            abort(403, '请先上传照片')
-
-        role_keys = ('role', 'other_number', 'unit1', 'unit2', 'real_name',
-                     'profession')
-
-        # 用户未提交身份审核信息或者审核未通过
-        if request.user.is_role_verified in [0, 3]:
-            for k in role_keys:
-                if k in kwargs:
-                    setattr(request.user, k, kwargs[k])
-
-        # 将身份认证状态设为1表示待审核
-        request.user.is_role_verified = 1
         request.user.save()
         abort(200)
 
@@ -739,6 +585,7 @@ class FollowedLab(View):
             qs.delete()
             abort(200)
         abort(403, '未关注过该团队')
+
 
 class FollowedTeamNeedList(View):
     @require_token
@@ -1251,6 +1098,7 @@ class LikedLab(LikedEntity):
         lab.save()
         return super().delete(request, lab)
 
+
 # noinspection PyMethodOverriding
 class LikedActivity(LikedEntity):
     @fetch_object(Activity.enabled, 'activity')
@@ -1325,6 +1173,7 @@ class LikedLabAction(LikedEntity):
     def delete(self, request, action):
         return super().delete(request, action)
 
+
 # noinspection PyMethodOverriding
 class LikedSystemAction(LikedEntity):
     @fetch_object(SystemAction.objects, 'action')
@@ -1338,6 +1187,7 @@ class LikedSystemAction(LikedEntity):
     @fetch_object(SystemAction.objects, 'action')
     def delete(self, request, action):
         return super().delete(request, action)
+
 
 # noinspection PyMethodOverriding
 class LikedUserTag(LikedEntity):
@@ -1353,6 +1203,7 @@ class LikedUserTag(LikedEntity):
     def delete(self, request, tag):
         return super().delete(request, tag)
 
+
 # noinspection PyMethodOverriding
 class LikedTeamTag(LikedEntity):
     @fetch_object(TeamTag.objects, 'tag')
@@ -1366,6 +1217,7 @@ class LikedTeamTag(LikedEntity):
     @fetch_object(TeamTag.objects, 'tag')
     def delete(self, request, tag):
         return super().delete(request, tag)
+
 
 class RelatedTeamList(View):
     ORDERS = ('team__time_created', '-team__time_created',
@@ -1666,9 +1518,9 @@ class CompetitionList(View):
                   'time_created': a.time_created,
                   'province': a.province} for a in qs]
             return JsonResponse({'count': c, 'list': l})
-        
+
         ctp = CompetitionTeamParticipator.objects.filter(
-                team__members__user=request.user).distinct()
+            team__members__user=request.user).distinct()
         qs = ctp.order_by(k)[offset: offset + limit]
         c = ctp.count()
         l = [{'id': a.competition.id,
@@ -1685,21 +1537,21 @@ class CompetitionList(View):
               } for a in qs]
 
         ctp2 = CompetitionTeamParticipator.objects.filter(
-                team__owner=request.user).distinct()
+            team__owner=request.user).distinct()
         qs2 = ctp2.order_by(k)[offset: offset + limit]
         c2 = ctp2.count()
         l2 = [{'id': a.competition.id,
-              'name': a.competition.name,
-              'liker_count': a.competition.likers.count(),
-              'time_started': a.competition.time_started,
-              'time_ended': a.competition.time_ended,
-              'deadline': a.competition.deadline,
-              'team_participator_count':
-                  a.competition.team_participators.count(),
-              'time_created': a.competition.time_created,
-              'team_id': a.team.id,
-              'team_name': a.team.name,
-              } for a in qs2]
+               'name': a.competition.name,
+               'liker_count': a.competition.likers.count(),
+               'time_started': a.competition.time_started,
+               'time_ended': a.competition.time_ended,
+               'deadline': a.competition.deadline,
+               'team_participator_count':
+                   a.competition.team_participators.count(),
+               'time_created': a.competition.time_created,
+               'team_id': a.team.id,
+               'team_name': a.team.name,
+               } for a in qs2]
         return JsonResponse({'count': c + c2, 'list': l + l2})
 
 
@@ -2037,6 +1889,7 @@ class FavoredLabAction(FavoredEntity):
     @fetch_object(LabAction.objects, 'action')
     def delete(self, request, action):
         return super().delete(request, action)
+
 
 # noinspection PyMethodOverriding
 class FavoredSystemAction(FavoredEntity):
