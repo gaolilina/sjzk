@@ -30,13 +30,13 @@ class UserAchievementRequireView(View):
     @require_token
     @fetch_object(UserAchievement.objects, 'achievement')
     def post(self, request, achievement):
-        achievement.requires_set.add(request.user)
+        achievement.requires.add(request.user)
         return JsonResponse({})
 
     @require_token
     @fetch_object(UserAchievement.objects, 'achievement')
     def delete(self, request, achievement):
-        achievement.requires_set.remove(request.user)
+        achievement.requires.remove(request.user)
         return JsonResponse({})
 
 
