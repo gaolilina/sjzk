@@ -1,7 +1,7 @@
 from django import forms
+from django.views.generic import View
 
-from ..utils import abort, identity_verify, \
-    get_score_stage, eid_verify
+from ..utils import abort, identity_verify, get_score_stage, eid_verify,save_uploaded_image
 from ..utils.decorators import *
 from ..views.user import Profile as Profile_
 
@@ -116,8 +116,7 @@ class OtherIdentityVerificationView(Profile_):
             role: 角色
             unit1: 机构
         """
-        if request.user.is_verified in [0, 3]:
-            abort(403, '请先进行实名认证')
+        checkIdVerified(request.user)
         if not request.user.other_card:
             abort(403, '请先上传照片')
 
@@ -133,3 +132,78 @@ class OtherIdentityVerificationView(Profile_):
         request.user.is_role_verified = 1
         request.user.save()
         abort(200)
+
+
+class IDCardView(View):
+    @require_token
+    def get(self, request):
+        """检查是否已上传身份证照片"""
+
+        if request.user.id_card:
+            abort(200)
+        abort(404, '未设置头像')
+
+    @require_token
+    def post(self, request):
+        """上传身份证照片"""
+
+        # 等待审核或者已通过审核不能上传照片
+        if request.user.is_verified in [1, 2]:
+            abort(403, '等待审核或已实名认证')
+        if request.user.is_verified == 4:
+            abort(403, '已通过eid认证')
+
+        id_card = request.FILES.get('image')
+        if not id_card:
+            abort(400, '图片上传失败')
+
+        filename = save_uploaded_image(id_card, is_private=True)
+        if filename:
+            if not request.user.id_card:
+                request.user.score += get_score_stage(5)
+                request.user.score_records.create(
+                    score=get_score_stage(5), type="初始数据",
+                    description="首次实名认证")
+            request.user.id_card = filename
+            request.user.save()
+            abort(200)
+        abort(400, '图片保存失败')
+
+
+class OtherCardView(View):
+    @require_token
+    def get(self, request):
+        """检查是否已上传其他证件照片"""
+
+        if request.user.other_card:
+            abort(200)
+        abort(404, '未上传图片')
+
+    @require_token
+    def post(self, request):
+        """上传其他证件照片"""
+        checkIdVerified(request.user)
+
+        if request.user.is_role_verified:
+            abort(403, '已经通过认证')
+
+        other_card = request.FILES.get('image')
+        if not other_card:
+            abort(400, '图片上传失败')
+
+        filename = save_uploaded_image(other_card, is_private=True)
+        if filename:
+            if not request.user.other_card:
+                request.user.score += get_score_stage(5)
+                request.user.score_records.create(
+                    score=get_score_stage(5), type="初始数据",
+                    description="首次身份认证")
+            request.user.other_card = filename
+            request.user.save()
+            abort(200)
+        abort(400, '图片保存失败')
+
+
+def checkIdVerified(user):
+    if user.is_verified in [0, 3]:
+        abort(403, '请先进行实名认证')

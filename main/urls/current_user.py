@@ -11,8 +11,6 @@ urls = [
     url(r'^username/$', Username.as_view(), name='username'),
     url(r'^password/$', Password.as_view(), name='password'),
     url(r'^icon/$', Icon.as_view(), name='icon'),
-    url(r'^id_card/$', IDCard.as_view(), name='id_card'),
-    url(r'^other_card/$', OtherCard.as_view(), name='other_card'),
     url(r'^profile/$', Profile.as_view(), name='profile'),
     url(r'^getui/$', Getui.as_view(), name='getui'),
     # 实名认证
