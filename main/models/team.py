@@ -5,7 +5,7 @@ from . import EnabledManager, Action, Comment, Follower, Liker, Tag, \
     Visitor, Favorer
 
 __all__ = ['Team', 'TeamAction', 'TeamActionLiker', 'TeamActionComment',
-           'TeamAchievement', 'TeamComment', 'TeamFollower', 'TeamInvitation',
+           'TeamComment', 'TeamFollower', 'TeamInvitation',
            'TeamLiker', 'TeamMember', 'TeamMemberRequest', 'TeamNeed',
            'TeamTag', 'TeamVisitor', 'InternalTask', 'ExternalTask',
            'TeamFeature', 'TeamScore', 'TeamNeedFollower', 'TeamActionFavorer',
