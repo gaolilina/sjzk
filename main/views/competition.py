@@ -7,11 +7,11 @@ from ..models import Competition, Team, CompetitionFile as File, CompetitionTeam
 from ..utils import abort, save_uploaded_file
 from ..utils.decorators import *
 
-
 __all__ = ['List', 'Detail', 'CompetitionStageList', 'CompetitionFile', 'CompetitionFileScore',
            'CompetitionFileList', 'TeamParticipatorList', 'Search', 'Screen',
            'CompetitionNotification', 'CompetitionAwardList', 'CompetitionFileExpert',
            'CompetitionExpertList', 'CompetitionTeamScore', 'CompetitionSignList']
+
 
 class CompetitionSignList(View):
     @fetch_object(Competition.enabled, 'competition')
@@ -43,6 +43,7 @@ class CompetitionSignList(View):
             else:
                 abort(403)
             abort(200)
+
 
 class List(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
@@ -147,7 +148,8 @@ class Detail(View):
             'expense': competition.expense,
             'experts': [{
                 'name': ex.name,
-                'username': ex.username
+                'username': ex.username,
+                'id': ex.id
             } for ex in competition.experts.all()]
         })
 
@@ -247,7 +249,7 @@ class CompetitionNotification(View):
               'notification': p.notification,
               'time_created': p.time_created} for p in qs]
         return JsonResponse({'count': c, 'list': l})
-    
+
 
 class CompetitionFileList(View):
     @fetch_object(Competition.enabled, 'competition')
@@ -350,7 +352,7 @@ class CompetitionFile(View):
                 competition_file.save()
             except ObjectDoesNotExist:
                 competition.team_files.create(
-                    file=filename,status=competition.status, team=team, type=kwargs['type'])
+                    file=filename, status=competition.status, team=team, type=kwargs['type'])
             abort(200)
         abort(400, '文件保存失败')
 
@@ -379,14 +381,15 @@ class CompetitionFileScore(View):
         'comment': forms.CharField(required=False),
     })
     def post(self, request, file, score='', comment=''):
-        file.score=score
-        file.comment=comment
+        file.score = score
+        file.comment = comment
         file.save()
         sum = 0
         for f in File.objects.filter(competition=file.competition, team=file.team, status=file.status):
             sum += int(f.score)
         CompetitionTeamParticipator.objects.filter(competition=file.competition, team=file.team).update(score=sum)
         abort(200)
+
 
 class CompetitionTeamScore(View):
     @fetch_object(CompetitionTeamParticipator.objects, 'team_participator')
@@ -395,9 +398,10 @@ class CompetitionTeamScore(View):
         'score': forms.CharField(),
     })
     def post(self, request, team_participator, score=''):
-        team_participator.score=score
+        team_participator.score = score
         team_participator.save()
         abort(200)
+
 
 class CompetitionExpertList(View):
     @fetch_object(Competition.enabled, 'competition')
@@ -434,6 +438,7 @@ class CompetitionExpertList(View):
               'profession': user.profession,
               'score': user.score} for user in qs]
         return JsonResponse({'count': c, 'list': l})
+
 
 class TeamParticipatorList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name', '-score')
@@ -480,7 +485,8 @@ class TeamParticipatorList(View):
         else:
             if competition.province and competition.province != team.province:
                 abort(403, '团队所在地区不符')
-            if competition.city and (competition.city != team.city and competition.city.replace('市', '') != team.city.replace('市', '')):
+            if competition.city and (
+                    competition.city != team.city and competition.city.replace('市', '') != team.city.replace('市', '')):
                 abort(403, '团队所在地区不符')
             for m in team.members.all():
                 if m.user.is_verified not in [2, 4]:
@@ -491,7 +497,7 @@ class TeamParticipatorList(View):
                     elif competition.user_type == 2 and m.user.role != "教师":
                         abort(403, '团队成员角色不符')
                     elif competition.user_type == 3 and \
-                                    m.user.role != "在职":
+                            m.user.role != "在职":
                         abort(403, '团队成员角色不符')
                 if competition.unit and competition.unit != m.user.unit1:
                     abort(403, '团队成员学校不符')

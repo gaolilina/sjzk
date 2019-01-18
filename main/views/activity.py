@@ -140,7 +140,8 @@ class Detail(View):
             'expense': activity.expense,
             'experts': [{
                 'name': ex.name,
-                'username': ex.username
+                'username': ex.username,
+                'id': ex.id
             } for ex in activity.experts.all()]
         })
 
