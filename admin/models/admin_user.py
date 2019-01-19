@@ -51,7 +51,7 @@ class AdminUser(models.Model):
         """保存当前实例并生成序列用户名"""
 
         self.save()
-        self.name = '创易汇后台用户 #{}'.format(self.id)
+        self.name = '智库后台用户 #{}'.format(self.id)
         self.save()
 
     def can_a(self):
