@@ -211,10 +211,9 @@ class Profile(View):
         user = user or request.user
 
         # 更新访客记录
-        if user != request.user:
-            UserVisitor.objects \
-                .update_or_create(visited=user, visitor=request.user)
-            record_view_user(request.user, user)
+        # if user != request.user:
+        #     UserVisitor.objects.update_or_create(visited=user, visitor=request.user)
+        #     record_view_user(request.user, user)
 
         arr1 = []
         arr2 = []
