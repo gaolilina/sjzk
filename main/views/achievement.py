@@ -75,7 +75,7 @@ class AllUserAchievementListView(View):
         achievements = UserAchievement.objects.order_by(k)[i:j]
         l = [{'id': a.id,
               'user_id': a.user.id,
-              'user_name': a.user.name,
+              'user_name': a.user.unit1 if a.user.is_role_verified else a.user.name,
               'icon_url': a.user.icon,
               'description': a.description,
               'picture': a.picture,
