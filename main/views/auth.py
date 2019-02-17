@@ -62,10 +62,18 @@ class Account(View):
         'role': forms.CharField(required=False),
         'openid': forms.CharField(max_length=28, min_length=28, required=False),
     })
-    def post(self, request, phone_number, password, validation_code,
+    def post(self, request, method, phone_number, password, validation_code,
              invitation_code=None, role='', openid=None):
         """注册，若成功返回用户令牌"""
-
+        if method == 'phone':
+            pass
+        elif method == 'wechat':
+            if openid == None:
+                abort(400, 'openid 不能为空')
+                return
+        else:
+            abort(400)
+            return
         if not UserValidationCode.verify(phone_number, validation_code):
             abort(400, '验证码错误')
 
