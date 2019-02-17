@@ -54,6 +54,19 @@ class AllTeamAchievementListView(View):
 
 # noinspection PyUnusedLocal
 class AllTeamAchievementView(View):
+    @require_verification_token
+    @fetch_object(TeamAchievement.objects, 'achievement')
+    def get(self, request, user, achievement):
+        """获取成果详情"""
+        return JsonResponse({
+            'achievement_id': achievement.id,
+            'team_id': achievement.team.id,
+            'team_name': achievement.team.name,
+            'icon_url': achievement.team.icon,
+            'desc': achievement.description,
+            'pics': achievement.picture,
+        })
+
     @fetch_object(TeamAchievement.objects, 'achievement')
     @require_verification_token
     def delete(self, request, team, achievement):
@@ -77,7 +90,7 @@ class TeamAchievementList(View):
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
     def get(self, request, team, offset=0, limit=10, order=1):
-        """获取团队发布的成果
+        """获取某团队发布的成果
 
         :param offset: 偏移量
         :param limit: 数量上限

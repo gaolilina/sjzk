@@ -118,6 +118,23 @@ class AllUserAchievementListView(View):
 
 # noinspection PyUnusedLocal
 class AllUserAchievementView(View):
+    @require_verification_token
+    @fetch_object(UserAchievement.objects, 'achievement')
+    def get(self, request, user, achievement):
+        """获取成果详情"""
+        return JsonResponse({
+            'achievement_id': achievement.id,
+            'user_id': achievement.user.id,
+            'user_name': achievement.user.unit1 if achievement.user.is_role_verified else achievement.user.name,
+            'icon_url': achievement.user.icon,
+            'desc': achievement.description,
+            'pics': achievement.picture,
+            'yes_count': achievement.likers.count(),
+            'is_yes': UserAchievementLiker.objects.filter(liker=request.user, liked=achievement).count() > 0,
+            'require_count': achievement.requirers.count(),
+            'is_require': request.user in achievement.requirers.all(),
+        })
+
     @fetch_object(UserAchievement.objects, 'achievement')
     @require_verification_token
     def delete(self, request, user, achievement):
