@@ -1,9 +1,105 @@
 from django import forms
+from django.db import transaction, IntegrityError
+from django.http import JsonResponse
 from django.views.generic import View
 
-from ..utils import abort, identity_verify, get_score_stage, eid_verify,save_uploaded_image
+from ChuangYi.settings import DEFAULT_ICON_URL, SERVER_URL
+from main.models import User, UserValidationCode
+from rongcloud import RongCloud
+from ..utils import abort, identity_verify, get_score_stage, eid_verify, save_uploaded_image
 from ..utils.decorators import *
 from ..views.user import Profile as Profile_
+
+
+class Account(View):
+    @validate_args({
+        'method': forms.CharField(max_length=20),
+        'username': forms.RegexField(r'^[a-zA-Z0-9_]{4,15}$', strip=True, required=False),
+        'password': forms.CharField(min_length=6, max_length=20, strip=False, required=False),
+        'openid': forms.CharField(min_length=28, max_length=28, required=False)
+    })
+    def get(self, request, method, username=None, password=None, openid=None, **kwargs):
+        if method == 'phone':
+            try:
+                if username.isdigit():
+                    user = User.objects.get(phone_number=username)
+                else:
+                    user = User.objects.get(username=username.lower())
+            except User.DoesNotExist:
+                abort(401, '用户不存在')
+            if not user.check_password(password):
+                abort(401, '密码错误')
+        elif method == 'wechat':
+            try:
+                user = User.objects.get(wechat_id=openid)
+            except User.DoesNotExist:
+                abort(401, '用户不存在')
+        else:
+            abort(400)
+            return
+        # 查找到用户
+        if not user.is_enabled:
+            abort(403, '用户已删除')
+        # user.update_token()
+        if not user.icon:
+            portraitUri = SERVER_URL + user.icon
+        else:
+            portraitUri = DEFAULT_ICON_URL
+        rcloud = RongCloud()
+        r = rcloud.User.getToken(
+            userId=user.id, name=user.name,
+            portraitUri=portraitUri)
+        token = r.result['token']
+        user.token = token
+        user.save()
+        return JsonResponse({'token': user.token})
+
+    @validate_args({
+        'phone_number': forms.CharField(min_length=11, max_length=11),
+        'password': forms.CharField(min_length=6, max_length=32),
+        'validation_code': forms.CharField(min_length=6, max_length=6),
+        'invitation_code': forms.CharField(required=False),
+        'role': forms.CharField(required=False),
+        'openid': forms.CharField(max_length=28, min_length=28, required=False),
+    })
+    def post(self, request, phone_number, password, validation_code,
+             invitation_code=None, role='', openid=None):
+        """注册，若成功返回用户令牌"""
+
+        if not UserValidationCode.verify(phone_number, validation_code):
+            abort(400, '验证码错误')
+
+        with transaction.atomic():
+            try:
+                user = User(phone_number=phone_number, role=role, openid=openid)
+                user.set_password(password)
+                # user.update_token()
+                user.save_and_generate_name()
+                user.create_invitation_code()
+                # 注册成功后给融云服务器发送请求获取Token
+                rcloud = RongCloud()
+                r = rcloud.User.getToken(
+                    userId=user.id, name=user.name,
+                    portraitUri=DEFAULT_ICON_URL)
+                token = r.result['token']
+                user.token = token
+                if invitation_code:
+                    u = User.enabled.filter(invitation_code=invitation_code)
+                    if not u:
+                        abort(404, '推荐码错误')
+                    user.used_invitation_code = invitation_code
+                    u.score_records.create(
+                        score=get_score_stage(4), type="活跃度",
+                        description="邀请码被使用")
+                # 加积分
+                user.score += get_score_stage(3)
+                user.score_records.create(
+                    score=get_score_stage(3), type="初始数据",
+                    description="首次手机号注册")
+                user.save()
+                return JsonResponse({'token': user.token})
+            except IntegrityError:
+                abort(403, '创建用户失败')
 
 
 # noinspection PyClassHasNoInit

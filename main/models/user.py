@@ -81,6 +81,9 @@ class User(models.Model):
     # 个推id
     getui_id = models.CharField(max_length=50, default='')
 
+    # 微信id
+    wechat_id = models.CharField(max_length=28, default=None, null=True)
+
     objects = models.Manager()
     enabled = EnabledManager()
 
