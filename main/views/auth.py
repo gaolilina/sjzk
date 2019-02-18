@@ -61,14 +61,20 @@ class Account(View):
         'invitation_code': forms.CharField(required=False),
         'role': forms.CharField(required=False),
         'openid': forms.CharField(max_length=28, min_length=28, required=False),
+        'nickname': forms.CharField(max_length=15, required=False),
+        'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'icon': forms.CharField(required=False, max_length=255)
     })
     def post(self, request, method, phone_number, password, validation_code,
-             invitation_code=None, role='', openid=None):
+             invitation_code=None, role='', icon=None,
+             openid=None, nickname=None, gender=0, province=None, city=DEFAULT_ICON_URL):
         """注册，若成功返回用户令牌"""
         if method == 'phone':
             pass
         elif method == 'wechat':
-            if openid == None:
+            if openid is None or nickname is None or province is None or city is None:
                 abort(400, 'openid 不能为空')
                 return
         else:
@@ -79,16 +85,20 @@ class Account(View):
 
         with transaction.atomic():
             try:
-                user = User(phone_number=phone_number, role=role, openid=openid)
+                user = User(phone_number=phone_number, role=role, openid=openid, city=city, province=province,
+                            gender=gender, icon = icon)
                 user.set_password(password)
                 # user.update_token()
-                user.save_and_generate_name()
+                if nickname is None:
+                    user.save_and_generate_name()
+                else:
+                    user.name = nickname
                 user.create_invitation_code()
                 # 注册成功后给融云服务器发送请求获取Token
                 rcloud = RongCloud()
                 r = rcloud.User.getToken(
                     userId=user.id, name=user.name,
-                    portraitUri=DEFAULT_ICON_URL)
+                    portraitUri=icon)
                 token = r.result['token']
                 user.token = token
                 if invitation_code:

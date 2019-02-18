@@ -120,8 +120,9 @@ class AllUserAchievementListView(View):
 class AllUserAchievementView(View):
     @require_verification_token
     @fetch_object(UserAchievement.objects, 'achievement')
-    def get(self, request, user, achievement):
+    def get(self, request, achievement):
         """获取成果详情"""
+        user = request.user
         return JsonResponse({
             'achievement_id': achievement.id,
             'user_id': achievement.user.id,
@@ -135,9 +136,10 @@ class AllUserAchievementView(View):
             'is_require': request.user in achievement.requirers.all(),
         })
 
-    @fetch_object(UserAchievement.objects, 'achievement')
     @require_verification_token
-    def delete(self, request, user, achievement):
+    @fetch_object(UserAchievement.objects, 'achievement')
+    def delete(self, request, achievement):
         """删除成果"""
+        user = request.user
         achievement.delete()
         abort(200)
