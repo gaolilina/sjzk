@@ -17,5 +17,5 @@ class Achievement(models.Model):
     likers = models.ManyToManyField('User', related_name='likeAchievements')
 
     class Meta:
-        db_table = 'user_achievement'
+        db_table = 'achievement'
         ordering = ['-time_created']
