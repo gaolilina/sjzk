@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
-from main.models import TeamAchievement
+from main.models import Achievement
 from main.models.team import *
 
 from admin.utils.decorators import *
@@ -201,7 +201,7 @@ class TeamList(View):
             context = Context({'rb': 'team', 'user': request.user})
             return HttpResponse(template.render(context))
 class TeamAchievementView(View):
-    @fetch_record(TeamAchievement.objects, 'mod', 'id')
+    @fetch_record(Achievement.objects, 'mod', 'id')
     @require_cookie
     @require_role('yz')
     def get(self, request, mod):
@@ -209,7 +209,7 @@ class TeamAchievementView(View):
         context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
-    @fetch_record(TeamAchievement.objects, 'mod', 'id')
+    @fetch_record(Achievement.objects, 'mod', 'id')
     @require_cookie
     @require_role('yz')
     @validate_args2({
@@ -234,7 +234,7 @@ class TeamAchievementList(View):
     })
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
-            list = TeamAchievement.objects.filter(team_id=kwargs["id"])
+            list = Achievement.objects.filter(team_id=kwargs["id"])
             template = loader.get_template("team/team_achievement_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_achievement', 'user': request.user})
             return HttpResponse(template.render(context))
@@ -245,7 +245,7 @@ class TeamAchievementList(View):
             county = request.GET.get("county")
 
             template = loader.get_template("team/index.html")
-            if TeamAchievement == Team:
+            if Achievement == Team:
                 redir = 'admin:team:team'
             else:
                 redir = 'admin:team:team_achievement_list'

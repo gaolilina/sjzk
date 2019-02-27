@@ -2,7 +2,7 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
-from main.models import Team, TeamAchievement
+from main.models import Team, Achievement
 from main.utils import abort, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
 from main.utils.dfa import check_bad_words
@@ -40,14 +40,19 @@ class AllTeamAchievementListView(View):
                 time_created: 发布时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        c = TeamAchievement.objects.count()
-        achievements = TeamAchievement.objects.order_by(k)[i:j]
+        c = Achievement.objects.count()
+        # 团队成果，要 team 非空
+        achievements = Achievement.objects.filter(team__isnull=False).order_by(k)[i:j]
         l = [{'id': a.id,
               'team_id': a.team.id,
               'team_name': a.team.name,
               'icon_url': a.team.icon,
               'description': a.description,
               'picture': a.picture,
+              'yes_count': a.likers.count(),
+              'is_yes': request.user in a.likers.all(),
+              'require_count': a.requirers.count(),
+              'is_require': request.user in a.requirers.all(),
               'time_created': a.time_created} for a in achievements]
         return JsonResponse({'count': c, 'list': l})
 
@@ -55,7 +60,7 @@ class AllTeamAchievementListView(View):
 # noinspection PyUnusedLocal
 class AllTeamAchievementView(View):
     @require_verification_token
-    @fetch_object(TeamAchievement.objects, 'achievement')
+    @fetch_object(Achievement.objects, 'achievement')
     def get(self, request, user, achievement):
         """获取成果详情"""
         return JsonResponse({
@@ -67,7 +72,7 @@ class AllTeamAchievementView(View):
             'pics': achievement.picture,
         })
 
-    @fetch_object(TeamAchievement.objects, 'achievement')
+    @fetch_object(Achievement.objects, 'achievement')
     @require_verification_token
     def delete(self, request, team, achievement):
         """删除成果"""
@@ -138,7 +143,7 @@ class TeamAchievementList(View):
                 score=get_score_stage(2), type="初始数据",
                 description="首次发布团队成果")
 
-        achievement = TeamAchievement(team=team, description=description)
+        achievement = Achievement(team=team, description=description)
         picture = request.FILES.get('image')
         if picture:
             filename = save_uploaded_image(picture)

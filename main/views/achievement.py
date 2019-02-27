@@ -4,40 +4,27 @@ from django.views.generic import View
 
 from main.utils import abort, save_uploaded_image
 from main.utils.dfa import check_bad_words
-from ..models import UserAchievementLiker, UserAchievement
+from ..models import Achievement
 from ..utils.decorators import *
 
 
 # noinspection PyMethodOverriding
-class UserAchievementLikerView(View):
-    """点赞和取消点赞"""
+class AchievementDoWhoView(View):
+    """
+    成果都有关联的群体，比如点赞者，需求者，他们称之为 who
+    需要添加或移除 who 中的成员，请使用该类
+    """
 
     @require_token
-    @fetch_object(UserAchievement.objects, 'achievement')
-    def post(self, request, achievement):
-        UserAchievementLiker.objects.get_or_create(liked=achievement, liker=request.user)
+    @fetch_object(Achievement.objects, 'achievement')
+    def post(self, request, achievement, who):
+        achievement[who].add(request.user)
         return JsonResponse({})
 
     @require_token
-    @fetch_object(UserAchievement.objects, 'achievement')
-    def delete(self, request, achievement):
-        UserAchievementLiker.objects.filter(liked=achievement, liker=request.user).delete()
-        return JsonResponse({})
-
-
-class UserAchievementRequireView(View):
-    """需求和取消需求"""
-
-    @require_token
-    @fetch_object(UserAchievement.objects, 'achievement')
-    def post(self, request, achievement):
-        achievement.requirers.add(request.user)
-        return JsonResponse({})
-
-    @require_token
-    @fetch_object(UserAchievement.objects, 'achievement')
-    def delete(self, request, achievement):
-        achievement.requirers.remove(request.user)
+    @fetch_object(Achievement.objects, 'achievement')
+    def delete(self, request, achievement, who):
+        achievement[who].remove(request.user)
         return JsonResponse({})
 
 
@@ -71,8 +58,8 @@ class AllUserAchievementListView(View):
                 time_created: 发布时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        c = UserAchievement.objects.count()
-        achievements = UserAchievement.objects.order_by(k)[i:j]
+        c = Achievement.objects.count()
+        achievements = Achievement.objects.filter(team=None).order_by(k)[i:j]
         l = [{'id': a.id,
               'user_id': a.user.id,
               'user_name': a.user.unit1 if a.user.is_role_verified else a.user.name,
@@ -81,7 +68,7 @@ class AllUserAchievementListView(View):
               'picture': a.picture,
               'time_created': a.time_created,
               'yes_count': a.likers.count(),
-              'is_yes': UserAchievementLiker.objects.filter(liker=request.user, liked=a).count() > 0,
+              'is_yes': request.user in a.likers.all(),
               'require_count': a.requirers.count(),
               'is_require': request.user in a.requirers.all(),
               } for a in achievements]
@@ -100,7 +87,7 @@ class AllUserAchievementListView(View):
         if check_bad_words(description):
             abort(403, '含有非法词汇')
 
-        achievement = UserAchievement(user=request.user, description=description)
+        achievement = Achievement(user=request.user, description=description)
         pics = [request.FILES.get('image'), request.FILES.get('image2'), request.FILES.get('image3')]
         if len(pics) != 0:
             filenames = []
@@ -119,7 +106,7 @@ class AllUserAchievementListView(View):
 # noinspection PyUnusedLocal
 class AllUserAchievementView(View):
     @require_verification_token
-    @fetch_object(UserAchievement.objects, 'achievement')
+    @fetch_object(Achievement.objects, 'achievement')
     def get(self, request, achievement):
         """获取成果详情"""
         user = request.user
@@ -137,7 +124,7 @@ class AllUserAchievementView(View):
         })
 
     @require_verification_token
-    @fetch_object(UserAchievement.objects, 'achievement')
+    @fetch_object(Achievement.objects, 'achievement')
     def delete(self, request, achievement):
         """删除成果"""
         user = request.user

@@ -11,7 +11,7 @@ from main.utils.recommender import calculate_ranking_score
 from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL
-from main.models import Team, User, TeamAchievement, TeamNeed, InternalTask,\
+from main.models import Team, User, Achievement, TeamNeed, InternalTask,\
     ExternalTask, CompetitionTeamParticipator, IllegalWord
 from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *

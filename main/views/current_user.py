@@ -1866,7 +1866,7 @@ class AchievementList(View):
         if check_bad_words(description):
             abort(403, '含有非法词汇')
 
-        achievement = UserAchievement(user=user, description=description)
+        achievement = Achievement(user=user, description=description)
         picture = request.FILES.get('image')
         if picture:
             filename = save_uploaded_image(picture)

@@ -8,10 +8,8 @@ from ..models import User, Team, Lab, TeamNeed, UserComment as UserCommentModel,
     Activity, ActivityComment as ActivityCommentModel, \
     Competition, CompetitionComment as CompetitionCommentModel, \
     UserAction, TeamAction, LabAction, SystemAction, \
-    UserActionFavorer, TeamActionFavorer, LabActionFavorer, SystemActionFavorer, \
-    ActivityFavorer, CompetitionFavorer, LabAchievementLiker, UserAchievementLiker, \
-    UserAchievement, LabAchievement
-
+    LabAchievementLiker, \
+    Achievement, LabAchievement
 from ..utils import abort, action
 from ..utils.decorators import *
 from ..utils.dfa import check_bad_words
@@ -500,6 +498,7 @@ class TeamActionList(ActionList):
     def get(self, request, team):
         return super(TeamActionList, self).get(request, team)
 
+
 # noinspection PyMethodOverriding
 class LabActionList(ActionList):
     @fetch_object(Lab.enabled, 'lab')
@@ -860,7 +859,7 @@ class SearchLabActionList(View):
         """
 
         r = LabAction.objects.filter(Q(entity__name__icontains=kwargs['name'])
-                                      | Q(action__icontains=kwargs['name']))
+                                     | Q(action__icontains=kwargs['name']))
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
@@ -974,6 +973,7 @@ class ScreenLabActionList(View):
               'time_created': i.time_created,
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
+
 
 class SearchSystemActionList(View):
     @validate_args({
@@ -1148,6 +1148,7 @@ class LabCommentList(CommentList):
 
         return super().post(request, lab)
 
+
 # noinspection PyMethodOverriding
 class ActivityCommentList(CommentList):
     @fetch_object(Activity.enabled, 'activity')
@@ -1282,6 +1283,7 @@ class LabActionCommentList(CommentList):
 
         return super().post(request, action)
 
+
 # noinspection PyMethodOverriding
 class SystemActionCommentList(CommentList):
     @fetch_object(SystemAction.objects, 'action')
@@ -1345,6 +1347,7 @@ class LabComment(View):
             comment.delete()
             abort(200)
         abort(403, '非法操作')
+
 
 class ActivityComment(View):
     @fetch_object(ActivityCommentModel.objects, 'comment')
@@ -1432,6 +1435,7 @@ class LabFollowerList(FollowerList):
     def get(self, request, lab):
         return super().get(request, lab)
 
+
 # noinspection PyMethodOverriding
 class TeamNeedFollowerList(FollowerList):
     @fetch_object(TeamNeed.objects, 'need')
@@ -1489,6 +1493,7 @@ class LabFollower(Follower):
     @require_token
     def get(self, request, lab):
         return super().get(request, lab)
+
 
 class LikerList(View):
     ORDERS = (
@@ -1554,12 +1559,14 @@ class LabLikerList(LikerList):
     def get(self, request, lab):
         return super().get(request, lab)
 
+
 # noinspection PyMethodOverriding
 class LabAchievementLikerList(LikerList):
     @require_token
     @fetch_object(LabAchievement.objects, 'achievement')
     def get(self, request, achievement):
         return super().get(request, achievement)
+
 
 class Liker(View):
     def get(self, request, entity, other_user):
@@ -1594,12 +1601,14 @@ class LabLiker(Liker):
     def get(self, request, lab, other_user):
         return super(LabLiker, self).get(request, lab, other_user)
 
+
 class UserAchievementLiker(Liker):
-    @fetch_object(UserAchievement.objects, 'achievement')
+    @fetch_object(Achievement.objects, 'achievement')
     @fetch_object(User.enabled, 'other_user')
     @require_token
     def get(self, request, achievement, other_user):
         return super(UserAchievementLiker, self).get(request, achievement, other_user)
+
 
 class LabAchievementLiker(Liker):
     @fetch_object(LabAchievement.objects, 'achievement')
@@ -1607,6 +1616,7 @@ class LabAchievementLiker(Liker):
     @require_token
     def get(self, request, achievement, other_user):
         return super(LabAchievementLiker, self).get(request, achievement, other_user)
+
 
 class VisitorList(View):
     @validate_args({
@@ -1661,6 +1671,7 @@ class LabVisitorList(VisitorList):
     def get(self, request, lab):
         return super().get(request, lab)
 
+
 class FavoredActionList(View):
     get_dict = {
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -1703,7 +1714,7 @@ class FavoredActionList(View):
             obj = obj.exclude(favored__entity__role__contains='专家')
         c = obj.count()
         qs = obj.order_by(self.ORDERS[order])[offset:offset + limit]
-        
+
         l = [{'id': i.favored.entity.id,
               'action_id': i.favored.id,
               'name': i.favored.entity.name,
@@ -1722,11 +1733,13 @@ class FavoredActionList(View):
               } for i in qs]
         return JsonResponse({'count': c, 'list': l})
 
+
 # noinspection PyMethodOverriding
 class FavoredUserActionList(FavoredActionList):
     @require_token
     def get(self, request):
         return super().get(request, request.user.favored_user_actions)
+
 
 # noinspection PyMethodOverriding
 class FavoredTeamActionList(FavoredActionList):
@@ -1734,17 +1747,20 @@ class FavoredTeamActionList(FavoredActionList):
     def get(self, request):
         return super().get(request, request.user.favored_team_actions)
 
+
 # noinspection PyMethodOverriding
 class FavoredLabActionList(FavoredActionList):
     @require_token
     def get(self, request):
         return super().get(request, request.user.favored_lab_actions)
 
+
 # noinspection PyMethodOverriding
 class FavoredSystemActionList(FavoredActionList):
     @require_token
     def get(self, request):
         return super().get(request, request.user.favored_system_actions)
+
 
 class FavoredActivityList(View):
     get_dict = {
@@ -1779,7 +1795,7 @@ class FavoredActivityList(View):
         """
         c = request.user.favored_activities.count()
         qs = request.user.favored_activities.order_by(self.ORDERS[order])[offset:offset + limit]
-        
+
         l = [{'id': a.favored.id,
               'name': a.favored.name,
               'liker_count': a.favored.likers.count(),
@@ -1826,7 +1842,7 @@ class FavoredCompetitionList(View):
         """
         c = request.user.favored_competitions.count()
         qs = request.user.favored_competitions.order_by(self.ORDERS[order])[offset:offset + limit]
-        
+
         l = [{'id': a.favored.id,
               'name': a.favored.name,
               'liker_count': a.favored.likers.count(),
