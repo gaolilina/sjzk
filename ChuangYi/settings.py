@@ -57,7 +57,7 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ChuangYi',   # 数据库名称
+        'NAME': 'ChuangYiTest',   # 数据库名称
         'USER': 'root',       # 数据库用户名
         'PASSWORD': 'root',   # 数据库密码
         'HOST': 'localhost',  # 数据库主机，留空默认为localhost
