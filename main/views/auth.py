@@ -98,6 +98,7 @@ class Account(View):
                     user.save_and_generate_name()
                 else:
                     user.name = nickname
+                    user.save()
                 user.create_invitation_code()
                 # 注册成功后给融云服务器发送请求获取Token
                 rcloud = RongCloud()
