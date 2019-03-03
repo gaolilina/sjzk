@@ -30,9 +30,11 @@ class Account(View):
             if not user.check_password(password):
                 abort(401, '密码错误')
         elif method == 'wechat':
-            try:
-                user = User.objects.get(wechat_id=wechatid)
-            except User.DoesNotExist:
+            users = User.objects.filter(wechat_id=wechatid)
+            if users.count() == 1:
+                user = users.first()
+            else:
+                users.update(wechat_id=None)
                 abort(401, '用户不存在')
         else:
             abort(400)
@@ -74,8 +76,11 @@ class Account(View):
         if method == 'phone':
             pass
         elif method == 'wechat':
-            if openid is None or nickname is None or province is None or city is None:
+            if wechatid is None or nickname is None or province is None or city is None:
                 abort(400, 'openid 不能为空')
+                return
+            if User.objects.filter(wechat_id=wechatid).count() > 0:
+                abort(400, '用户已经注册')
                 return
         else:
             abort(400)
