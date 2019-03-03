@@ -122,6 +122,7 @@ class User(models.Model):
         """保存当前实例并生成序列用户名"""
 
         self.name = nickname if nickname is not None else '智库用户 #{}'.format(self.id)
+        self.save()
 
     def create_invitation_code(self):
         """生成邀请码"""
