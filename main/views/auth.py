@@ -70,13 +70,13 @@ class Account(View):
         'icon': forms.CharField(required=False, max_length=500)
     })
     def post(self, request, method, phone_number, password, validation_code,
-             invitation_code=None, role='', icon=None,
-             wechatid=None, nickname=None, gender=0, province=None, city=DEFAULT_ICON_URL):
+             invitation_code=None, role='', icon=DEFAULT_ICON_URL,
+             wechatid=None, nickname=None, gender=0, province=None, city=None):
         """注册，若成功返回用户令牌"""
         if method == 'phone':
             pass
         elif method == 'wechat':
-            if wechatid is None or nickname is None or province is None or city is None:
+            if wechatid is None or nickname is None:
                 abort(400, 'openid 不能为空')
                 return
             if User.objects.filter(wechat_id=wechatid).count() > 0 or User.objects.filter(
