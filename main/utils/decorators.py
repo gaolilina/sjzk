@@ -80,7 +80,11 @@ def validate_args(d):
                 data = QueryDict(request.body)
             for k, v in d.items():
                 try:
-                    kwargs[k] = v.clean(data[k])
+                    if k in kwargs:
+                        request_value = kwargs.get(k)
+                    else:
+                        request_value = data.get(k) or request.FILES[k]
+                    kwargs[k] = v.clean(request_value)
                 except KeyError:
                     if v.required:
                         abort(400, '需要参数 "%s"' % k)
