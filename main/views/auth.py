@@ -95,11 +95,7 @@ class Account(View):
                             gender=gender, icon=icon)
                 user.set_password(password)
                 # user.update_token()
-                if nickname is None:
-                    user.save_and_generate_name()
-                else:
-                    user.name = nickname
-                    user.save()
+                user.save_and_generate_name(nickname)
                 user.create_invitation_code()
                 # 注册成功后给融云服务器发送请求获取Token
                 rcloud = RongCloud()
@@ -123,7 +119,8 @@ class Account(View):
                     description="首次手机号注册")
                 user.save()
                 return JsonResponse({'token': user.token})
-            except IntegrityError:
+            except IntegrityError as e:
+                print(e)
                 abort(403, '创建用户失败')
 
 

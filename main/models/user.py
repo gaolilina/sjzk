@@ -34,9 +34,9 @@ class User(models.Model):
     wechat = models.CharField(max_length=20, default='')
     email = models.EmailField(default='')
     birthday = models.DateField(default=None, null=True, db_index=True)
-    province = models.CharField(max_length=20, default='')
-    city = models.CharField(max_length=20, default='')
-    county = models.CharField(max_length=20, default='')
+    province = models.CharField(max_length=20, default='', null=True)
+    city = models.CharField(max_length=20, default='', null=True)
+    county = models.CharField(max_length=20, default='', null=True)
     adept_field = models.CharField(default='', max_length=20)
     adept_skill = models.CharField(default='', max_length=20)
     expect_role = models.CharField(max_length=20, default='')
@@ -118,12 +118,10 @@ class User(models.Model):
         hasher.update(random_content.encode())
         self.token = hasher.hexdigest()
 
-    def save_and_generate_name(self):
+    def save_and_generate_name(self, nickname=None):
         """保存当前实例并生成序列用户名"""
 
-        self.save()
-        self.name = '智库用户 #{}'.format(self.id)
-        self.save()
+        self.name = nickname if nickname is not None else '智库用户 #{}'.format(self.id)
 
     def create_invitation_code(self):
         """生成邀请码"""
