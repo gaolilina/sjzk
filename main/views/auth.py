@@ -80,7 +80,7 @@ class Account(View):
                 abort(400, 'openid 不能为空')
                 return
             if User.objects.filter(wechat_id=wechatid).count() > 0 or User.objects.filter(
-                    phone_number=phone_number) > 0:
+                    phone_number=phone_number).count() > 0:
                 abort(400, '用户已经注册')
                 return
         else:
