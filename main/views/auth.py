@@ -16,9 +16,9 @@ class Account(View):
         'method': forms.CharField(max_length=20),
         'username': forms.RegexField(r'^[a-zA-Z0-9_]{4,15}$', strip=True, required=False),
         'password': forms.CharField(min_length=6, max_length=20, strip=False, required=False),
-        'openid': forms.CharField(min_length=28, max_length=28, required=False)
+        'wechatid': forms.CharField(min_length=28, max_length=28, required=False)
     })
-    def get(self, request, method, username=None, password=None, openid=None, **kwargs):
+    def get(self, request, method, username=None, password=None, wechatid=None, **kwargs):
         if method == 'phone':
             try:
                 if username.isdigit():
@@ -31,7 +31,7 @@ class Account(View):
                 abort(401, '密码错误')
         elif method == 'wechat':
             try:
-                user = User.objects.get(wechat_id=openid)
+                user = User.objects.get(wechat_id=wechatid)
             except User.DoesNotExist:
                 abort(401, '用户不存在')
         else:
@@ -60,7 +60,7 @@ class Account(View):
         'validation_code': forms.CharField(min_length=6, max_length=6),
         'invitation_code': forms.CharField(required=False),
         'role': forms.CharField(required=False),
-        'openid': forms.CharField(max_length=28, min_length=28, required=False),
+        'wechatid': forms.CharField(max_length=28, min_length=28, required=False),
         'nickname': forms.CharField(max_length=15, required=False),
         'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
         'province': forms.CharField(required=False, max_length=20),
@@ -69,7 +69,7 @@ class Account(View):
     })
     def post(self, request, method, phone_number, password, validation_code,
              invitation_code=None, role='', icon=None,
-             openid=None, nickname=None, gender=0, province=None, city=DEFAULT_ICON_URL):
+             wechatid=None, nickname=None, gender=0, province=None, city=DEFAULT_ICON_URL):
         """注册，若成功返回用户令牌"""
         if method == 'phone':
             pass
@@ -85,8 +85,8 @@ class Account(View):
 
         with transaction.atomic():
             try:
-                user = User(phone_number=phone_number, role=role, openid=openid, city=city, province=province,
-                            gender=gender, icon = icon)
+                user = User(phone_number=phone_number, role=role, wechat_id=wechatid, city=city, province=province,
+                            gender=gender, icon=icon)
                 user.set_password(password)
                 # user.update_token()
                 if nickname is None:

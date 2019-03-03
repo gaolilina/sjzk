@@ -26,9 +26,11 @@ def add_illegal_word():
                 continue
         f.close()
 
+
 def init_system_params():
     from main.models import System
     System.objects.create()
+
 
 def add_sys_op():
     from admin.models.admin_user import AdminUser
@@ -37,6 +39,7 @@ def add_sys_op():
     user.phone_number = '18301018512'
     user.role = 'z'
     user.save_and_generate_name()
+
 
 if __name__ == "__main__":
     add_illegal_word()

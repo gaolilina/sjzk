@@ -318,8 +318,8 @@ class Screen(View):
 
 
 class Profile(View):
-    @fetch_object(Team.enabled, 'team')
     @require_token
+    @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         """获取团队的基本资料
 
