@@ -67,7 +67,7 @@ class Account(View):
         'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
         'province': forms.CharField(required=False, max_length=20),
         'city': forms.CharField(required=False, max_length=20),
-        'icon': forms.CharField(required=False, max_length=255)
+        'icon': forms.CharField(required=False, max_length=500)
     })
     def post(self, request, method, phone_number, password, validation_code,
              invitation_code=None, role='', icon=None,
@@ -79,7 +79,8 @@ class Account(View):
             if wechatid is None or nickname is None or province is None or city is None:
                 abort(400, 'openid 不能为空')
                 return
-            if User.objects.filter(wechat_id=wechatid).count() > 0:
+            if User.objects.filter(wechat_id=wechatid).count() > 0 or User.objects.filter(
+                    phone_number=phone_number) > 0:
                 abort(400, '用户已经注册')
                 return
         else:
