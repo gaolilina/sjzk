@@ -98,12 +98,12 @@ class Account(View):
                 user.save_and_generate_name(nickname)
                 user.create_invitation_code()
                 # 注册成功后给融云服务器发送请求获取Token
-                # rcloud = RongCloud()
-                # r = rcloud.User.getToken(
-                #     userId=user.id, name=user.name,
-                #     portraitUri=icon)
-                # token = r.result['token']
-                # user.token = token
+                rcloud = RongCloud()
+                r = rcloud.User.getToken(
+                    userId=user.id, name=user.name,
+                    portraitUri=icon)
+                token = r.result['token']
+                user.token = token
                 if invitation_code:
                     u = User.enabled.filter(invitation_code=invitation_code)
                     if not u:
