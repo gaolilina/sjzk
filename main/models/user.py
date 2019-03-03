@@ -82,7 +82,7 @@ class User(models.Model):
     getui_id = models.CharField(max_length=50, default='')
 
     # 微信id
-    wechat_id = models.CharField(max_length=28, default=None, null=True)
+    wechat_id = models.CharField(max_length=28, default=None, null=True, blank=True)
 
     objects = models.Manager()
     enabled = EnabledManager()
