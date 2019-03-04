@@ -88,7 +88,7 @@ class Account(View):
             # 绑定已有账户
             user = User.objects.filter(phone_number=phone_number).first()
             if user is not None:
-                user.update(wechat_id=wechatid)
+                User.objects.filter(phone_number=phone_number).update(wechat_id=wechatid)
                 return JsonResponse({'token': user.token})
         else:
             abort(400)
