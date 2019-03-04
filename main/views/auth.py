@@ -73,16 +73,23 @@ class Account(View):
              invitation_code=None, role='', icon=DEFAULT_ICON_URL,
              wechatid=None, nickname=None, gender=0, province=None, city=None):
         """注册，若成功返回用户令牌"""
+
         if method == 'phone':
-            pass
-        elif method == 'wechat':
-            if wechatid is None or nickname is None:
-                abort(400, 'openid 不能为空')
-                return
-            if User.objects.filter(wechat_id=wechatid).count() > 0 or User.objects.filter(
-                    phone_number=phone_number).count() > 0:
+            if User.objects.filter(phone_number=phone_number).count() > 0:
                 abort(400, '用户已经注册')
                 return
+        elif method == 'wechat':
+            if wechatid is None or nickname is None:
+                abort(400, 'wechatid 或昵称不能为空')
+                return
+            if User.objects.filter(wechat_id=wechatid).count() > 0:
+                abort(400, '用户已经注册')
+                return
+            # 绑定已有账户
+            user = User.objects.filter(phone_number=phone_number).first()
+            if user is not None:
+                user.update(wechat_id=wechatid)
+                return JsonResponse({'token': user.token})
         else:
             abort(400)
             return
