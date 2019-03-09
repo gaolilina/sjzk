@@ -118,7 +118,7 @@ class AllUserAchievementView(View):
             'desc': achievement.description,
             'pics': achievement.picture,
             'yes_count': achievement.likers.count(),
-            'is_yes': UserAchievementLiker.objects.filter(liker=request.user, liked=achievement).count() > 0,
+            'is_yes': request.user in achievement.likers.all(),
             'require_count': achievement.requirers.count(),
             'is_require': request.user in achievement.requirers.all(),
         })

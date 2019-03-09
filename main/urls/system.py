@@ -1,7 +1,8 @@
 from django.conf.urls import url
 
+from main.views.system_role import RoleList
 from ..views.system import *
-from ..views.common import SystemActionCommentList, SystemActionsList
+from ..views.common import SystemActionsList
 
 urls = [
     # 版本号
@@ -10,4 +11,6 @@ urls = [
     url(r'actions/$', SystemActionsList.as_view(), name='actions'),
     # 系统通知
     url(r'notifications/$', SystemNotificationList.as_view(), name='actions'),
+    # 资格认证角色列表
+    url(r'qualification/$', RoleList.as_view(), name='qualification'),
 ]

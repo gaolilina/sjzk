@@ -73,7 +73,10 @@ class User(models.Model):
 
     # 邀请码
     invitation_code = models.CharField(max_length=8)
+    # 邀请人的邀请码，将不再使用该字段
     used_invitation_code = models.CharField(max_length=8, default='')
+    # 邀请人，被谁邀请，多人。
+    invited = models.ManyToManyField(to='User', related_name='invites')
 
     # 被举报次数
     reported_count = models.IntegerField(default=0)

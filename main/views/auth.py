@@ -82,12 +82,13 @@ class Account(View):
             if wechatid is None or nickname is None:
                 abort(400, 'wechatid 或昵称不能为空')
                 return
+            # 防止绑定过微信的用户重复绑定
             if User.objects.filter(wechat_id=wechatid).count() > 0:
                 abort(400, '用户已经注册')
                 return
-            # 绑定已有账户
             user = User.objects.filter(phone_number=phone_number).first()
             if user is not None:
+                # 绑定已经使用手机号注册的账户
                 User.objects.filter(phone_number=phone_number).update(wechat_id=wechatid)
                 return JsonResponse({'token': user.token})
         else:
@@ -112,13 +113,7 @@ class Account(View):
                 token = r.result['token']
                 user.token = token
                 if invitation_code:
-                    u = User.enabled.filter(invitation_code=invitation_code)
-                    if not u:
-                        abort(404, '推荐码错误')
-                    user.used_invitation_code = invitation_code
-                    u.score_records.create(
-                        score=get_score_stage(4), type="活跃度",
-                        description="邀请码被使用")
+                    self.__add_invited_users(request.user, invitation_code.split(','))
                 # 加积分
                 user.score += get_score_stage(3)
                 user.score_records.create(
@@ -129,6 +124,16 @@ class Account(View):
             except IntegrityError as e:
                 print(e)
                 abort(403, '创建用户失败')
+
+    def __add_invited_users(self, user, codes):
+        for c in codes:
+            u = User.enabled.filter(invitation_code=c)
+            if not u:
+                abort(404, '推荐码错误')
+            user.invited.add(u)
+            u.score_records.create(
+                score=get_score_stage(4), type="活跃度",
+                description="邀请码被使用")
 
 
 # noinspection PyClassHasNoInit
