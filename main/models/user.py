@@ -3,9 +3,8 @@ import hashlib
 from django.db import models
 from django.utils import timezone
 
-from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
+from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag, \
     Visitor, Favorer
-
 
 __all__ = ['User', 'UserAction', 'UserActionLiker', 'UserActionComment',
            'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
@@ -18,13 +17,14 @@ class User(models.Model):
     """用户模型"""
 
     is_enabled = models.BooleanField(default=True, db_index=True)
-    username = models.CharField(
-        max_length=20, default=None, null=True, unique=True)
+    # 用户名
+    username = models.CharField(max_length=20, default=None, null=True, unique=True)
     password = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=11, unique=True)
     token = models.CharField(max_length=256)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
+    # 昵称
     name = models.CharField(max_length=15)
     description = models.CharField(max_length=100, default='')
     icon = models.CharField(max_length=500, default='')
@@ -43,10 +43,10 @@ class User(models.Model):
     follow_field = models.CharField(default='', max_length=20)
     follow_skill = models.CharField(default='', max_length=20)
 
-
     # 是否通过实名验证,0:未提交, 1:待审核, 2:身份证审核通过, 3:审核未通过,请重新提交,
     # 4:Eid审核通过
     is_verified = models.IntegerField(default=0, db_index=True)
+    # 真实姓名
     real_name = models.CharField(max_length=20, default='')
     id_number = models.CharField(max_length=18, default='')
     id_card = models.CharField(max_length=100, default='')
@@ -360,6 +360,7 @@ class UserBehavior(models.Model):
         db_table = 'user_behavior'
         ordering = ['-time_created']
 
+
 class UserActionFavorer(Favorer):
     """用户动态收藏记录"""
 
@@ -368,6 +369,7 @@ class UserActionFavorer(Favorer):
 
     class Meta:
         db_table = 'user_action_favorer'
+
 
 class UserTagLiker(Liker):
     """用户标签点赞记录"""

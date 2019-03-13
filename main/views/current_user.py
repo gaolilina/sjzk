@@ -13,7 +13,7 @@ from ..utils.decorators import *
 from ..utils.dfa import check_bad_words
 from ..utils.recommender import record_like_user, record_like_team
 from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
-    ExperienceList_, Friend as Friend_
+    ExperienceList_
 
 
 class Username(View):
@@ -107,6 +107,7 @@ class Icon(Icon_):
                 portraitUri=portraitUri)
             return JsonResponse({'icon_url': request.user.icon})
         abort(400, '头像保存失败')
+
 
 class Getui(View):
     @require_token
@@ -803,106 +804,6 @@ class FollowedCompetition(View):
             qs.delete()
             abort(200)
         abort(403, '未关注过该竞赛')
-
-
-# noinspection PyClassHasNoInit
-class Friend(Friend_):
-    @fetch_object(User.enabled, 'other_user')
-    @require_verification_token
-    def post(self, request, other_user):
-        """将目标用户添加为自己的好友（对方需发送过好友请求）"""
-
-        if not request.user.friend_requests.filter(other_user=other_user) \
-                .exists():
-            abort(403, '对方未发送过申请')
-
-        if request.user.friends.filter(other_user=other_user).exists():
-            abort(403, '已经是好友')
-
-        request.user.friends.create(other_user=other_user)
-        other_user.friends.create(other_user=request.user)
-        request.user.friend_requests.filter(other_user=other_user).delete()
-        # 积分相关
-        request.user.score += get_score_stage(1)
-        request.user.score_records.create(
-            score=get_score_stage(1), type="受欢迎度", description="添加一个好友")
-        other_user.score += get_score_stage(1)
-        other_user.score_records.create(
-            score=get_score_stage(1), type="受欢迎度", description="添加一个好友")
-        request.user.save()
-        other_user.save()
-        abort(200)
-
-    @fetch_object(User.enabled, 'other_user')
-    @require_verification_token
-    def delete(self, request, other_user):
-        """删除好友"""
-
-        if not request.user.friends.filter(other_user=other_user).exists():
-            abort(404, '好友不存在')
-
-        from ..models import UserFriend
-        UserFriend.objects.filter(user=request.user, other_user=other_user) \
-            .delete()
-        UserFriend.objects.filter(user=other_user, other_user=request.user) \
-            .delete()
-        # 积分相关
-        request.user.score -= get_score_stage(1)
-        request.user.score_records.create(
-            score=-get_score_stage(1), type="受欢迎度", description="删除一个好友")
-        other_user.score -= get_score_stage(1)
-        other_user.score_records.create(
-            score=-get_score_stage(1), type="受欢迎度", description="删除一个好友")
-        request.user.save()
-        other_user.save()
-        abort(200)
-
-
-# noinspection PyClassHasNoInit
-class FriendRequestList(View):
-    @require_token
-    @validate_args({
-        'offset': forms.IntegerField(required=False),
-        'limit': forms.IntegerField(required=False, min_value=0),
-    })
-    def get(self, request, offset=0, limit=10):
-        """按请求时间逆序获取当前用户收到的的好友请求信息，
-        拉取后的请求标记为已读
-
-        :return:
-            count: 请求的总条数
-            list: 好友请求信息列表
-                id: 用户ID
-                username: 用户名
-                request_id: 申请ID
-                name: 用户昵称
-                icon_url: 用户头像
-                description: 附带消息
-                time_created: 请求发出的时间
-        """
-        # 拉取好友请求信息
-        c = request.user.friend_requests.count()
-        qs = request.user.friend_requests.all()[offset:offset + limit]
-
-        l = [{'id': r.other_user.id,
-              'request_id': r.id,
-              'username': r.other_user.username,
-              'name': r.other_user.name,
-              'icon_url': r.other_user.icon,
-              'description': r.description,
-              'time_created': r.time_created} for r in qs]
-        return JsonResponse({'count': c, 'list': l})
-
-    post_dict = {'description': forms.CharField(required=False, max_length=100)}
-
-
-class FriendRequest(View):
-    @require_verification_token
-    def delete(self, request, req_id):
-        """忽略某条好友请求"""
-
-        request.user.friend_requests.filter(pk=req_id).delete()
-        abort(200)
 
 
 class LikedEntity(View):

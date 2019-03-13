@@ -1,22 +1,18 @@
 from django import forms
 from django.db import IntegrityError
-from django.http import JsonResponse, HttpResponseRedirect
 from django.db import transaction
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
-from rongcloud import RongCloud
-import json
-from main.utils.http import notify_user
 
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
-from ..utils import abort, get_score_stage, send_message, save_uploaded_image
+from rongcloud import RongCloud
+from ..models import *
+from ..utils import abort, get_score_stage, send_message
 from ..utils.decorators import *
 from ..utils.dfa import check_bad_words
-from ..utils.recommender import calculate_ranking_score, record_view_user
-from ..models import *
+from ..utils.recommender import calculate_ranking_score
 
-
-__all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience',
-           'FriendList', 'Friend', 'FriendRequestList', 'Search', 'Screen',
+__all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience', 'Search', 'Screen',
            'TeamOwnedList', 'TeamJoinedList', 'ValidationCode',
            'PasswordForgotten', 'ActivityList', 'CompetitionList', 'CompetitionJoinedList']
 
@@ -86,7 +82,7 @@ class List(View):
 
         with transaction.atomic():
             try:
-                user = User(phone_number=phone_number,role=role)
+                user = User(phone_number=phone_number, role=role)
                 user.set_password(password)
                 # user.update_token()
                 user.save_and_generate_name()
@@ -319,94 +315,6 @@ class Experience(View):
         if exp.user != request.user:
             abort(403, '只能删除自己的经历')
         exp.delete()
-        abort(200)
-
-
-class FriendList(View):
-    ORDERS = (
-        'time_created', '-time_created',
-        'friend__name', '-friend__name',
-    )
-
-    @fetch_object(User.enabled, 'user')
-    @require_token
-    @validate_args({
-        'offset': forms.IntegerField(required=False, min_value=0),
-        'limit': forms.IntegerField(required=False, min_value=0),
-        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-    })
-    def get(self, request, user=None, offset=0, limit=10, order=1):
-        """
-        获取用户的好友列表
-
-        :param offset: 偏移量
-        :param limit: 数量上限
-        :param order: 排序方式
-            0: 成为好友时间升序
-            1: 成为好友时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
-        :return:
-            count: 好友总数
-            list: 好友列表
-                id: 用户ID
-                username: 用户名
-                name: 用户昵称
-                icon_url: 用户头像
-                time_created: 成为好友时间
-        """
-        user = user or request.user
-
-        c = user.friends.count()
-        qs = user.friends.order_by(self.ORDERS[order])[offset:offset + limit]
-        l = [{'id': r.other_user.id,
-              'username': r.other_user.username,
-              'name': r.other_user.name,
-              'icon_url': r.other_user.icon,
-              'time_created': r.time_created} for r in qs]
-        return JsonResponse({'count': c, 'list': l})
-
-
-class Friend(View):
-    @fetch_object(User.enabled, 'user')
-    @fetch_object(User.enabled, 'other_user')
-    @require_token
-    def get(self, request, other_user, user=None):
-        """检查两个用户是否为好友关系"""
-
-        user = user or request.user
-
-        if user.friends.filter(other_user=other_user).exists():
-            abort(200)
-        abort(404, '非好友关系')
-
-
-class FriendRequestList(View):
-    @fetch_object(User.enabled, 'user')
-    @require_verification_token
-    @validate_args({
-        'description': forms.CharField(required=False, max_length=100)
-    })
-    def post(self, request, user, description=''):
-        """向目标用户发出好友申请
-
-        :param description: 附带消息
-        """
-        if user == request.user:
-            abort(403, '不能给自己发送好友申请')
-
-        if user.friends.filter(other_user=request.user).exists():
-            abort(403, '已经是好友了')
-
-        if user.friend_requests.filter(other_user=request.user).exists():
-            abort(200)
-
-        user.friend_requests.create(other_user=request.user,
-                                    description=description)
-        
-        notify_user(user, json.dumps({
-            'type': 'friend_request'
-        }))
         abort(200)
 
 
@@ -789,7 +697,7 @@ class CompetitionList(View):
 
         k = self.ORDERS[order]
         ctp = CompetitionTeamParticipator.objects.filter(
-                team__members__user=user).distinct()
+            team__members__user=user).distinct()
         qs = ctp.order_by(k)[offset: offset + limit]
         c = ctp.count()
         l = [{'id': a.competition.id,
@@ -858,7 +766,7 @@ class CompetitionJoinedList(View):
               'time_created': a.time_created
               } for a in qs]
         return JsonResponse({'count': c, 'list': l})
-    
+
     @fetch_object(User.enabled, 'user')
     @require_token
     @validate_args({
@@ -868,6 +776,7 @@ class CompetitionJoinedList(View):
         ctp = Compentition.objects.filter(pk=competition_id).get()
         ctp.experts.add(user)
         abort(200)
+
 
 class ValidationCode(View):
     @validate_args({

@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from main.views.auth import IdentityVerificationView
-from main.views.user import FriendList
+from main.views.friend import FriendAction, FriendRequestList, FriendRequestAction, FriendList
 from ..views.current_user import *
 from ..views.common import *
 from ..views.forum import BoardList
@@ -75,38 +75,23 @@ urls = [
         FollowedCompetition.as_view(), name='followed_competition'),
     # 好友
     url(r'^friends/$', FriendList.as_view(), name='friends'),
-    url(r'^friends/(?P<other_user_id>[0-9]+)/$', Friend.as_view(),
-        name='friend'),
-    url(r'^friend_requests/$', FriendRequestList.as_view(),
-        name='friend_requests'),
-    url(r'^friend_requests/(?P<req_id>[0-9]+)/$',
-        FriendRequest.as_view(), name='friend_request'),
+    url(r'^friends/(?P<other_user_id>[0-9]+)/$', FriendAction.as_view(), name='friend'),
+    url(r'^friend_requests/$', FriendRequestList.as_view(), name='friend_requests'),
+    url(r'^friend_requests/(?P<req_id>[0-9]+)/$', FriendRequestAction.as_view(), name='friend_request'),
     # 点赞
     url(r'likers/$', UserLikerList.as_view(), name='likers'),
-    url(r'likers/(?P<other_user_id>[0-9]+)/$',
-        UserLiker.as_view(), name='liker'),
-    url(r'liked/users/(?P<user_id>[0-9]+)/$',
-        LikedUser.as_view(), name='liked_user'),
-    url(r'liked/teams/(?P<team_id>[0-9]+)/$',
-        LikedTeam.as_view(), name='liked_team'),
-    url(r'liked/labs/(?P<lab_id>[0-9]+)/$',
-        LikedLab.as_view()),
-    url(r'liked/activities/(?P<activity_id>[0-9]+)/$',
-        LikedActivity.as_view(), name='liked_activity'),
-    url(r'liked/competitions/(?P<competition_id>[0-9]+)/$',
-        LikedCompetition.as_view(), name='liked_competition'),
-    url(r'liked/user_actions/(?P<action_id>[0-9]+)/$',
-        LikedUserAction.as_view(), name='liked_user_action'),
-    url(r'liked/team_actions/(?P<action_id>[0-9]+)/$',
-        LikedTeamAction.as_view(), name='liked_team_action'),
-    url(r'liked/lab_actions/(?P<action_id>[0-9]+)/$',
-        LikedLabAction.as_view()),
-    url(r'liked/system_actions/(?P<action_id>[0-9]+)/$',
-        LikedSystemAction.as_view(), name='liked_system_action'),
-    url(r'liked/user_tags/(?P<tag_id>.+?)/$',
-        LikedUserTag.as_view(), name='liked_user_tag'),
-    url(r'liked/team_tags/(?P<tag_id>.+?)/$',
-        LikedTeamTag.as_view(), name='liked_team_tag'),
+    url(r'likers/(?P<other_user_id>[0-9]+)/$', UserLiker.as_view(), name='liker'),
+    url(r'liked/users/(?P<user_id>[0-9]+)/$', LikedUser.as_view(), name='liked_user'),
+    url(r'liked/teams/(?P<team_id>[0-9]+)/$', LikedTeam.as_view(), name='liked_team'),
+    url(r'liked/labs/(?P<lab_id>[0-9]+)/$', LikedLab.as_view()),
+    url(r'liked/activities/(?P<activity_id>[0-9]+)/$', LikedActivity.as_view(), name='liked_activity'),
+    url(r'liked/competitions/(?P<competition_id>[0-9]+)/$', LikedCompetition.as_view(), name='liked_competition'),
+    url(r'liked/user_actions/(?P<action_id>[0-9]+)/$', LikedUserAction.as_view(), name='liked_user_action'),
+    url(r'liked/team_actions/(?P<action_id>[0-9]+)/$', LikedTeamAction.as_view(), name='liked_team_action'),
+    url(r'liked/lab_actions/(?P<action_id>[0-9]+)/$', LikedLabAction.as_view()),
+    url(r'liked/system_actions/(?P<action_id>[0-9]+)/$', LikedSystemAction.as_view(), name='liked_system_action'),
+    url(r'liked/user_tags/(?P<tag_id>.+?)/$', LikedUserTag.as_view(), name='liked_user_tag'),
+    url(r'liked/team_tags/(?P<tag_id>.+?)/$', LikedTeamTag.as_view(), name='liked_team_tag'),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view(), name='visitors'),
     # 与当前用户相关的团队

@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 
-from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth
+from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth, \
+    friend
 from admin.urls import urlpatterns as admin_urls
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     url(r'^topic/', include(topic.urls, namespace='topic')),
     url(r'^vote/', include(vote.urls, namespace='vote')),
     url(r'^auth/', include(auth.urls, namespace='auth')),
+    url(r'friend/', include(friend.urls, namespace='friend')),
 ]
