@@ -3,10 +3,12 @@ from functools import wraps
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import QueryDict
 
+from main.models import System
+from main.models.role import Role
 from ..utils import abort
 from ..models.user import User
 
-__all__ = ['require_token', 'require_verification', 'validate_args',
+__all__ = ['require_token', 'require_role_token', 'validate_args',
            'fetch_object', 'require_verification_token',
            'fetch_user_by_token']
 
@@ -25,6 +27,8 @@ def require_token(function):
             user = User.objects.get(token=token)
             if user.is_enabled:
                 request.user = user
+                request.param = System.objects.get(
+                    role__name=user.role if user.role else Role.objects.get(name__isnull=True).name)
                 return function(self, request, *args, **kwargs)
             abort(403, '用户已删除')
         except User.DoesNotExist:
@@ -49,6 +53,8 @@ def require_verification_token(function):
                 if user.is_verified not in [2, 4]:
                     abort(403, '请先实名认证')
                 request.user = user
+                request.param = System.objects.get(
+                    role__name=user.role if user.role else Role.objects.get(name__isnull=True).name)
                 return function(self, request, *args, **kwargs)
             abort(403, '用户已删除')
         except User.DoesNotExist:
@@ -57,14 +63,28 @@ def require_verification_token(function):
     return decorator
 
 
-def require_verification(function):
-    """对被装饰的方法要求用户身份认证，该装饰器应放在require_token之后"""
+def require_role_token(function):
+    """对被装饰的方法要求用户资格认证"""
 
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
-        if request.user.is_verified:
-            return function(self, request, *args, **kwargs)
-        abort(403)
+        token = request.META.get('HTTP_X_USER_TOKEN')
+        if not token:
+            abort(401, '缺少参数token')
+        try:
+            user = User.objects.get(token=token)
+            if user.is_enabled:
+                if user.is_verified not in [2, 4]:
+                    abort(403, '请先实名认证')
+                elif user.is_role_verified != 2:
+                    abort(403, '请先资格认证')
+                request.user = user
+                request.param = System.objects.get(
+                    role__name=user.role if user.role else Role.objects.get(name__isnull=True).name)
+                return function(self, request, *args, **kwargs)
+            abort(403, '用户已删除')
+        except User.DoesNotExist:
+            abort(404, '用户不存在')
 
     return decorator
 

@@ -201,7 +201,7 @@ class FriendList(View):
         qs = user.friends.order_by(self.ORDERS[order])[offset:offset + limit]
         l = [{'id': r.other_user.id,
               'username': r.other_user.username,
-              'name': r.other_user.real_name if r.other_user.is_verified else r.other_user.name,
+              'name': r.other_user.real_name if r.other_user.is_verified == 2 else r.other_user.name,
               'icon_url': r.other_user.icon,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})

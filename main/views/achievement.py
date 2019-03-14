@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
@@ -74,7 +76,7 @@ class AllUserAchievementListView(View):
               } for a in achievements]
         return JsonResponse({'count': c, 'list': l})
 
-    @require_verification_token
+    @require_role_token
     @validate_args({
         'description': forms.CharField(min_length=1, max_length=100),
     })
@@ -84,11 +86,21 @@ class AllUserAchievementListView(View):
         :param description: 成果描述
         :return: achievement_id: 成果id
         """
+        # 检查非法词汇
         if check_bad_words(description):
             abort(403, '含有非法词汇')
-
+        system_param = request.param
+        # 检查发布的时间间隔
+        last_time = datetime.datetime.now() + datetime.timedelta(minutes=system_param.publish_min_minute)
+        if Achievement.objects.filter(user=request.user, time_created__gt=last_time).count() > 0:
+            abort(403, '发布成果时间间隔不能小于{}分钟'.format_map(system_param.publish_min_minute))
+        # 检查上传图片数量
+        max_pic = system_param.pic_max + 1
+        if 'image' + str(max_pic) in request.FILES:
+            abort(403, '最多上传' + str(max_pic) + '张图片')
+        pics = [request.FILES.get('image') if 'image' + str(i) in request.FILES else None
+                for i in range(1, max_pic)]
         achievement = Achievement(user=request.user, description=description)
-        pics = [request.FILES.get('image'), request.FILES.get('image2'), request.FILES.get('image3')]
         if len(pics) != 0:
             filenames = []
             for p in pics:

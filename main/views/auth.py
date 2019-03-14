@@ -61,7 +61,6 @@ class Account(View):
         'password': forms.CharField(min_length=6, max_length=32),
         'validation_code': forms.CharField(min_length=6, max_length=6),
         'invitation_code': forms.CharField(required=False),
-        'role': forms.CharField(required=False),
         'wechatid': forms.CharField(max_length=28, min_length=28, required=False),
         'nickname': forms.CharField(max_length=15, required=False),
         'gender': forms.IntegerField(required=False, min_value=0, max_value=2),
@@ -70,7 +69,7 @@ class Account(View):
         'icon': forms.CharField(required=False, max_length=500)
     })
     def post(self, request, method, phone_number, password, validation_code,
-             invitation_code=None, role='', icon=DEFAULT_ICON_URL,
+             invitation_code=None, icon=DEFAULT_ICON_URL,
              wechatid=None, nickname=None, gender=0, province=None, city=None):
         """注册，若成功返回用户令牌"""
 
@@ -99,7 +98,7 @@ class Account(View):
 
         with transaction.atomic():
             try:
-                user = User(phone_number=phone_number, role=role, wechat_id=wechatid, city=city, province=province,
+                user = User(phone_number=phone_number, wechat_id=wechatid, city=city, province=province,
                             gender=gender, icon=icon)
                 user.set_password(password)
                 # user.update_token()

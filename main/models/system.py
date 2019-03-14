@@ -25,6 +25,12 @@ class System(models.Model):
     SCORE_VALUE_FIVE = models.IntegerField(default=200)
     # 举报封号次数阈值
     MAX_REPORTED = models.IntegerField(default=10)
+    # 上传图片的最大数量
+    pic_max = models.IntegerField(default=3)
+    # 发布需求和成果最小的时间间隔，单位分钟
+    publish_min_minute = models.IntegerField(default=60)
+    # 最近访客的时间间隔，单位小时
+    visit_max_hour = models.IntegerField(default=72)
 
     class Meta:
         db_table = 'system'
@@ -67,6 +73,7 @@ class SystemActionComment(Comment):
     class Meta:
         db_table = 'system_action_comment'
 
+
 class SystemActionFavorer(Favorer):
     """系统动态收藏记录"""
 
@@ -75,6 +82,7 @@ class SystemActionFavorer(Favorer):
 
     class Meta:
         db_table = 'system_action_favorer'
+
 
 class SystemNotification(models.Model):
     """系统通知"""
@@ -85,6 +93,7 @@ class SystemNotification(models.Model):
     class Meta:
         db_table = 'system_notification'
         ordering = ['-time_created']
+
 
 class SystemNotificationRecord(models.Model):
     """系统通知未读记录"""

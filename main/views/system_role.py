@@ -11,7 +11,7 @@ class RoleList(View):
 
     @require_token
     def get(self, request, **kwargs):
-        roles = Role.objects.all()
+        roles = Role.objects.filter(name__isnull=False)
         return JsonResponse({
             'roles': [r.name for r in roles]
         })

@@ -8,9 +8,6 @@ from ..utils import abort
 from ..utils.decorators import *
 
 
-__all__ = ['VersionNumber', 'SystemNotificationList']
-
-
 class VersionNumber(View):
     def get(self, request):
         """获取app当前版本号"""
@@ -20,6 +17,7 @@ class VersionNumber(View):
             return JsonResponse({'VERSION_NUMBER': num})
         except ObjectDoesNotExist:
             abort(400, '版本号不存在')
+
 
 class SystemNotificationList(View):
     @validate_args({
@@ -55,3 +53,14 @@ class SystemNotificationList(View):
               'time_created': i.time_created,
               } for i in records]
         return JsonResponse({'count': c, 'list': l})
+
+
+class SystemParam(View):
+
+    @require_token
+    def get(self, request):
+        return JsonResponse({
+            'VERSION_NUMBER': request.param.VERSION_NUMBER,  # 系统版本号
+            'pic_max': request.param.pic_max,  # 上传图片最大数量
+            'publish_min_minute': request.param.publish_min_minute  # 发布需求和成果最小时间间隔，单位分钟
+        })
