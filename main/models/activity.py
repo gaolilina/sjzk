@@ -32,6 +32,7 @@ class Activity(models.Model):
     province = models.CharField(max_length=20, default='')
     city = models.CharField(max_length=20, default='')
     unit = models.CharField(max_length=20, default='')
+    field = models.CharField(max_length=20, default='')
     # 0:不限, 1:学生, 2:教师, 3:在职
     user_type = models.IntegerField(default=0, db_index=True)
     is_enabled = models.BooleanField(default=True)

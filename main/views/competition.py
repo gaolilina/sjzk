@@ -53,8 +53,10 @@ class List(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
         'history': forms.BooleanField(required=False),
+        'province': forms.CharField(required=False, max_length=20),
+        'field': forms.CharField(required=False, max_length=20)
     })
-    def get(self, request, offset=0, limit=10, order=1, history=False):
+    def get(self, request, offset=0, limit=10, order=1, history=False, province='', field=''):
         """获取竞赛列表
 
         :param offset: 偏移量
@@ -83,13 +85,15 @@ class List(View):
 
         k = self.ORDERS[order]
         if history is False:
-            c = Competition.enabled.exclude(status=6).count()
+            c = Competition.enabled.exclude(province=province, status=6, field=field).count()
             qs = Competition.enabled.exclude(
-                status=6).order_by(k)[offset: offset + limit]
+                province=province, status=6, field=field
+            ).order_by(k)[offset: offset + limit]
         else:
-            c = Competition.enabled.filter(status=6).count()
+            c = Competition.enabled.filter(province=province, status=6, field=field).count()
             qs = Competition.enabled.filter(
-                status=6).order_by(k)[offset: offset + limit]
+                province=province, status=6, field=field
+            ).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
               'liker_count': a.likers.count(),

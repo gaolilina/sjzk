@@ -45,8 +45,10 @@ class List(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
         'history': forms.BooleanField(required=False),
+        'province': forms.CharField(required=False, max_length=20),
+        'field': forms.CharField(required=False, max_length=20)
     })
-    def get(self, request, offset=0, limit=10, order=1, history=False):
+    def get(self, request, offset=0, limit=10, order=1, history=False, province='', field=''):
         """获取活动列表
 
         :param offset: 偏移量
@@ -75,13 +77,13 @@ class List(View):
 
         k = self.ORDERS[order]
         if history is False:
-            c = Activity.enabled.exclude(status=2).count()
+            c = Activity.enabled.exclude(status=2, province=province, field=field).count()
             qs = Activity.enabled.exclude(
-                status=2).order_by(k)[offset: offset + limit]
+                status=2, province=province, field=field).order_by(k)[offset: offset + limit]
         else:
-            c = Activity.enabled.filter(status=2).count()
+            c = Activity.enabled.filter(status=2, province=province, field=field).count()
             qs = Activity.enabled.filter(
-                status=2).order_by(k)[offset: offset + limit]
+                status=2, province=province, field=field).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
               'liker_count': a.likers.count(),

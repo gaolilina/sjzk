@@ -39,8 +39,10 @@ class List(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'province': forms.CharField(required=False, max_length=20),
+        'field': forms.CharField(required=False, max_length=20)
     })
-    def get(self, request, offset=0, limit=10, order=1):
+    def get(self, request, offset=0, limit=10, order=1, province='', field=''):
         """获取团队列表
 
         :param offset: 偏移量
@@ -65,8 +67,8 @@ class List(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        c = Team.enabled.count()
-        teams = Team.enabled.order_by(k)[i:j]
+        c = Team.enabled.filter(province=province, field1=field).count()
+        teams = Team.enabled.filter(province=province, field1=field).order_by(k)[i:j]
         l = [{'id': t.id,
               'name': t.name,
               'icon_url': t.icon,
