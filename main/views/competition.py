@@ -84,16 +84,13 @@ class List(View):
         """
 
         k = self.ORDERS[order]
-        if history is False:
-            c = Competition.enabled.exclude(province=province, status=6, field=field).count()
-            qs = Competition.enabled.exclude(
-                province=province, status=6, field=field
-            ).order_by(k)[offset: offset + limit]
-        else:
-            c = Competition.enabled.filter(province=province, status=6, field=field).count()
-            qs = Competition.enabled.filter(
-                province=province, status=6, field=field
-            ).order_by(k)[offset: offset + limit]
+        condition = {
+            'status__in': [6] if not history else [0, 1, 2, 3, 4, 5],
+            'province': province,
+            'field': field
+        }
+        c = Competition.enabled.filter(**condition).count()
+        qs = Competition.enabled.filter(**condition).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
               'liker_count': a.likers.count(),

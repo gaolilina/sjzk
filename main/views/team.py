@@ -11,7 +11,7 @@ from main.utils.recommender import calculate_ranking_score
 from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL
-from main.models import Team, User, Achievement, TeamNeed, InternalTask,\
+from main.models import Team, User, Achievement, TeamNeed, InternalTask, \
     ExternalTask, CompetitionTeamParticipator, IllegalWord
 from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
@@ -67,8 +67,12 @@ class List(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        c = Team.enabled.filter(province=province, field1=field).count()
-        teams = Team.enabled.filter(province=province, field1=field).order_by(k)[i:j]
+        condition = {
+            'province': province,
+            'field1': field
+        }
+        c = Team.enabled.filter(**condition).count()
+        teams = Team.enabled.filter(**condition).order_by(k)[i:j]
         l = [{'id': t.id,
               'name': t.name,
               'icon_url': t.icon,
@@ -77,7 +81,7 @@ class List(View):
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
-              'tags':[tag.name for tag in t.tags.all()],
+              'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})
 
@@ -1519,7 +1523,7 @@ class NeedTeamList(View):
                   'visitor_count': r.visitors.count(),
                   'member_count': r.members.count(),
                   'fields': [r.field1, r.field2],
-                  'tags':[tag.name for tag in r.tags.all()],
+                  'tags': [tag.name for tag in r.tags.all()],
                   'time_created': r.time_created} for r in rs]
         else:
             c = 0
@@ -1954,9 +1958,9 @@ class InternalTaskList(View):
         qs = team.internal_tasks
         if sign is not None:
             if sign == 0:
-                qs = qs.filter(status__range=[0,4])
+                qs = qs.filter(status__range=[0, 4])
             elif sign == 1:
-                qs = qs.filter(status__in=[5,6])
+                qs = qs.filter(status__in=[5, 6])
             else:
                 qs = qs.filter(status=7)
             tasks = qs[offset:offset + limit]
@@ -2047,9 +2051,9 @@ class InternalTasks(View):
         qs = request.user.internal_tasks
         if sign is not None:
             if sign == 0:
-                qs = qs.filter(status__range=[0,4])
+                qs = qs.filter(status__range=[0, 4])
             elif sign == 1:
-                qs = qs.filter(status__in=[5,6])
+                qs = qs.filter(status__in=[5, 6])
             else:
                 qs = qs.filter(status=7)
             tasks = qs[offset:offset + limit]
@@ -2095,7 +2099,7 @@ class InternalTasks(View):
 
 
 class TeamInternalTask(View):
-    keys = ('id','title', 'content', 'status', 'deadline', 'assign_num',
+    keys = ('id', 'title', 'content', 'status', 'deadline', 'assign_num',
             'submit_num', 'finish_time', 'time_created')
 
     @fetch_object(InternalTask.objects, 'task')
@@ -2255,9 +2259,9 @@ class ExternalTaskList(View):
             qs = team.outsource_external_tasks
             if sign is not None:
                 if sign == 0:
-                    qs = qs.filter(status__range=[0,8])
+                    qs = qs.filter(status__range=[0, 8])
                 else:
-                    qs = qs.filter(status__in=[9,10])
+                    qs = qs.filter(status__in=[9, 10])
                 tasks = qs[offset:offset + limit]
             else:
                 tasks = qs.all()[offset:offset + limit]
@@ -2274,9 +2278,9 @@ class ExternalTaskList(View):
             qs = team.undertake_external_tasks
             if sign is not None:
                 if sign == 0:
-                    qs = qs.filter(status__range=[0,8])
+                    qs = qs.filter(status__range=[0, 8])
                 else:
-                    qs = qs.filter(status__in=[9,10])
+                    qs = qs.filter(status__in=[9, 10])
 
             c = qs.count()
             tasks = qs[offset:offset + limit]
@@ -2369,7 +2373,7 @@ class ExternalTasks(View):
 
 
 class TeamExternalTask(View):
-    keys = ('id','title', 'content', 'status', 'expend', 'expend_actual',
+    keys = ('id', 'title', 'content', 'status', 'expend', 'expend_actual',
             'deadline', 'assign_num', 'submit_num', 'pay_num', 'finish_time',
             'time_created')
 

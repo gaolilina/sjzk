@@ -76,14 +76,13 @@ class List(View):
         """
 
         k = self.ORDERS[order]
-        if history is False:
-            c = Activity.enabled.exclude(status=2, province=province, field=field).count()
-            qs = Activity.enabled.exclude(
-                status=2, province=province, field=field).order_by(k)[offset: offset + limit]
-        else:
-            c = Activity.enabled.filter(status=2, province=province, field=field).count()
-            qs = Activity.enabled.filter(
-                status=2, province=province, field=field).order_by(k)[offset: offset + limit]
+        condition = {
+            'status__in': [2] if not history else [0, 1],
+            'province': province,
+            'field': field
+        }
+        c = Activity.enabled.filter(**condition).count()
+        qs = Activity.enabled.filter(**condition).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,
               'name': a.name,
               'liker_count': a.likers.count(),

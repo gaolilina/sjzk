@@ -3,7 +3,6 @@ from django.utils import timezone
 
 from . import EnabledManager, Comment, Liker, Follower, Favorer
 
-
 __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
            'CompetitionComment', 'CompetitionLiker', 'CompetitionFile',
            'CompetitionNotification', 'CompetitionFollower', 'CompetitionAward',
@@ -13,9 +12,11 @@ __all__ = ['Competition', 'CompetitionStage', 'CompetitionTeamParticipator',
 class CompetitionSign(models.Model):
     class Meta:
         db_table = 'competition_sign'
+
     competition = models.ForeignKey('Competition', related_name='signers')
     team = models.ForeignKey('Team', related_name='+')
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
+
 
 class Competition(models.Model):
     """竞赛基本信息"""
@@ -100,7 +101,7 @@ class CompetitionFile(models.Model):
     comment = models.TextField(default='')
 
     objects = models.Manager()
-    
+
     class Meta:
         db_table = 'competition_file'
 
@@ -165,6 +166,7 @@ class CompetitionAward(models.Model):
     class Meta:
         db_table = 'competition_award'
         ordering = ['-time_created']
+
 
 class CompetitionFavorer(Favorer):
     """活动收藏记录"""
