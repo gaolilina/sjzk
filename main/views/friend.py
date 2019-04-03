@@ -30,8 +30,8 @@ class FriendAction(FriendCheck):
     对好友进行操作，加好友，删除好友
     """
 
-    @fetch_object(User.enabled, 'other_user')
     @require_verification_token
+    @fetch_object(User.enabled, 'other_user')
     def post(self, request, other_user):
         """将目标用户添加为自己的好友（对方需发送过好友请求）"""
 

@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from main.views.friend import FriendRequestList, FriendCheck, FriendList
+from main.views.search import SearchUser, SearchUserActionList, SearchTeamActionList, SearchLabActionList
 from ..views.user import *
 from ..views.common import *
 from ..views.recommend import UserRecommend
@@ -49,7 +50,7 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/likers/(?P<other_user_id>[0-9]+)/$',
         UserLiker.as_view(), name='liker'),
     # 搜索
-    url(r'^search/$', Search.as_view(), name='search'),
+    url(r'^search/$', SearchUser.as_view(), name='search'),
     url(r'^search/user_action/$', SearchUserActionList.as_view(),
         name='search_user_action'),
     url(r'^search/team_action/$', SearchTeamActionList.as_view(),

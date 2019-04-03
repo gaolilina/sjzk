@@ -1,0 +1,16 @@
+[[source]]
+url = "https://mirrors.aliyun.com/pypi/simple"
+verify_ssl = true
+name = "aliyun"
+
+[dev-packages]
+
+[packages]
+requests = "*"
+django = "==1.11.20"
+django-crontab = "*"
+tencentyun = "*"
+qcloud-image = "*"
+
+[requires]
+python_version = "3.7"

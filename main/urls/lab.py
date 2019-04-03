@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.search import SearchLab
 from ..views.lab import *
 from ..views.common import LabActionList, LabCommentList, LabComment, \
     LabFollowerList, LabFollower, LabLikerList, LabLiker, \
@@ -14,7 +15,7 @@ urls = [
     url(r'^(?P<lab_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     url(r'^(?P<lab_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
     # 团队搜索
-    url(r'^search/$', Search.as_view(), name='search'),
+    url(r'^search/$', SearchLab.as_view(), name='search'),
     # 筛选
     url(r'^screen/$', Screen.as_view(), name='screen'),
     # 成员
