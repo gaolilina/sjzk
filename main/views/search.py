@@ -3,7 +3,6 @@
 from django import forms
 from django.db.models import Q
 from django.http import JsonResponse
-from django.views import View
 from django.views.generic.base import View
 
 from main.models import User, UserAction, TeamAction, LabAction, SystemAction, Lab, Team
