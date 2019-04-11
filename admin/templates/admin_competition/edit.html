@@ -6,6 +6,9 @@
     <tr>
         <td>标题：</td>
         <td><input name="name" type="text" value="{{ model.name }}" required/></td>
+
+        <td>标签：</td>
+        <td><input name="tags" type="text" value="{{ model.tags }}" required/></td>
     </tr>
     <tr>
         <td>详细内容：</td>
@@ -18,16 +21,14 @@
     <tr>
         <td>开始时间：</td>
         <td><input name="time_started" type="text" data-field="datetime" readonly value="{{ model.time_started }}" required/></td>
-    </tr>
-    <tr>
+    
         <td>结束时间：</td>
         <td><input name="time_ended" type="text" data-field="datetime" readonly value="{{ model.time_ended }}" required/></td>
     </tr>
     <tr>
         <td>人数上限：</td>
         <td><input name="allow_team" type="number" value="{{ model.allow_team }}" required/> (0为不限)</td>
-    </tr>
-    <tr>
+    
         <td>省：</td>
         <!-- <td><input name="province" type="text" value="{{ model.province }}" /></td> -->
         <td><select id="province" name="province" value="{{ model.province }}" ></select></td>
@@ -36,16 +37,14 @@
         <td>市：</td>
         <!-- <td><input name="city" type="text" value="{{ model.city }}" /></td> -->
         <td><select id="city" name="city" value="{{ model.city }}" ></select></td>
-    </tr>
-    <tr>
+    
         <td>机构：</td>
         <td><input name="unit" type="text" value="{{ model.unit }}" /></td>
     </tr>
     <tr>
         <td>最少人数：</td>
         <td><input name="min_member" type="text" value="{{ model.min_member }}" required/></td>
-    </tr>
-    <tr>
+    
         <td>最多人数：</td>
         <td><input name="max_member" type="text" value="{{ model.max_member }}" required/></td>
     </tr>
@@ -57,6 +56,16 @@
                 <option value="1"{% if model.user_type == 1 %} selected="selected"{% endif %}>学生</option>
                 <option value="2"{% if model.user_type == 2 %} selected="selected"{% endif %}>教师</option>
                 <option value="3"{% if model.user_type == 3 %} selected="selected"{% endif %}>社会人员</option>
+            </select>
+        </td>
+    
+        <td>竞赛负责人：</td>
+        <td>
+            <select name="owner">
+                <option value="">(无)</option>
+                {% for p in owners %}
+                <option value="{{ p.id }}" {% ifequal p.id ownerid %}selected="selected"{% endifequal %}>{{ p.name }}</option>
+                {% endfor %}
             </select>
         </td>
     </tr>
@@ -93,17 +102,7 @@
             </td>
         </tr>
     {% endfor %}
-    <tr>
-        <td>竞赛负责人：</td>
-        <td>
-            <select name="owner">
-                <option value="">(无)</option>
-                {% for p in owners %}
-                <option value="{{ p.id }}" {% ifequal p.id ownerid %}selected="selected"{% endifequal %}>{{ p.name }}</option>
-                {% endfor %}
-            </select>
-        </td>
-    </tr>
+    
     <tr>
         <td colspan="2">
             {{ msg }}

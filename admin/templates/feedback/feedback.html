@@ -3,9 +3,9 @@
 {% block content %}
 <table style="margin:30px">
     <tr>
-        <td>用户</td>
-        <td style="min-width: 450px">内容</td>
-        <td>时间</td>
+        <th>用户</th>
+        <th style="min-width: 450px">内容</th>
+        <th>时间</th>
     </tr>
     {% for item in list %}
         <tr>
@@ -23,15 +23,8 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
 <style>
-table {
-    border-collapse: collapse;
-}
-table td {
-    border: 1px solid #999;
-}
-table tr:nth-child(1) td {
-    text-align: center;
-}
+
 </style>
 {% endblock %}

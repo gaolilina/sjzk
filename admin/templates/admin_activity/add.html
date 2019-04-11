@@ -6,6 +6,9 @@
     <tr>
         <td>标题：</td>
         <td><input name="name" type="text" value="" maxlength="50" required/></td>
+
+        <td>标签：</td>
+        <td><input name="tags" type="text" value="" maxlength="50" required/></td>
     </tr>
     <tr>
         <td>详细内容：</td>
@@ -14,32 +17,7 @@
     <tr>
         <td>截至日期：</td>
         <td><input name="deadline" type="text" data-field="datetime" readonly value="" required/></td>
-    </tr>
-    <tr>
-        <td>开始时间：</td>
-        <td><input name="time_started" type="text" data-field="datetime" readonly value="" required/></td>
-    </tr>
-    <tr>
-        <td>结束时间：</td>
-        <td><input name="time_ended" type="text" data-field="datetime" readonly value="" required/></td>
-    </tr>
-    <tr>
-        <td>人数上限：</td>
-        <td><input name="allow_user" type="number" value="0" required/> (0为不限)</td>
-    </tr>
-    <tr>
-        <td>省：</td>
-        <td><input name="province" type="text" value=""/></td>
-    </tr>
-    <tr>
-        <td>市：</td>
-        <td><input name="city" type="text" value=""/></td>
-    </tr>
-    <tr>
-        <td>机构：</td>
-        <td><input name="unit" type="text" value=""/></td>
-    </tr>
-    <tr>
+
         <td>参与者类型：</td>
         <td>
             <select name="user_type">
@@ -51,6 +29,28 @@
         </td>
     </tr>
     <tr>
+        <td>开始时间：</td>
+        <td><input name="time_started" type="text" data-field="datetime" readonly value="" required/></td>
+    
+        <td>结束时间：</td>
+        <td><input name="time_ended" type="text" data-field="datetime" readonly value="" required/></td>
+    </tr>
+    <tr>
+        <td>人数上限：</td>
+        <td><input name="allow_user" type="number" value="0" required/> (0为不限)</td>
+    
+        <td>省：</td>
+        <td><input name="province" type="text" value=""/></td>
+    </tr>
+    <tr>
+        <td>市：</td>
+        <td><input name="city" type="text" value=""/></td>
+    
+        <td>机构：</td>
+        <td><input name="unit" type="text" value=""/></td>
+    </tr>
+    
+    <tr>
         <td>当前活动阶段：</td>
         <td>
             <input name="stages" type="hidden" value="" required/>
@@ -60,7 +60,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="4">
             {{ msg }}
             <div class="buttons">
                 <input type="submit" value="保存" />
@@ -80,6 +80,9 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+<style type="text/css">
+    
+</style>
 {% endblock %}
 
 {% block js %}

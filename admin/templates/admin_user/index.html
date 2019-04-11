@@ -1,23 +1,23 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="" method="get" style="text-align:center">
-    用户名：<input type="text" name="name" value="{{name}}" />
-    <input type="submit" value="搜索" />
+<form role="form" action="" method="get">
+    <span>用户名：</span><input type="text" name="name" value="{{name}}" /><br/>
+    <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
 </form>
 {% if list %}
-<table style="width:300px;margin:0 auto;">
+<table style="width:1200px;margin:0 auto;">
     <thead>
         <tr>
-            <td>ID</td>
-            <td>用户名</td>
-            <td>操作</td>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>操作</th>
         </tr>
         {% for item in list.all %}
         <tr>
             <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
-            <td><a href="{% url redir item.id %}">查看</a></td>
+            <td><a href="{% url redir item.id %}"><i class="icon Hui-iconfont">&#xe725;</i>查看</a></td>
         </tr>
         {% endfor %}
     </thead>
@@ -30,47 +30,8 @@
 {% block rightbar %}{% include 'rightbar.html' with tb='admin_user_admin' lb='1' rb='1' %}{% endblock %}
 
 {% block css %}
+{% include 'parts/table_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
-    input.tiny {
-        width: 60px;
-    }
+    
 </style>
 {% endblock %}

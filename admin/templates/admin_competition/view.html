@@ -1,10 +1,13 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<table>
+<table style="margin:30px;">
     <tr>
         <td>标题：</td>
         <td style="max-width: 500px">{{ model.name }}</td>
+
+        <td>标签：</td>
+        <td style="max-width: 500px">{{ model.tags }}</td>
     </tr>
     <tr>
         <td>详细内容：</td>
@@ -13,40 +16,7 @@
     <tr>
         <td>截至日期：</td>
         <td>{{ model.deadline }}</td>
-    </tr>
-    <tr>
-        <td>开始时间：</td>
-        <td>{{ model.time_started }}</td>
-    </tr>
-    <tr>
-        <td>结束时间：</td>
-        <td>{{ model.time_ended }}</td>
-    </tr>
-    <tr>
-        <td>人数上限：</td>
-        <td>{{ model.allow_team }}</td>
-    </tr>
-    <tr>
-        <td>省：</td>
-        <td>{{ model.province }}</td>
-    </tr>
-    <tr>
-        <td>市：</td>
-        <td>{{ model.city }}</td>
-    </tr>
-    <tr>
-        <td>机构：</td>
-        <td>{{ model.unit }}</td>
-    </tr>
-    <tr>
-        <td>最少人数：</td>
-        <td>{{ model.min_member }}</td>
-    </tr>
-    <tr>
-        <td>最多人数：</td>
-        <td>{{ model.max_member }}</td>
-    </tr>
-    <tr>
+
         <td>参与者类型：</td>
         <td>
             {% if model.user_type == 0 %}不限{% endif %}
@@ -55,6 +25,35 @@
             {% if model.user_type == 3 %}社会人员{% endif %}
         </td>
     </tr>
+    <tr>
+        <td>开始时间：</td>
+        <td>{{ model.time_started }}</td>
+    
+        <td>结束时间：</td>
+        <td>{{ model.time_ended }}</td>
+    </tr>
+    <tr>
+        <td>人数上限：</td>
+        <td>{{ model.allow_team }}</td>
+    
+        <td>省：</td>
+        <td>{{ model.province }}</td>
+    </tr>
+    <tr>
+        <td>市：</td>
+        <td>{{ model.city }}</td>
+    
+        <td>机构：</td>
+        <td>{{ model.unit }}</td>
+    </tr>
+    <tr>
+        <td>最少人数：</td>
+        <td>{{ model.min_member }}</td>
+    
+        <td>最多人数：</td>
+        <td>{{ model.max_member }}</td>
+    </tr>
+    
     <tr>
         <td>当前活动阶段：</td>
         <td>
@@ -137,16 +136,6 @@
 {% block css %}
 {% include 'parts/input_style.html' %}
 <style>
-table {
-    border-collapse: collapse;
-    margin: 30px;
-}
-table td {
-    border: 1px solid #999;
-}
-td a {
-    text-decoration: underline;
-    color: blue;
-}
+    
 </style>
 {% endblock %}

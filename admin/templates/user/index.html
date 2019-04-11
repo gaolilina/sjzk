@@ -1,32 +1,32 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="" method="get" style="text-align:center">
-    用户名：<input type="text" name="name" value="{{name}}" />
-    手机号：<input type="text" name="phone" value="{{phone}}" />
-    机构名：<input type="text" name="unit1" value="{{unit1}}" /><br/>
-    所在省：<input type="text" name="province" value="{{province}}" />
-    所在市：<input type="text" name="city" value="{{city}}" />
-    所在区/县：<input type="text" name="county" value="{{county}}" />
-    审核状态：<select name="is_verified">
+<form role="form" action="" method="get">
+    <span>用户名：</span><input type="text" name="name" value="{{name}}" />
+    <span>手机号：</span><input type="text" name="phone" value="{{phone}}" />
+    <span>机构名：</span><input type="text" name="unit1" value="{{unit1}}" /><br/>
+    <span>所在省：</span><input type="text" name="province" value="{{province}}" />
+    <span>所在市：</span><input type="text" name="city" value="{{city}}" />
+    <span>所在区/县：</span><input type="text" name="county" value="{{county}}" />
+    <span>审核状态：</span><select name="is_verified">
     <option value="0" {% ifequal is_verified 0 %}checked="checked"{% endifequal %}>未提交</option>
     <option value="1" {% ifequal is_verified 1 %}checked="checked"{% endifequal %}>待审核</option>
     <option value="2" {% ifequal is_verified 2 %}checked="checked"{% endifequal %}>身份证审核通过</option>
     <option value="3" {% ifequal is_verified 3 %}checked="checked"{% endifequal %}>未通过</option>
     <option value="4" {% ifequal is_verified 3 %}checked="checked"{% endifequal %}>eid审核通过</option>
-    </select>
-    <input type="submit" value="搜索" />
+    </select><br/>
+    <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
 </form>
 {% if list %}
-<table style="width:700px;margin:0 auto;">
+<table style="width:1200px;margin:0 auto;">
     <thead>
         <tr>
-            <td>ID</td>
-            <td>用户名</td>
-            <td>昵称</td>
-            <td>手机号</td>
-            <td>地区</td>
-            <td>操作</td>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>昵称</th>
+            <th>手机号</th>
+            <th>地区</th>
+            <th>操作</th>
         </tr>
         {% for item in list.all %}
         <tr>
@@ -35,7 +35,7 @@
             <td>{% if item.username != None %}{{ item.username }}{% endif %}</td>
             <td>{{ item.phone_number }}</td>
             <td>{{ item.province }} {{ item.city }}</td>
-            <td><a href="{% url redir item.id %}">查看</a></td>
+            <td><a href="{% url redir item.id %}"><i class="icon Hui-iconfont">&#xe725;</i>查看</a></td>
         </tr>
         {% endfor %}
     </thead>
@@ -48,47 +48,8 @@
 {% block rightbar %}{% include 'rightbar.html' with tb='user_admin' lb='user' rb=rb %}{% endblock %}
 
 {% block css %}
+{% include 'parts/table_style.html' %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=email], input[type=date], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
-        float: right;
-    }
-
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
-    }
-
-    input.tiny {
-        width: 60px;
-    }
+    
 </style>
 {% endblock %}

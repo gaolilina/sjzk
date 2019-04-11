@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="" method="get" style="text-align:center">
-    板块名：<input type="text" name="name" value="{{name}}" />
-    <input type="submit" value="搜索" />
+<form role="form" action="" method="get">
+    <span>板块名：</span><input type="text" name="name" value="{{name}}" /><br/>
+    <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
 </form>
 {% if list %}
-<table style="margin:30px">
+<table style="width:1200px;margin:30px">
     {% for item in list %}
         <tr>
             <td>板块名： </td>
@@ -23,5 +23,8 @@
 {% block rightbar %}{% include 'rightbar.html' with tb='forum_admin' lb='forum' rb='forum_board' %}{% endblock %}
 
 {% block css %}
-{% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
+<style>
+	
+</style>
 {% endblock %}

@@ -1,11 +1,15 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<table>
+<table style="margin:30px;">
     <tr>
         <td>标题：</td>
         <td>{{ model.name }}</td>
+
+        <td>标签：</td>
+        <td>{{ model.tags }}</td>
     </tr>
+
     <tr>
         <td>详细内容：</td>
         <td>{{ model.content }}</td>
@@ -13,32 +17,7 @@
     <tr>
         <td>截至日期：</td>
         <td>{{ model.deadline }}</td>
-    </tr>
-    <tr>
-        <td>开始时间：</td>
-        <td>{{ model.time_started }}</td>
-    </tr>
-    <tr>
-        <td>结束时间：</td>
-        <td>{{ model.time_ended }}</td>
-    </tr>
-    <tr>
-        <td>人数上限：</td>
-        <td>{{ model.allow_user }}</td>
-    </tr>
-    <tr>
-        <td>省：</td>
-        <td>{{ model.province }}</td>
-    </tr>
-    <tr>
-        <td>市：</td>
-        <td>{{ model.city }}</td>
-    </tr>
-    <tr>
-        <td>机构：</td>
-        <td>{{ model.unit }}</td>
-    </tr>
-    <tr>
+
         <td>参与者类型：</td>
         <td>
             {% if model.user_type == 0 %}不限{% endif %}
@@ -47,6 +26,28 @@
             {% if model.user_type == 3 %}社会人员{% endif %}
         </td>
     </tr>
+    <tr>
+        <td>开始时间：</td>
+        <td>{{ model.time_started }}</td>
+    
+        <td>结束时间：</td>
+        <td>{{ model.time_ended }}</td>
+    </tr>
+    <tr>
+        <td>人数上限：</td>
+        <td>{{ model.allow_user }}</td>
+    
+        <td>省：</td>
+        <td>{{ model.province }}</td>
+    </tr>
+    <tr>
+        <td>市：</td>
+        <td>{{ model.city }}</td>
+    
+        <td>机构：</td>
+        <td>{{ model.unit }}</td>
+    </tr>
+    
     <tr>
         <td>当前活动阶段：</td>
         <td>
@@ -67,12 +68,12 @@
     {% endfor %}
 </table>
 报名者：<a href="{% url 'admin:admin_activity:excel' model.id %}">导出Excel</a>
-<table>
+<table style="width:1200px;margin:30px;">
     <tr>
-        <td>用户</td>
-        <td>报名时间</td>
-        <td>联系方式</td>
-        <td>省 市 区</td>
+        <th>用户</th>
+        <th>报名时间</th>
+        <th>联系方式</th>
+        <th>省 市 区</th>
     </tr>
     {% for user in model.user_participators.all %}
     <tr>
@@ -92,12 +93,6 @@
 {% block css %}
 {% include 'parts/input_style.html' %}
 <style>
-table {
-    border-collapse: collapse;
-    margin: 30px;
-}
-table td {
-    border: 1px solid #999;
-}
+    
 </style>
 {% endblock %}

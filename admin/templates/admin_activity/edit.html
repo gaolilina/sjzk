@@ -6,6 +6,9 @@
     <tr>
         <td>标题：</td>
         <td><input name="name" type="text" value="{{ model.name }}" maxlength="50" required/></td>
+
+        <td>标签：</td>
+        <td><input name="tags" type="text" value="{{ model.tags }}" maxlength="50" required/></td>
     </tr>
     <tr>
         <td>详细内容：</td>
@@ -14,32 +17,7 @@
     <tr>
         <td>截至日期：</td>
         <td><input name="deadline" type="text" data-field="datetime" readonly value="{{ model.deadline }}" required/></td>
-    </tr>
-    <tr>
-        <td>开始时间：</td>
-        <td><input name="time_started" type="text" data-field="datetime" readonly value="{{ model.time_started }}" required/></td>
-    </tr>
-    <tr>
-        <td>结束时间：</td>
-        <td><input name="time_ended" type="text" data-field="datetime" readonly value="{{ model.time_ended }}" required/></td>
-    </tr>
-    <tr>
-        <td>人数上限：</td>
-        <td><input name="allow_user" type="number" value="{{ model.allow_user }}" required/> (0为不限)</td>
-    </tr>
-    <tr>
-        <td>省：</td>
-        <td><input name="province" type="text" value="{{ model.province }}"/></td>
-    </tr>
-    <tr>
-        <td>市：</td>
-        <td><input name="city" type="text" value="{{ model.city }}"/></td>
-    </tr>
-    <tr>
-        <td>机构：</td>
-        <td><input name="unit" type="text" value="{{ model.unit }}"/></td>
-    </tr>
-    <tr>
+
         <td>参与者类型：</td>
         <td>
             <select name="user_type">
@@ -50,6 +28,28 @@
             </select>
         </td>
     </tr>
+    <tr>
+        <td>开始时间：</td>
+        <td><input name="time_started" type="text" data-field="datetime" readonly value="{{ model.time_started }}" required/></td>
+    
+        <td>结束时间：</td>
+        <td><input name="time_ended" type="text" data-field="datetime" readonly value="{{ model.time_ended }}" required/></td>
+    </tr>
+    <tr>
+        <td>人数上限：</td>
+        <td><input name="allow_user" type="number" value="{{ model.allow_user }}" required/> (0为不限)</td>
+    
+        <td>省：</td>
+        <td><input name="province" type="text" value="{{ model.province }}"/></td>
+    </tr>
+    <tr>
+        <td>市：</td>
+        <td><input name="city" type="text" value="{{ model.city }}"/></td>
+    
+        <td>机构：</td>
+        <td><input name="unit" type="text" value="{{ model.unit }}"/></td>
+    </tr>
+    
     <tr>
         <td>当前活动阶段：</td>
         <td>

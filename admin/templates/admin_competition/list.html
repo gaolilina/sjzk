@@ -1,15 +1,22 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<table style="margin:30px">
+<table style="width:1000px;margin:30px">
+    <tr>
+        <th>标题</th>
+        <th>操作</th>
+    </tr>
     {% for item in list %}
         <tr>
-            <td>标题： </td>
-            <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.competition.name }}</td>
-            <td><a href="{% url 'admin:admin_competition:view' item.competition.id %}">查看</a></td>
-            {% if user.can_a %}
-            <td><a href="{% url 'admin:admin_competition:edit' item.competition.id %}">修改</a></td>
-            {% endif %}
+            <td style="min-width: 200px;">{{ item.competition.name }}</td>
+            <td>
+                <a href="{% url 'admin:admin_competition:view' item.competition.id %}">
+                    <i class="icon Hui-iconfont">&#xe725;</i>查看</a>
+                {% if user.can_a %}
+                &nbsp;&nbsp;&nbsp;<a href="{% url 'admin:admin_competition:edit' item.competition.id %}">
+                    <i class="icon Hui-iconfont">&#xe692;</i>修改</a>
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
 </table>
@@ -21,4 +28,8 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
+<style type="text/css">
+    
+</style>
 {% endblock %}

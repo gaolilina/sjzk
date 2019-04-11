@@ -21,13 +21,15 @@
     </tr>
     <tr>
         <td>短信验证码</td>
-        <td><input name="valid_code" type="text" value="" required/> <button>获取</button></td>
+        <td class="pos-rel"><input name="valid_code" type="text" value="" required/> 
+        <button class="bc-gray pos-abs feachBtn">点击获取</button></td>
     </tr>
     <tr>
         <td>{{ msg }}</td>
         <td>
             <div class="buttons">
                 <input type="submit" value="确定" />
+                <input type="reset" value="取消" />
             </div>
         </td>
     </tr>
@@ -37,14 +39,26 @@
 
 <script>
 $('button').click(function(e) {
+    var count = 60;
     e.preventDefault();
     $.get("http://www.chuangyh.com:8000/users/validation_code/?phone_number=" + $("input[name=phone_number]").val())
         .then(function() {
-            $("button").prop("disabled", true);
-
-            setTimeout(function() {
-                $("button").prop("disabled", false);
-            }, 60000);
+            const countDown = setInterval(() => {
+                if (count === 0) {
+                    $('.feachBtn').text('重新获取').removeAttr('disabled');
+                    $('.feachBtn').css({
+                        background: '#C1C1C1',
+                    });
+                    clearInterval(countDown);
+                } else {
+                    $('.feachBtn').attr('disabled', true);
+                    $('.feachBtn').text(count + '秒');
+                }
+                    count--;
+            }, 1000);
+            // setTimeout(function() {
+            //     $("button").prop("disabled", false);
+            // }, 60000);
         })
         .fail(function() {
             alert("发送失败，请重试");
@@ -66,42 +80,17 @@ $('form').submit(function(e) {
 
 {% block css %}
 <style>
-    form {
-        padding: 30px;
-    }
-    form img {
-        width: 100px;
-        height: 100px;
-    }
-    td {
-        padding: 5px 8px;
-        vertical-align: top;
-    }
-
-    input[type=text], input[type=password], input[type=email], textarea {
-        border: 2px solid #C5DBAD;
-    }
-
-    input[type=radio] {
-        margin-right: 5px;
-    }
-
-    input[type=radio] ~ input {
-        margin-left: 15px;
-    }
-
-    .buttons {
+    .buttons{
         float: right;
     }
 
-    input[type=submit], input[type=reset] {
-        border: 0 none;
-        border-radius: 3px;
-        padding: 2px 5px;
-        background: #85A365;
-        color: white;
-        margin-left: 10px;
-        margin-top: 10px;
+    input[type=text], input[type=password], input[type=email]{
+        display: block;
+        width: 100%;
+    }
+    button{
+        top: 5px;
+        right: 7px;
     }
 </style>
 {% endblock %}

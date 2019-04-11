@@ -3,16 +3,16 @@
 {% block content %}
 <table style="margin:30px">
     <tr>
-        <td>用户</td>
-        <td>对象</td>
-        <td>操作</td>
-        <td>时间</td>
+        <th>用户</th>
+        <th>对象</th>
+        <th>操作</th>
+        <th>时间</th>
     </tr>
     {% for item in list %}
         <tr>
             <td><a href="{% url 'admin:admin_user:admin_user' item.user.id %}" target="_blank">{{ item.user.name }}</a></td>
             <td>{{ item.table }}: {{ item.data_id }}</td>
-            <td>{% if item.operate_type == 1 %}修改{% endif %}{% if item.operate_type == 2 %}新增{% endif %}{% if item.operate_type == 3 %}删除{% endif %}</td>
+            <td>{% if item.operate_type == 1 %}<i class="icon Hui-iconfont">&#xe692;</i>修改{% endif %}{% if item.operate_type == 2 %}<i class="icon Hui-iconfont">&#xe600;</i>新增{% endif %}{% if item.operate_type == 3 %}<i class="icon Hui-iconfont">&#xe6e2;</i>删除{% endif %}</td>
             <td>{{ item.time }}</td>
         </tr>
     {% endfor %}
@@ -25,15 +25,10 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
 <style>
-table {
-    border-collapse: collapse;
-}
-table td {
-    border: 1px solid #999;
-}
-table tr:nth-child(1) td {
-    text-align: center;
-}
+    table tr:nth-child(1) td {
+        text-align: center;
+    }
 </style>
 {% endblock %}
