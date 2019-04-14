@@ -4,7 +4,30 @@
 {% block content %}
 <form role="form" action="{% url 'admin:team:team_need' mod.id %}" method="post">
 <table>
-    <tr><td>团队：</td><td><a href="{% url "admin:team:team" mod.team.id %}">{{ mod.team.id }}</a></td></tr>{% include "parts/input_control.html" with text="类型" name="type" type="number" maxlen="{{maxlen}}" value=mod.type %}{% include "parts/input_control.html" with text="标题" name="title" type="{{type}}" maxlen="20" value=mod.title %}{% include "parts/input_control.html" with text="简介" name="description" type="text" maxlen="200" value=mod.description %}{% include "parts/input_control.html" with text="状态" name="status" type="number" maxlen="{{maxlen}}" value=mod.status %}{% include "parts/input_control.html" with text="数量" name="number" type="number" maxlen="{{maxlen}}" value=mod.number %}{% include "parts/input_control.html" with text="领域" name="field" type="text" maxlen="20" value=mod.field %}{% include "parts/input_control.html" with text="技能" name="skill" type="text" maxlen="20" value=mod.skill %}{% include "parts/input_control.html" with text="截止日期" name="deadline" type="date" maxlen="{{maxlen}}" value=mod.deadline %}{% include "parts/input_control.html" with text="最低年龄" name="age_min" type="number" maxlen="{{maxlen}}" value=mod.age_min %}{% include "parts/input_control.html" with text="最高年龄" name="age_max" type="number" maxlen="{{maxlen}}" value=mod.age_max %}{% include "parts/input_control.html" with text="性别" name="gender" type="text" maxlen="1" value=mod.gender %}{% include "parts/input_control.html" with text="学历" name="degree" type="text" maxlen="20" value=mod.degree %}{% include "parts/input_control.html" with text="专业" name="major" type="text" maxlen="20" value=mod.major %}{% include "parts/input_control.html" with text="毕业时间" name="time_graduated" type="date" maxlen="{{maxlen}}" value=mod.time_graduated %}{% include "parts/input_control.html" with text="花费" name="cost" type="number" maxlen="{{maxlen}}" value=mod.cost %}{% include "parts/input_control.html" with text="单位花费" name="cost_unit" type="text" maxlen="1" value=mod.cost_unit %}{% include "parts/input_control.html" with text="开始时间" name="time_started" type="date" maxlen="{{maxlen}}" value=mod.time_started %}{% include "parts/input_control.html" with text="结束时间" name="time_ended" type="date" maxlen="{{maxlen}}" value=mod.time_ended %}{% include "parts/input_control.html" with text="成员" name="members" type="text" maxlen="100" value=mod.members %}{% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
+    <tr>
+        <td>团队：</td>
+        <td><a href="{% url "admin:team:team" mod.team.id %}">{{ mod.team.id }}</a></td>
+    </tr>
+    {% include "parts/input_control.html" with text="类型" name="type" type="number" maxlen="{{maxlen}}" value=mod.type %}
+    {% include "parts/input_control.html" with text="标题" name="title" type="{{type}}" maxlen="20" value=mod.title %}
+    {% include "parts/input_control.html" with text="简介" name="description" type="text" maxlen="200" value=mod.description %}
+    {% include "parts/input_control.html" with text="状态" name="status" type="number" maxlen="{{maxlen}}" value=mod.status %}
+    {% include "parts/input_control.html" with text="数量" name="number" type="number" maxlen="{{maxlen}}" value=mod.number %}
+    {% include "parts/input_control.html" with text="领域" name="field" type="text" maxlen="20" value=mod.field %}
+    {% include "parts/input_control.html" with text="技能" name="skill" type="text" maxlen="20" value=mod.skill %}
+    {% include "parts/input_control.html" with text="截止日期" name="deadline" type="date" maxlen="{{maxlen}}" value=mod.deadline %}
+    {% include "parts/input_control.html" with text="最低年龄" name="age_min" type="number" maxlen="{{maxlen}}" value=mod.age_min %}
+    {% include "parts/input_control.html" with text="最高年龄" name="age_max" type="number" maxlen="{{maxlen}}" value=mod.age_max %}
+    {% include "parts/input_control.html" with text="性别" name="gender" type="text" maxlen="1" value=mod.gender %}
+    {% include "parts/input_control.html" with text="学历" name="degree" type="text" maxlen="20" value=mod.degree %}
+    {% include "parts/input_control.html" with text="专业" name="major" type="text" maxlen="20" value=mod.major %}
+    {% include "parts/input_control.html" with text="毕业时间" name="time_graduated" type="date" maxlen="{{maxlen}}" value=mod.time_graduated %}
+    {% include "parts/input_control.html" with text="花费" name="cost" type="number" maxlen="{{maxlen}}" value=mod.cost %}
+    {% include "parts/input_control.html" with text="单位花费" name="cost_unit" type="text" maxlen="1" value=mod.cost_unit %}
+    {% include "parts/input_control.html" with text="开始时间" name="time_started" type="date" maxlen="{{maxlen}}" value=mod.time_started %}
+    {% include "parts/input_control.html" with text="结束时间" name="time_ended" type="date" maxlen="{{maxlen}}" value=mod.time_ended %}
+    {% include "parts/input_control.html" with text="成员" name="members" type="text" maxlen="100" value=mod.members %}
+    {% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
     <tr>
         <td>{{ msg }}</td>
         <td>

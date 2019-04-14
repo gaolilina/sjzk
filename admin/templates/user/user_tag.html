@@ -4,7 +4,12 @@
 {% block content %}
 <form role="form" action="{% url 'admin:user:user_tag' mod.id %}" method="post">
 <table>
-    {% include "parts/input_control.html" with text="名字" name="name" type="text" maxlen="20" value=mod.name %}{% include "parts/input_control.html" with text="顺序" name="order" type="number" maxlen="{{maxlen}}" value=mod.order %}<tr><td>对象：</td><td><a href="{% url "admin:user:user" mod.entity.id %}">{{ mod.entity.id }}</a></td></tr>
+    {% include "parts/input_control.html" with text="名字" name="name" type="text" maxlen="20" value=mod.name %}
+    {% include "parts/input_control.html" with text="顺序" name="order" type="number" maxlen="{{maxlen}}" value=mod.order %}
+    <tr>
+        <td>对象：</td>
+        <td><a href="{% url "admin:user:user" mod.entity.id %}">{{ mod.entity.id }}</a></td>
+    </tr>
     <tr>
         <td>{{ msg }}</td>
         <td>

@@ -10,7 +10,7 @@
         <tr>
             <td>用户名： </td>
             <td style="min-width: 200px;border:1px solid #C4D9AE;">{{ item.user.name }}</td>
-            <td><a href="{% url 'admin:user:user_validation_code' item.id %}">查看</a></td>
+            <td><a href="{% url 'admin:user:user_validation_code' item.id %}"><i class="icon Hui-iconfont">&#xe725;</i>查看</a></td>
         </tr>
     {% endfor %}
 </table>
@@ -22,4 +22,5 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
 {% endblock %}

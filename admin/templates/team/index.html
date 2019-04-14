@@ -4,8 +4,8 @@
 <form role="form" action="" method="get">
     <span>团队名：</span><input type="text" name="name" value="{{name}}" />
     <span>所在省：</span><input type="text" name="province" value="{{province}}" />
-    <span>所在市：</span><input type="text" name="city" value="{{city}}" />
-    <span>所在区/县：</span><input type="text" name="county" value="{{county}}" />
+    <span>所在市：</span><input type="text" name="city" value="{{city}}" /><br/>
+    <span>所在区/县：</span><input type="text" name="county" value="{{county}}" /><br/>
     <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10 mr-10" value="取消" />
 </form>
 {% if list %}
@@ -16,6 +16,7 @@
             <th>团队名</th>
             <th>操作</th>
         </tr>
+        {% if list.all %}
         {% for item in list.all %}
         <tr>
             <td>{{ item.id }}</td>
@@ -23,6 +24,9 @@
             <td><a href="{% url redir item.id %}"><i class="icon Hui-iconfont">&#xe725;</i>查看</a></td>
         </tr>
         {% endfor %}
+        {% else %}
+        <tr><td colspan="3" style="text-align: left">没有数据</td></tr>
+        {% endif %}
     </thead>
 </table>
 {% endif %}

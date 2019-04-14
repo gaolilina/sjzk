@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<table style="margin:30px;">
+<table style="width:1050px;margin:30px;">
     <tr>
         <td>标题：</td>
         <td>{{ model.name }}</td>
@@ -11,8 +11,8 @@
     </tr>
 
     <tr>
-        <td>详细内容：</td>
-        <td>{{ model.content }}</td>
+        <td rowspan="">详细内容：</td>
+        <td colspan="3">{{ model.content }}</td>
     </tr>
     <tr>
         <td>截至日期：</td>
@@ -50,7 +50,7 @@
     
     <tr>
         <td>当前活动阶段：</td>
-        <td>
+        <td colspan="3">
             {% if model.status == 0 %}前期宣传{% endif %}
             {% if model.status == 1 %}报名{% endif %}
             {% if model.status == 2 %}结束{% endif %}
@@ -60,29 +60,33 @@
         <tr>
             <td>活动阶段{{forloop.counter}}</td>
             <td>
-                类　　型：{% if stage.status == 0 %}前期宣传{% endif %}{% if stage.status == 1 %}报名{% endif %}{% if stage.status == 2 %}结束{% endif %}<br/>
-                开始时间：{{ stage.time_started }}<br/>
-                结束时间：{{ stage.time_ended }}<br/>
+                类　　型：{% if stage.status == 0 %}前期宣传{% endif %}{% if stage.status == 1 %}报名{% endif %}{% if stage.status == 2 %}结束{% endif %}
             </td>
+            <td>开始时间：{{ stage.time_started }}</td>
+            <td>结束时间：{{ stage.time_ended }}</td>
         </tr>
     {% endfor %}
 </table>
-报名者：<a href="{% url 'admin:admin_activity:excel' model.id %}">导出Excel</a>
-<table style="width:1200px;margin:30px;">
+<span>报名者：</span><a class="btn" href="{% url 'admin:admin_activity:excel' model.id %}">导出Excel</a>
+<table style="width:1050px;margin:30px;">
     <tr>
         <th>用户</th>
         <th>报名时间</th>
         <th>联系方式</th>
         <th>省 市 区</th>
     </tr>
-    {% for user in model.user_participators.all %}
-    <tr>
-        <td>{{ user.user.name }}</td>
-        <td>{{ user.time_created }}</td>
-        <td>{{ user.user.phone_number }}</td>
-        <td>{{ user.user.province }} {{ user.user.city }} {{ user.user.county }}</td>
-    </tr>
-    {% endfor %}
+    {% if model.user_participators.all %}
+        {% for user in model.user_participators.all %}
+        <tr>
+            <td>{{ user.user.name }}</td>
+            <td>{{ user.time_created }}</td>
+            <td>{{ user.user.phone_number }}</td>
+            <td>{{ user.user.province }} {{ user.user.city }} {{ user.user.county }}</td>
+        </tr>
+        {% endfor %}
+    {% else %}
+        <td colspan="4" style="text-align:left;">没有数据</td>
+    {% endif %}
 </table>
 {% endblock %}
 
@@ -92,7 +96,10 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
 <style>
-    
+    td{
+        border: 1px solid #C1C1C1;
+    }
 </style>
 {% endblock %}

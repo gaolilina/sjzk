@@ -6,6 +6,7 @@
         <th>标题</th>
         <th>操作</th>
     </tr>
+    {% if list %}
     {% for item in list %}
         <tr>
             <td style="min-width: 200px;">{{ item.activity.name }}</td>
@@ -18,21 +19,9 @@
             </td>
         </tr>
     {% endfor %}
-    <tr>
-        <td style="min-width: 200px;">activity</td>
-        <td><a href="#"><i class="icon Hui-iconfont">&#xe725;</i>查看</a>
-            <a href="#"><i class="icon Hui-iconfont">&#xe692;</i>修改</a></td>
-    </tr>
-    <tr>
-        <td style="min-width: 200px;">activity</td>
-        <td><a href="#"><i class="icon Hui-iconfont">&#xe725;</i>查看</a>
-            <a href="#"><i class="icon Hui-iconfont">&#xe692;</i>修改</a></td>
-    </tr>
-    <tr>
-        <td style="min-width: 200px;">activity</td>
-        <td><a href="#"><i class="icon Hui-iconfont">&#xe725;</i>查看</a>
-            <a href="#"><i class="icon Hui-iconfont">&#xe692;</i>修改</a></td>
-    </tr>
+    {% else %}
+        <tr><td colspan="2" style="text-align: left">没有数据</td></tr>
+    {% endif %}
 </table>
 {% endblock %}
 

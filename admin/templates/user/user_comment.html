@@ -4,7 +4,16 @@
 {% block content %}
 <form role="form" action="{% url 'admin:user:user_comment' mod.id %}" method="post">
 <table>
-    <tr><td>作者：</td><td><a href="{% url "admin:user:user" mod.author.id %}">{{ mod.author.id }}</a></td></tr>{% include "parts/input_control.html" with text="内容" name="content" type="text" maxlen="100" value=mod.content %}{% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}<tr><td>对象：</td><td><a href="{% url "admin:user:user" mod.entity.id %}">{{ mod.entity.id }}</a></td></tr>
+    <tr>
+        <td>作者：</td>
+        <td><a href="{% url "admin:user:user" mod.author.id %}">{{ mod.author.id }}</a></td>
+    </tr>
+    {% include "parts/input_control.html" with text="内容" name="content" type="text" maxlen="100" value=mod.content %}
+    {% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
+    <tr>
+        <td>对象：</td>
+        <td><a href="{% url "admin:user:user" mod.entity.id %}">{{ mod.entity.id }}</a></td>
+    </tr>
     <tr>
         <td>{{ msg }}</td>
         <td>
