@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.http import JsonResponse
-from django.views import View
+from django.views.generic.base import View
 
 from main.models import Competition
 from main.utils.decorators import validate_args
