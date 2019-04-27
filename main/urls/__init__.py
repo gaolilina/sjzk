@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
 
+from main.urls import search
 from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth, \
     friend
 from admin.urls import urlpatterns as admin_urls
@@ -19,4 +20,5 @@ urlpatterns = [
     url(r'^vote/', include(vote.urls, namespace='vote')),
     url(r'^auth/', include(auth.urls, namespace='auth')),
     url(r'friend/', include(friend.urls, namespace='friend')),
+    url(r'search/', include(search.urls, namespace='search')),
 ]

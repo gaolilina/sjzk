@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.search.competition import SearchCompetition
 from ..views.competition import *
 from ..views.common import CompetitionCommentList, CompetitionComment, \
     CompetitionFollowerList
@@ -15,7 +16,7 @@ urls = [
     url(r'^comments/(?P<comment_id>[0-9]+)/$',
         CompetitionComment.as_view(), name='comment'),
     # 搜索
-    url(r'^search/$', Search.as_view(), name='search'),
+    url(r'^search/$', SearchCompetition.as_view(), name='search'),
     # 筛选
     url(r'^screen/$', Screen.as_view(), name='screen'),
     # 竞赛的阶段

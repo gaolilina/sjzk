@@ -46,6 +46,8 @@ class Activity(models.Model):
     experts = models.ManyToManyField('User', related_name='activities_as_expert', null=True, default=None)
     # 费用二维码
     expense = models.CharField(max_length=100, default='')
+    # 标签
+    tags = models.CharField(max_length=255, default='')
 
     objects = models.Manager()
     enabled = EnabledManager()

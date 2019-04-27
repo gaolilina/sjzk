@@ -1,9 +1,9 @@
 from django.conf.urls import url
 
+from main.views.search import SearchActivity
 from ..views.activity import *
 from ..views.common import ActivityCommentList, ActivityComment, \
     ActivityFollowerList
-
 
 urls = [
     url(r'^$', List.as_view(), name='list'),
@@ -15,7 +15,7 @@ urls = [
     url(r'^comments/(?P<comment_id>[0-9]+)/$',
         ActivityComment.as_view(), name='comment'),
     # 搜索
-    url(r'^search/$', Search.as_view(), name='search'),
+    url(r'^search/$', SearchActivity.as_view(), name='search'),
     # 筛选
     url(r'^screen/$', Screen.as_view(), name='screen'),
     # 活动的阶段

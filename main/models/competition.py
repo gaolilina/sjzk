@@ -47,6 +47,8 @@ class Competition(models.Model):
     sponsor = models.ForeignKey('Lab', related_name='sponsored_competitions', null=True)
     # 费用二维码
     expense = models.CharField(max_length=100, default='')
+    # 标签
+    tags = models.CharField(max_length=255, default='')
 
     objects = models.Manager()
     enabled = EnabledManager()
