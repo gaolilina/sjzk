@@ -48,7 +48,7 @@ class AdminCompetitionAdd(View):
         if 'stages' in kwargs and kwargs['stages'] != "":
             stages = json.loads(kwargs['stages'])
             for st in stages:
-                if st['time_start'] < kwargs['time_started'] or st['time_ended'] > kwargs['time_ended']:
+                if st['time_started'] < kwargs['time_started'] or st['time_ended'] > kwargs['time_ended']:
                     return HttpResponseForbidden('时间输入有误')
 
         for k in kwargs:
