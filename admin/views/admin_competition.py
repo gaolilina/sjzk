@@ -57,13 +57,10 @@ class AdminCompetitionAdd(View):
                     return HttpResponseForbidden('时间输入有误')
 
         for k in kwargs:
-            if k == 'owner':
-                CompetitionOwner.objects.create(competition=competition,
-                                                user=AdminUser.objects.filter(pk=kwargs['owner']).get())
-            elif k != "stages":
+            if k != "stages":
                 setattr(competition, k, kwargs[k])
         competition.save()
-
+        CompetitionOwner.objects.create(competition=competition, user=user)
         stages = json.loads(kwargs['stages'])
         for st in stages:
             competition.stages.create(status=int(st['status']), time_started=st['time_started'],
