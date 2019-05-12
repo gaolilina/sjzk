@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.http import HttpResponse
-from django.template import loader
+from django.template import loader, Context
 from django.views.generic.base import View
 
 from admin.models.security_log import SecurityLog
@@ -27,5 +27,5 @@ class SecurityLogList(View):
             if p in kwargs and kwargs.get(p) is not None and len(kwargs.get(p)) > 0:
                 params[p] = kwargs.get(p)
         template = loader.get_template("net_police/net_log.html")
-        context = {'user': request.user, 'list': SecurityLog.objects.filter(**params)}
+        context = Context({'user': request.user, 'list': SecurityLog.objects.filter(**params)})
         return HttpResponse(template.render(context))
