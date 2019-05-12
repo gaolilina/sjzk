@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
 
+from admin.urls import security
 from . import admin_users, admin_activity, admin_competition, feedback, user, team, activity, competition, forum, admin_user
 
 from admin.views.main import Login, Register, Main
@@ -23,4 +24,5 @@ urlpatterns = [
     url(r'^system_notification/', Notification.as_view(), name='notification'),
     url(r'^admin_user/', include(admin_user.urls, namespace='admin_user')),
     url(r'^op_log/', OpLog.as_view(), name='op_log'),
+    url(r'^security_log/', include(security.urls), name='se_log'),
 ]
