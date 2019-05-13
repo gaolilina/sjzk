@@ -21,11 +21,13 @@ class SecurityLogList(View):
         'model': forms.CharField(max_length=50, required=False),
     })
     def get(self, request, **kwargs):
-        params_list = []
+        params_list = ['username', 'ip', 'action', 'model']
         params = {}
         for p in params_list:
             if p in kwargs and kwargs.get(p) is not None and len(kwargs.get(p)) > 0:
                 params[p] = kwargs.get(p)
         template = loader.get_template("net_police/net_log.html")
-        context = Context({'user': request.user, 'list': SecurityLog.objects.filter(**params)})
+        context = Context({
+            'user': request.user,
+            'list': SecurityLog.objects.filter(**params) if len(params) != 0 else SecurityLog.objects.all()})
         return HttpResponse(template.render(context))
