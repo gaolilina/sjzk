@@ -2,7 +2,8 @@
 {% load staticfiles %}
 {% block content %}
 <form role="form" action="" method="get">
-    <span>帖子名：</span><input type="text" name="name" value="{{name}}" /><br/>
+    <span>帖子名：</span>
+    <input type="text" name="name" value="{{name}}" /><br/>
     <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
 </form>
 {% if list %}

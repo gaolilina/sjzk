@@ -4,7 +4,20 @@
 {% block content %}
 <form role="form" action="{% url 'admin:activity:activity' mod.id %}" method="post">
 <table>
-    {% include "parts/input_control.html" with text="名字" name="name" type="text" maxlen="50" value=mod.name %}{% include "parts/input_control.html" with text="状态" name="status" type="number" maxlen="{{maxlen}}" value=mod.status %}{% include "parts/input_control.html" with text="内容" name="content" type="text" maxlen="1000" value=mod.content %}{% include "parts/input_control.html" with text="截止日期" name="deadline" type="datetime" maxlen="{{maxlen}}" value=mod.deadline %}{% include "parts/input_control.html" with text="开始时间" name="time_started" type="datetime" maxlen="{{maxlen}}" value=mod.time_started %}{% include "parts/input_control.html" with text="结束时间" name="time_ended" type="datetime" maxlen="{{maxlen}}" value=mod.time_ended %}{% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}{% include "parts/input_control.html" with text="允许创友" name="allow_user" type="number" maxlen="{{maxlen}}" value=mod.allow_user %}{% include "parts/input_control.html" with text="省" name="province" type="text" maxlen="20" value=mod.province %}{% include "parts/input_control.html" with text="市" name="city" type="text" maxlen="20" value=mod.city %}{% include "parts/input_control.html" with text="机构" name="unit" type="text" maxlen="20" value=mod.unit %}{% include "parts/input_control.html" with text="用户类型" name="user_type" type="number" maxlen="{{maxlen}}" value=mod.user_type %}{% include "parts/input_control.html" with text="是否启用" name="is_enabled" type="checkbox" maxlen="{{maxlen}}" value=mod.is_enabled %}
+    {% include "parts/input_control.html" with text="名字" name="name" type="text" maxlen="50" value=mod.name %}
+    {% include "parts/input_control.html" with text="标签" name="tags" type="text" maxlen="50" value=mod.tags %}
+    {% include "parts/input_control.html" with text="状态" name="status" type="number" maxlen="{{maxlen}}" value=mod.status %}
+    {% include "parts/input_control.html" with text="内容" name="content" type="text" maxlen="1000" value=mod.content %}
+    {% include "parts/input_control.html" with text="截止日期" name="deadline" type="datetime" maxlen="{{maxlen}}" value=mod.deadline %}
+    {% include "parts/input_control.html" with text="开始时间" name="time_started" type="datetime" maxlen="{{maxlen}}" value=mod.time_started %}
+    {% include "parts/input_control.html" with text="结束时间" name="time_ended" type="datetime" maxlen="{{maxlen}}" value=mod.time_ended %}
+    {% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
+    {% include "parts/input_control.html" with text="允许创友" name="allow_user" type="number" maxlen="{{maxlen}}" value=mod.allow_user %}
+    {% include "parts/input_control.html" with text="省" name="province" type="text" maxlen="20" value=mod.province %}
+    {% include "parts/input_control.html" with text="市" name="city" type="text" maxlen="20" value=mod.city %}
+    {% include "parts/input_control.html" with text="机构" name="unit" type="text" maxlen="20" value=mod.unit %}
+    {% include "parts/input_control.html" with text="用户类型" name="user_type" type="number" maxlen="{{maxlen}}" value=mod.user_type %}
+    {% include "parts/input_control.html" with text="是否启用" name="is_enabled" type="checkbox" maxlen="{{maxlen}}" value=mod.is_enabled %}
     <tr>
         <td>{{ msg }}</td>
         <td>

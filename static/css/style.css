@@ -138,7 +138,13 @@ input[type=reset]:hover {
 .width-100{
     width: 100px;
 }
-.mt-5{ margin-top: 5px;}.mt-10{ margin-top: 10px;}.mt-15{ margin-top: 15px;}.mt-20{margin-top: 20px;}
+.width-1000{
+    width: 1000px;
+}
+.width-1050{
+    width: 1050px;
+}
+.mt-f5{ margin-top: -5px;}.mt-5{ margin-top: 5px;}.mt-10{ margin-top: 10px;}.mt-15{ margin-top: 15px;}.mt-20{margin-top: 20px;}
 .mr-5{margin-right: 5px;}.mr-10{margin-right: 10px;}.mr-15{margin-right: 15px;}.mr-20{margin-right: 20px;}
 .mb-5{margin-bottom: 5px;}.mb-10{margin-bottom: 10px;}.mb-15{margin-bottom: 15px;}.mb-20{margin-bottom: 20px;}
 .ml-5{margin-left: 5px;}.ml-10{margin-left: 10px;}.ml-15{margin-left: 15px;}.ml-20{margin-left: 20px;}
@@ -164,4 +170,10 @@ td {
 }
 input.tiny {
     width: 60px;
+}
+
+.banner{
+    margin: 10px 30px 0px 30px;
+    padding: 8px 10px;
+    background-color: #F5FAFE;
 }

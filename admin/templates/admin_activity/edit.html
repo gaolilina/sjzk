@@ -6,9 +6,20 @@
     <tr>
         <td>标题：</td>
         <td><input name="name" type="text" value="{{ model.name }}" maxlength="50" required/></td>
-
+    </tr>
+    <tr>
         <td>标签：</td>
-        <td><input name="tags" type="text" value="{{ model.tags }}" maxlength="50" required/></td>
+        <td><input name="tag" type="text" value="" maxlength="50" required/></td>
+
+        <td>类型：</td>
+        <td>
+            <select name="type">
+                <option value="0" selected="selected">--请选择--</option>
+                <option value="1">讲座</option>
+                <option value="2">会议</option>
+                <option value="3">培训</option>
+            </select>
+        </td>
     </tr>
     <tr>
         <td>详细内容：</td>
@@ -57,7 +68,11 @@
             <input name="status" type="hidden" value="{{ model.status }}" required/>
             <select id="status">
                 {% for stage in stages %}
-                    <option value="{{ stage.status }}"{% if stage.status == model.status %} selected="selected"{% endif %}>{% if stage.status == 0 %}前期宣传{% endif %}{% if stage.status == 1 %}报名{% endif %}{% if stage.status == 2 %}结束{% endif %}</option>
+                    <option value="{{ stage.status }}"{% if stage.status == model.status %} selected="selected"{% endif %}>
+                        {% if stage.status == 0 %}前期宣传{% endif %}
+                        {% if stage.status == 1 %}报名{% endif %}
+                        {% if stage.status == 2 %}结束{% endif %}
+                    </option>
                 {% endfor %}
             </select>
             <input id="add_stage" type="button" value="新增" style="margin-top: 0px;" />
@@ -77,6 +92,10 @@
             </td>
         </tr>
     {% endfor %}
+    <tr>
+        <td>活动成果发布：</td>
+        <td colspan="3"><textarea name="achievement" maxlength="1000" required>{{ model.achievement }}</textarea></td>
+    </tr>
     <tr>
         <td colspan="2">
             {{ msg }}

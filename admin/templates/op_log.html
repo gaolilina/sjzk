@@ -12,7 +12,17 @@
         <tr>
             <td><a href="{% url 'admin:admin_user:admin_user' item.user.id %}" target="_blank">{{ item.user.name }}</a></td>
             <td>{{ item.table }}: {{ item.data_id }}</td>
-            <td>{% if item.operate_type == 1 %}<i class="icon Hui-iconfont">&#xe692;</i>修改{% endif %}{% if item.operate_type == 2 %}<i class="icon Hui-iconfont">&#xe600;</i>新增{% endif %}{% if item.operate_type == 3 %}<i class="icon Hui-iconfont">&#xe6e2;</i>删除{% endif %}</td>
+            <td>
+                {% if item.operate_type == 1 %}
+                <i class="icon Hui-iconfont">&#xe692;</i>修改
+                {% endif %}
+                {% if item.operate_type == 2 %}
+                <i class="icon Hui-iconfont">&#xe600;</i>新增
+                {% endif %}
+                {% if item.operate_type == 3 %}
+                <i class="icon Hui-iconfont">&#xe6e2;</i>删除
+                {% endif %}
+            </td>
             <td>{{ item.time }}</td>
         </tr>
     {% endfor %}

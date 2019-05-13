@@ -1,24 +1,32 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
+<script type="text/javascript">
+    console.log(123);
+    console.log('{{model.experts}}');
+    console.log('{{model.experts_}}');
+</script>
 <table style="width:1050px;margin:30px;">
     <tr>
-        <td>标题：</td>
-        <td>{{ model.name }}</td>
-
-        <td>标签：</td>
-        <td>{{ model.tags }}</td>
+        <td>标题</td>
+        <td colspan="3">{{ model.name }}</td>
     </tr>
-
     <tr>
-        <td rowspan="">详细内容：</td>
+        <td>标签</td>
+        <td>{{ model.tag }}</td>
+
+        <td>类型</td>
+        <td>{{ model.type }}</td>
+    </tr>
+    <tr rowspan="">
+        <td>详细内容</td>
         <td colspan="3">{{ model.content }}</td>
     </tr>
     <tr>
-        <td>截至日期：</td>
+        <td>截至日期</td>
         <td>{{ model.deadline }}</td>
 
-        <td>参与者类型：</td>
+        <td>参与者类型</td>
         <td>
             {% if model.user_type == 0 %}不限{% endif %}
             {% if model.user_type == 1 %}学生{% endif %}
@@ -27,29 +35,29 @@
         </td>
     </tr>
     <tr>
-        <td>开始时间：</td>
+        <td>开始时间</td>
         <td>{{ model.time_started }}</td>
     
-        <td>结束时间：</td>
+        <td>结束时间</td>
         <td>{{ model.time_ended }}</td>
     </tr>
     <tr>
-        <td>人数上限：</td>
+        <td>人数上限</td>
         <td>{{ model.allow_user }}</td>
     
-        <td>省：</td>
+        <td>省</td>
         <td>{{ model.province }}</td>
     </tr>
     <tr>
-        <td>市：</td>
+        <td>市</td>
         <td>{{ model.city }}</td>
     
-        <td>机构：</td>
+        <td>机构</td>
         <td>{{ model.unit }}</td>
     </tr>
     
     <tr>
-        <td>当前活动阶段：</td>
+        <td>当前活动阶段</td>
         <td colspan="3">
             {% if model.status == 0 %}前期宣传{% endif %}
             {% if model.status == 1 %}报名{% endif %}
@@ -66,8 +74,25 @@
             <td>结束时间：{{ stage.time_ended }}</td>
         </tr>
     {% endfor %}
+
+    <tr>
+        <td>活动成果发布</td>
+        <td colspan="3">{{ model.achievement }}</td>
+    </tr>
+    <tr>
+        <td colspan="4">活动评论</td>
+    </tr>
+    <tr>
+        {% for comm in comment %}
+            <td colspan="1">评论时间</td>
+            <td colspan="3">评论内容</td>
+        {% endfor %}
+    </tr>
 </table>
-<span>报名者：</span><a class="btn" href="{% url 'admin:admin_activity:excel' model.id %}">导出Excel</a>
+<div class="banner width-1050">报名者
+    <a class="btn buttons mt-f5" href="{% url 'admin:admin_activity:excel' model.id %}">导出Excel</a>
+</div>
+
 <table style="width:1050px;margin:30px;">
     <tr>
         <th>用户</th>
@@ -103,3 +128,4 @@
     }
 </style>
 {% endblock %}
+

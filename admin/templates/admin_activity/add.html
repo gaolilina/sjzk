@@ -6,9 +6,20 @@
     <tr>
         <td>标题：</td>
         <td><input name="name" type="text" value="" maxlength="50" required/></td>
-
+    </tr>
+    <tr>
         <td>标签：</td>
-        <td><input name="tags" type="text" value="" maxlength="50" required/></td>
+        <td><input name="tag" type="text" value="" maxlength="50" required/></td>
+
+        <td>类型：</td>
+        <td>
+            <select name="type">
+                <option value="0" selected="selected">--请选择--</option>
+                <option value="1">讲座</option>
+                <option value="2">会议</option>
+                <option value="3">培训</option>
+            </select>
+        </td>
     </tr>
     <tr>
         <td>详细内容：</td>

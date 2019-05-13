@@ -1,4 +1,10 @@
-﻿{{ model.name }} 报名信息
+﻿{{ model.name }} 
+报名信息
 团队,报名时间,队长,队长联系方式,省 市 区
-{% for team in model.team_participators.all %}{{ team.team.name }},{{ team.time_created }},{{ team.team.owner.name }},{{ team.team.owner.phone_number }},{{ team.team.province }} {{ team.team.city }} {{ team.team.county }}
+{% for team in model.team_participators.all %}
+{{ team.team.name }},
+{{ team.time_created }},
+{{ team.team.owner.name }},
+{{ team.team.owner.phone_number }},
+{{ team.team.province }} {{ team.team.city }} {{ team.team.county }}
 {% endfor %}

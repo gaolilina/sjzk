@@ -4,7 +4,17 @@
 {% block content %}
 <form role="form" action="{% url 'admin:competition:competition_file' mod.id %}" method="post">
 <table>
-    <tr><td>竞赛：</td><td><a href="{% url "admin:competition:competition" mod.competition.id %}">{{ mod.competition.id }}</a></td></tr><tr><td>团队：</td><td><a href="{% url "admin:team:team" mod.team.id %}">{{ mod.team.id }}</a></td></tr>{% include "parts/input_control.html" with text="状态" name="status" type="number" maxlen="{{maxlen}}" value=mod.status %}{% include "parts/input_control.html" with text="文件" name="file" type="text" maxlen="100" value=mod.file %}{% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
+    <tr>
+        <td>竞赛：</td>
+        <td><a href="{% url "admin:competition:competition" mod.competition.id %}">{{ mod.competition.id }}</a></td>
+    </tr>
+    <tr>
+        <td>团队：</td>
+        <td><a href="{% url "admin:team:team" mod.team.id %}">{{ mod.team.id }}</a></td>
+    </tr>
+    {% include "parts/input_control.html" with text="状态" name="status" type="number" maxlen="{{maxlen}}" value=mod.status %}
+    {% include "parts/input_control.html" with text="文件" name="file" type="text" maxlen="100" value=mod.file %}
+    {% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
     <tr>
         <td>{{ msg }}</td>
         <td>
