@@ -22,13 +22,17 @@ class AdminCompetitionAdd(View):
     @require_role('xyz')
     def get(self, request):
         template = loader.get_template("admin_competition/add.html")
-        context = Context({'user': request.user, 'owners': AdminUser.objects.filter(role__contains='a').all()})
+        context = Context({
+            'user': request.user,
+            'owners': AdminUser.objects.filter(role__contains='a').all()
+        })
         return HttpResponse(template.render(context))
 
     @require_cookie
     @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50),
+        'tags': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
         'deadline': forms.DateTimeField(required=False),
         'time_started': forms.DateTimeField(),
@@ -95,6 +99,7 @@ class AdminCompetitionEdit(View):
     @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
+        'tags': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
         'deadline': forms.DateTimeField(required=False),
         'time_started': forms.DateTimeField(required=False),
