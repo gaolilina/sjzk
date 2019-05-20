@@ -39,14 +39,18 @@
             {% if user.can_x %}
             <li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:add' %}">新增</a></li>
             {% endif %}
+            <li{% if rb == 'collect' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">活动征集</a></li>
         </ul>
     {% endif %}
 {% endif %}
 
-{% if tb == 'system_admin' %}
+{% if tb == 'power' %}
 <ul>
-    {% if lb == 'setting' %}
+    {% if lb == 'system' %}
         <li class="active"><a href="{% url 'admin:system' %}">系统参数</a></li>
+    {% endif %}
+    {% if lb == 'role' %}
+        <li class="active"><a href="{% url 'admin:system' %}">角色权限参数</a></li>
     {% endif %}
     {% if lb == 'notification' %}
         <li class="active"><a href="{% url 'admin:notification' %}">系统通知</a></li>
@@ -119,4 +123,9 @@
         <ul>
             <li class="active"><a href="{% url 'admin:op_log' %}">日志</a></li>
         </ul>
+{% endif %}
+{% if tb == 'net_police' %}
+    <ul>
+        <li class="active"><a href="{% url 'admin:security_log:list' %}">网警日志查询</a></li>
+    </ul>
 {% endif %}

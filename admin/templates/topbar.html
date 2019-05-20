@@ -11,14 +11,17 @@
             <li{% if tb == 'feedback' %} class="active"{% endif %}><a href="{% url 'admin:feedback:feedback' %}">反馈举报</a></li>
         {% endif %}
         {% if user.can_y %}
-            <li{% if tb == 'system_admin' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">参数设定</a></li>
             <li{% if tb == 'user_admin' %} class="active"{% endif %}><a href="{% url 'admin:user:user_list' %}">用户管理</a></li>
             <li{% if tb == 'activity_admin' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动管理</a></li>
             <li{% if tb == 'forum_admin' %} class="active"{% endif %}><a href="{% url 'admin:forum:forum_board_list' %}">论坛管理</a></li>
+            <li{% if tb == 'power' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">权限管理</a></li>
         {% endif %}
         {% if user.can_z %}
             <li{% if tb == 'admin_user_admin' %} class="active"{% endif %}><a href="{% url 'admin:admin_user:admin_user_list' %}">后台用户管理</a></li>
             <li{% if tb == 'op_log' %} class="active"{% endif %}><a href="{% url 'admin:op_log' %}">操作日志</a></li>
+        {% endif %}
+        {% if user.can_x and user.can_y and user.can_z %}
+            <li{% if tb == 'net_police' %} class="active"{% endif %}><a href="{% url 'admin:security_log:list' %}">网警查询</a></li>
         {% endif %}
     {% endif %}
 </ul>

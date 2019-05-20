@@ -20,9 +20,11 @@
     <li class="active"><a href="{% url 'admin:admin_activity:list' %}">活动管理</a></li>
 </ul>
 {% endif %}
-{% if tb == 'system_admin' %}
+{% if tb == 'power' %}
 <ul>
-    <li{% if lb == 'setting' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">系统参数</a></li>
+    <li{% if lb == 'system' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">系统权限</a></li>
+    <li{% if lb == 'role' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">角色权限</a></li>
+    <li{% if lb == 'user' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">用户权限</a></li>
     <li{% if lb == 'notification' %} class="active"{% endif %}><a href="{% url 'admin:notification' %}">系统通知</a></li>
 </ul>
 {% endif %}
@@ -57,5 +59,10 @@
 {% if tb == 'op_log' %}
 <ul>
     <li class="active"><a href="{% url 'admin:op_log' %}">操作日志</a></li>
+</ul>
+{% endif %}
+{% if tb == 'net_police' %}
+<ul>
+    <li class="active"><a href="{% url 'admin:security_log:list' %}">网警查询</a></li>
 </ul>
 {% endif %}
