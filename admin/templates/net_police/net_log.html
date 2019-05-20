@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="" method="get">
+    <span>用户：</span><input type="text" name="username" value="{{username}}" />
+    <span>IP：</span><input type="text" name="ip" value="{{ip}}" />
+    <span>行为：</span><input type="text" name="action" value="{{action}}" /><br/>
+    <span>地区：</span><input type="text" name="location" value="{{location}}" />
+    <span>手机型号：</span><input type="text" name="model" value="{{model}}" /><br/>
+    <!-- <span>分类：</span>
+    <select name="type">
+        <option value="" selected="selected">请选择</option>
+        <option value="username">用户</option>
+        <option value="action">行为</option>
+        <option value="ip">IP</option>
+        <option value="location">地区</option>
+        <option value="model">手机型号</option>
+    </select><br/> -->
+    <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
+</form>
+<table style="margin:30px">
+    <tr>
+        <th>用户名</th>
+        <th>行为</th>
+        <th>IP</th>
+        <th>MAC地址</th>
+        <th>手机型号</th>
+        <th>网络</th>
+        <th>地理位置</th>
+    </tr>
+    {% if list %}
+    {% for item in list %}
+        <tr>
+            <td>{{ item.username }}</td>
+            <td>{{ item.action }}</td>
+            <td>{{ item.ip }}</td>
+            <td>{{ item.mac }}</td>
+            <td>{{ item.model }}</td>
+            <td>{{ item.network }}</td>
+            <td>{{ item.location }}</td>
+        </tr>
+    {% endfor %}
+    {% else %}
+        <tr><td colspan="7" style="text-align: left">没有数据</td></tr>
+    {% endif %}
+</table>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='net_police' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='net_police' lb='1' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='net_police' lb='1' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
+<style>
+    table tr:nth-child(1) td {
+        text-align: center;
+    }
+</style>
+{% endblock %}
