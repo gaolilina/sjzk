@@ -46,7 +46,7 @@ class List(View):
         'province': forms.CharField(required=False, max_length=20),
         'field': forms.CharField(required=False, max_length=20)
     })
-    def get(self, request, offset=0, limit=10, order=1, history=False, province='', field=''):
+    def get(self, request, offset=0, limit=10, order=1, history=False, province=None, field=None):
         """获取活动列表
 
         :param offset: 偏移量
@@ -75,10 +75,14 @@ class List(View):
 
         k = self.ORDERS[order]
         condition = {
-            'status__in': [2] if not history else [0, 1],
+            'status__in': [2] if history else [0, 1],
             'province': province,
             'field': field
         }
+        if province is not None:
+            condition['province'] = province
+        if field is not None:
+            condition['field'] = field
         c = Activity.enabled.filter(**condition).count()
         qs = Activity.enabled.filter(**condition).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,
