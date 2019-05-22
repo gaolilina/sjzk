@@ -75,9 +75,7 @@ class List(View):
 
         k = self.ORDERS[order]
         condition = {
-            'status__in': [2] if history else [0, 1],
-            'province': province,
-            'field': field
+            'status__in': [2] if history else [0, 1]
         }
         if province is not None:
             condition['province'] = province
