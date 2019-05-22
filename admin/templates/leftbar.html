@@ -24,7 +24,6 @@
 <ul>
     <li{% if lb == 'system' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">系统权限</a></li>
     <li{% if lb == 'role' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">角色权限</a></li>
-    <li{% if lb == 'user' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">用户权限</a></li>
     <li{% if lb == 'notification' %} class="active"{% endif %}><a href="{% url 'admin:notification' %}">系统通知</a></li>
 </ul>
 {% endif %}

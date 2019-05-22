@@ -50,7 +50,8 @@
         <li class="active"><a href="{% url 'admin:system' %}">系统参数</a></li>
     {% endif %}
     {% if lb == 'role' %}
-        <li class="active"><a href="{% url 'admin:system' %}">角色权限参数</a></li>
+        <li {% if rb == 'list' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">角色列表</a></li>
+        <li {% if rb == 'view' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">角色权限参数</a></li>
     {% endif %}
     {% if lb == 'notification' %}
         <li class="active"><a href="{% url 'admin:notification' %}">系统通知</a></li>
