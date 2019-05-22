@@ -18,11 +18,10 @@ class SearchTeam(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-        'by_tag': forms.IntegerField(required=False),
         'name': forms.CharField(max_length=20, required=False),
         'tag': forms.CharField(max_length=20, required=False),
     })
-    def get(self, request, name, offset=0, limit=10, order=1, by_tag=0, **kwargs):
+    def get(self, request, offset=0, limit=10, order=1, **kwargs):
         """搜索团队
         :param offset: 偏移量
         :param limit: 数量上限
@@ -49,17 +48,14 @@ class SearchTeam(View):
                 time_created: 注册时间
         """
         i, j = offset, offset + limit
-        if by_tag == 0:
-            # 按团队名称段检索
-            condition = None
-            if 'name' in kwargs:
-                condition['name__icontains'] = kwargs['name']
-            if 'tag' in kwargs:
-                condition['tags__name__icontains'] = kwargs['tag']
-            teams = Team.enabled.filter(**condition) if condition is not None else Team.enabled.all()
-        else:
-            # 按标签检索
-            teams = Team.enabled.filter(tags__name=name)
+        # 按团队名称段检索
+        condition = {}
+        if 'name' in kwargs:
+            condition['name__icontains'] = kwargs['name']
+        if 'tag' in kwargs:
+            condition['tags__name__icontains'] = kwargs['tag']
+        teams = Team.enabled.filter(**condition) if condition is not None else Team.enabled.all()
+
         c = teams.count()
         if order is not None:
             teams = teams.order_by(self.ORDERS[order])[i:j]

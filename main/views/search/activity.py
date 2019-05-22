@@ -47,7 +47,7 @@ class SearchActivity(View):
                 province:
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        condition = None
+        condition = {}
         if 'name' in kwargs:
             condition['name__icontains'] = kwargs['name']
         if 'tag' in kwargs:
