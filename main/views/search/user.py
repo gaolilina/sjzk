@@ -18,11 +18,10 @@ class SearchUser(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-        'by_tag': forms.IntegerField(required=False),
         'name': forms.CharField(max_length=20, required=False),
         'tag': forms.CharField(max_length=20, required=False),
     })
-    def get(self, request, name, offset=0, limit=10, order=None, by_tag=0, **kwargs):
+    def get(self, request, offset=0, limit=10, order=None, **kwargs):
         """
         搜索用户
 
