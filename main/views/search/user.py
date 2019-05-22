@@ -53,17 +53,15 @@ class SearchUser(View):
                 time_created: 注册时间
         """
         i, j = offset, offset + limit
-        if by_tag == 0:
-            # 按用户昵称段检索
-            condition = None
-            if 'name' in kwargs:
-                condition['name__icontains'] = kwargs['name']
-            if 'tag' in kwargs:
-                condition['tags__name__icontains'] = kwargs['tag']
-            users = User.enabled.filter(**condition) if condition is not None else User.enabled.all()
-        else:
-            # 按标签检索
-            users = User.enabled.filter(tags__name=name)
+
+        # 按用户昵称段检索
+        condition = {}
+        if 'name' in kwargs:
+            condition['name__icontains'] = kwargs['name']
+        if 'tag' in kwargs:
+            condition['tags__name__icontains'] = kwargs['tag']
+        users = User.enabled.filter(**condition) if condition is not None else User.enabled.all()
+
         c = users.count()
         if order is not None:
             users = users.order_by(self.ORDERS[order])[i:j]
