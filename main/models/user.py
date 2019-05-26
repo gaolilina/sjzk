@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag, \
     Visitor, Favorer
+from modellib.models.paper.answer import *
 
 __all__ = ['User', 'UserAction', 'UserActionLiker', 'UserActionComment',
            'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
@@ -86,6 +87,8 @@ class User(models.Model):
 
     # 微信id
     wechat_id = models.CharField(max_length=28, default=None, null=True, blank=True)
+
+    paper_answers = models.ForeignKey(PaperAnswer, related_name='user', default=None)
 
     objects = models.Manager()
     enabled = EnabledManager()

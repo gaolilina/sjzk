@@ -4,9 +4,11 @@ from main.urls import search
 from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth, \
     friend
 from admin.urls import urlpatterns as admin_urls
+from web.urls import urlpatterns as web_urls
 
 urlpatterns = [
     url(r'^admin/', include(admin_urls, namespace='admin')),
+    url(r'^web/', include(web_urls, namespace='web')),
     url(r'^users/', include(user.urls, namespace='user')),
     url(r'^achievement/', include(achievement.urls, namespace='achievement')),
     url(r'^users/current/', include(current_user.urls, namespace='current_user')),

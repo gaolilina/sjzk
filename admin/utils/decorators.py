@@ -107,7 +107,7 @@ def validate_args2(d):
                 except KeyError:
                     if v.required:
                         abort(400, 'require argument "%s"' % k)
-                    if isinstance(v, forms.BooleanField):
+                    if isinstance(v, forms.BooleanField) and not isinstance(v, forms.NullBooleanField):
                         kwargs[k] = False
                 except ValidationError:
                     abort(400, 'invalid argument "%s"' % k)

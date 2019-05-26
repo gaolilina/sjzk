@@ -19,6 +19,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'admin.apps.ChuangYiAdmin',
     'main.apps.ChuangYi',
+    'modellib.apps.ModellibConfig',
+    'web.apps.WebConfig,'
     'django_crontab',
 ]
 
