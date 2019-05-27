@@ -9,3 +9,4 @@ class PaperAnswer(models.Model):
 
     paper = models.ForeignKey('Paper', related_name='answers')
     content = models.TextField()
+    user = models.ForeignKey('main.User', related_name='answers', default=None)

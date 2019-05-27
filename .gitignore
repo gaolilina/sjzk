@@ -11,3 +11,4 @@ admin/migrations/
 json_data/
 .venv/
 modellib/migrations/
+.vscode/

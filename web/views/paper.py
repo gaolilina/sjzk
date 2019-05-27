@@ -38,7 +38,7 @@ class AnswerThePaper(View):
         'answers': forms.CharField(max_length=1000),
     })
     @fetch_object(Paper.objects, 'paper')
-    def post(self, request, paper, answers):
+    def post(self, request, paper, answers, **kwargs):
         if paper.answers.filter(user=request.user).count() != 0:
             abort(403, "you have answer the question")
         try:
