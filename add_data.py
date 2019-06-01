@@ -30,6 +30,8 @@ def add_illegal_word():
 def init_system_params():
     from main.models import System
     System.objects.create()
+    from modellib.models.config import ApplicationConfig
+    ApplicationConfig.objects.create()
 
 
 def add_sys_op():

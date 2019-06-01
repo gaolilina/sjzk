@@ -1,14 +1,17 @@
 from django.conf.urls import url, include
 
-from main.urls import search
+from main.urls import search, paper
 from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth, \
     friend
 from admin.urls import urlpatterns as admin_urls
 from web.urls import urlpatterns as web_urls
 
 urlpatterns = [
+    # 这两个是导入其他工程
     url(r'^admin/', include(admin_urls, namespace='admin')),
     url(r'^web/', include(web_urls, namespace='web')),
+
+    # 当前工程 url
     url(r'^users/', include(user.urls, namespace='user')),
     url(r'^achievement/', include(achievement.urls, namespace='achievement')),
     url(r'^users/current/', include(current_user.urls, namespace='current_user')),
@@ -23,4 +26,5 @@ urlpatterns = [
     url(r'^auth/', include(auth.urls, namespace='auth')),
     url(r'friend/', include(friend.urls, namespace='friend')),
     url(r'search/', include(search.urls, namespace='search')),
+    url(r'paper/', include(paper.urls, namespace='paper')),
 ]
