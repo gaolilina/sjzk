@@ -19,6 +19,6 @@ class PaperList(View):
             'list': [{
                 'id': p.id,
                 'name': p.name,
-                'url': appconfig.paper_url + "?id=" + p.id
+                'url': appconfig.paper_url
             } for p in papers]
         })
