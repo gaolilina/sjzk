@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="" method="get">
+    <span>问卷名：</span><input type="text" name="name" value="{{name}}" /><br/>
+    <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
+</form>
+{% if list %}
+<table style="width:1200px;margin:0 auto;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>问卷名</th>
+            <th>描述</th>
+            <th>问题个数</th>
+            <th>是否启用</th>
+            <th>操作</th>
+        </tr>
+        {% for item in list.all %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.desc }}</td>
+            <td>{{ item.count }}</td>
+            <td>
+                {% if item.enable %} 启用 {% else %} 未启用 {% endif %}
+            </td>
+            <td><a href="#"><i class="icon Hui-iconfont">&#xe725;</i>查看</a>
+            <a href="#">
+            {% if item.enable %} 停用 {% else %} 启用 {% endif %}</a>
+            <a id="del"><i class="icon Hui-iconfont">&#xe609;</i>删除</a></td>
+        </tr>
+        {% endfor %}
+    </thead>
+</table>
+{% endif %}
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='admin_activity' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='admin_activity' lb='1' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='admin_activity' lb='1' rb='view' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/table_style.html' %}
+<style>
+    
+</style>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+    $("#del").click(function(){
+        var r = confirm("确认删除？")
+        if(r){
+            console.log('ok');
+        }
+    });
+</script>
+{% endblock %}

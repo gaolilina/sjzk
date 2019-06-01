@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="{% url 'admin:paper:add' %}" method="post">
+<table>
+    <tr>
+        <td>问卷名称：</td>
+        <td><input name="name" type="text" value="" maxlength="50" required/></td>
+    </tr>
+    <tr>
+        <td>问卷描述：</td>
+        <td><textarea name="desc" maxlength="1000" required></textarea></td>
+    </tr>    
+    <tr>
+        <td>问题描述：</td>
+        <td>
+            <input name="questions" type="hidden" value="" required/>
+            <input name="type" type="hidden" value="" required/>
+            <input id="add_question" type="button" value="新增" style="margin-top: 0px;" />
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            {{ msg }}
+            <div class="buttons">
+                <input type="submit" value="保存" />
+                <input type="reset" value="取消" />
+            </div>
+        </td>
+    </tr>
+    <script>var question_count = 0;</script>
+</table>
+
+</form>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb='admin_activity' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='admin_activity' lb=1 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='admin_activity' lb=1 rb='add' %}{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+<style type="text/css">
+    
+</style>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/paper.js' %}"></script>
+{% endblock %}
