@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
@@ -10,6 +12,10 @@ __all__ = ['List', 'Detail', 'ActivityStage', 'UserParticipatorList', 'Screen', 
 
 
 class ActivitySignList(View):
+    """
+    活动签到
+    """
+
     @fetch_object(Activity.enabled, 'activity')
     @require_token
     @validate_args({
@@ -74,9 +80,13 @@ class List(View):
         """
 
         k = self.ORDERS[order]
+        # 只显示审核通过的
         condition = {
-            'status__in': [2] if history else [0, 1]
+            'state': Activity.STATE_PASSED
         }
+        # 一般情况只显示未结束的活动
+        if not history:
+            condition['time_ended__lt'] = datetime.datetime.now()
         if province is not None:
             condition['province'] = province
         if field is not None:
@@ -130,6 +140,7 @@ class Detail(View):
             'allow_user': activity.allow_user,
             'user_participator_count': activity.user_participators.count(),
             'status': activity.status,
+            'achievement': activity.achievement,
             'province': activity.province,
             'city': activity.city,
             'unit': activity.unit,
@@ -244,6 +255,9 @@ class UserParticipatorList(View):
 
 
 class Screen(View):
+    """
+    筛选
+    """
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @validate_args({

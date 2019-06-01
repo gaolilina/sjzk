@@ -20,7 +20,31 @@ class ActivitySign(models.Model):
 class Activity(models.Model):
     """活动基本信息"""
 
+    # 活动状态
+    # 审核中
+    STATE_CHECKING = 0
+    # 通过
+    STATE_PASSED = 100
+    # 未通过
+    STATE_NO = 10
+
+    # 活动类型
+    # 会议
+    TYPE_CONFERENCE = 0
+    # 讲座
+    TYPE_LECTURE = 1
+    # 培训
+    TYPE_TRAINING = 2
+
+    TYPES = [TYPE_CONFERENCE, TYPE_LECTURE, TYPE_TRAINING]
+
     name = models.CharField(max_length=50, null=True)
+    # 活动状态：
+    state = models.IntegerField(default=STATE_CHECKING)
+    # 活动类型
+    type = models.IntegerField(default=TYPE_CONFERENCE)
+    # 活动成果
+    achievement = models.CharField(max_length=100, default='')
     # 活动当前阶段：0:前期宣传, 1:报名, 2:结束
     status = models.IntegerField(default=0, db_index=True)
     content = models.CharField(max_length=1000, null=True)
