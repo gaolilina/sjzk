@@ -9,14 +9,24 @@
 <table style="width:1050px;margin:30px;">
     <tr>
         <td>标题</td>
-        <td colspan="3">{{ model.name }}</td>
+        <td>{{ model.name }}</td>
+        <td>状态</td>
+        <td>
+            {% if model.state == 0 %} 审核中 {% endif %} 
+            {% if model.state == 100 %} 审核通过 {% endif %} 
+            {% if model.state == 10 %} 审核未通过 {% endif %} 
+        </td>
     </tr>
     <tr>
         <td>标签</td>
         <td>{{ model.tags }}</td>
 
         <td>类型</td>
-        <td>{{ model.type }}</td>
+        <td>
+            {% if model.type == 0 %}会议{% endif %}
+            {% if model.type == 1 %}讲座{% endif %}
+            {% if model.type == 2 %}培训{% endif %}
+        </td>
     </tr>
     <tr rowspan="">
         <td>详细内容</td>
@@ -91,7 +101,7 @@
     </tr>
 </table>
 <div class="banner width-1050">报名者
-    <a class="btn buttons mt-f5" href="{% url 'admin:admin_activity:excel' model.id %}">导出Excel</a>
+    <a class="btn buttons mt-f5" href="{% url 'admin:admin_activity:excel' model.id %}">导出</a>
 </div>
 <table style="width:1050px;margin:30px;">
     <tr>
