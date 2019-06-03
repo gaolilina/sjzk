@@ -42,27 +42,12 @@
             <div class="buttons">
                 <input type="submit" value="保存" />
                 <input type="reset" value="取消" />
-                <input type="button" class="btn4 ml-10" value="审核通过" onclick="verify({{model.id}})">
             </div>
         </td>
     </tr>
 </table>
 <script>
 var question_count = {{ questions|length }};
-
-function verify(id){
-    r = confirm("确认？");
-    if(r){
-        alert("通过审核");
-        // $.post('')
-        // .then(function() {
-        //     alert();
-        // })
-        // .fail(function() {
-        //     alert("审核失败");
-        // });
-    }
-}
 
 </script>
 
