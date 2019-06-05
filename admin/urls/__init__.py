@@ -26,6 +26,6 @@ urlpatterns = [
     url(r'^system_notification/', Notification.as_view(), name='notification'),
     url(r'^admin_user/', include(admin_user.urls, namespace='admin_user')),
     url(r'^op_log/', OpLog.as_view(), name='op_log'),
-    url(r'^paper/', include(paper.urls), name='paper'),
+    url(r'^paper/', include(paper.urls, namespace='paper')),
     url(r'^security_log/', include(security.urls, namespace='security_log')),
 ]

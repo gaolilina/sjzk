@@ -3,8 +3,9 @@
 import json
 from json import JSONDecodeError
 
-from django import forms
-from django.http import JsonResponse
+from django import forms, template
+from django.http import JsonResponse, HttpResponse
+from django.template import loader, Context
 from django.views.generic.base import View
 
 from admin.utils.decorators import require_cookie, require_role, validate_args2
@@ -13,10 +14,44 @@ from main.utils.decorators import fetch_object, validate_args
 from modellib.models.paper.paper import Paper
 
 
+class PaperAdd(View):
+
+    # @require_cookie
+    # @require_role('xyz')
+    def get(self, request):
+        template = loader.get_template("paper/add.html")
+        context = Context()
+        return HttpResponse(template.render(context))
+
+    # @require_cookie
+    # @require_role('xyz')
+    @validate_args2({
+        'name': forms.CharField(max_length=50),
+        'desc': forms.CharField(max_length=250, required=False),
+        'questions': forms.CharField(max_length=1000),
+    })
+    def post(self, request, name, questions, desc='', **kwargs):
+        try:
+            questions_list = json.loads(questions)
+            if not isinstance(questions_list, list) or len(questions_list) == 0:
+                abort(400, 'questions should be list and not empty')
+        except JSONDecodeError:
+            abort(400, 'questions should be json str')
+        Paper.objects.create(
+            name=name,
+            desc=desc,
+            count_question=len(questions_list),
+            questions=questions
+        )
+        context = Context()
+        template = loader.get_template("paper/list.html")
+        return HttpResponse(template.render(context))
+
+
 class PaperList(View):
 
-    @require_cookie
-    @require_role('xyz')
+    # @require_cookie
+    # @require_role('xyz')
     @validate_args2({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -37,38 +72,11 @@ class PaperList(View):
             papers = Paper.objects.filter(**params)[offset: offset + limit]
         else:
             papers = Paper.objects.all()[offset: offset + limit]
-        return JsonResponse({
-            'count': len(papers),
-            'list': [{
-                'id': p.id,
-                'name': p.name,
-                'desc': p.desc,
-                'enable': p.enable,
-                'count': p.count_question,
-            } for p in papers]
+        template = loader.get_template("paper/list.html")
+        context = Context({
+            'list': papers
         })
-
-    @require_cookie
-    @require_role('xyz')
-    @validate_args2({
-        'name': forms.CharField(max_length=50),
-        'desc': forms.CharField(max_length=250, required=False),
-        'questions': forms.CharField(max_length=1000),
-    })
-    def post(self, request, name, questions, desc='', **kwargs):
-        try:
-            questions_list = json.loads(questions)
-            if not isinstance(questions_list, list) or len(questions_list) == 0:
-                abort(400, 'questions should be list and not empty')
-        except JSONDecodeError:
-            abort(400, 'questions should be json str')
-        Paper.objects.create(
-            name=name,
-            desc=desc,
-            count_question=len(questions_list),
-            questions=questions
-        )
-        return JsonResponse({})
+        return HttpResponse(template.render(context))
 
 
 class PaperDetail(View):
