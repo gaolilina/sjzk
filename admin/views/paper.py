@@ -3,8 +3,8 @@
 import json
 from json import JSONDecodeError
 
-from django import forms, template
-from django.http import JsonResponse, HttpResponse
+from django import forms
+from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.template import loader, Context
 from django.views.generic.base import View
 
@@ -16,15 +16,15 @@ from modellib.models.paper.paper import Paper
 
 class PaperAdd(View):
 
-    # @require_cookie
-    # @require_role('xyz')
+    @require_cookie
+    @require_role('xyz')
     def get(self, request):
         template = loader.get_template("paper/add.html")
         context = Context()
         return HttpResponse(template.render(context))
 
-    # @require_cookie
-    # @require_role('xyz')
+    @require_cookie
+    @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50),
         'desc': forms.CharField(max_length=250, required=False),
@@ -50,8 +50,8 @@ class PaperAdd(View):
 
 class PaperList(View):
 
-    # @require_cookie
-    # @require_role('xyz')
+    @require_cookie
+    @require_role('xyz')
     @validate_args2({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -69,9 +69,9 @@ class PaperList(View):
         if enable is not None:
             params['enable'] = enable
         if len(params) != 0:
-            papers = Paper.objects.filter(**params)[offset: offset + limit]
+            papers = Paper.objects.filter(**params)
         else:
-            papers = Paper.objects.all()[offset: offset + limit]
+            papers = Paper.objects.all()
         template = loader.get_template("paper/list.html")
         context = Context({
             'list': papers
@@ -88,13 +88,12 @@ class PaperDetail(View):
     })
     @fetch_object(Paper.objects, 'paper')
     def get(self, request, paper, **kwargs):
-        return JsonResponse({
-            'name': paper.name,
-            'desc': paper.desc,
-            'enable': paper.enable,
-            'count': paper.count_question,
-            'questions': json.loads(paper.questions),
+        template = loader.get_template("paper/edit.html")
+        paper.questions = json.loads(paper.questions)
+        context = Context({
+            'model': paper
         })
+        return HttpResponse(template.render(context))
 
     @require_cookie
     @require_role('xyz')
@@ -117,15 +116,20 @@ class PaperDetail(View):
             try:
                 questions_list = json.loads(questions)
                 if not isinstance(questions_list, list) or len(questions_list) == 0:
-                    abort(400, 'questions should be list and not empty')
+                    return HttpResponseBadRequest()
                 paper.count_question = len(questions_list)
                 paper.questions = questions
                 has_update = True
             except JSONDecodeError:
-                abort(400, 'questions should be json str')
+                return HttpResponseBadRequest()
         if has_update:
             paper.save()
-        return JsonResponse({})
+        template = loader.get_template("paper/edit.html")
+        paper.questions = json.loads(paper.questions)
+        context = Context({
+            'model': paper
+        })
+        return HttpResponse(template.render(context))
 
 
 class PaperSwitch(View):

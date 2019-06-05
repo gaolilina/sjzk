@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="{% url 'admin:paper:edit' model.id %}" method="post">
+<form role="form" action="{% url 'admin:paper:detail' model.id %}" method="post">
 <table>
     <tr>
         <td>问卷名称：</td>
@@ -18,7 +18,7 @@
             <input id="add_question" type="button" value="新增" style="margin-top: 0px;" />
         </td>
     </tr>
-    {% for question in questions %}
+    {% for question in model.questions %}
         <tr class="question">
             <td>问题{{forloop.counter}}</td>
             <td>
