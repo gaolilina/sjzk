@@ -9,7 +9,6 @@
     <span>所在市：</span><input type="text" name="city" value="{{city}}" /><br/>
     <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
 </form>
-{% if list %}
 <table style="width:1200px;margin:0 auto;">
     <thead>
         <tr>
@@ -17,6 +16,9 @@
             <th>竞赛名</th>
             <th>操作</th>
         </tr>
+    </thead>
+    <tbody>
+        {% if list %}
         {% for item in list.all %}
         <tr>
             <td>{{ item.id }}</td>
@@ -24,7 +26,9 @@
             <td><a href="{% url redir item.id %}"><i class="icon Hui-iconfont">&#xe725;</i>查看</a></td>
         </tr>
         {% endfor %}
-    </thead>
+        {% else %}
+            <tr><td colspan="3" style="text-align: left">没有数据</td></tr>
+    </tbody>
 </table>
 {% endif %}
 {% endblock %}

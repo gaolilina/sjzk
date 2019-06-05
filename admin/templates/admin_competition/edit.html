@@ -110,7 +110,7 @@
             <div class="buttons">
                 <input type="submit" value="保存" />
                 <input type="reset" value="取消" />
-                <input type="button" class="btn4 ml-10" value="审核通过" onclick="verify({{model.id}})">
+                <input type="button" class="btn4 ml-10" value="审核" onclick="verify_choose({{model.id}})">
             </div>
         </td>
     </tr>
@@ -118,18 +118,42 @@
 <script>
 var stage_count = {{ stages|length }};
 
-function verify(id){
-    r = confirm("确认？");
-    if(r){
-        alert("通过审核");
-        // $.post('')
-        // .then(function() {
-        //     alert();
-        // })
-        // .fail(function() {
-        //     alert("审核失败");
-        // });
-    }
+function verify_choose(id){
+    $.confirm({
+        title: null,
+        content: '确认？',
+        type: 'blue',
+        icon: 'glyphicon glyphicon-question-sign',
+        backgroundDismiss:true,
+        columnClass:'width-300',
+        buttons: {
+            ok: {
+                text: '通过',
+                btnClass: 'btn-primary',
+                action: function() {
+                    verify(id,true);
+                }
+            },
+            cancel: {
+                text: '不通过',
+                btnClass: 'btn-default',
+                action: function() {
+                    verify(id,false);
+                }
+            }
+        }
+    });
+}
+
+function verify(id,result){
+    $.post(base_url+'admin/competition/{{model.id}}/check/',{"result":result})
+    .then(function() {
+        alert("审核成功");
+        window.location.reload();
+    })
+    .fail(function() {
+        alert("审核失败");
+    });
 }
 </script>
 
