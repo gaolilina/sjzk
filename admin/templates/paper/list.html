@@ -1,44 +1,44 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="" method="get">
+<form role="form" action="{% url 'admin:paper:list' %}" method="get">
     <span>问卷名：</span><input type="text" name="name" value="{{name}}" /><br/>
     <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
 </form>
-{% if list %}
 <table style="width:1200px;margin:0 auto;">
     <thead>
         <tr>
             <th>ID</th>
             <th>问卷名</th>
             <th>描述</th>
-            <th>问题个数</th>
             <th>是否启用</th>
             <th>操作</th>
         </tr>
+        {% if list %}
         {% for item in list.all %}
         <tr>
             <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
             <td>{{ item.desc }}</td>
-            <td>{{ item.count }}</td>
             <td>
                 {% if item.enable %} 启用 {% else %} 未启用 {% endif %}
             </td>
-            <td><a href="#"><i class="icon Hui-iconfont">&#xe725;</i>查看</a>
-            <a href="#">
+            <td><a href="{% url 'admin:paper:detail' item.id %}"><i class="icon Hui-iconfont">&#xe725;</i>查看</a>
+            <a onclick="verify_choose({{item.id}},'{{item.enable}}')">
             {% if item.enable %} 停用 {% else %} 启用 {% endif %}</a>
-            <a id="del"><i class="icon Hui-iconfont">&#xe609;</i>删除</a></td>
+            <!--<a id="del"><i class="icon Hui-iconfont">&#xe609;</i>删除</a></td>-->
         </tr>
         {% endfor %}
+        {% else %}
+        <tr><td colspan="5" style="text-align:left">没有数据</td></tr>
+        {% endif %}
     </thead>
 </table>
-{% endif %}
-{% endblock %}
 
-{% block topbar %}{% include 'topbar.html' with tb='admin_activity' %}{% endblock %}
-{% block leftbar %}{% include 'leftbar.html' with tb='admin_activity' lb='1' %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb='admin_activity' lb='1' rb='view' %}{% endblock %}
+{% endblock %}
+{% block topbar %}{% include 'topbar.html' with tb='activity_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='activity_admin' lb='paper' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='paper' rb='list' %}{% endblock %}
 
 {% block css %}
 {% include 'parts/table_style.html' %}
@@ -54,5 +54,41 @@
             console.log('ok');
         }
     });
+    function verify_choose(id,enable){
+        if(enable=="True") enable=false;
+        else enable=true;
+        $.confirm({
+            title: null,
+            content: '确认？',
+            type: 'blue',
+            icon: 'glyphicon glyphicon-question-sign',
+            backgroundDismiss:true,
+            columnClass:'width-300',
+            buttons: {
+                ok: {
+                    text: '确认',
+                    btnClass: 'btn-primary',
+                    action: function() {
+                        verify(id,enable);
+                    }
+                },
+                cancel: {
+                    text: '取消',
+                    btnClass: 'btn-default',
+                    action: function() {}
+                }
+            }
+        });
+    }
+    function verify(id,enable){
+        $.post(base_url+'admin/paper/'+id+'/switch/',{'enable':enable})
+        .then(function() {
+            alert("成功");
+            window.location.reload();
+        })
+        .fail(function() {
+            alert("失败");
+        });
+    }
 </script>
 {% endblock %}

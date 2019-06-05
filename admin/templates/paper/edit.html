@@ -5,38 +5,37 @@
 <table>
     <tr>
         <td>问卷名称：</td>
-        <td><input name="name" type="text" value="{{ model.name }}" maxlength="50" required/></td>
+        <td><input name="name" type="text" value="{{ model.name }}" maxlength="50" required readonly /></td>
     </tr>
     <tr>
         <td>问卷描述：</td>
-        <td><textarea name="desc" maxlength="1000" required>{{ model.desc }}</textarea></td>
+        <td><textarea name="desc" maxlength="1000" required readonly>{{ model.desc }}</textarea></td>
     </tr>
     <tr>
         <td>问题描述：</td>
         <td>
             <input name="questions" type="hidden" value=""/>
-            <input id="add_question" type="button" value="新增" style="margin-top: 0px;" />
+            <!--<input id="add_question" type="button" value="新增" style="margin-top: 0px;" />-->
         </td>
     </tr>
     {% for question in model.questions %}
         <tr class="question">
             <td>问题{{forloop.counter}}</td>
             <td>
-                类　　型：<select onchange="javascript:question_gen()">
+                类　　型：<select onchange="javascript:question_gen()" disabled>
                     <option value="0"{% if question.type == 0 %} selected="selected"{% endif %}>简答题</option>
                     <option value="1"{% if question.type == 1 %} selected="selected"{% endif %}>单选题</option>
                     <option value="2"{% if question.type == 2 %} selected="selected"{% endif %}>多选题</option>
-                </select><input class="remove_question" type="button" value="删除" style="margin-top: 0px;" /><br/>
-                标题：<input type="text" onchange="javascript:question_gen()" value="{{ question.time_started }}" /><br/>
-                选项(多个选项用Enter分割)：<br/><textarea width="300px" onchange="javascript:question_gen()" value="{{ question.time_ended }}" /></textarea>
+                </select>
+                <!--<input class="remove_question" type="button" value="删除" style="margin-top: 0px;" />--><br/>
+                标　　题：<input type="text" onchange="javascript:question_gen()" value="{{ question.title }}" readonly /><br/>
+                选项(多个选项用Enter分割)：<br/><textarea width="300px" onchange="javascript:question_gen()" readonly>{% for option in question.options %}
+{{option}}{% endfor %}
+            </textarea>
             </td>
         </tr>
     {% endfor %}
-    <tr>
-        <td>活动成果发布：</td>
-        <td colspan="3"><textarea name="achievement" maxlength="1000">{{ model.achievement }}</textarea></td>
-    </tr>
-    <tr>
+    <!--<tr>
         <td colspan="2">
             {{ msg }}
             <div class="buttons">
@@ -44,7 +43,7 @@
                 <input type="reset" value="取消" />
             </div>
         </td>
-    </tr>
+    </tr>-->
 </table>
 <script>
 var question_count = {{ questions|length }};
@@ -54,9 +53,9 @@ var question_count = {{ questions|length }};
 </form>
 {% endblock %}
 
-{% block topbar %}{% include 'topbar.html' with tb='admin_activity' %}{% endblock %}
-{% block leftbar %}{% include 'leftbar.html' with tb='admin_activity' lb=1 %}{% endblock %}
-{% block rightbar %}{% include 'rightbar.html' with tb='admin_activity' lb=1 rb='add' %}{% endblock %}
+{% block topbar %}{% include 'topbar.html' with tb='activity_admin' %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb='activity_admin' lb='paper' %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='paper' rb='add' %}{% endblock %}
 
 {% block css %}
 {% include 'parts/input_style.html' %}
