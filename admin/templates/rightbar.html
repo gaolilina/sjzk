@@ -39,7 +39,7 @@
             {% if user.can_x %}
             <li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:add' %}">新增</a></li>
             {% endif %}
-            <li{% if rb == 'collect' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">活动征集</a></li>
+            <!-- <li{% if rb == 'collect' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">活动征集</a></li> -->
         </ul>
     {% endif %}
 {% endif %}
@@ -101,6 +101,12 @@
             <li{% if rb == 'competition' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_list' %}">竞赛信息</a></li>
             <li{% if rb == 'competition_notification' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_notification_list' %}">竞赛通知</a></li>
             <li{% if rb == 'competition_comment' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_comment_list' %}">竞赛评论</a></li>
+        </ul>
+    {% endif %}
+    {% if lb == 'paper' %}
+        <ul>
+            <li{% if rb == 'list' %} class="active"{% endif %}><a href="{% url 'admin:paper:list' %}">查看</a></li>
+            <li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:paper:add' %}">新增</a></li>
         </ul>
     {% endif %}
 {% endif %}
