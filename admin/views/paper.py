@@ -20,7 +20,9 @@ class PaperAdd(View):
     @require_role('xyz')
     def get(self, request):
         template = loader.get_template("paper/add.html")
-        context = Context()
+        context = Context({
+            'user': request.user,
+        })
         return HttpResponse(template.render(context))
 
     @require_cookie
@@ -43,7 +45,9 @@ class PaperAdd(View):
             count_question=len(questions_list),
             questions=questions
         )
-        context = Context()
+        context = Context({
+            'user': request.user,
+        })
         template = loader.get_template("paper/list.html")
         return HttpResponse(template.render(context))
 
@@ -74,6 +78,7 @@ class PaperList(View):
             papers = Paper.objects.all()
         template = loader.get_template("paper/list.html")
         context = Context({
+            'user': request.user,
             'list': papers
         })
         return HttpResponse(template.render(context))
@@ -91,6 +96,7 @@ class PaperDetail(View):
         template = loader.get_template("paper/edit.html")
         paper.questions = json.loads(paper.questions)
         context = Context({
+            'user': request.user,
             'model': paper
         })
         return HttpResponse(template.render(context))
@@ -127,6 +133,7 @@ class PaperDetail(View):
         template = loader.get_template("paper/edit.html")
         paper.questions = json.loads(paper.questions)
         context = Context({
+            'user': request.user,
             'model': paper
         })
         return HttpResponse(template.render(context))
