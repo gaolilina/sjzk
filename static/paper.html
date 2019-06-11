@@ -78,21 +78,31 @@
       var url = location.search; //获取url中"?"符后的字串 
       var theRequest = new Object(); 
       if (url.indexOf("?") != -1) { 
-          var str = url.substr(1); 
-          strs = str.split("&"); 
+          var str = url.substr(1);
+          strs = str.split("&");
           for(let i = 0; i < strs.length; i ++) {
-              theRequest[strs[i].split("=")[0]]=decodeURI(strs[i].split("=")[1]);
+              if(strs[i].indexOf('token')==-1)
+                theRequest[strs[i].split("=")[0]]=decodeURI(strs[i].split("=")[1]);
+              else
+                theRequest[strs[i].split("=")[0]]=decodeURI(strs[i].replace("token=",""));
           } 
       }
       return theRequest; 
     }
     const domain = window.location.host;
     const base_url = "http://"+domain+"/";
-    // console.log(base_url);
-    var token = getRequest()["token"];
-    $.get(base_url+"web/paper/1/",{"token":token})
-    .then(function(data) {
-        init_paper(JSON.parse(data));
+    var paper_id = getRequest()["id"];
+    $("#paper_id").val(paper_id);
+    const token = getRequest()["token"];
+    $.ajax({
+        type: 'GET',
+        url: base_url+"web/paper/"+paper_id+"/",
+        headers: {'X-USER-TOKEN': token},
+        dataType: 'json',
+        error:function(data) {},
+        success: function(data){
+            init_paper(data);
+        }
     });
     // paper = {
     //     "id":1,
@@ -127,7 +137,6 @@
     ]
     //初始化
     function init_paper(paper){
-        $("#paper_id").val(paper.id);
         $("#count").val(paper.count);
         $("#title").html("问卷名称："+paper.name);
         $("#desc").html("问卷描述："+paper.desc);
@@ -174,17 +183,18 @@
         }
         // console.log(JSON.stringify(answers));
         r = confirm("确认提交？");
-        if(r){
-            $.post(base_url+"web/paper/"+paper_id+"/answer/",{"answers":JSON.stringify(answers)})
-            .then(function() {
+        $.ajax({
+            type: 'POST',
+            url: base_url+"web/paper/"+paper_id+"/answer/",
+            data:{"answers":JSON.stringify(answers)},
+            dataType: 'json',
+            headers: {'X-USER-TOKEN': token},
+            error:function(data) {alert("提交失败!");},
+            success: function(data){
                 alert("提交成功！");
                 window.location.reload();
-            })
-            .fail(function() {
-                alert("提交失败!");
-            });
-        }
+            }
+        });
     });
-    init_paper(paper);
 </script>
 </html>
