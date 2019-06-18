@@ -6,13 +6,13 @@
 </form>
 <table style="min-width:300px;margin:30px;">
     <tr>
-        <td>奖项</td>
-        <td><button onclick="javascript:add()">添加</button><button onclick="javascript:exportCSV()">导出excel</button></td>
+        <th>奖项</th>
+        <th><button class="btn" onclick="javascript:add()">添加</button><button class="btn btn4 ml-20" onclick="javascript:exportCSV()">导出excel</button></th>
     </tr>
     <tr id="target">
         <td colspan="2" style="border-left:none;border-right:none;border-bottom:none;">
             {{ msg }}
-            <div class="buttons">
+            <div style="margin: 0 auto;">
                 <input type="submit" onclick="javascript:submit()" value="保存" />
             </div>
         </td>
@@ -30,7 +30,9 @@
     function add(_name) {
         var name = _name || prompt("请输入奖项名");
         if (name != '' && name != null) {
-          $("#target").before("<tr class='a'><td>" + name + "</td><td><select data-name='" + name + "'></select><button onclick='javascript:addTeam(\"" + name + "\")'>添加团队</button></td></tr>");
+          $("#target").before("<tr class='a'><td>" + name + "</td>\
+            <td><select data-name='" + name + "'></select>\
+            <button class='btn btn4 ml-20' style='margin-top:-3px;' onclick='javascript:addTeam(\"" + name + "\")'>添加团队</button></td></tr>");
           genOption();
           result2[name] = [];
         }
@@ -108,4 +110,5 @@
     
 </style>
 {% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
 {% endblock %}

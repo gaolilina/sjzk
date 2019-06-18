@@ -4,21 +4,21 @@
 <h3 style="text-align: center;margin-top: 30px">
     设定评委
 </h3>
-<table>
+<table style="margin:50px auto;width:500px;">
     <tr>
-        <td width="200px">评委姓名</td>
-        <td width="100px">设定评委</td>
-        <!-- <td width="50px">下载</td> -->
-        <!-- <td width="150px">评分</td>
-        <td width="100px">提交评分</td> -->
+        <th width="200px">评委姓名</th>
+        <th width="100px">设定评委</th>
+        <!-- <th width="50px">下载</th> -->
+        <!-- <th width="150px">评分</th>
+        <th width="100px">提交评分</th> -->
     </tr>
     {% for e in all_experts %}
     <tr>
         <td>{{ e.name }}</td>
         {% if e in experts %}
-            <td><button disabled>设定评委</button></td>
+            <td><button class="btn btn4" disabled>设定评委</button></td>
         {% else %}
-            <td><button id="button{{ e.id }}" onclick="setExpert({{ e.id }})">设定评委</button></td>
+            <td><button class="btn btn4" id="button{{ e.id }}" onclick="setExpert({{ e.id }})">设定评委</button></td>
         {% endif %}
         
     </tr>
@@ -36,6 +36,7 @@
  {% endblock %} 
  {% block css %}
  {% include 'parts/input_style.html' %}
+ {% include 'parts/table_style.html' %}
 <style>
     table {
         border-collapse: collapse;

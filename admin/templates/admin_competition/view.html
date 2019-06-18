@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<table style="margin:30px;">
+<table style="width:1050px;margin:30px;">
     <tr>
         <td>标题：</td>
         <td style="max-width: 500px">{{ model.name }}</td>
@@ -11,7 +11,7 @@
     </tr>
     <tr>
         <td>详细内容：</td>
-        <td><pre>{{ model.content }}</pre></td>
+        <td colspan="3"><pre>{{ model.content }}</pre></td>
     </tr>
     <tr>
         <!--<td>截至日期：</td>
@@ -24,6 +24,12 @@
             {% if model.user_type == 2 %}教师{% endif %}
             {% if model.user_type == 3 %}社会人员{% endif %}
         </td>
+        <td>负责人</td>
+        {% if model.owner %}
+        <td>{{model.owner.first.user.name}}</td>
+        {% else %}
+        <td>无，<a href="/admin/admin_competition/edit/{{ model.id }}">请设置负责人</a></td>
+        {% endif %}
     </tr>
     <tr>
         <td>开始时间：</td>
@@ -56,7 +62,7 @@
     
     <tr>
         <td>当前活动阶段：</td>
-        <td>
+        <td colspan="3">
             {% if model.status == 0 %}前期宣传{% endif %}
             {% if model.status == 1 %}报名{% endif %}
             {% if model.status == 2 %}预赛{% endif %}
@@ -69,7 +75,7 @@
     {% for stage in stages %}
         <tr>
             <td>活动阶段{{forloop.counter}}</td>
-            <td>
+            <td colspan="3">
                 类　　型：
                 {% if stage.status == 0 %}前期宣传
                 {% elif stage.status == 1 %}报名
@@ -93,41 +99,35 @@
     <tr>
         <td>设定评委：</td>
         <td><a href="/admin/admin_competition/{{ model.id }}/experts/">设定评委</a></td>
-    </tr>
-    <tr>
-        <td>负责人</td>
-        {% if model.owner %}
-        <td>{{model.owner.first.user.name}}</td>
-        {% else %}
-        <td>无，<a href="/admin/admin_competition/edit/{{ model.id }}">请设置负责人</a></td>
-        {% endif %}
-    </tr>
-    <tr>
         <td>获奖名单：</td>
         <td><a href="{% url 'admin:admin_competition:award' model.id %}">设置</a></td>
     </tr>
 </table>
 <br>
 <div class="banner width-1050">报名者
-    <a class="btn buttons mt-f5" href="{% url 'admin:admin_competition:excel' model.id %}">导出Excel</a>
+    <a class="btn buttons mt-f5" href="{% url 'admin:admin_competition:excel' model.id %}">导出</a>
 </div>
-<table>
+<table style="width:1050px;margin:30px;">
     <tr>
-        <td>团队</td>
-        <td>报名时间</td>
-        <td>队长</td>
-        <td>队长联系方式</td>
-        <td>地区</td>
+        <th>团队</th>
+        <th>报名时间</th>
+        <th>队长</th>
+        <th>队长联系方式</th>
+        <th>地区</th>
     </tr>
-    {% for team in model.team_participators.all %}
-    <tr>
-        <td>{{ team.team.name }}</td>
-        <td>{{ team.time_created }}</td>
-        <td>{{ team.team.owner.name }}</td>
-        <td>{{ team.team.owner.phone_number }}</td>
-        <td>{{ team.team.province }} {{ team.team.city }} {{ team.team.county }}</td>
-    </tr>
-    {% endfor %}
+    {% if model.team_participators.all %}
+        {% for team in model.team_participators.all %}
+        <tr>
+            <td>{{ team.team.name }}</td>
+            <td>{{ team.time_created }}</td>
+            <td>{{ team.team.owner.name }}</td>
+            <td>{{ team.team.owner.phone_number }}</td>
+            <td>{{ team.team.province }} {{ team.team.city }} {{ team.team.county }}</td>
+        </tr>
+        {% endfor %}
+    {% else %}
+        <td colspan="5" style="text-align:left;">没有数据</td>
+    {% endif %}
 </table>
 {% endblock %}
 
@@ -137,7 +137,10 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
 <style>
-    
+    td{
+        border: 1px solid #C1C1C1;
+    }
 </style>
 {% endblock %}
