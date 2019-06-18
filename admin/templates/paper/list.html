@@ -8,24 +8,37 @@
 <table style="width:1200px;margin:0 auto;">
     <thead>
         <tr>
-            <th>ID</th>
+            <th class="min-width-50">ID</th>
             <th>问卷名</th>
             <th>描述</th>
-            <th>是否启用</th>
-            <th>操作</th>
+            <th class="min-width-80">是否启用</th>
+            <th class="min-width-150">操作</th>
         </tr>
         {% if list %}
         {% for item in list.all %}
         <tr>
             <td>{{ item.id }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.desc }}</td>
+            <td>
+                {% if item.name|length >= 15 %}
+                    {{ item.name|slice:"15" }}...
+                {% else %}
+                    {{ item.name }}
+                {% endif %}
+            </td>
+            <td>
+                {% if item.desc|length >= 25 %}
+                    {{ item.desc|slice:"25" }}...
+                {% else %}
+                    {{ item.desc }}
+                {% endif %}
+            </td>
             <td>
                 {% if item.enable %} 启用 {% else %} 未启用 {% endif %}
             </td>
             <td><a href="{% url 'admin:paper:detail' item.id %}"><i class="icon Hui-iconfont">&#xe725;</i>查看</a>
             <a onclick="verify_choose({{item.id}},'{{item.enable}}')">
             {% if item.enable %} 停用 {% else %} 启用 {% endif %}</a>
+            <a>统计</a></td>
             <!--<a id="del"><i class="icon Hui-iconfont">&#xe609;</i>删除</a></td>-->
         </tr>
         {% endfor %}

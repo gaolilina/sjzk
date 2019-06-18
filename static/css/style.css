@@ -180,3 +180,8 @@ input.tiny {
     padding: 8px 10px;
     background-color: #F5FAFE;
 }
+.min-width-50{min-width: 50px;}
+.min-width-80{min-width: 80px;}
+.min-width-100{min-width: 100px;}
+.min-width-150{min-width: 150px;}
+.min-width-200{min-width: 200px;}
