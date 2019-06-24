@@ -27,7 +27,6 @@ class AdminActivityAdd(View):
         'name': forms.CharField(max_length=50),
         'tags': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
-        'deadline': forms.DateTimeField(),
         'time_started': forms.DateTimeField(),
         'time_ended': forms.DateTimeField(),
         'allow_user': forms.IntegerField(),

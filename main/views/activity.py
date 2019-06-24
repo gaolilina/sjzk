@@ -73,7 +73,6 @@ class List(View):
                 status: 竞赛当前阶段
                 time_started: 开始时间
                 time_ended: 结束时间
-                deadline: 截止时间
                 user_participator_count: 已报名人数
                 time_created: 创建时间
                 province:
@@ -99,7 +98,6 @@ class List(View):
               'status': a.status,
               'time_started': a.time_started,
               'time_ended': a.time_ended,
-              'deadline': a.deadline,
               'user_participator_count': a.user_participators.count(),
               'time_created': a.time_created,
               'province': a.province} for a in qs]

@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^topic/', include(topic.urls, namespace='topic')),
     url(r'^vote/', include(vote.urls, namespace='vote')),
     url(r'^auth/', include(auth.urls, namespace='auth')),
-    url(r'friend/', include(friend.urls, namespace='friend')),
-    url(r'search/', include(search.urls, namespace='search')),
-    url(r'paper/', include(paper.urls, namespace='paper')),
+    url(r'^friend/', include(friend.urls, namespace='friend')),
+    url(r'^search/', include(search.urls, namespace='search')),
+    url(r'^paper/', include(paper.urls, namespace='paper')),
 ]

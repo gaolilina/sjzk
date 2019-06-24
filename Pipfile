@@ -7,10 +7,12 @@ name = "aliyun"
 
 [packages]
 requests = "*"
-django = "==1.11.20"
+django = "==1.9.13"
 django-crontab = "*"
 tencentyun = "*"
 qcloud-image = "*"
+mysqlclient = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"

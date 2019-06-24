@@ -59,7 +59,6 @@ class SearchActivity(View):
               'liker_count': a.likers.count(),
               'time_started': a.time_started,
               'time_ended': a.time_ended,
-              'deadline': a.deadline,
               'user_participator_count': a.user_participators.count(),
               'time_created': a.time_created,
               'status': a.status,

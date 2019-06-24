@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
@@ -56,7 +58,7 @@ class List(View):
         'province': forms.CharField(required=False, max_length=20),
         'field': forms.CharField(required=False, max_length=20)
     })
-    def get(self, request, offset=0, limit=10, order=1, history=False, province='', field=''):
+    def get(self, request, offset=0, limit=10, order=1, history=False, province=None, field=None):
         """获取竞赛列表
 
         :param offset: 偏移量
@@ -86,9 +88,14 @@ class List(View):
         k = self.ORDERS[order]
         condition = {
             'status__in': [6] if not history else [0, 1, 2, 3, 4, 5],
-            'province': province,
-            'field': field
         }
+        # 一般情况只显示未结束的活动
+        if not history:
+            condition['time_ended__lt'] = datetime.datetime.now()
+        if province is not None:
+            condition['province'] = province
+        if field is not None:
+            condition['field'] = field
         c = Competition.enabled.filter(**condition).count()
         qs = Competition.enabled.filter(**condition).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,

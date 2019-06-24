@@ -109,7 +109,8 @@ class List(View):
                     description="首次手机号注册")
                 user.save()
                 return JsonResponse({'token': user.token})
-            except IntegrityError:
+            except IntegrityError as e:
+                print(e)
                 abort(403, '创建用户失败')
 
 
