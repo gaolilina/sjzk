@@ -32,6 +32,8 @@ def init_system_params():
     System.objects.create()
     from modellib.models.config import ApplicationConfig
     ApplicationConfig.objects.create()
+    from modellib.models.config import ServerConfig
+    ServerConfig.objects.create()
 
 
 def add_sys_op():
