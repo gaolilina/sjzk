@@ -145,7 +145,6 @@ class User(models.Model):
         self.name = '智库用户' + phone
         self.create_invitation_code()
         self.update_token()
-        pass
 
 
 class UserComment(Comment):

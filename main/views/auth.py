@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from ChuangYi.settings import DEFAULT_ICON_URL, SERVER_URL
+from im.huanxin import register_to_huanxin
 from main.models import User, UserValidationCode
 from ..utils import abort, identity_verify, get_score_stage, eid_verify, save_uploaded_image
 from ..utils.decorators import *
@@ -91,6 +92,10 @@ class Account(View):
                             gender=gender, icon=icon)
                 user.set_password(password)
                 user.generate_info(phone_number)
+                user.save()
+                code, desc = register_to_huanxin(phone_number, password)
+                if code != 200:
+                    raise RuntimeError(desc)
                 if invitation_code:
                     self.__add_invited_users(request.user, invitation_code.split(','))
                 # 加积分
@@ -98,11 +103,10 @@ class Account(View):
                 user.score_records.create(
                     score=get_score_stage(3), type="初始数据",
                     description="首次手机号注册")
-                user.save()
                 return JsonResponse({'token': user.token})
-            except IntegrityError as e:
+            except RuntimeError as e:
                 print(e)
-                abort(403, '创建用户失败')
+                abort(403, str(e) or '创建用户失败')
 
     def __add_invited_users(self, user, codes):
         for c in codes:

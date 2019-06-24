@@ -16,7 +16,7 @@ SECRET = "YXA6PxXmw-wSxMcGrYrjflRWRuY2wR4"
 URL = EASEMOB_HOST + '/' + APP_ID + '/' + APP_NAME + '/'
 
 
-def refresh_access_token():
+def __refresh_access_token():
     url = URL + 'token'
     param = {
         "grant_type": "client_credentials",
@@ -41,13 +41,32 @@ def register_to_huanxin(userid, psd):
             "password": psd,
         }
     ]
-    response = requests.post(url, data=json.dumps(param), header=header)
+    response = requests.post(url, data=json.dumps(param), headers=header)
     if response.status_code == requests.codes.ok:
-        return 200, response.json().entities[0]
+        return 200, response.json().get('entities')[0]
     elif response.status_code == 400:
-        return response.status_code, response.json().error_description
+        return response.status_code, response.json().get('error_description')
     elif response.status_code == 401:
-        refresh_access_token()
+        __refresh_access_token()
         return register_to_huanxin(userid, psd)
+    else:
+        return response.status_code, 'too fast'
+
+
+def delete_user(userid):
+    url = URL + 'users/' + userid
+    token = ServerConfig.objects.first().huanxin_token
+    header = {
+        **JSON_HEADER,
+        'Authorization': "Bearer " + token
+    }
+    response = requests.delete(url, headers=header)
+    if response.status_code == requests.codes.ok:
+        return 200, response.json().get('entities')[0]
+    elif response.status_code == 400:
+        return response.status_code, response.json().get('error_description')
+    elif response.status_code == 401:
+        __refresh_access_token()
+        return delete_user(userid)
     else:
         return response.status_code, 'too fast'
