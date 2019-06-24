@@ -8,7 +8,6 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.utils.recommender import calculate_ranking_score
-from rongcloud import RongCloud
 
 from ChuangYi.settings import UPLOADED_URL
 from main.models import Team, User, TeamNeed, InternalTask, \
@@ -123,14 +122,6 @@ class List(View):
 
         team = Team(owner=request.user, name=name)
         team.save()
-        # 调用融云接口创建团队群聊
-        rcloud = RongCloud()
-        r = rcloud.Group.create(
-            userId=str(request.user.id),
-            groupId=str(team.id),
-            groupName=name)
-        if r.result['code'] != 200:
-            abort(404, '创建团队群聊失败')
 
         for k in kwargs:
             setattr(team, k, kwargs[k])
@@ -377,12 +368,6 @@ class Profile(View):
                 # 昵称非法词验证
                 if check_bad_words(name):
                     abort(403, '团队名含非法词汇')
-                # 更新容云上的信息
-                rcloud = RongCloud()
-                r = rcloud.Group.refresh(
-                    groupId=str(team.id), groupName=name)
-                if r.result['code'] != 200:
-                    abort(404, '更新群聊信息失败')
             if k == "description":
                 if check_bad_words(kwargs['description']):
                     abort(403, '含有非法词汇')
@@ -512,15 +497,6 @@ class Member(View):
         if team.members.filter(user=user).exists():
             abort(200)
 
-        # 调用融云接口将用户添加进团队群聊
-        rcloud = RongCloud()
-        r = rcloud.Group.join(
-            userId=str(user.id),
-            groupId=str(team.id),
-            groupName=team.name)
-        if r.result['code'] != 200:
-            abort(404, '加入团队群聊失败')
-
         # 在事务中建立关系，并删除对应的加团队申请
         with transaction.atomic():
             team.member_requests.filter(user=user).delete()
@@ -538,14 +514,6 @@ class Member(View):
 
         qs = team.members.filter(user=user)
         if qs.exists():
-            # 调用融云接口从团队群聊中删除该用户
-            rcloud = RongCloud()
-            r = rcloud.Group.quit(
-                userId=str(user.id),
-                groupId=str(team.id))
-            if r.result['code'] != 200:
-                abort(404, '将成员移出团队群聊失败')
-
             qs.delete()
             abort(200)
         abort(404, '成员不存在')

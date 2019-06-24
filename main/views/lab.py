@@ -1,24 +1,22 @@
+import json
+
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Q
-from django.utils import timezone
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.utils import timezone
 from django.views.generic import View
 
-from main.utils.recommender import calculate_ranking_score
-from rongcloud import RongCloud
-
 from ChuangYi.settings import UPLOADED_URL
-from main.models import Lab, User, LabAchievement, LabNeed, InternalTask,\
+from main.models import Lab, User, LabAchievement, LabNeed, InternalTask, \
     ExternalTask
 from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
-#from main.utils.recommender import record_view_lab
 from main.utils.dfa import check_bad_words
-import json
 from main.utils.http import notify_user
+from main.utils.recommender import calculate_ranking_score
 
 __all__ = ('List', 'Screen', 'Profile', 'Icon', 'MemberList',
            'Member', 'MemberRequestList', 'MemberRequest', 'Invitation',
@@ -76,7 +74,7 @@ class List(View):
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
-              'tags':[tag.name for tag in t.tags.all()],
+              'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in labs]
         return JsonResponse({'count': c, 'list': l})
 
@@ -118,14 +116,6 @@ class List(View):
 
         lab = Lab(owner=request.user, name=name)
         lab.save()
-        # 调用融云接口创建实验室群聊
-        rcloud = RongCloud()
-        r = rcloud.Group.create(
-            userId=str(request.user.id),
-            groupId=str(lab.id),
-            groupName=name)
-        if r.result['code'] != 200:
-            abort(404, '创建实验室群聊失败')
 
         for k in kwargs:
             setattr(lab, k, kwargs[k])
@@ -144,7 +134,7 @@ class List(View):
                         order += 1
         lab.save()
 
-        #action.create_lab(request.user, lab)
+        # action.create_lab(request.user, lab)
         request.user.score += get_score_stage(2)
         request.user.score_records.create(
             score=get_score_stage(2), type="能力", description="成功创建一个实验室")
@@ -284,7 +274,7 @@ class Profile(View):
         """
         if lab.owner != request.user:
             lab.visitors.update_or_create(visitor=request.user)
-            #record_view_lab(request.user, lab)
+            # record_view_lab(request.user, lab)
 
         r = dict()
         r['id'] = lab.id
@@ -372,12 +362,6 @@ class Profile(View):
                 # 昵称非法词验证
                 if check_bad_words(name):
                     abort(403, '实验室名含非法词汇')
-                # 更新容云上的信息
-                rcloud = RongCloud()
-                r = rcloud.Group.refresh(
-                    groupId=str(lab.id), groupName=name)
-                if r.result['code'] != 200:
-                    abort(404, '更新群聊信息失败')
             if k == "description":
                 if check_bad_words(kwargs['description']):
                     abort(403, '含有非法词汇')
@@ -507,20 +491,11 @@ class Member(View):
         if lab.members.filter(user=user).exists():
             abort(200)
 
-        # 调用融云接口将用户添加进实验室群聊
-        rcloud = RongCloud()
-        r = rcloud.Group.join(
-            userId=str(user.id),
-            groupId=str(lab.id),
-            groupName=lab.name)
-        if r.result['code'] != 200:
-            abort(404, '加入实验室群聊失败')
-
         # 在事务中建立关系，并删除对应的加实验室申请
         with transaction.atomic():
             lab.member_requests.filter(user=user).delete()
             lab.members.create(user=user)
-            #action.join_lab(user, lab)
+            # action.join_lab(user, lab)
         abort(200)
 
     @fetch_object(Lab.enabled, 'lab')
@@ -533,14 +508,6 @@ class Member(View):
 
         qs = lab.members.filter(user=user)
         if qs.exists():
-            # 调用融云接口从实验室群聊中删除该用户
-            rcloud = RongCloud()
-            r = rcloud.Group.quit(
-                userId=str(user.id),
-                groupId=str(lab.id))
-            if r.result['code'] != 200:
-                abort(404, '将成员移出实验室群聊失败')
-
             qs.delete()
             abort(200)
         abort(404, '成员不存在')
@@ -1589,7 +1556,7 @@ class NeedLabList(View):
                   'visitor_count': r.visitors.count(),
                   'member_count': r.members.count(),
                   'fields': [r.field1, r.field2],
-                  'tags':[tag.name for tag in r.tags.all()],
+                  'tags': [tag.name for tag in r.tags.all()],
                   'time_created': r.time_created} for r in rs]
         else:
             c = 0
@@ -1687,7 +1654,7 @@ class MemberNeedRequest(View):
                 need.members = str(user.id)
             need.save()
             need.lab.members.create(user=user)
-            #action.join_lab(user, need.lab)
+            # action.join_lab(user, need.lab)
             # 积分
             request.user.score += get_score_stage(1)
             request.user.score_records.create(
@@ -1827,7 +1794,7 @@ class NeedRequest(View):
                 need.save()
 
                 need.lab.members.create(user=lab.owner)
-                #action.join_lab(lab.owner, need.lab)
+                # action.join_lab(lab.owner, need.lab)
                 request.user.score += get_score_stage(1)
                 request.user.score_records.create(
                     score=get_score_stage(1), type="能力",
@@ -1965,7 +1932,7 @@ class NeedInvitation(View):
                     need.members = str(lab.id)
                 need.save()
                 need.lab.members.create(user=lab.owner)
-                #action.join_lab(lab.owner, need.lab)
+                # action.join_lab(lab.owner, need.lab)
                 request.user.score += get_score_stage(1)
                 request.user.score_records.create(
                     score=get_score_stage(1), type="能力",
@@ -2024,9 +1991,9 @@ class InternalTaskList(View):
         qs = lab.internal_tasks
         if sign is not None:
             if sign == 0:
-                qs = qs.filter(status__range=[0,4])
+                qs = qs.filter(status__range=[0, 4])
             elif sign == 1:
-                qs = qs.filter(status__in=[5,6])
+                qs = qs.filter(status__in=[5, 6])
             else:
                 qs = qs.filter(status=7)
             tasks = qs[offset:offset + limit]
@@ -2072,7 +2039,7 @@ class InternalTaskList(View):
         if not lab.members.filter(user=executor).exists():
             abort(404, '执行者非实验室成员')
         t = lab.internal_tasks.create(status=0, executor=executor,
-                                       deadline=kwargs['deadline'])
+                                      deadline=kwargs['deadline'])
         for k in kwargs:
             setattr(t, k, kwargs[k])
         t.save()
@@ -2117,9 +2084,9 @@ class InternalTasks(View):
         qs = request.user.internal_tasks
         if sign is not None:
             if sign == 0:
-                qs = qs.filter(status__range=[0,4])
+                qs = qs.filter(status__range=[0, 4])
             elif sign == 1:
-                qs = qs.filter(status__in=[5,6])
+                qs = qs.filter(status__in=[5, 6])
             else:
                 qs = qs.filter(status=7)
             tasks = qs[offset:offset + limit]
@@ -2165,7 +2132,7 @@ class InternalTasks(View):
 
 
 class LabInternalTask(View):
-    keys = ('id','title', 'content', 'status', 'deadline', 'assign_num',
+    keys = ('id', 'title', 'content', 'status', 'deadline', 'assign_num',
             'submit_num', 'finish_time', 'time_created')
 
     @fetch_object(InternalTask.objects, 'task')
@@ -2325,9 +2292,9 @@ class ExternalTaskList(View):
             qs = lab.outsource_external_tasks
             if sign is not None:
                 if sign == 0:
-                    qs = qs.filter(status__range=[0,8])
+                    qs = qs.filter(status__range=[0, 8])
                 else:
-                    qs = qs.filter(status__in=[9,10])
+                    qs = qs.filter(status__in=[9, 10])
                 tasks = qs[offset:offset + limit]
             else:
                 tasks = qs.all()[offset:offset + limit]
@@ -2344,9 +2311,9 @@ class ExternalTaskList(View):
             qs = lab.undertake_external_tasks
             if sign is not None:
                 if sign == 0:
-                    qs = qs.filter(status__range=[0,8])
+                    qs = qs.filter(status__range=[0, 8])
                 else:
-                    qs = qs.filter(status__in=[9,10])
+                    qs = qs.filter(status__in=[9, 10])
 
             c = qs.count()
             tasks = qs[offset:offset + limit]
@@ -2439,7 +2406,7 @@ class ExternalTasks(View):
 
 
 class LabExternalTask(View):
-    keys = ('id','title', 'content', 'status', 'expend', 'expend_actual',
+    keys = ('id', 'title', 'content', 'status', 'expend', 'expend_actual',
             'deadline', 'assign_num', 'submit_num', 'pay_num', 'finish_time',
             'time_created')
 

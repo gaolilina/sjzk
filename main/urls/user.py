@@ -9,7 +9,6 @@ from ..views.recommend import UserRecommend
 urls = [
     # 基本信息
     url(r'^$', List.as_view(), name='list'),
-    url(r'^token/$', Token.as_view(), name='token'),
     url(r'^(?P<user_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
     url(r'^(?P<user_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     # 获取某用户的团队

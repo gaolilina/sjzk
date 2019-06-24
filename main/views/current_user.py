@@ -4,8 +4,6 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
-from ChuangYi.settings import SERVER_URL, DEFAULT_ICON_URL
-from rongcloud import RongCloud
 from ..models import *
 from ..utils import abort, save_uploaded_image, get_score_stage
 from ..utils import action
@@ -44,16 +42,6 @@ class Username(View):
         try:
             request.user.username = username.lower()
             request.user.save()
-            # 更改融云上的用户信息
-            if not request.user.icon:
-                portraitUri = SERVER_URL + request.user.icon
-            else:
-                portraitUri = DEFAULT_ICON_URL
-            rcloud = RongCloud()
-            rcloud.User.refresh(
-                userId=request.user.id,
-                name=request.user.name,
-                portraitUri=portraitUri)
             return JsonResponse({'username': request.user.username})
         except IntegrityError:
             abort(403, '用户名已存在')
@@ -98,13 +86,6 @@ class Icon(Icon_):
                     description="首次上传头像")
             request.user.icon = filename
             request.user.save()
-            # 用户头像更换后调用融云接口更改融云上的用户头像
-            portraitUri = SERVER_URL + request.user.icon
-            rcloud = RongCloud()
-            rcloud.User.refresh(
-                userId=request.user.id,
-                name=request.user.name,
-                portraitUri=portraitUri)
             return JsonResponse({'icon_url': request.user.icon})
         abort(400, '头像保存失败')
 
@@ -191,16 +172,6 @@ class Profile(Profile_):
                     score=get_score_stage(3), type="初始数据",
                     description="首次更换昵称")
             request.user.name = name
-            # 用户昵称更换后调用融云接口更改融云上的用户头像
-            if request.user.icon:
-                portraitUri = SERVER_URL + request.user.icon
-            else:
-                portraitUri = DEFAULT_ICON_URL
-            rcloud = RongCloud()
-            rcloud.User.refresh(
-                userId=request.user.id,
-                name=request.user.name,
-                portraitUri=portraitUri)
         normal_keys = ('description', 'qq', 'wechat', 'email', 'gender',
                        'birthday', 'province', 'city', 'county', 'adept_field',
                        'adept_skill', 'expect_role', 'follow_field',
@@ -1436,15 +1407,6 @@ class Invitation(View):
         if invitation.team.members.filter(user=request.user).exists():
             invitation.delete()
             abort(200)
-
-        # 调用融云接口将用户添加进团队群聊
-        rcloud = RongCloud()
-        r = rcloud.Group.join(
-            userId=request.user.id,
-            groupId=invitation.team.id,
-            groupName=invitation.team.name)
-        if r.result['code'] != 200:
-            abort(404, '团队成员加入群聊失败')
 
         # 在事务中建立关系，并删除对应的加团队邀请
         with transaction.atomic():

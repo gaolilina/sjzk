@@ -124,7 +124,7 @@ class User(models.Model):
     def save_and_generate_name(self, nickname=None):
         """保存当前实例并生成序列用户名"""
 
-        self.name = nickname if nickname is not None else '智库用户 #{}'.format(self.id)
+        self.name = nickname if nickname is not None else '智库用户'
         self.save()
 
     def create_invitation_code(self):
@@ -140,6 +140,12 @@ class User(models.Model):
             if c == 0:
                 break
         self.invitation_code = code
+
+    def generate_info(self, phone):
+        self.name = '智库用户' + phone
+        self.create_invitation_code()
+        self.update_token()
+        pass
 
 
 class UserComment(Comment):

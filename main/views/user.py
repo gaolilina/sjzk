@@ -5,14 +5,13 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
 
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
-from rongcloud import RongCloud
 from ..models import *
 from ..utils import abort, get_score_stage, send_message
 from ..utils.decorators import *
 from ..utils.dfa import check_bad_words
 from ..utils.recommender import calculate_ranking_score
 
-__all__ = ['List', 'Token', 'Icon', 'Profile', 'ExperienceList', 'Experience', 'Screen',
+__all__ = ['List', 'Icon', 'Profile', 'ExperienceList', 'Experience', 'Screen',
            'TeamOwnedList', 'TeamJoinedList', 'ValidationCode',
            'PasswordForgotten', 'ActivityList', 'CompetitionList', 'CompetitionJoinedList']
 
@@ -65,93 +64,6 @@ class List(View):
               'is_verified': u.is_verified,
               'is_role_verified': u.is_role_verified} for u in users]
         return JsonResponse({'count': c, 'list': l})
-
-    @validate_args({
-        'phone_number': forms.CharField(min_length=11, max_length=11),
-        'password': forms.CharField(min_length=6, max_length=32),
-        'validation_code': forms.CharField(min_length=6, max_length=6),
-        'invitation_code': forms.CharField(required=False),
-        'role': forms.CharField(required=False),
-    })
-    def post(self, request, phone_number, password, validation_code,
-             invitation_code=None, role=''):
-        """注册，若成功返回用户令牌"""
-
-        if not UserValidationCode.verify(phone_number, validation_code):
-            abort(400, '验证码错误')
-
-        with transaction.atomic():
-            try:
-                user = User(phone_number=phone_number, role=role)
-                user.set_password(password)
-                # user.update_token()
-                user.save_and_generate_name()
-                user.create_invitation_code()
-                # 注册成功后给融云服务器发送请求获取Token
-                rcloud = RongCloud()
-                r = rcloud.User.getToken(
-                    userId=user.id, name=user.name,
-                    portraitUri=DEFAULT_ICON_URL)
-                token = r.result['token']
-                user.token = token
-                if invitation_code:
-                    u = User.enabled.filter(invitation_code=invitation_code)
-                    if not u:
-                        abort(404, '推荐码错误')
-                    user.used_invitation_code = invitation_code
-                    u.score_records.create(
-                        score=get_score_stage(4), type="活跃度",
-                        description="邀请码被使用")
-                # 加积分
-                user.score += get_score_stage(3)
-                user.score_records.create(
-                    score=get_score_stage(3), type="初始数据",
-                    description="首次手机号注册")
-                user.save()
-                return JsonResponse({'token': user.token})
-            except IntegrityError as e:
-                print(e)
-                abort(403, '创建用户失败')
-
-
-class Token(View):
-    @validate_args({
-        'username': forms.RegexField(r'^[a-zA-Z0-9_]{4,15}$', strip=True),
-        'password': forms.CharField(min_length=6, max_length=20, strip=False),
-    })
-    def post(self, request, username, password):
-        """更新并返回用户令牌，纯数字用户名视为手机号
-
-        :param username: 用户名
-        :param password: 密码
-        :return token: 用户token
-        """
-
-        try:
-            if username.isdigit():
-                user = User.objects.get(phone_number=username)
-            else:
-                user = User.objects.get(username=username.lower())
-        except User.DoesNotExist:
-            abort(401, '用户不存在')
-        else:
-            if not user.is_enabled:
-                abort(403, '用户已删除')
-            if not user.check_password(password):
-                abort(401, '密码错误')
-            # user.update_token()
-            if not user.icon:
-                portraitUri = SERVER_URL + user.icon
-            else:
-                portraitUri = DEFAULT_ICON_URL
-            rcloud = RongCloud()
-            r = rcloud.User.getToken(
-                userId=user.id, name=user.name,
-                portraitUri=portraitUri)
-            token = r.result['token']
-            user.token = token
-            user.save()
-            return JsonResponse({'token': user.token})
 
 
 class Icon(View):
@@ -317,6 +229,7 @@ class Experience(View):
             abort(403, '只能删除自己的经历')
         exp.delete()
         abort(200)
+
 
 class Screen(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')

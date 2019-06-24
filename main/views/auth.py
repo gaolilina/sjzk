@@ -5,7 +5,6 @@ from django.views.generic import View
 
 from ChuangYi.settings import DEFAULT_ICON_URL, SERVER_URL
 from main.models import User, UserValidationCode
-from rongcloud import RongCloud
 from ..utils import abort, identity_verify, get_score_stage, eid_verify, save_uploaded_image
 from ..utils.decorators import *
 from ..views.user import Profile as Profile_
@@ -43,17 +42,7 @@ class Account(View):
         if not user.is_enabled:
             abort(403, '用户已删除')
         # user.update_token()
-        if not user.icon:
-            portraitUri = SERVER_URL + user.icon
-        else:
-            portraitUri = DEFAULT_ICON_URL
-        rcloud = RongCloud()
-        r = rcloud.User.getToken(
-            userId=user.id, name=user.name,
-            portraitUri=portraitUri)
-        token = r.result['token']
-        user.token = token
-        user.save()
+        # user.save()
         return JsonResponse({'token': user.token})
 
     @validate_args({
@@ -101,16 +90,7 @@ class Account(View):
                 user = User(phone_number=phone_number, wechat_id=wechatid, city=city, province=province,
                             gender=gender, icon=icon)
                 user.set_password(password)
-                # user.update_token()
-                user.save_and_generate_name(nickname)
-                user.create_invitation_code()
-                # 注册成功后给融云服务器发送请求获取Token
-                rcloud = RongCloud()
-                r = rcloud.User.getToken(
-                    userId=user.id, name=user.name,
-                    portraitUri=icon)
-                token = r.result['token']
-                user.token = token
+                user.generate_info(phone_number)
                 if invitation_code:
                     self.__add_invited_users(request.user, invitation_code.split(','))
                 # 加积分
