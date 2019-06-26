@@ -2,6 +2,9 @@ from django.conf.urls import url
 
 from admin.views.admin_activity import *
 
+'''
+问卷发布需要迁移到客户端去做
+'''
 urls = [
     url(r'^add$', AdminActivityAdd.as_view(), name='add'),
     url(r'^view/(?P<id>\w+)$', AdminActivityView.as_view(), name='view'),

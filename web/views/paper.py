@@ -39,6 +39,8 @@ class AnswerThePaper(View):
     })
     @fetch_object(Paper.objects, 'paper')
     def post(self, request, paper, answers, **kwargs):
+        if not paper.enable:
+            abort(403, "paper is disabled")
         if paper.answers.filter(user=request.user).count() != 0:
             abort(403, "you have answer the question")
         try:

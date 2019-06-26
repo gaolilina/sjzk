@@ -3,6 +3,7 @@
 
 from django.conf.urls import url
 
+from admin.views.analysis import PaperAnalysis
 from admin.views.paper import PaperList, PaperDetail, PaperSwitch, PaperAdd
 
 urls = [
@@ -10,4 +11,5 @@ urls = [
     url(r'^add/$', PaperAdd.as_view(), name='add'),
     url(r'^(?P<paper_id>\d+)/$', PaperDetail.as_view(), name='detail'),
     url(r'^(?P<paper_id>\d+)/switch/$', PaperSwitch.as_view(), name='switch'),
+    url(r'^(?P<paper_id>\d+)/analysis/$', PaperAnalysis.as_view(), name='analysis'),
 ]
