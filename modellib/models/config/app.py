@@ -12,4 +12,4 @@ class ApplicationConfig(models.Model):
     # 显示调查问卷的样式
     paper_style = models.CharField(max_length=25, default='list')
     # 调查问卷 url
-    paper_url = models.CharField(max_length=100, default='/static/paper.html')
+    paper_url = models.CharField(max_length=100, default='/static/paper/detail.html')
