@@ -30,15 +30,18 @@ function show_statistics(paper_id,paper_name,paper_desc){
                 let counts = question.analysis.count;
                 let l_data = [];
                 let s_data = [];
+                let s_data_bar = [];
                 let options = question.options;
                 for(let op_index in options){
                     options_html += options[op_index]+'  ';
                     if(options[op_index]!=''){
                         l_data.push(options[op_index]);
                         s_data.push({'name':options[op_index],'value':counts[op_index]});
+                        s_data_bar.push(counts[op_index]);
                     }
                 }
                 echarts_html += '<div id="div-echarts'+ques_index+'" style="width:560px;height:350px;margin-right:20px;margin-bottom:20px;" class="inline-block"></div>';
+                echarts_html += '<div id="div2-echarts'+ques_index+'" style="width:560px;height:350px;margin-right:20px;margin-bottom:20px;" class="inline-block"></div>';
                 echarts_data.push({
                     'type':'pie',
                     'id':'div-echarts'+ques_index,
@@ -46,10 +49,19 @@ function show_statistics(paper_id,paper_name,paper_desc){
                     'l_data':l_data,
                     's_data':s_data,
                 });
+                echarts_data.push({
+                    'type':'bar',
+                    'id':'div2-echarts'+ques_index,
+                    'name':question.title,
+                    'l_data':l_data,
+                    's_data':s_data_bar,
+                });
             } else{
                 //统计数据
                 let origins = question.analysis.origin;
                 let s_data = [];
+                let l_data_bar = [];
+                let s_data_bar = [];
                 let origin_counts = {};
                 //统计问答题选项个数
                 for(let o_index in origins){
@@ -59,13 +71,23 @@ function show_statistics(paper_id,paper_name,paper_desc){
                 }
                 for(let og in origin_counts){
                     s_data.push({'name':og,'value':origin_counts[og]});
+                    l_data_bar.push(og);
+                    s_data_bar.push(origin_counts[og]);
                 }
                 echarts_html += '<div id="div-echarts'+ques_index+'" style="width:560px;height:350px;margin-right:20px;margin-bottom:20px;" class="inline-block"></div>';
+                echarts_html += '<div id="div2-echarts'+ques_index+'" style="width:560px;height:350px;margin-right:20px;margin-bottom:20px;" class="inline-block"></div>';
                 echarts_data.push({
                     'type':'pie',
                     'id':'div-echarts'+ques_index,
                     'name':question.title,
                     'l_data':origins,
+                    's_data':s_data,
+                });
+                echarts_data.push({
+                    'type':'bar',
+                    'id':'div2-echarts'+ques_index,
+                    'name':question.title,
+                    'l_data':l_data_bar,
                     's_data':s_data,
                 });
             }
@@ -78,7 +100,7 @@ function show_statistics(paper_id,paper_name,paper_desc){
             if(echart.type=='pie'){
                 pie_echarts(echart.id,echart.name,echart.l_data,'',echart.s_data);
             } else{
-                // init_echarts(echart.id,echart.name,echart.type,'','',[],[])
+                init_echarts(echart.id,echart.name,echart.type,'','',echart.l_data,echart.s_data);
             }
         }
     });
@@ -91,8 +113,8 @@ function show_statistics(paper_id,paper_name,paper_desc){
 //init_echarts('div-echarts2','柱形图','bar','横轴','纵轴',[1,2,3,4],[9,12,55,24]);
 function init_echarts(div_echarts,e_name,e_type,x_name,y_name,x_data,s_data){
     // 基于准备好的dom，初始化echarts图表
-    var e_boundaryGap = false;
-    if(type=='line') e_boundaryGap = true;
+    var e_boundaryGap = true;
+    if(e_type=='line') e_boundaryGap = false;
     option = {
         title: {
             text: e_name,
