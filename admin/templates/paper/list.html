@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
+<div id="main">
 <form role="form" action="{% url 'admin:paper:list' %}" method="get">
     <span>问卷名：</span><input type="text" name="name" value="{{name}}" /><br/>
     <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
@@ -38,7 +39,7 @@
             <td><a href="{% url 'admin:paper:detail' item.id %}"><i class="icon Hui-iconfont">&#xe725;</i>查看</a>
             <a onclick="verify_choose({{item.id}},'{{item.enable}}')">
             {% if item.enable %} 停用 {% else %} 启用 {% endif %}</a>
-            <a>统计</a></td>
+            <a onclick="show_statistics({{item.id}},'{{item.name}}','{{item.desc}}')">统计</a></td>
             <!--<a id="del"><i class="icon Hui-iconfont">&#xe609;</i>删除</a></td>-->
         </tr>
         {% endfor %}
@@ -47,7 +48,7 @@
         {% endif %}
     </thead>
 </table>
-
+</div>
 {% endblock %}
 {% block topbar %}{% include 'topbar.html' with tb='activity_admin' %}{% endblock %}
 {% block leftbar %}{% include 'leftbar.html' with tb='activity_admin' lb='paper' %}{% endblock %}
@@ -60,6 +61,8 @@
 </style>
 {% endblock %}
 {% block js %}
+<script src="{% static 'js/statistics.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/echarts.min.js' %}" type="text/javascript"></script>
 <script type="text/javascript">
     $("#del").click(function(){
         var r = confirm("确认删除？")
