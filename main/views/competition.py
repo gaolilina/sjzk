@@ -90,7 +90,7 @@ class List(View):
         }
         # 一般情况只显示未结束的活动
         if not history:
-            condition['time_ended__lt'] = datetime.datetime.now()
+            condition['time_ended__gt'] = datetime.datetime.now()
         if province is not None:
             condition['province'] = province
         if field is not None:

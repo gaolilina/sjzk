@@ -129,10 +129,10 @@ class AllUserAchievementView(View):
             'icon_url': achievement.user.icon,
             'desc': achievement.description,
             'pics': achievement.picture,
-            'yes_count': achievement.likers.count(),
-            'is_yes': request.user in achievement.likers.all(),
-            'require_count': achievement.requirers.count(),
-            'is_require': request.user in achievement.requirers.all(),
+            'yes_count': achievement.likers.count(), # 点赞数
+            'is_yes': request.user in achievement.likers.all(), # 是否点赞
+            'require_count': achievement.requirers.count(), # 需求树
+            'is_require': request.user in achievement.requirers.all(), # 是否需求
         })
 
     @require_verification_token

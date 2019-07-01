@@ -8,7 +8,6 @@ from ..views.common import TeamActionList, TeamCommentList, TeamComment, \
 from ..views.recommend import TeamRecommend, OutsourceNeedTeamRecommend, \
     UndertakeNeedTeamRecommend
 
-
 urls = [
     # 基本
     url(r'^$', List.as_view(), name='list'),
@@ -59,12 +58,9 @@ urls = [
     url(r'^(?P<need_id>[0-9]+)/need/teams/$',
         NeedTeamList.as_view(), name='need_teams'),
 
-    url(r'^needs/member/$', AllNeedList.as_view(),
-        name='all_member_needs', kwargs={'type': 0}),
-    url(r'^needs/outsource/$', AllNeedList.as_view(),
-        name='all_outsource_needs', kwargs={'type': 1}),
-    url(r'^needs/undertake/$', AllNeedList.as_view(),
-        name='all_undertake_needs', kwargs={'type': 2}),
+    url(r'^needs/member/$', AllNeedList.as_view(), name='all_member_needs', kwargs={'type': 0}),
+    url(r'^needs/outsource/$', AllNeedList.as_view(), name='all_outsource_needs', kwargs={'type': 1}),
+    url(r'^needs/undertake/$', AllNeedList.as_view(), name='all_undertake_needs', kwargs={'type': 2}),
     url(r'^(?P<team_id>[0-9]+)/needs/$', NeedList.as_view(), name='needs'),
     url(r'^(?P<team_id>[0-9]+)/needs/member/$', NeedList.as_view(),
         name='member_needs', kwargs={'type': 0}),
@@ -125,6 +121,6 @@ urls = [
     url(r'^(?P<team_id>[0-9]+)/score_records/$', TeamScoreRecord.as_view(),
         name='score_records'),
     # 团队参加的竞赛评比列表
-    url(r'^(?P<team_id>[0-9]+)/awards/$',TeamAwardList.as_view(),
+    url(r'^(?P<team_id>[0-9]+)/awards/$', TeamAwardList.as_view(),
         name='awards'),
 ]
