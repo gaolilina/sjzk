@@ -70,7 +70,7 @@
             $("form").submit(function(e) {
                 e.preventDefault();
 
-                post('/users/token/', {
+                post('/auth/account/phone/', {
                     username: $('#username').val(),
                     password: $('#password').val()
                 }).then(function(data) {

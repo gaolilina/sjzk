@@ -86,7 +86,7 @@ class List(View):
 
         k = self.ORDERS[order]
         condition = {
-            'status__in': [6] if not history else [0, 1, 2, 3, 4, 5],
+            'status__in': [6] if history else [0, 1, 2, 3, 4, 5],
         }
         # 一般情况只显示未结束的活动
         if not history:
