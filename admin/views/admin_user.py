@@ -7,6 +7,8 @@ from django.views.generic import View
 from admin.models.admin_user import *
 
 from admin.utils.decorators import *
+
+
 class AdminUserView(View):
     @fetch_record(AdminUser.objects, 'mod', 'id')
     @require_cookie
@@ -20,7 +22,20 @@ class AdminUserView(View):
     @require_cookie
     @require_role('z')
     @validate_args2({
-        'is_enabled': forms.BooleanField(required=False),'username': forms.CharField(max_length=20,),'password': forms.CharField(max_length=128,),'time_created': forms.DateTimeField(required=False,),'role': forms.CharField(max_length=26,required=False,),'name': forms.CharField(max_length=15,required=False,),'description': forms.CharField(max_length=100,required=False,),'icon': forms.CharField(max_length=100,required=False,),'gender': forms.CharField(max_length=1,required=False,),'email': forms.CharField(max_length=254,required=False,),'phone_number': forms.CharField(max_length=11,required=False,),'is_verified': forms.BooleanField(required=False),'real_name': forms.CharField(max_length=20,required=False,),'id_number': forms.CharField(max_length=18,required=False,),
+        'is_enabled': forms.BooleanField(required=False),
+        'username': forms.CharField(max_length=20, ),
+        'password': forms.CharField(max_length=128, ),
+        'time_created': forms.DateTimeField(required=False, ),
+        'role': forms.CharField(max_length=26, required=False, ),
+        'name': forms.CharField(max_length=15, required=False, ),
+        'description': forms.CharField(max_length=100, required=False, ),
+        'icon': forms.CharField(max_length=100, required=False, ),
+        'gender': forms.CharField(max_length=1, required=False, ),
+        'email': forms.CharField(max_length=254, required=False, ),
+        'phone_number': forms.CharField(max_length=11, required=False, ),
+        'is_verified': forms.BooleanField(required=False),
+        'real_name': forms.CharField(max_length=20, required=False, ),
+        'id_number': forms.CharField(max_length=18, required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -33,6 +48,7 @@ class AdminUserView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class AdminUserList(View):
     @require_cookie
     @require_role('yz')
@@ -43,7 +59,8 @@ class AdminUserList(View):
         if kwargs["id"] is not None:
             list = AdminUser.objects.filter(admin_user_id=kwargs["id"])
             template = loader.get_template("admin_user/admin_user_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:admin_user:admin_user', 'user': request.user})
+            context = Context(
+                {'page': page, 'list': list, 'redir': 'admin:admin_user:admin_user', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -52,7 +69,8 @@ class AdminUserList(View):
                 redir = 'admin:admin_user:admin_user'
             else:
                 redir = 'admin:admin_user:admin_user_list'
-            context = Context({'name': name, 'list': AdminUser.objects.filter(name__contains=name), 'redir': redir, 'rb': 'admin_user', 'user': request.user})
+            context = Context({'name': name, 'list': AdminUser.objects.filter(name__contains=name), 'redir': redir,
+                               'rb': 'admin_user', 'user': request.user})
             return HttpResponse(template.render(context))
         else:
             template = loader.get_template("admin_user/index.html")

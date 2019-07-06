@@ -23,8 +23,11 @@ class List(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'province': forms.CharField(required=False, max_length=20),
+        'field': forms.CharField(required=False, max_length=20),
+        'is_expert': forms.BooleanField(required=False),
     })
-    def get(self, request, offset=0, limit=10, order=1):
+    def get(self, request, offset=0, limit=10, order=1, province=None, field=None, is_expert=False):
         """获取用户列表
 
         :param offset: 偏移量
@@ -49,10 +52,19 @@ class List(View):
                 is_verified: 是否通过实名认证
                 is_role_verified: 是否通过身份认证
         """
-        c = User.enabled.count()
-        users = User.enabled.order_by(self.ORDERS[order])[offset:offset + limit]
+        condition = {}
+        if province is not None:
+            condition['province'] = province
+        if field is not None:
+            condition['adept_field'] = field
+        if is_expert:
+            condition['is_role_verified'] = 2
+            condition['role'] = '专家'
+        c = User.enabled.filter(**condition).count()
+        users = User.enabled.filter(**condition).order_by(self.ORDERS[order])[offset:offset + limit]
         l = [{'id': u.id,
               'time_created': u.time_created,
+              'role': u.role,
               'username': u.username,
               'name': u.name,
               'icon_url': u.icon,

@@ -7,6 +7,8 @@ from django.views.generic import View
 from main.models.user import *
 
 from admin.utils.decorators import *
+
+
 class UserView(View):
     @fetch_record(User.objects, 'mod', 'id')
     @require_cookie
@@ -21,31 +23,31 @@ class UserView(View):
     @require_role('yz')
     @validate_args2({
         'is_enabled': forms.BooleanField(required=False),
-        'username': forms.CharField(max_length=20,required=False,),
-        'phone_number': forms.CharField(max_length=11,),
-        'name': forms.CharField(max_length=15,),
-        'description': forms.CharField(max_length=100,required=False,),
-        'icon': forms.CharField(max_length=100,required=False,),
-        'gender': forms.IntegerField(required=False,),
-        'qq': forms.CharField(max_length=20,required=False,),
-        'wechat': forms.CharField(max_length=20,required=False,),
-        'email': forms.CharField(max_length=254,required=False,),
-        'birthday': forms.DateField(required=False,),
-        'province': forms.CharField(max_length=20,required=False,),
-        'city': forms.CharField(max_length=20,required=False,),
-        'county': forms.CharField(max_length=20,required=False,),
-        'is_verified': forms.IntegerField(required=False,),
-        'real_name': forms.CharField(max_length=20,required=False,),
-        'id_number': forms.CharField(max_length=18,required=False,),
-        'id_card': forms.CharField(max_length=100,required=False,),
-        'is_role_verified': forms.BooleanField(required=False),
-        'role': forms.CharField(max_length=20,required=False,),
-        'other_number': forms.CharField(max_length=20,required=False,),
-        'other_card': forms.CharField(max_length=100,required=False,),
-        'unit1': forms.CharField(max_length=20,required=False,),
-        'unit2': forms.CharField(max_length=20,required=False,),
-        'profession': forms.CharField(max_length=20,required=False,),
-        'score': forms.IntegerField(required=False,),
+        'username': forms.CharField(max_length=20, required=False, ),
+        'phone_number': forms.CharField(max_length=11, ),
+        'name': forms.CharField(max_length=15, ),
+        'description': forms.CharField(max_length=100, required=False, ),
+        'icon': forms.CharField(max_length=100, required=False, ),
+        'gender': forms.IntegerField(required=False, ),
+        'qq': forms.CharField(max_length=20, required=False, ),
+        'wechat': forms.CharField(max_length=20, required=False, ),
+        'email': forms.CharField(max_length=254, required=False, ),
+        'birthday': forms.DateField(required=False, ),
+        'province': forms.CharField(max_length=20, required=False, ),
+        'city': forms.CharField(max_length=20, required=False, ),
+        'county': forms.CharField(max_length=20, required=False, ),
+        'is_verified': forms.IntegerField(required=False, ),
+        'real_name': forms.CharField(max_length=20, required=False, ),
+        'id_number': forms.CharField(max_length=18, required=False, ),
+        'id_card': forms.CharField(max_length=100, required=False, ),
+        'is_role_verified': forms.IntegerField(required=False),
+        'role': forms.CharField(max_length=20, required=False, ),
+        'other_number': forms.CharField(max_length=20, required=False, ),
+        'other_card': forms.CharField(max_length=100, required=False, ),
+        'unit1': forms.CharField(max_length=20, required=False, ),
+        'unit2': forms.CharField(max_length=20, required=False, ),
+        'profession': forms.CharField(max_length=20, required=False, ),
+        'score': forms.IntegerField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -57,6 +59,7 @@ class UserView(View):
         template = loader.get_template("user/user.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserList(View):
     @require_cookie
@@ -105,6 +108,8 @@ class UserList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserActionView(View):
     @fetch_record(UserAction.objects, 'mod', 'id')
     @require_cookie
@@ -118,7 +123,10 @@ class UserActionView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'action': forms.CharField(max_length=20,),'time_created': forms.DateTimeField(required=False,),'object_type': forms.CharField(max_length=20,),'object_id': forms.IntegerField(required=False,),'related_object_type': forms.CharField(max_length=20,required=False,),'related_object_id': forms.IntegerField(required=False,),
+        'action': forms.CharField(max_length=20, ), 'time_created': forms.DateTimeField(required=False, ),
+        'object_type': forms.CharField(max_length=20, ), 'object_id': forms.IntegerField(required=False, ),
+        'related_object_type': forms.CharField(max_length=20, required=False, ),
+        'related_object_id': forms.IntegerField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -130,6 +138,7 @@ class UserActionView(View):
         template = loader.get_template("user/user_action.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserActionList(View):
     @require_cookie
@@ -175,6 +184,8 @@ class UserActionList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_action', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserActionCommentView(View):
     @fetch_record(UserActionComment.objects, 'mod', 'id')
     @require_cookie
@@ -188,7 +199,7 @@ class UserActionCommentView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'content': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),
+        'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -201,6 +212,7 @@ class UserActionCommentView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class UserActionCommentList(View):
     @require_cookie
     @require_role('yz')
@@ -211,7 +223,8 @@ class UserActionCommentList(View):
         if kwargs["id"] is not None:
             list = UserActionComment.objects.filter(entity_id=kwargs["id"])
             template = loader.get_template("user/user_action_comment_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_action_comment', 'user': request.user})
+            context = Context(
+                {'page': page, 'list': list, 'redir': 'admin:user:user_action_comment', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -245,6 +258,8 @@ class UserActionCommentList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_action_comment', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserActionLikerView(View):
     @fetch_record(UserActionLiker.objects, 'mod', 'id')
     @require_cookie
@@ -258,7 +273,7 @@ class UserActionLikerView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'time_created': forms.DateTimeField(required=False,),
+        'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -271,6 +286,7 @@ class UserActionLikerView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class UserActionLikerList(View):
     @require_cookie
     @require_role('yz')
@@ -281,7 +297,8 @@ class UserActionLikerList(View):
         if kwargs["id"] is not None:
             list = UserActionLiker.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_action_liker_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_action_liker', 'user': request.user})
+            context = Context(
+                {'page': page, 'list': list, 'redir': 'admin:user:user_action_liker', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -315,6 +332,8 @@ class UserActionLikerList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_action_liker', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserBehaviorView(View):
     @fetch_record(UserBehavior.objects, 'mod', 'id')
     @require_cookie
@@ -328,7 +347,8 @@ class UserBehaviorView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'behavior': forms.CharField(max_length=10,),'object_type': forms.CharField(max_length=20,),'object_id': forms.IntegerField(required=False,),'time_created': forms.DateTimeField(required=False,),
+        'behavior': forms.CharField(max_length=10, ), 'object_type': forms.CharField(max_length=20, ),
+        'object_id': forms.IntegerField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -340,6 +360,7 @@ class UserBehaviorView(View):
         template = loader.get_template("user/user_behavior.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserBehaviorList(View):
     @require_cookie
@@ -385,6 +406,8 @@ class UserBehaviorList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_behavior', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserCommentView(View):
     @fetch_record(UserComment.objects, 'mod', 'id')
     @require_cookie
@@ -398,7 +421,7 @@ class UserCommentView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'content': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),
+        'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -410,6 +433,7 @@ class UserCommentView(View):
         template = loader.get_template("user/user_comment.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserCommentList(View):
     @require_cookie
@@ -455,6 +479,8 @@ class UserCommentList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_comment', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserExperienceView(View):
     @fetch_record(UserExperience.objects, 'mod', 'id')
     @require_cookie
@@ -468,7 +494,11 @@ class UserExperienceView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'type': forms.CharField(max_length=20,),'unit': forms.CharField(max_length=20,required=False,),'profession': forms.CharField(max_length=20,required=False,),'degree': forms.CharField(max_length=20,required=False,),'description': forms.CharField(max_length=100,required=False,),'time_in': forms.DateField(required=False,),'time_out': forms.DateField(required=False,),'time_created': forms.DateTimeField(required=False,),
+        'type': forms.CharField(max_length=20, ), 'unit': forms.CharField(max_length=20, required=False, ),
+        'profession': forms.CharField(max_length=20, required=False, ),
+        'degree': forms.CharField(max_length=20, required=False, ),
+        'description': forms.CharField(max_length=100, required=False, ), 'time_in': forms.DateField(required=False, ),
+        'time_out': forms.DateField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -480,6 +510,7 @@ class UserExperienceView(View):
         template = loader.get_template("user/user_experience.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserExperienceList(View):
     @require_cookie
@@ -525,6 +556,8 @@ class UserExperienceList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_experience', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserFeatureView(View):
     @fetch_record(UserFeature.objects, 'mod', 'id')
     @require_cookie
@@ -538,7 +571,7 @@ class UserFeatureView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'data': forms.CharField(required=False,),
+        'data': forms.CharField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -550,6 +583,7 @@ class UserFeatureView(View):
         template = loader.get_template("user/user_feature.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserFeatureList(View):
     @require_cookie
@@ -595,6 +629,8 @@ class UserFeatureList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_feature', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserFeedbackView(View):
     @fetch_record(UserFeedback.objects, 'mod', 'id')
     @require_cookie
@@ -608,7 +644,7 @@ class UserFeedbackView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'content': forms.CharField(required=False,),'time_created': forms.DateTimeField(required=False,),
+        'content': forms.CharField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -620,6 +656,7 @@ class UserFeedbackView(View):
         template = loader.get_template("user/user_feedback.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserFeedbackList(View):
     @require_cookie
@@ -665,6 +702,8 @@ class UserFeedbackList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_feedback', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserFollowerView(View):
     @fetch_record(UserFollower.objects, 'mod', 'id')
     @require_cookie
@@ -678,7 +717,7 @@ class UserFollowerView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'time_created': forms.DateTimeField(required=False,),
+        'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -690,6 +729,7 @@ class UserFollowerView(View):
         template = loader.get_template("user/user_follower.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserFollowerList(View):
     @require_cookie
@@ -735,6 +775,8 @@ class UserFollowerList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_follower', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserFriendView(View):
     @fetch_record(UserFriend.objects, 'mod', 'id')
     @require_cookie
@@ -748,7 +790,7 @@ class UserFriendView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'time_created': forms.DateTimeField(required=False,),
+        'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -760,6 +802,7 @@ class UserFriendView(View):
         template = loader.get_template("user/user_friend.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserFriendList(View):
     @require_cookie
@@ -805,6 +848,8 @@ class UserFriendList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_friend', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserFriendRequestView(View):
     @fetch_record(UserFriendRequest.objects, 'mod', 'id')
     @require_cookie
@@ -818,7 +863,7 @@ class UserFriendRequestView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'description': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),
+        'description': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -831,6 +876,7 @@ class UserFriendRequestView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class UserFriendRequestList(View):
     @require_cookie
     @require_role('yz')
@@ -841,7 +887,8 @@ class UserFriendRequestList(View):
         if kwargs["id"] is not None:
             list = UserFriendRequest.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_friend_request_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_friend_request', 'user': request.user})
+            context = Context(
+                {'page': page, 'list': list, 'redir': 'admin:user:user_friend_request', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -875,6 +922,8 @@ class UserFriendRequestList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_friend_request', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserLikerView(View):
     @fetch_record(UserLiker.objects, 'mod', 'id')
     @require_cookie
@@ -888,7 +937,7 @@ class UserLikerView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'time_created': forms.DateTimeField(required=False,),
+        'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -900,6 +949,7 @@ class UserLikerView(View):
         template = loader.get_template("user/user_liker.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserLikerList(View):
     @require_cookie
@@ -945,6 +995,8 @@ class UserLikerList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_liker', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserScoreView(View):
     @fetch_record(UserScore.objects, 'mod', 'id')
     @require_cookie
@@ -958,7 +1010,8 @@ class UserScoreView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'score': forms.IntegerField(required=False,),'description': forms.CharField(max_length=100,required=False,),'type': forms.CharField(max_length=10,required=False,),'time_created': forms.DateTimeField(required=False,),
+        'score': forms.IntegerField(required=False, ), 'description': forms.CharField(max_length=100, required=False, ),
+        'type': forms.CharField(max_length=10, required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -971,6 +1024,7 @@ class UserScoreView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class UserScoreList(View):
     @require_cookie
     @require_role('yz')
@@ -981,7 +1035,8 @@ class UserScoreList(View):
         if kwargs["id"] is not None:
             list = UserScore.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_score_record_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_score_record', 'user': request.user})
+            context = Context(
+                {'page': page, 'list': list, 'redir': 'admin:user:user_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -1015,6 +1070,8 @@ class UserScoreList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_score_record', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserTagView(View):
     @fetch_record(UserTag.objects, 'mod', 'id')
     @require_cookie
@@ -1028,7 +1085,7 @@ class UserTagView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'name': forms.CharField(max_length=20,),'order': forms.IntegerField(required=False,),
+        'name': forms.CharField(max_length=20, ), 'order': forms.IntegerField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -1040,6 +1097,7 @@ class UserTagView(View):
         template = loader.get_template("user/user_tag.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserTagList(View):
     @require_cookie
@@ -1085,6 +1143,8 @@ class UserTagList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_tag', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserValidationCodeView(View):
     @fetch_record(UserValidationCode.objects, 'mod', 'id')
     @require_cookie
@@ -1098,7 +1158,8 @@ class UserValidationCodeView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'phone_number': forms.CharField(max_length=11,),'code': forms.CharField(max_length=6,),'time_expired': forms.DateTimeField(required=False,),
+        'phone_number': forms.CharField(max_length=11, ), 'code': forms.CharField(max_length=6, ),
+        'time_expired': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -1111,6 +1172,7 @@ class UserValidationCodeView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class UserValidationCodeList(View):
     @require_cookie
     @require_role('yz')
@@ -1121,7 +1183,8 @@ class UserValidationCodeList(View):
         if kwargs["id"] is not None:
             list = UserValidationCode.objects.filter(user_id=kwargs["id"])
             template = loader.get_template("user/user_validation_code_list.html")
-            context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_validation_code', 'user': request.user})
+            context = Context(
+                {'page': page, 'list': list, 'redir': 'admin:user:user_validation_code', 'user': request.user})
             return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
@@ -1155,6 +1218,8 @@ class UserValidationCodeList(View):
             template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_validation_code', 'user': request.user})
             return HttpResponse(template.render(context))
+
+
 class UserVisitorView(View):
     @fetch_record(UserVisitor.objects, 'mod', 'id')
     @require_cookie
@@ -1168,7 +1233,7 @@ class UserVisitorView(View):
     @require_cookie
     @require_role('yz')
     @validate_args2({
-        'time_updated': forms.DateTimeField(required=False,),
+        'time_updated': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -1180,6 +1245,7 @@ class UserVisitorView(View):
         template = loader.get_template("user/user_visitor.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
+
 
 class UserVisitorList(View):
     @require_cookie

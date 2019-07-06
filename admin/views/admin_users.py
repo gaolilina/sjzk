@@ -9,6 +9,7 @@ from main.models import UserValidationCode
 
 from admin.utils.decorators import require_cookie
 
+
 class AdminUsersInfo(View):
     @require_cookie
     def get(self, request):
@@ -34,6 +35,7 @@ class AdminUsersInfo(View):
         context = Context({'u': user, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class AdminUsersIcon(View):
     @require_cookie
     def post(self, request):
@@ -52,6 +54,7 @@ class AdminUsersIcon(View):
             context = Context({'u': request.user, 'msg': '上传成功', 'user': request.user})
             return HttpResponse(template.render(context))
         HttpResponseForbidden()
+
 
 class AdminUsersIndentify(View):
     @require_cookie

@@ -98,9 +98,9 @@ class UserActionsList(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'is_expert': forms.IntegerField(required=False),
+        'is_expert': forms.BooleanField(required=False),
     })
-    def get(self, request, entity=None, offset=0, limit=10, is_expert=0):
+    def get(self, request, entity=None, offset=0, limit=10, is_expert=False):
         """获取用户的动态列表
 
         :param offset: 偏移量
@@ -128,7 +128,7 @@ class UserActionsList(View):
 
         # 获取主语是用户的动态
         obj = UserAction.objects
-        if is_expert == 1:
+        if is_expert:
             obj = obj.filter(entity__role__contains='专家')
         else:
             obj = obj.exclude(entity__role__contains='专家')

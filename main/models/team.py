@@ -20,7 +20,9 @@ class Team(models.Model):
     icon = models.CharField(max_length=100, default='')
     description = models.CharField(max_length=100, default='')
     url = models.CharField(max_length=100)
+    # 领域
     field1 = models.CharField(max_length=10, db_index=True, default='')
+    # field2 字段弃用
     field2 = models.CharField(max_length=10, db_index=True, default='')
     province = models.CharField(max_length=20, default='')
     city = models.CharField(max_length=20, default='')

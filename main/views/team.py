@@ -41,7 +41,7 @@ class List(View):
         'province': forms.CharField(required=False, max_length=20),
         'field': forms.CharField(required=False, max_length=20)
     })
-    def get(self, request, offset=0, limit=10, order=1, province='', field=''):
+    def get(self, request, offset=0, limit=10, order=1, province=None, field=None):
         """获取团队列表
 
         :param offset: 偏移量
@@ -66,10 +66,11 @@ class List(View):
                 time_created: 注册时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        condition = {
-            'province': province,
-            'field1': field
-        }
+        condition = {}
+        if province is not None:
+            condition['province'] = province
+        if field is not None:
+            condition['field1'] = field
         c = Team.enabled.filter(**condition).count()
         teams = Team.enabled.filter(**condition).order_by(k)[i:j]
         l = [{'id': t.id,
@@ -79,7 +80,7 @@ class List(View):
               'liker_count': t.likers.count(),
               'visitor_count': t.visitors.count(),
               'member_count': t.members.count(),
-              'fields': [t.field1, t.field2],
+              'fields': [t.field1],
               'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in teams]
         return JsonResponse({'count': c, 'list': l})

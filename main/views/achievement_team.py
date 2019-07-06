@@ -143,7 +143,7 @@ class TeamAchievementList(View):
                 score=get_score_stage(2), type="初始数据",
                 description="首次发布团队成果")
 
-        achievement = Achievement(team=team, description=description)
+        achievement = Achievement(team=team, description=description, user=request.user)
         picture = request.FILES.get('image')
         if picture:
             filename = save_uploaded_image(picture)

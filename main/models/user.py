@@ -37,6 +37,7 @@ class User(models.Model):
     province = models.CharField(max_length=20, default='', null=True)
     city = models.CharField(max_length=20, default='', null=True)
     county = models.CharField(max_length=20, default='', null=True)
+    # 领域
     adept_field = models.CharField(default='', max_length=20)
     adept_skill = models.CharField(default='', max_length=20)
     expect_role = models.CharField(max_length=20, default='')
