@@ -57,11 +57,16 @@ class List(View):
             condition['province'] = province
         if field is not None:
             condition['adept_field'] = field
+        condition_expert = {
+            'is_role_verified': 2,
+            'role': '专家'
+        }
         if is_expert:
-            condition['is_role_verified'] = 2
-            condition['role'] = '专家'
-        c = User.enabled.filter(**condition).count()
-        users = User.enabled.filter(**condition).order_by(self.ORDERS[order])[offset:offset + limit]
+            qs = User.enabled.filter(**condition).filter(**condition_expert)
+        else:
+            qs = User.enabled.filter(**condition).exclude(**condition_expert)
+        c = qs.count()
+        users = qs.order_by(self.ORDERS[order])[offset:offset + limit]
         l = [{'id': u.id,
               'time_created': u.time_created,
               'role': u.role,
