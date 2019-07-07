@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="{% url 'admin:admin_activity:add' %}" method="post">
+<table>
+    <tr>
+        <td>标题：</td>
+        <td><input name="name" type="text" value="" maxlength="50" required/></td>
+    </tr>
+    <tr>
+        <td>标签：</td>
+        <td><input name="tags" type="text" value="" maxlength="50" required/></td>
+
+        <td>类型：</td>
+        <td>
+            <select name="type">
+                <option value="" selected="selected">--请选择--</option>
+                <option value="0">会议</option>
+                <option value="1">讲座</option>
+                <option value="2">培训</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>详细内容：</td>
+        <td colspan="3"><textarea name="content" maxlength="1000" required></textarea></td>
+    </tr>
+    <tr>
+        <td>参与者类型：</td>
+        <td>
+            <select name="user_type">
+                <option value="0" selected="selected">不限</option>
+                <option value="1">学生</option>
+                <option value="2">教师</option>
+                <option value="3">社会人员</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>开始时间：</td>
+        <td><input name="time_started" type="text" data-field="datetime" readonly value="" required/></td>
+    
+        <td>结束时间：</td>
+        <td><input name="time_ended" type="text" data-field="datetime" readonly value="" required/></td>
+    </tr>
+    <tr>
+        <td>人数上限：</td>
+        <td><input name="allow_user" type="number" value="0" required/> (0为不限)</td>
+    
+        <td>省：</td>
+        <td><input name="province" type="text" value=""/></td>
+    </tr>
+    <tr>
+        <td>市：</td>
+        <td><input name="city" type="text" value=""/></td>
+    
+        <td>机构：</td>
+        <td><input name="unit" type="text" value=""/></td>
+    </tr>
+    
+    <tr>
+        <td>当前活动阶段：</td>
+        <td>
+            <input name="stages" type="hidden" value="" required/>
+            <input name="status" type="hidden" value="" required/>
+            <select id="status"></select>
+            <input id="add_stage" type="button" value="新增" style="margin-top: 0px;" />
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            {{ msg }}
+            <div class="buttons">
+                <input type="submit" value="保存" />
+                <input type="reset" value="取消" />
+            </div>
+        </td>
+    </tr>
+    <script>var stage_count = 0;</script>
+</table>
+
+</form>
+{% endblock %}
+
+{% block css %}
+{% include 'parts/input_style.html' %}
+<style type="text/css">
+    
+</style>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/activity.js' %}"></script>
+{% endblock %}
