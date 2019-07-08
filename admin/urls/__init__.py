@@ -1,7 +1,7 @@
 from django.conf.urls import url, include
 
 from admin.urls import security, paper
-from admin.urls.activity import admin as activity_admin, client
+from admin.urls.activity import client
 from . import admin_users, admin_competition, feedback, user, team, activity, competition, forum, admin_user
 
 from admin.views.main import Login, Register, Main
@@ -13,9 +13,6 @@ urlpatterns = [
     url(r'^login', Login.as_view(), name='login'),
     url(r'^register', Register.as_view(), name='register'),
     url(r'^admin_users/', include(admin_users.urls, namespace="admin_users")),
-    url(r'^admin_activity/', include(client.urls, namespace="admin_activity")),
-    url(r'^activity_admin/', include(activity.urls, namespace="activity")),
-    url(r'^activity/', include(activity_admin.urls, namespace="activity_admin")),
     url(r'^admin_competition/', include(admin_competition.urls, namespace="admin_competition")),
     url(r'^feedback/', include(feedback.urls, namespace="feedback")),
     url(r'^user_admin/', include(user.urls, namespace="user")),
@@ -28,4 +25,8 @@ urlpatterns = [
     url(r'^op_log/', OpLog.as_view(), name='op_log'),
     url(r'^paper/', include(paper.urls, namespace='paper')),
     url(r'^security_log/', include(security.urls, namespace='security_log')),
+
+    # 活动，以后仅在 activity 这个 url，另外两个不在维护
+    url(r'^admin_activity/', include(client.urls, namespace="admin_activity")),
+    url(r'^activity/', include(activity.urls, namespace="activity")),
 ]
