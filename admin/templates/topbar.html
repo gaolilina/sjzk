@@ -4,9 +4,9 @@
         {% if user.can_a %}
             <li{% if tb == 'admin_competition' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:list' %}">竞赛</a></li>
         {% endif %}
-        {% if user.can_b %}
+        <!--{% if user.can_b %}
             <li{% if tb == 'admin_activity' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">活动</a></li>
-        {% endif %}
+        {% endif %}-->
         {% if user.can_x %}
             <li{% if tb == 'feedback' %} class="active"{% endif %}><a href="{% url 'admin:feedback:feedback' %}">反馈举报</a></li>
         {% endif %}

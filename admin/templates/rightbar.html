@@ -37,7 +37,7 @@
         <ul>
             <li{% if rb == 'view' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">查看</a></li>
             {% if user.can_x %}
-            <li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:add' %}">新增</a></li>
+            <!--li{% if rb == 'add' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:add' %}">新增</a></li-->
             {% endif %}
             <!-- <li{% if rb == 'collect' %} class="active"{% endif %}><a href="{% url 'admin:admin_activity:list' %}">活动征集</a></li> -->
         </ul>

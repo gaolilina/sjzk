@@ -24,6 +24,17 @@
       </a>
     </td>
   </tr>
+{% elif name == 'activity_state' %}
+  <tr>
+    <td>{{ text }}：</td>
+    <td>
+      <select name="{{ name }}">
+        <option value="0" {% ifequal mod.is_verified 0 %}selected="selected"{% endifequal %}>审核中</option>
+        <option value="100" {% ifequal mod.is_verified 100 %}selected="selected"{% endifequal %}>审核通过</option>
+        <option value="10" {% ifequal mod.is_verified 10 %}selected="selected"{% endifequal %}>审核未通过</option>
+      </select>
+    </td>
+  </tr>
 {% elif name == 'is_verified' %}
   <tr>
     <td>{{ text }}：</td>
@@ -52,7 +63,7 @@
 {% elif name == 'province' or name == 'county' or name == 'city' %}
   <tr>
     <td>{{ text }}：</td>
-    <td><select name="{{ name }}"></select></td>
+    <td><input type="text" name="{{ name }}" value="{{value}}"/></td>
   </tr>
 {% elif type == 'checkbox' %}
 <tr>
