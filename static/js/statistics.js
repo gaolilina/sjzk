@@ -5,23 +5,71 @@ function show_statistics(paper_id,paper_name,paper_desc){
     p{font-size:1.05em;width:100%;padding:8px 10px;border-bottom:0.8px solid #C1C1C1;margin-bottom:5px;}\
     #questions p{padding-left:40px;}\
     .inline-block{display:inline-block;}\
+    .title-bar{padding:8px 20px;margin-bottom:20px;font-size:14px;background-color:#E1FAFE;}\
+    .c-blue{color:blue;}\
+    .font-bold{font-weight:bold;}\
+    .result{display:inline-block;margin:0 5px;}\
     </style>\
     <div id="statistics">\
     <p>问卷名称：'+paper_name+'</p>\
     <p>问卷描述：'+paper_desc+'</p>\
     <p id="question_count"></p>\
     <div id="questions"></div><br/>\
+    <div class="title-bar">统计图表</div>\
     <div id="div-echarts"></div>\
     </div>\
+    <div class="title-bar">统计表格</div>\
+    <table style="width:1200px;margin:0 auto;">\
+    <thead><tr>\
+            <th class="min-width-50">序号</th>\
+            <th class="min-width-150">问题名称</th>\
+            <th class="min-width-80">问题类型</th>\
+            <th class="min-width-150">选项</th>\
+            <th class="min-width-80">统计</th>\
+    </tr></thead>\
+    <tbody id="statistics_body">\
+        <tr>\
+            <td rowspan="3">123</td>\
+            <td rowspan="3">123</td>\
+            <td>123</td>\
+            <td>123</td>\
+            <td>123</td>\
+        </tr>\
+        <tr>\
+            <td>123</td>\
+            <td>123</td>\
+            <td>123</td>\
+        </tr>\
+        <tr>\
+            <td>123</td>\
+            <td>123</td>\
+            <td>123</td>\
+        </tr>\
+    </tbody>\
+    </table><br/>\
+    <div class="title-bar">统计搜索</div>\
+    <div style="width:1200px;margin:0 auto;">\
+    选择问题：<select id="question_select"></select>&nbsp;&nbsp;&nbsp;\
+    输入关键字：<input type="text" id="keyword"/>&nbsp;&nbsp;&nbsp;\
+    <button class="btn" onclick="question_search()" style="margin-top:0;">搜索</button>\
+    <br/><br/>\
+    <div id="search_result">搜索结果</div>\
+    </div>\
+    \
+    <br/><br/><br/><br/>\
     ';
     $('#main').html(inner_html);
+    var type_list = ['问答题','单选题','多选题'];
     $.get(base_url+'admin/paper/'+paper_id+'/analysis/',{},function(data){
         // console.log(data);
         result = data.result;
+        result[0].analysis.origin = ['张三','李四','王五','赵四','陈三','张三','李四','张三'];
         $('#question_count').html('问题：'+result.length);
         var echarts_data = [];
         var question_html = '';//问题详情
         var echarts_html = '';//echarts内容
+        var statistics_html = '';//统计表格
+        var question_select_html = '';//统计搜搜
         for(let ques_index in result){
             let question = result[ques_index];
             let options_html = '';
@@ -56,7 +104,16 @@ function show_statistics(paper_id,paper_name,paper_desc){
                     'l_data':l_data,
                     's_data':s_data_bar,
                 });
+                statistics_html += '<tr><td rowspan="'+s_data.length+'">'+ques_index+'</td>\
+                <td rowspan="'+s_data.length+'">'+question.title+'</td>\
+                <td rowspan="'+s_data.length+'">'+type_list[question.type]+'</td>';
+                for(let sd in s_data){
+                    let tr = '<tr>';
+                    if(sd == 0) tr = '';
+                    statistics_html += tr+'<td>'+s_data[sd].name+'</td><td>'+s_data[sd].value+'</td></tr>';
+                }
             } else{
+                question_select_html += '<option value="'+ques_index+'">'+question.title+'</option>';
                 //统计数据
                 let origins = question.analysis.origin;
                 let s_data = [];
@@ -74,24 +131,17 @@ function show_statistics(paper_id,paper_name,paper_desc){
                     l_data_bar.push(og);
                     s_data_bar.push(origin_counts[og]);
                 }
-                echarts_html += '<div id="div-echarts'+ques_index+'" style="width:560px;height:350px;margin-right:20px;margin-bottom:20px;" class="inline-block"></div>';
-                echarts_html += '<div id="div2-echarts'+ques_index+'" style="width:560px;height:350px;margin-right:20px;margin-bottom:20px;" class="inline-block"></div>';
-                echarts_data.push({
-                    'type':'pie',
-                    'id':'div-echarts'+ques_index,
-                    'name':question.title,
-                    'l_data':origins,
-                    's_data':s_data,
-                });
-                echarts_data.push({
-                    'type':'bar',
-                    'id':'div2-echarts'+ques_index,
-                    'name':question.title,
-                    'l_data':l_data_bar,
-                    's_data':s_data,
-                });
+                statistics_html += '<tr><td rowspan="'+s_data.length+'">'+ques_index+'</td>\
+                <td rowspan="'+s_data.length+'">'+question.title+'</td>\
+                <td rowspan="'+s_data.length+'">'+type_list[question.type]+'</td>';
+                for(let sd in s_data){
+                    let tr = '<tr>';
+                    if(sd == 0) tr = '';
+                    statistics_html += tr+'<td>'+s_data[sd].name+'</td><td>'+s_data[sd].value+'</td></tr>'; 
+                }
             }
             question_html += '<p>'+question.title+'：'+options_html+'</p>';
+            
         }
         $('#div-echarts').html(echarts_html);
         $('#questions').html(question_html);
@@ -103,6 +153,8 @@ function show_statistics(paper_id,paper_name,paper_desc){
                 init_echarts(echart.id,echart.name,echart.type,'','',echart.l_data,echart.s_data);
             }
         }
+        $('#statistics_body').html(statistics_html);
+        $('#question_select').html(question_select_html);
     });
 }
 /*id,name,type,x,s*/
@@ -198,4 +250,16 @@ function pie_echarts(div_echarts,e_name,l_data,s_name,s_data){
     };
     var myChart = echarts.init(document.getElementById(div_echarts));
     myChart.setOption(option);
+}
+
+function question_search(){
+    var keyword = $('#keyword').val();
+    if(keyword=="") {
+        $('#search_result').html('请输入关键字');
+        return;
+    }
+    var count = Math.round((Math.random()*100).toFixed(2));
+    var pecent = (count/150*100).toFixed(2);
+    $('#search_result').html('包含关键字<div class="c-blue font-bold result">'+keyword+'</div>的回答共有\
+        <div class="c-blue font-bold result">'+count+'</div>个，占比<div class="c-blue font-bold result">'+pecent+'%</div>');
 }
