@@ -13,12 +13,12 @@ from main.models.activity import *
 
 
 class ActivityView(View):
-    @fetch_record(Activity.objects, 'mod', 'id')
     @require_cookie
     @require_role('yz')
+    @fetch_record(Activity.objects, 'mod', 'id')
     def get(self, request, mod):
         template = loader.get_template("activity/activity.html")
-        context = Context({'mod': mod, 'user': request.user})
+        context = Context({'model': mod, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=mod)})
         return HttpResponse(template.render(context))
 
     @require_cookie
