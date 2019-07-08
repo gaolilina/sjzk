@@ -125,6 +125,7 @@ var stage_count = 0;
 </form>
 <div id="dtBox"></div>
     <script>
+        const token = getRequest()["token"];
         $(document).ready(function() {
             setDateTimePicker();
             $('.dir_warn').click(function(e) {
@@ -167,13 +168,17 @@ var stage_count = 0;
                     return false;
                 }
             }
-            $.post(base_url+'web/activity/',$('form').serialize())
-            .then(function(){
-                alert('添加成功');
-                window.location.reload();
-            })
-            .fail(function(){
-                alert('添加失败')
+            $.ajax({
+                type: 'POST',
+                url: base_url+"web/activity/",
+                data:$('form').serialize(),
+                dataType: 'json',
+                headers: {'X-USER-TOKEN': token},
+                error:function(data) {alert("提交失败!");},
+                success: function(data){
+                    alert("提交成功！");
+                    window.location.reload();
+                }
             });
             return false;
         });
