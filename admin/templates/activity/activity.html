@@ -1,33 +1,164 @@
-
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="{% url 'admin:activity:activity' mod.id %}" method="post">
+<form role="form" action="{% url 'admin:activity:activity' model.id %}" method="post">
 <table>
-    {% include "parts/input_control.html" with text="名字" name="name" type="text" maxlen="50" value=mod.name %}
-    {% include "parts/input_control.html" with text="标签" name="tags" type="text" maxlen="50" value=mod.tags %}
-    {% include "parts/input_control.html" with text="状态" name="status" type="number" maxlen="{{maxlen}}" value=mod.status %}
-    {% include "parts/input_control.html" with text="内容" name="content" type="text" maxlen="1000" value=mod.content %}
-    {% include "parts/input_control.html" with text="截止日期" name="deadline" type="datetime" maxlen="{{maxlen}}" value=mod.deadline %}
-    {% include "parts/input_control.html" with text="开始时间" name="time_started" type="datetime" maxlen="{{maxlen}}" value=mod.time_started %}
-    {% include "parts/input_control.html" with text="结束时间" name="time_ended" type="datetime" maxlen="{{maxlen}}" value=mod.time_ended %}
-    {% include "parts/input_control.html" with text="创建时间" name="time_created" type="datetime" maxlen="{{maxlen}}" value=mod.time_created %}
-    {% include "parts/input_control.html" with text="允许创友" name="allow_user" type="number" maxlen="{{maxlen}}" value=mod.allow_user %}
-    {% include "parts/input_control.html" with text="省" name="province" type="text" maxlen="20" value=mod.province %}
-    {% include "parts/input_control.html" with text="市" name="city" type="text" maxlen="20" value=mod.city %}
-    {% include "parts/input_control.html" with text="机构" name="unit" type="text" maxlen="20" value=mod.unit %}
-    {% include "parts/input_control.html" with text="用户类型" name="user_type" type="number" maxlen="{{maxlen}}" value=mod.user_type %}
-    {% include "parts/input_control.html" with text="是否启用" name="is_enabled" type="checkbox" maxlen="{{maxlen}}" value=mod.is_enabled %}
     <tr>
-        <td>{{ msg }}</td>
+        <td>标题：</td>
+        <td><input name="name" type="text" value="{{ model.name }}" maxlength="50" required/></td>
+        <td>状态：</td>
         <td>
+            {% if model.state == 0 %} 审核中 {% endif %} 
+            {% if model.state == 100 %} 审核通过 {% endif %} 
+            {% if model.state == 10 %} 审核未通过 {% endif %} 
+        </td>
+    </tr>
+    <tr>
+        <td>领域：</td>
+        <td><input name="tags" type="text" value="{{ model.tags }}" maxlength="50" required/></td>
+
+        <td>类型：</td>
+        <td>
+            <select name="type" >
+                <option value="" selected="selected">--请选择--</option>
+                <option value="0"{% if model.type == 0 %} selected="selected"{% endif %}>会议</option>
+                <option value="1"{% if model.type == 1 %} selected="selected"{% endif %}>讲座</option>
+                <option value="2"{% if model.type == 2 %} selected="selected"{% endif %}>培训</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>详细内容：</td>
+        <td colspan="3"><textarea name="content" maxlength="1000" required>{{ model.content }}</textarea></td>
+    </tr>
+    <tr>
+        <!--
+        <td>截至日期：</td>
+        <td><input name="deadline" type="text" data-field="datetime" readonly value="{{ model.deadline }}" required/></td>
+        -->
+        <td>参与者类型：</td>
+        <td>
+            <select name="user_type">
+                <option value="0"{% if model.user_type == 0 %} selected="selected"{% endif %}>不限</option>
+                <option value="1"{% if model.user_type == 1 %} selected="selected"{% endif %}>学生</option>
+                <option value="2"{% if model.user_type == 2 %} selected="selected"{% endif %}>教师</option>
+                <option value="3"{% if model.user_type == 3 %} selected="selected"{% endif %}>社会人员</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>开始时间：</td>
+        <td><input name="time_started" type="text" data-field="datetime" readonly value="{{ model.time_started }}" required/></td>
+    
+        <td>结束时间：</td>
+        <td><input name="time_ended" type="text" data-field="datetime" readonly value="{{ model.time_ended }}" required/></td>
+    </tr>
+    <tr>
+        <td>人数上限：</td>
+        <td><input name="allow_user" type="number" value="{{ model.allow_user }}" required/> (0为不限)</td>
+    
+        <td>省：</td>
+        <td><input name="province" type="text" value="{{ model.province }}"/></td>
+    </tr>
+    <tr>
+        <td>市：</td>
+        <td><input name="city" type="text" value="{{ model.city }}"/></td>
+    
+        <td>机构：</td>
+        <td><input name="unit" type="text" value="{{ model.unit }}"/></td>
+    </tr>
+    
+    <tr>
+        <td>当前活动阶段：</td>
+        <td>
+            <input name="stages" type="hidden" value=""/>
+            <input name="status" type="hidden" value="{{ model.status }}" required/>
+            <select id="status">
+                {% for stage in stages %}
+                    <option value="{{ stage.status }}"{% if stage.status == model.status %} selected="selected"{% endif %}>
+                        {% if stage.status == 0 %}前期宣传{% endif %}
+                        {% if stage.status == 1 %}报名{% endif %}
+                        {% if stage.status == 2 %}结束{% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+            <input id="add_stage" type="button" value="新增" style="margin-top: 0px;" />
+        </td>
+    </tr>
+    {% for stage in stages %}
+        <tr class="stage">
+            <td>活动阶段{{forloop.counter}}</td>
+            <td>
+                类　　型：<select onchange="javascript:stage_gen()">
+                    <option value="0"{% if stage.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
+                    <option value="1"{% if stage.status == 1 %} selected="selected"{% endif %}>报名</option>
+                    <option value="2"{% if stage.status == 2 %} selected="selected"{% endif %}>结束</option>
+                </select><input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /><br/>
+                开始时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_started }}" /><br/>
+                结束时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_ended }}" />
+            </td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td>活动成果发布：</td>
+        <td colspan="3"><textarea name="achievement" maxlength="1000">{{ model.achievement }}</textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            {{ msg }}
             <div class="buttons">
                 <input type="submit" value="保存" />
                 <input type="reset" value="取消" />
+                {% if model.state == 0 %}
+                <input type="button" class="btn4 ml-10" value="审核" onclick="verify_choose({{model.id}})">
+                {% endif %}
             </div>
         </td>
     </tr>
 </table>
+<script>
+console.log("{{model.stages}}");
+var stage_count = {{ stages|length }};
+function verify_choose(id){
+    $.confirm({
+        title: null,
+        content: '确认？',
+        type: 'blue',
+        icon: 'glyphicon glyphicon-question-sign',
+        backgroundDismiss:true,
+        columnClass:'width-300',
+        buttons: {
+            ok: {
+                text: '通过',
+                btnClass: 'btn-primary',
+                action: function() {
+                    verify(id,true);
+                }
+            },
+            cancel: {
+                text: '不通过',
+                btnClass: 'btn-default',
+                action: function() {
+                    verify(id,false);
+                }
+            }
+        }
+    });
+}
+
+function verify(id,result){
+    $.post(base_url+'admin/activity/{{model.id}}/check/',{"result":result})
+    .then(function() {
+        alert("审核成功");
+        window.location.reload();
+    })
+    .fail(function() {
+        alert("审核失败");
+    });
+}
+
+</script>
+
 </form>
 {% endblock %}
 
@@ -37,7 +168,8 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
-<style>
-    
-</style>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/activity.js' %}"></script>
 {% endblock %}
