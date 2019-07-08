@@ -89,7 +89,7 @@ class List(View):
         if province is not None:
             condition['province'] = province
         if field is not None:
-            condition['field'] = field
+            condition['tags'] = field
         c = Activity.enabled.filter(**condition).count()
         qs = Activity.enabled.filter(**condition).order_by(k)[offset: offset + limit]
         l = [{'id': a.id,

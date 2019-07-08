@@ -4,14 +4,13 @@ from django import forms
 from django.http import HttpResponseForbidden, JsonResponse
 from django.views.generic import View
 
-from main.models import User
 from main.models.activity import *
 from main.utils.decorators import validate_args, require_role_token
 
 
 class AdminActivityAdd(View):
 
-    # @require_role_token
+    @require_role_token
     @validate_args({
         'name': forms.CharField(max_length=50),
         'tags': forms.CharField(max_length=50),
@@ -28,7 +27,7 @@ class AdminActivityAdd(View):
         'stages': forms.CharField(),
     })
     def post(self, request, **kwargs):
-        user = User.objects.first()
+        user = request.user
         if kwargs['type'] not in Activity.TYPES:
             return HttpResponseForbidden()
 
