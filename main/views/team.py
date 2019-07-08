@@ -654,8 +654,9 @@ class AllNeedList(View):
         'status': forms.IntegerField(required=False, min_value=0, max_value=2),
         'type': forms.IntegerField(required=False, min_value=0, max_value=2),
         'province': forms.CharField(required=False, max_length=100),
+        'field': forms.CharField(required=False, max_length=100),
     })
-    def get(self, request, type=None, status=None, province=None, offset=0, limit=10):
+    def get(self, request, type=None, status=None, province=None, field=None, offset=0, limit=10):
         """
         获取发布中的需求列表
 
@@ -686,6 +687,8 @@ class AllNeedList(View):
             qs = qs.filter(status=0)
         if province is not None:
             qs = qs.filter(province=province)
+        if field is not None:
+            qs = qs.filter(field=field)
         c = qs.count()
         needs = qs[offset:offset + limit]
         l = list()
@@ -710,6 +713,8 @@ class AllNeedList(View):
             need_dic['degree'] = n.degree
             need_dic['members'] = members
             need_dic['time_created'] = n.time_created
+            need_dic['field'] = n.field
+            need_dic['province'] = n.province
             l.append(need_dic)
         return JsonResponse({'count': c, 'list': l})
 

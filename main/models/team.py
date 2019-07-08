@@ -166,6 +166,7 @@ class TeamNeed(models.Model):
     # 0: pending, 1: completed, 2: removed
     status = models.IntegerField(default=0, db_index=True)
     number = models.IntegerField(default=None, null=True)
+    # 领域
     field = models.CharField(default='', max_length=20)
     skill = models.CharField(default='', max_length=20)
     deadline = models.DateField(default=None, null=True, db_index=True)
