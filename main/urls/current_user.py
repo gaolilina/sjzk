@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.action import UserActionsList, TeamActionsList, LabActionsList
 from main.views.auth import IdentityVerificationView
 from main.views.friend import FriendAction, FriendRequestList, FriendRequestAction, FriendList
 from ..views.current_user import *

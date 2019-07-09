@@ -1,15 +1,13 @@
 from django.db import models
 from django.utils import timezone
 
-from . import EnabledManager, Action, Comment, Follower, Liker, Tag, \
-    Visitor, Favorer
+from . import EnabledManager, Comment, Follower, Liker, Tag, \
+    Visitor
 
-__all__ = ['Team', 'TeamAction', 'TeamActionLiker', 'TeamActionComment',
-           'TeamComment', 'TeamFollower', 'TeamInvitation',
+__all__ = ['Team', 'TeamComment', 'TeamFollower', 'TeamInvitation',
            'TeamLiker', 'TeamMember', 'TeamMemberRequest', 'TeamNeed',
            'TeamTag', 'TeamVisitor', 'InternalTask', 'ExternalTask',
-           'TeamFeature', 'TeamScore', 'TeamNeedFollower', 'TeamActionFavorer',
-           'TeamTagLiker']
+           'TeamFeature', 'TeamScore', 'TeamNeedFollower', 'TeamTagLiker']
 
 
 class Team(models.Model):
@@ -50,35 +48,6 @@ class Team(models.Model):
     class Meta:
         db_table = 'team'
         ordering = ['-time_created']
-
-
-class TeamAction(Action):
-    """团队动态"""
-
-    entity = models.ForeignKey('Team', models.CASCADE, 'actions')
-
-    class Meta:
-        db_table = 'team_action'
-
-
-class TeamActionLiker(Liker):
-    """团队动态点赞记录"""
-
-    liked = models.ForeignKey('TeamAction', models.CASCADE, 'likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_team_actions')
-
-    class Meta:
-        db_table = 'team_action_liker'
-
-
-class TeamActionComment(Comment):
-    """团队动态评论记录"""
-
-    entity = models.ForeignKey('TeamAction', models.CASCADE, 'comments')
-
-    class Meta:
-        db_table = 'team_action_comment'
-        ordering = ['time_created']
 
 
 class TeamComment(Comment):
@@ -344,16 +313,6 @@ class TeamFeature(models.Model):
 
     class Meta:
         db_table = 'team_feature'
-
-
-class TeamActionFavorer(Favorer):
-    """团队动态收藏记录"""
-
-    favored = models.ForeignKey('TeamAction', models.CASCADE, 'favorers')
-    favorer = models.ForeignKey('User', models.CASCADE, 'favored_team_actions')
-
-    class Meta:
-        db_table = 'team_action_favorer'
 
 
 class TeamTagLiker(Liker):

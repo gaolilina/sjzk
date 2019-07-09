@@ -1,28 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-
-__all__ = ['Action', 'Comment', 'Follower', 'Liker', 'Tag', 'Visitor', 'Favorer']
-
-
-class Action(models.Model):
-    """动态"""
-
-    entity = None
-    action = models.CharField(max_length=20)
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-    # user, team, member_need, outsource_need, undertake_need
-    object_type = models.CharField(max_length=20)
-    object_id = models.IntegerField(db_index=True)
-    # user, team, member_need, outsource_need, undertake_need
-    related_object_type = models.CharField(
-        default=None, null=True, max_length=20)
-    related_object_id = models.IntegerField(
-        default=None, null=True, db_index=True)
-
-    class Meta:
-        abstract = True
-        ordering = ['-time_created']
+__all__ = ['Comment', 'Follower', 'Liker', 'Tag', 'Visitor', 'Favorer']
 
 
 class Comment(models.Model):
@@ -84,6 +63,7 @@ class Visitor(models.Model):
     class Meta:
         abstract = True
         ordering = ['-time_updated']
+
 
 class Favorer(models.Model):
     """收藏"""

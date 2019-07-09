@@ -1,16 +1,13 @@
 from django.db import models
 from django.utils import timezone
 
-from . import EnabledManager, Action, Comment, Follower, Liker, Tag, \
-    Visitor, Favorer
+from . import EnabledManager, Comment, Follower, Liker, Tag, \
+    Visitor
 
-
-__all__ = ['Lab', 'LabAction', 'LabActionLiker', 'LabActionComment',
-           'LabAchievement', 'LabComment', 'LabFollower', 'LabInvitation',
+__all__ = ['Lab', 'LabAchievement', 'LabComment', 'LabFollower', 'LabInvitation',
            'LabLiker', 'LabMember', 'LabMemberRequest', 'LabNeed',
-           'LabTag', 'LabVisitor', #'InternalTask', 'ExternalTask',
-           'LabFeature', 'LabScore', 'LabNeedFollower', 'LabActionFavorer',
-           'LabTagLiker', 'LabAchievementLiker']
+           'LabTag', 'LabVisitor',  # 'InternalTask', 'ExternalTask',
+           'LabFeature', 'LabScore', 'LabNeedFollower', 'LabTagLiker', 'LabAchievementLiker']
 
 
 class Lab(models.Model):
@@ -49,35 +46,6 @@ class Lab(models.Model):
         ordering = ['-time_created']
 
 
-class LabAction(Action):
-    """团队动态"""
-
-    entity = models.ForeignKey('Lab', models.CASCADE, 'actions')
-
-    class Meta:
-        db_table = 'lab_action'
-
-
-class LabActionLiker(Liker):
-    """团队动态点赞记录"""
-
-    liked = models.ForeignKey('LabAction', models.CASCADE, 'likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_lab_actions')
-
-    class Meta:
-        db_table = 'lab_action_liker'
-
-
-class LabActionComment(Comment):
-    """团队动态评论记录"""
-
-    entity = models.ForeignKey('LabAction', models.CASCADE, 'comments')
-
-    class Meta:
-        db_table = 'lab_action_comment'
-        ordering = ['time_created']
-
-
 class LabAchievement(models.Model):
     """团队成果"""
 
@@ -90,6 +58,7 @@ class LabAchievement(models.Model):
         db_table = 'lab_achievement'
         ordering = ['-time_created']
 
+
 class LabAchievementLiker(Liker):
     """团队动态点赞记录"""
 
@@ -98,6 +67,7 @@ class LabAchievementLiker(Liker):
 
     class Meta:
         db_table = 'lab_achievement_liker'
+
 
 class LabComment(Comment):
     """团队评论"""
@@ -217,108 +187,6 @@ class LabNeedFollower(Follower):
     class Meta:
         db_table = 'lab_need_follower'
 
-'''
-class MemberNeedRequest(models.Model):
-    """人员需求的申请加入记录"""
-
-    need = models.ForeignKey('LabNeed', models.CASCADE, 'member_requests')
-    sender = models.ForeignKey('User', models.CASCADE, 'member_requests')
-    description = models.TextField(max_length=100)
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-
-    class Meta:
-        db_table = 'member_need_request'
-        ordering = ['-time_created']
-
-
-class NeedCooperationRequest(models.Model):
-    """外包、承接需求的合作申请记录"""
-
-    need = models.ForeignKey('LabNeed', models.CASCADE, 'cooperation_requests')
-    sender = models.ForeignKey('Lab', models.CASCADE, 'cooperation_requests')
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-
-    class Meta:
-        db_table = 'need_cooperation_request'
-        ordering = ['-time_created']
-
-
-class NeedCooperationInvitation(models.Model):
-    """外包、承接需求的合作邀请记录"""
-
-    need = models.ForeignKey('LabNeed', models.CASCADE,
-                             'cooperation_invitations')
-    invitee = models.ForeignKey('Lab', models.CASCADE,
-                                'cooperation_invitations')
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-
-    class Meta:
-        db_table = 'need_cooperation_invitation'
-        ordering = ['-time_created']
-
-
-class InternalTask(models.Model):
-    """内部任务"""
-
-    lab = models.ForeignKey('Lab', models.CASCADE, 'internal_tasks')
-    executor = models.ForeignKey('User', models.CASCADE, 'internal_tasks')
-
-    title = models.CharField(max_length=20)
-    content = models.TextField(max_length=100)
-    status = models.IntegerField(
-        default=0, db_index=True,
-        choices=(('等待接受', 0), ('再派任务', 1),
-                 ('等待完成', 2), ('等待验收', 3),
-                 ('再次提交', 4), ('按时结束', 5),
-                 ('超时结束', 6), ('终止', 7)))
-    deadline = models.DateField(db_index=True)
-    assign_num = models.IntegerField(default=1)
-    submit_num = models.IntegerField(default=1)
-    finish_time = models.DateTimeField(
-        default=None, blank=True, null=True, db_index=True)
-
-    time_created = models.DateTimeField(
-        default=timezone.now, db_index=True)
-
-    class Meta:
-        db_table = 'internal_task'
-        ordering = ['-time_created']
-
-
-class ExternalTask(models.Model):
-    """外部任务"""
-
-    lab = models.ForeignKey('Lab', models.CASCADE, 'outsource_external_tasks')
-    executor = models.ForeignKey(
-        'Lab', models.CASCADE, 'undertake_external_tasks')
-
-    title = models.CharField(max_length=20)
-    content = models.TextField(default='', max_length=100)
-    expend = models.IntegerField(default=-1, db_index=True)
-    expend_actual = models.IntegerField(default=-1, db_index=True)
-    status = models.IntegerField(
-        default=0, db_index=True,
-        choices=(('等待接受', 0), ('再派任务', 1),
-                 ('等待完成', 2), ('等待验收', 3),
-                 ('再次提交', 4), ('等待支付', 6),
-                 ('再次支付', 7), ('等待确认', 8),
-                 ('按时结束', 9),('超时结束', 10)))
-    deadline = models.DateField(db_index=True)
-    assign_num = models.IntegerField(default=1)
-    submit_num = models.IntegerField(default=1)
-    pay_num = models.IntegerField(default=1)
-    pay_time = models.DateTimeField(
-        default=None, blank=True, null=True, db_index=True)
-    finish_time = models.DateTimeField(
-        default=None, blank=True, null=True, db_index=True)
-
-    time_created = models.DateTimeField(
-        default=timezone.now, db_index=True)
-
-    class Meta:
-        db_table = 'external_task'
-        ordering = ['-time_created']
-'''
 
 class LabTag(Tag):
     """团队标签"""
@@ -355,21 +223,12 @@ class LabScore(models.Model):
 class LabFeature(models.Model):
     """团队特征模型"""
 
-    lab = models.OneToOneField('Lab', models.CASCADE,
-                                related_name='feature_model')
+    lab = models.OneToOneField('Lab', models.CASCADE, related_name='feature_model')
     data = models.TextField(default="{}")
 
     class Meta:
         db_table = 'lab_feature'
 
-class LabActionFavorer(Favorer):
-    """团队动态收藏记录"""
-
-    favored = models.ForeignKey('LabAction', models.CASCADE, 'favorers')
-    favorer = models.ForeignKey('User', models.CASCADE, 'favored_lab_actions')
-
-    class Meta:
-        db_table = 'lab_action_favorer'
 
 class LabTagLiker(Liker):
     """团队标签点赞记录"""

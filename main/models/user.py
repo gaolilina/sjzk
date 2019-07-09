@@ -3,14 +3,13 @@ import hashlib
 from django.db import models
 from django.utils import timezone
 
-from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag, \
-    Visitor, Favorer
+from ..models import EnabledManager, Comment, Follower, Liker, Tag, \
+    Visitor
 
-__all__ = ['User', 'UserAction', 'UserActionLiker', 'UserActionComment',
-           'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
+__all__ = ['User', 'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
            'UserFriendRequest', 'UserLiker', 'UserTag', 'UserValidationCode',
            'UserVisitor', 'UserFeedback', 'UserFeature', 'UserBehavior',
-           'UserScore', 'UserActionFavorer', 'UserTagLiker']
+           'UserScore', 'UserTagLiker']
 
 
 class User(models.Model):
@@ -155,35 +154,6 @@ class UserComment(Comment):
 
     class Meta:
         db_table = 'user_comment'
-        ordering = ['time_created']
-
-
-class UserAction(Action):
-    """用户动态"""
-
-    entity = models.ForeignKey('User', models.CASCADE, 'actions')
-
-    class Meta:
-        db_table = 'user_action'
-
-
-class UserActionLiker(Liker):
-    """用户动态点赞记录"""
-
-    liked = models.ForeignKey('UserAction', models.CASCADE, 'likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_user_actions')
-
-    class Meta:
-        db_table = 'user_action_liker'
-
-
-class UserActionComment(Comment):
-    """用户动态评论记录"""
-
-    entity = models.ForeignKey('UserAction', models.CASCADE, 'comments')
-
-    class Meta:
-        db_table = 'user_action_comment'
         ordering = ['time_created']
 
 
@@ -346,8 +316,7 @@ class UserScore(models.Model):
 class UserFeature(models.Model):
     """用户特征模型"""
 
-    user = models.OneToOneField('User', models.CASCADE,
-                                related_name='feature_model')
+    user = models.OneToOneField('User', models.CASCADE, related_name='feature_model')
     data = models.TextField(default="{}")
 
     class Meta:
@@ -368,16 +337,6 @@ class UserBehavior(models.Model):
     class Meta:
         db_table = 'user_behavior'
         ordering = ['-time_created']
-
-
-class UserActionFavorer(Favorer):
-    """用户动态收藏记录"""
-
-    favored = models.ForeignKey('UserAction', models.CASCADE, 'favorers')
-    favorer = models.ForeignKey('User', models.CASCADE, 'favored_user_actions')
-
-    class Meta:
-        db_table = 'user_action_favorer'
 
 
 class UserTagLiker(Liker):

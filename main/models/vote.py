@@ -3,9 +3,9 @@ import hashlib
 from django.db import models
 from django.utils import timezone
 
-from ..models import EnabledManager, Action, Comment, Follower, Liker, Tag,\
+from ..models import EnabledManager, Comment, Follower, Liker, Tag,\
     Visitor, Favorer
-
+from main.models.action import Action
 
 __all__ = ['UserVote', 'UserVoteOption', 'UserVoteOptionAdvocator',
            'LabVote', 'LabVoteOption', 'LabVoteOptionAdvocator',]

@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
-from . import Action, Liker, Comment, Favorer
+from . import Liker, Comment, Favorer
+from main.models.action import Action
 
 __all__ = ['System', 'IllegalWord', 'SystemAction', 'SystemActionLiker',
            'SystemActionComment', 'SystemActionFavorer', 'SystemNotification',

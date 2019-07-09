@@ -5,7 +5,8 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic.base import View
 
-from main.models import TeamAction, Team
+from main.models import Team
+from main.models.action import TeamAction
 from main.utils import action
 from main.utils.decorators import fetch_user_by_token, validate_args
 from main.utils.recommender import calculate_ranking_score

@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
+from main.models.action import UserAction, UserActionLiker, UserActionComment
 from main.models.user import *
 
 from admin.utils.decorators import *
@@ -111,9 +112,9 @@ class UserList(View):
 
 
 class UserActionView(View):
-    @fetch_record(UserAction.objects, 'mod', 'id')
     @require_cookie
     @require_role('yz')
+    @fetch_record(UserAction.objects, 'mod', 'id')
     def get(self, request, mod):
         template = loader.get_template("user/user_action.html")
         context = Context({'mod': mod, 'user': request.user})

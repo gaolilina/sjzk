@@ -7,6 +7,7 @@ class EnabledManager(models.Manager):
 
 
 from .common import *
+from .action import *
 from .user import *
 from .team import *
 from .forum import *
