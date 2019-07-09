@@ -11,76 +11,9 @@ from ..utils.decorators import *
 from ..utils.dfa import check_bad_words
 from ..utils.recommender import calculate_ranking_score
 
-__all__ = ['List', 'Icon', 'Profile', 'ExperienceList', 'Experience', 'Screen',
+__all__ = ['Icon', 'Profile', 'ExperienceList', 'Experience', 'Screen',
            'TeamOwnedList', 'TeamJoinedList', 'ValidationCode',
            'PasswordForgotten', 'ActivityList', 'CompetitionList', 'CompetitionJoinedList']
-
-
-class List(View):
-    ORDERS = ('time_created', '-time_created', 'name', '-name')
-
-    @validate_args({
-        'offset': forms.IntegerField(required=False, min_value=0),
-        'limit': forms.IntegerField(required=False, min_value=0),
-        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-        'province': forms.CharField(required=False, max_length=20),
-        'field': forms.CharField(required=False, max_length=20),
-        'is_expert': forms.BooleanField(required=False),
-    })
-    def get(self, request, offset=0, limit=10, order=1, province=None, field=None, is_expert=False):
-        """获取用户列表
-
-        :param offset: 偏移量
-        :param order: 排序方式
-            0: 注册时间升序
-            1: 注册时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
-        :return:
-            count: 用户总数
-            list: 用户列表
-                id: 用户ID
-                time_created: 注册时间
-                username: 用户名
-                name: 用户昵称
-                icon_url: 用户头像
-                tags: 标签
-                gender: 性别
-                liker_count: 点赞数
-                follower_count: 粉丝数
-                visitor_count: 访问数
-                is_verified: 是否通过实名认证
-                is_role_verified: 是否通过身份认证
-        """
-        condition = {}
-        if province is not None:
-            condition['province'] = province
-        if field is not None:
-            condition['adept_field'] = field
-        condition_expert = {
-            'is_role_verified': 2,
-            'role': '专家'
-        }
-        if is_expert:
-            qs = User.enabled.filter(**condition).filter(**condition_expert)
-        else:
-            qs = User.enabled.filter(**condition).exclude(**condition_expert)
-        c = qs.count()
-        users = qs.order_by(self.ORDERS[order])[offset:offset + limit]
-        l = [{'id': u.id,
-              'time_created': u.time_created,
-              'role': u.role,
-              'username': u.username,
-              'name': u.name,
-              'icon_url': u.icon,
-              'tags': [tag.name for tag in u.tags.all()],
-              'gender': u.gender,
-              'liker_count': u.likers.count(),
-              'follower_count': u.followers.count(),
-              'visitor_count': u.visitors.count(),
-              'is_verified': u.is_verified,
-              'is_role_verified': u.is_role_verified} for u in users]
-        return JsonResponse({'count': c, 'list': l})
 
 
 class Icon(View):

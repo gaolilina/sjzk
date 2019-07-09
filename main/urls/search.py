@@ -1,17 +1,20 @@
 #!usr/bin/env python3
 # -*- coding:utf-8 _*-
-from django.conf.urls import url
+from django.conf.urls import url, include
 
-from main.views.search import SearchUser, SearchUserActionList, SearchTeamActionList, SearchLabActionList, \
-    SearchActivity, SearchCompetition, SearchTeam
+from main.urls import action
+from main.views.search import SearchUser, SearchActivity, SearchCompetition, SearchTeam
+from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
 
 urls = [
     # 搜索
-    url(r'^user/$', SearchUser.as_view(), name='search_user'),
-    url(r'^team/$', SearchTeam.as_view(), name='search_team'),
-    url(r'^user_action/$', SearchUserActionList.as_view(), name='search_user_action'),
-    url(r'^team_action/$', SearchTeamActionList.as_view(), name='search_team_action'),
-    url(r'^lab_action/$', SearchLabActionList.as_view(), name='search_lab_action'),
-    url(r'^activity/$', SearchActivity.as_view(), name='search_activity'),
-    url(r'^competition/$', SearchCompetition.as_view(), name='search_competition'),
+    url(r'^user/$', SearchUser.as_view()),
+    url(r'^team/$', SearchTeam.as_view()),
+    url(r'^activity/$', SearchActivity.as_view()),
+    url(r'^competition/$', SearchCompetition.as_view()),
+
+    url(r'^action/', include(action.url)),
+    url(r'^user_action/$', SearchUserAction.as_view()),
+    url(r'^team_action/$', SearchTeamAction.as_view()),
+    url(r'^lab_action/$', SearchLabAction.as_view()),
 ]

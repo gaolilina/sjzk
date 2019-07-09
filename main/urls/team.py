@@ -9,8 +9,8 @@ from ..views.recommend import TeamRecommend, OutsourceNeedTeamRecommend, \
     UndertakeNeedTeamRecommend
 
 urls = [
+    url(r'^$', TeamCreate.as_view(), name='list'),
     # 基本
-    url(r'^$', List.as_view(), name='list'),
     url(r'^(?P<team_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     url(r'^(?P<team_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
     # 团队搜索

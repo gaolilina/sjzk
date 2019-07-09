@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from main.views.action import UserActionsList, TeamActionsList, LabActionsList
+from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
 from main.views.auth import IdentityVerificationView
 from main.views.friend import FriendAction, FriendRequestList, FriendRequestAction, FriendList
 from ..views.current_user import *
@@ -18,9 +18,9 @@ urls = [
     # 实名认证
     url(r'^identity_verification/$', IdentityVerificationView.as_view(), name='identity_verification'),
     # 动态
-    url(r'^user_actions/$', UserActionsList.as_view(), name='user_actions'),
-    url(r'^team_actions/$', TeamActionsList.as_view(), name='team_actions'),
-    url(r'^lab_actions/$', LabActionsList.as_view(), name='lab_actions'),
+    url(r'^user_actions/$', SearchUserAction.as_view(), name='user_actions'),
+    url(r'^team_actions/$', SearchTeamAction.as_view(), name='team_actions'),
+    url(r'^lab_actions/$', SearchLabAction.as_view(), name='lab_actions'),
     url(r'^owned_actions/$', UserActionList.as_view(), name='owned_actions'),
     url(r'^followed_user/actions/$', FollowedUserActionList.as_view(),
         name='followed_actions'),

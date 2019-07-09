@@ -41,69 +41,6 @@ class ActivitySignList(View):
         abort(200)
 
 
-class List(View):
-    ORDERS = ('time_created', '-time_created', 'name', '-name')
-
-    @validate_args({
-        'offset': forms.IntegerField(required=False, min_value=0),
-        'limit': forms.IntegerField(required=False, min_value=0),
-        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-        'history': forms.BooleanField(required=False),
-        'province': forms.CharField(required=False, max_length=20),
-        'field': forms.CharField(required=False, max_length=20)
-    })
-    def get(self, request, offset=0, limit=10, order=1, history=False, province=None, field=None):
-        """获取活动列表
-
-        :param offset: 偏移量
-        :param limit: 数量上限
-        :param order: 排序方式
-        :param history: 是否往期活动（默认否）
-            0: 注册时间升序
-            1: 注册时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
-
-        :return:
-            count: 活动总数
-            list: 活动列表
-                id: 活动ID
-                name: 活动名
-                liker_count: 点赞数
-                status: 竞赛当前阶段
-                time_started: 开始时间
-                time_ended: 结束时间
-                user_participator_count: 已报名人数
-                time_created: 创建时间
-                province:
-        """
-
-        k = self.ORDERS[order]
-        # 只显示审核通过的
-        condition = {
-            'state': Activity.STATE_PASSED
-        }
-        # 一般情况只显示未结束的活动
-        if not history:
-            condition['time_ended__gt'] = datetime.datetime.now()
-        if province is not None:
-            condition['province'] = province
-        if field is not None:
-            condition['tags'] = field
-        c = Activity.enabled.filter(**condition).count()
-        qs = Activity.enabled.filter(**condition).order_by(k)[offset: offset + limit]
-        l = [{'id': a.id,
-              'name': a.name,
-              'liker_count': a.likers.count(),
-              'status': a.status,
-              'time_started': a.time_started,
-              'time_ended': a.time_ended,
-              'user_participator_count': a.user_participators.count(),
-              'time_created': a.time_created,
-              'province': a.province} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
-
-
 class Detail(View):
     @fetch_object(Activity.enabled, 'activity')
     @require_token

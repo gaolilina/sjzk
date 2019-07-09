@@ -19,7 +19,7 @@ from main.utils.dfa import check_bad_words
 import json
 from main.utils.http import notify_user
 
-__all__ = ('List', 'Screen', 'Profile', 'Icon', 'MemberList',
+__all__ = ('TeamCreate', 'Screen', 'Profile', 'Icon', 'MemberList',
            'Member', 'MemberRequestList', 'MemberRequest', 'Invitation',
            'AllNeedList', 'NeedList', 'Need', 'MemberNeedRequestList',
            'MemberNeedRequest', 'NeedRequestList', 'NeedRequest',
@@ -30,60 +30,8 @@ __all__ = ('List', 'Screen', 'Profile', 'Icon', 'MemberList',
            'TeamAwardList')
 
 
-class List(View):
+class TeamCreate(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
-
-    # noinspection PyUnusedLocal
-    @validate_args({
-        'offset': forms.IntegerField(required=False, min_value=0),
-        'limit': forms.IntegerField(required=False, min_value=0),
-        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-        'province': forms.CharField(required=False, max_length=20),
-        'field': forms.CharField(required=False, max_length=20)
-    })
-    def get(self, request, offset=0, limit=10, order=1, province=None, field=None):
-        """获取团队列表
-
-        :param offset: 偏移量
-        :param limit: 数量上限
-        :param order: 排序方式
-            0: 注册时间升序
-            1: 注册时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
-        :return:
-            count: 团队总数
-            list: 团队列表
-                id: 团队ID
-                name: 团队名
-                icon_url: 头像
-                owner_id: 创建者ID
-                liker_count: 点赞数
-                visitor_count: 最近7天访问数
-                member_count: 团队成员人数
-                fields: 所属领域，格式：['field1', 'field2']
-                tags: 标签，格式：['tag1', 'tag2', ...]
-                time_created: 注册时间
-        """
-        i, j, k = offset, offset + limit, self.ORDERS[order]
-        condition = {}
-        if province is not None:
-            condition['province'] = province
-        if field is not None:
-            condition['field1'] = field
-        c = Team.enabled.filter(**condition).count()
-        teams = Team.enabled.filter(**condition).order_by(k)[i:j]
-        l = [{'id': t.id,
-              'name': t.name,
-              'icon_url': t.icon,
-              'owner_id': t.owner.id,
-              'liker_count': t.likers.count(),
-              'visitor_count': t.visitors.count(),
-              'member_count': t.members.count(),
-              'fields': [t.field1],
-              'tags': [tag.name for tag in t.tags.all()],
-              'time_created': t.time_created} for t in teams]
-        return JsonResponse({'count': c, 'list': l})
 
     @require_verification_token
     @validate_args({

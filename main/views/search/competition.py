@@ -17,8 +17,11 @@ class SearchCompetition(View):
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
         'name': forms.CharField(max_length=20, required=False),
         'tag': forms.CharField(max_length=20, required=False),
+        'history': forms.BooleanField(required=False),
+        'province': forms.CharField(required=False, max_length=20),
+        'field': forms.CharField(required=False, max_length=20),
     })
-    def get(self, request, offset=0, limit=10, order=1, **kwargs):
+    def get(self, request, offset=0, limit=10, order=1, history=False, province=None, field=None, **kwargs):
         """
         搜索竞赛
 
@@ -47,7 +50,16 @@ class SearchCompetition(View):
                 province:
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        condition = {}
+        condition = {
+            'status__in': [6] if history else [0, 1, 2, 3, 4, 5],
+        }
+        # 一般情况只显示未结束的活动
+        if not history:
+            condition['time_ended__gt'] = datetime.datetime.now()
+        if province is not None:
+            condition['province'] = province
+        if field is not None:
+            condition['field'] = field
         if 'name' in kwargs:
             condition['name__icontains'] = kwargs['name']
         if 'tag' in kwargs:
@@ -59,7 +71,6 @@ class SearchCompetition(View):
               'liker_count': a.likers.count(),
               'time_started': a.time_started,
               'time_ended': a.time_ended,
-              'deadline': a.deadline,
               'team_participator_count': a.team_participators.count(),
               'time_created': a.time_created,
               'status': a.status,

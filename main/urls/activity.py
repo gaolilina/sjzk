@@ -6,7 +6,8 @@ from ..views.common import ActivityCommentList, ActivityComment, \
     ActivityFollowerList
 
 urls = [
-    url(r'^$', List.as_view(), name='list'),
+    # 暂时保留这个接口，后期变更为创建活动
+    url(r'^$', SearchActivity.as_view(), name='list'),
     url(r'^(?P<activity_id>[0-9]+)/$', Detail.as_view(), name='detail'),
     url(r'^(?P<activity_id>[0-9]+)/user_participators/$',
         UserParticipatorList.as_view(), name='user_participators'),

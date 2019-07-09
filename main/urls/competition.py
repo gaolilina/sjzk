@@ -7,7 +7,8 @@ from ..views.common import CompetitionCommentList, CompetitionComment, \
 
 
 urls = [
-    url(r'^$', List.as_view(), name='list'),
+    # 暂时保留这个接口，后期变更为创建竞赛
+    url(r'^$', SearchCompetition.as_view(), name='list'),
     url(r'^(?P<competition_id>[0-9]+)/$', Detail.as_view(), name='detail'),
     url(r'^(?P<competition_id>[0-9]+)/team_participators/$',
         TeamParticipatorList.as_view(), name='team_participators'),

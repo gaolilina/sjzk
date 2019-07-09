@@ -1,14 +1,16 @@
 from django.conf.urls import url
 
 from main.views.friend import FriendRequestList, FriendCheck, FriendList
-from main.views.search import SearchUser, SearchUserActionList, SearchTeamActionList, SearchLabActionList
+from main.views.search import SearchUser
+from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
 from ..views.user import *
 from ..views.common import *
 from ..views.recommend import UserRecommend
 
 urls = [
+    # 暂时保留这个接口，后期删除
+    url(r'^$', SearchUser.as_view(), name='list'),
     # 基本信息
-    url(r'^$', List.as_view(), name='list'),
     url(r'^(?P<user_id>[0-9]+)/icon/$', Icon.as_view(), name='icon'),
     url(r'^(?P<user_id>[0-9]+)/profile/$', Profile.as_view(), name='profile'),
     # 获取某用户的团队
@@ -50,11 +52,11 @@ urls = [
         UserLiker.as_view(), name='liker'),
     # 搜索
     url(r'^search/$', SearchUser.as_view(), name='search'),
-    url(r'^search/user_action/$', SearchUserActionList.as_view(),
+    url(r'^search/user_action/$', SearchUserAction.as_view(),
         name='search_user_action'),
-    url(r'^search/team_action/$', SearchTeamActionList.as_view(),
+    url(r'^search/team_action/$', SearchTeamAction.as_view(),
         name='search_team_action'),
-    url(r'^search/lab_action/$', SearchLabActionList.as_view(),
+    url(r'^search/lab_action/$', SearchLabAction.as_view(),
         name='search_lab_action'),
     # 筛选
     url(r'^screen/$', Screen.as_view(), name='screen'),

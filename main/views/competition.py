@@ -1,15 +1,13 @@
-import datetime
-
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views.generic import View
-from django.core.exceptions import ObjectDoesNotExist
 
 from ..models import Competition, Team, CompetitionFile as File, CompetitionTeamParticipator
 from ..utils import abort, save_uploaded_file
 from ..utils.decorators import *
 
-__all__ = ['List', 'Detail', 'CompetitionStageList', 'CompetitionFile', 'CompetitionFileScore',
+__all__ = ['Detail', 'CompetitionStageList', 'CompetitionFile', 'CompetitionFileScore',
            'CompetitionFileList', 'TeamParticipatorList', 'Screen',
            'CompetitionNotification', 'CompetitionAwardList', 'CompetitionFileExpert',
            'CompetitionExpertList', 'CompetitionTeamScore', 'CompetitionSignList']
@@ -45,69 +43,6 @@ class CompetitionSignList(View):
             else:
                 abort(403)
             abort(200)
-
-
-class List(View):
-    ORDERS = ('time_created', '-time_created', 'name', '-name')
-
-    @validate_args({
-        'offset': forms.IntegerField(required=False, min_value=0),
-        'limit': forms.IntegerField(required=False, min_value=0),
-        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-        'history': forms.BooleanField(required=False),
-        'province': forms.CharField(required=False, max_length=20),
-        'field': forms.CharField(required=False, max_length=20)
-    })
-    def get(self, request, offset=0, limit=10, order=1, history=False, province=None, field=None):
-        """获取竞赛列表
-
-        :param offset: 偏移量
-        :param limit: 数量上限
-        :param order: 排序方式
-            0: 注册时间升序
-            1: 注册时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
-        :param history: 是否往期活动（默认否）
-
-        :return:
-            count: 竞赛总数
-            list: 竞赛列表
-                id: 竞赛ID
-                name: 竞赛名
-                liker_count: 点赞数
-                status: 竞赛当前阶段
-                time_started: 开始时间
-                time_ended: 结束时间
-                team_participator_count: 已报名人数
-                time_created: 创建时间
-                province:
-        """
-
-        k = self.ORDERS[order]
-        condition = {
-            'status__in': [6] if history else [0, 1, 2, 3, 4, 5],
-        }
-        # 一般情况只显示未结束的活动
-        if not history:
-            condition['time_ended__gt'] = datetime.datetime.now()
-        if province is not None:
-            condition['province'] = province
-        if field is not None:
-            condition['field'] = field
-        c = Competition.enabled.filter(**condition).count()
-        qs = Competition.enabled.filter(**condition).order_by(k)[offset: offset + limit]
-        l = [{'id': a.id,
-              'name': a.name,
-              'liker_count': a.likers.count(),
-              'status': a.status,
-              'time_started': a.time_started,
-              'time_ended': a.time_ended,
-              'deadline': a.deadline,
-              'team_participator_count': a.team_participators.count(),
-              'time_created': a.time_created,
-              'province': a.province} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
 
 
 class Detail(View):
