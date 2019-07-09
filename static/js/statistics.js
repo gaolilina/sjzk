@@ -1,3 +1,4 @@
+const answers = {};
 function show_statistics(paper_id,paper_name,paper_desc){
     var inner_html = '\
     <style>\
@@ -54,16 +55,16 @@ function show_statistics(paper_id,paper_name,paper_desc){
     <button class="btn" onclick="question_search()" style="margin-top:0;">搜索</button>\
     <br/><br/>\
     <div id="search_result">搜索结果</div>\
+    <table id="table_search_result"></table>\
     </div>\
     \
     <br/><br/><br/><br/>\
     ';
     $('#main').html(inner_html);
-    var type_list = ['问答题','单选题','多选题'];
+    const type_list = ['问答题','单选题','多选题'];
     $.get(base_url+'admin/paper/'+paper_id+'/analysis/',{},function(data){
         // console.log(data);
         result = data.result;
-        result[0].analysis.origin = ['张三','李四','王五','赵四','陈三','张三','李四','张三'];
         $('#question_count').html('问题：'+result.length);
         var echarts_data = [];
         var question_html = '';//问题详情
@@ -113,9 +114,10 @@ function show_statistics(paper_id,paper_name,paper_desc){
                     statistics_html += tr+'<td>'+s_data[sd].name+'</td><td>'+s_data[sd].value+'</td></tr>';
                 }
             } else{
-                question_select_html += '<option value="'+ques_index+'">'+question.title+'</option>';
+                question_select_html += '<option value="ques'+ques_index+'">'+question.title+'</option>';
                 //统计数据
                 let origins = question.analysis.origin;
+                answers['ques'+ques_index] = origins;//用于统计搜索
                 let s_data = [];
                 let l_data_bar = [];
                 let s_data_bar = [];
@@ -253,13 +255,19 @@ function pie_echarts(div_echarts,e_name,l_data,s_name,s_data){
 }
 
 function question_search(){
+    var question_select = $('#question_select').val();
     var keyword = $('#keyword').val();
     if(keyword=="") {
         $('#search_result').html('请输入关键字');
         return;
     }
-    var count = Math.round((Math.random()*100).toFixed(2));
-    var pecent = (count/150*100).toFixed(2);
+    let count = 0;
+    let origins = answers[question_select];
+    let length = origins.length;
+    for(let o_index in origins){
+        if(origins[o_index].indexOf(keyword)!=-1) count++;
+    }
+    let pecent = (count/length*100).toFixed(2);
     $('#search_result').html('包含关键字<div class="c-blue font-bold result">'+keyword+'</div>的回答共有\
         <div class="c-blue font-bold result">'+count+'</div>个，占比<div class="c-blue font-bold result">'+pecent+'%</div>');
 }
