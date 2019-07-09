@@ -1,11 +1,11 @@
 var stage_template = '<tr class="stage">\
-<td>活动阶段{{num}}</td>\
+<td>活动阶段{{num}}：&nbsp;&nbsp;&nbsp;<input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /></td>\
 <td>\
 类　　型：<select onchange="javascript:stage_gen()">\
     <option value="0">前期宣传</option>\
     <option value="1">报名</option>\
     <option value="2">结束</option>\
-</select><input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /><br/>\
+</select><br/>\
 开始时间：<input type="text" data-field="date" readonly onchange="javascript:stage_gen()" /><br/>\
 结束时间：<input type="text" data-field="date" readonly onchange="javascript:stage_gen()" /><br/>\
 </td>\

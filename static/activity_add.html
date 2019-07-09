@@ -15,17 +15,10 @@
 <script src="js/jquery-confirm-3.0.3.min.js"></script>
 <script src="js/activity.js"></script>
 <style type="text/css">
-    #header{
-        width: 100%;
-        height: 80px;
-        background: linear-gradient(to right, #0198CA , #00BBD9); /* 标准的语法 */
-        color: #fff;
-        font-size: 1.8em;
-        padding-left: 30px;
-        padding-top: 15px;
-    }
-    input[type="text"],input[type="textarea"],select{
-        width: 300px;
+    @media (min-width: 700px){
+        input[type="text"],input[type="textarea"],select{
+            width: 300px;
+        }
     }
     input[type="button"]{
         margin-top: 0;
@@ -40,10 +33,24 @@
     .buttons{
         float: right;
     }
+    @media (max-width: 768px) {
+        td{
+            display: block;
+            width: 100%;
+        }
+        input,textarea,select{
+            width: 100%;
+        }
+        input[type="button"]{
+            float:right;
+        }
+        #add_stage{
+            width: 100%;
+        }
+    }
 </style>
 </head>
 <body>
-<div id="header">活动创建</div>
 <form role="form" action="" method="post">
 <table>
     <tr>
@@ -51,7 +58,7 @@
         <td><input name="name" type="text" value="" maxlength="50" required/></td>
     </tr>
     <tr>
-        <td>标签：</td>
+        <td>领域：</td>
         <td><input name="tags" type="text" value="" maxlength="50" required/></td>
 
         <td>类型：</td>

@@ -87,13 +87,13 @@
     </tr>
     {% for stage in stages %}
         <tr class="stage">
-            <td>活动阶段{{forloop.counter}}</td>
+            <td>活动阶段{{forloop.counter}}：<input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /></td>
             <td>
                 类　　型：<select onchange="javascript:stage_gen()">
                     <option value="0"{% if stage.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
                     <option value="1"{% if stage.status == 1 %} selected="selected"{% endif %}>报名</option>
                     <option value="2"{% if stage.status == 2 %} selected="selected"{% endif %}>结束</option>
-                </select><input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /><br/>
+                </select><br/>
                 开始时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_started }}" /><br/>
                 结束时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_ended }}" />
             </td>
