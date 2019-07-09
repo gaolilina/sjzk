@@ -1,5 +1,3 @@
-import datetime
-
 from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
@@ -8,7 +6,7 @@ from ..models import Activity
 from ..utils import abort
 from ..utils.decorators import *
 
-__all__ = ['List', 'Detail', 'ActivityStage', 'UserParticipatorList', 'Screen', 'ActivitySignList']
+__all__ = ['Detail', 'ActivityStage', 'UserParticipatorList', 'Screen', 'ActivitySignList']
 
 
 class ActivitySignList(View):
