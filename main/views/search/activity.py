@@ -62,7 +62,7 @@ class SearchActivity(View):
         if province is not None:
             condition['province'] = province
         if field is not None:
-            condition['tags'] = field
+            condition['field'] = field
         if 'name' in kwargs:
             condition['name__icontains'] = kwargs['name']
         if 'tag' in kwargs:
@@ -77,5 +77,6 @@ class SearchActivity(View):
               'user_participator_count': a.user_participators.count(),
               'time_created': a.time_created,
               'status': a.status,
+              'field': a.field,
               'province': a.province} for a in qs.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})

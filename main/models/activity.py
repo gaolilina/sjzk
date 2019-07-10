@@ -57,6 +57,7 @@ class Activity(models.Model):
     province = models.CharField(max_length=20, default='')
     city = models.CharField(max_length=20, default='')
     unit = models.CharField(max_length=20, default='')
+    # 领域
     field = models.CharField(max_length=20, default='')
     # 0:不限, 1:学生, 2:教师, 3:在职
     user_type = models.IntegerField(default=0, db_index=True)
@@ -70,7 +71,7 @@ class Activity(models.Model):
     experts = models.ManyToManyField('User', related_name='activities_as_expert', null=True, default=None)
     # 费用二维码
     expense = models.CharField(max_length=100, default='')
-    # 标签，领域
+    # 标签
     tags = models.CharField(max_length=255, default='')
 
     objects = models.Manager()

@@ -76,5 +76,6 @@ class SearchCompetition(View):
               'team_participator_count': a.team_participators.count(),
               'time_created': a.time_created,
               'status': a.status,
+              'field': a.field,
               'province': a.province} for a in qs.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
