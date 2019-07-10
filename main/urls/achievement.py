@@ -5,11 +5,9 @@ from ..views.achievement_team import *
 
 urls = [
     # 点赞
-    url(r'^(?P<achievement_id>[0-9]+)/like/$', AchievementDoWhoView.as_view(), name='liker',
-        kwargs={'who': 'likers'}),
+    url(r'^(?P<achievement_id>[0-9]+)/like/$', AchievementDoWhoView.as_view(), name='liker', kwargs={'who': 'likers'}),
     # 需求
-    url(r'^(?P<achievement_id>[0-9]+)/require/$', AchievementDoWhoView.as_view(), name='require',
-        kwargs={'who': 'requirers'}),
+    url(r'^(?P<achievement_id>[0-9]+)/require/$', AchievementDoWhoView.as_view(), name='require', kwargs={'who': 'requirers'}),
     # 成果列表，发布成果
     url(r'^$', AllUserAchievementListView.as_view(), name='all_achievements'),
     # 单挑成果

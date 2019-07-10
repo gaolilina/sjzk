@@ -54,9 +54,9 @@ class SearchUserAction(View):
         if tag is not None:
             obj = obj.filter(entity__tags__name__icontains=tag)
         if province is not None:
-            obj.filter(entity__province=province)
+            obj = obj.filter(entity__province=province)
         if field is not None:
-            obj.filter(entity__adept_field=field)
+            obj = obj.filter(entity__adept_field=field)
         condition_expert = {
             'entity__is_role_verified': 2,
             'entity__role': '专家'
@@ -121,9 +121,9 @@ class SearchTeamAction(View):
         """
         qs = TeamAction.objects.filter(Q(entity__name__icontains=name) | Q(action__icontains=name))
         if province is not None:
-            qs.filter(entity__province=province)
+            qs = qs.filter(entity__province=province)
         if field is not None:
-            qs.filter(entity__field1=field)
+            qs = qs.filter(entity__field1=field)
         # 获取主语是团队的动态
         c = qs.count()
         records = (i for i in qs[offset:offset + limit])
@@ -186,9 +186,9 @@ class SearchLabAction(View):
         r = LabAction.objects.filter(Q(entity__name__icontains=kwargs['name'])
                                      | Q(action__icontains=kwargs['name']))
         if province is not None:
-            r.filter(entity__province=province)
+            r = r.filter(entity__province=province)
         if field is not None:
-            r.filter(entity__field1=field)
+            r = r.filter(entity__field1=field)
         c = r.count()
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
