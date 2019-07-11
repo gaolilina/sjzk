@@ -7,6 +7,7 @@ function show_statistics(paper_id,paper_name,paper_desc){
     #questions p{padding-left:40px;}\
     .inline-block{display:inline-block;}\
     .title-bar{padding:8px 20px;margin-bottom:20px;font-size:14px;background-color:#E1FAFE;}\
+    input[type="button"]{background-color:#55CE63;float:right;margin-right:20px;margin-top:-5px;;width:65px;height:30px;border:1px solid #55CE63;border-radius:3px;}\
     .c-blue{color:blue;}\
     .font-bold{font-weight:bold;}\
     .result{display:inline-block;margin:0 5px;}\
@@ -19,14 +20,14 @@ function show_statistics(paper_id,paper_name,paper_desc){
     <div class="title-bar">统计图表</div>\
     <div id="div-echarts"></div>\
     </div>\
-    <div class="title-bar">统计表格</div>\
+    <div class="title-bar">统计表格<input type="button" id="export" value="导出"/></div>\
     <table style="width:1200px;margin:0 auto;">\
     <thead><tr>\
             <th class="min-width-50">序号</th>\
             <th class="min-width-150">问题名称</th>\
             <th class="min-width-80">问题类型</th>\
             <th class="min-width-150">选项</th>\
-            <th class="min-width-80">统计</th>\
+            <th class="min-width-80">统计(<i id="person_count"></i>人)</th>\
     </tr></thead>\
     <tbody id="statistics_body">\
         <tr>\
@@ -62,6 +63,8 @@ function show_statistics(paper_id,paper_name,paper_desc){
     ';
     $('#main').html(inner_html);
     const type_list = ['问答题','单选题','多选题'];
+    var statis_data = [];//用于生成统计表格
+    var export_data = [];
     $.get(base_url+'admin/paper/'+paper_id+'/analysis/',{},function(data){
         // console.log(data);
         result = data.result;
@@ -105,18 +108,13 @@ function show_statistics(paper_id,paper_name,paper_desc){
                     'l_data':l_data,
                     's_data':s_data_bar,
                 });
-                statistics_html += '<tr><td rowspan="'+s_data.length+'">'+ques_index+'</td>\
-                <td rowspan="'+s_data.length+'">'+question.title+'</td>\
-                <td rowspan="'+s_data.length+'">'+type_list[question.type]+'</td>';
-                for(let sd in s_data){
-                    let tr = '<tr>';
-                    if(sd == 0) tr = '';
-                    statistics_html += tr+'<td>'+s_data[sd].name+'</td><td>'+s_data[sd].value+'</td></tr>';
-                }
+                statis_data = s_data;
+                
             } else{
                 question_select_html += '<option value="ques'+ques_index+'">'+question.title+'</option>';
                 //统计数据
                 let origins = question.analysis.origin;
+                $('#person_count').html(origins.length);//总人数
                 answers['ques'+ques_index] = origins;//用于统计搜索
                 let s_data = [];
                 let l_data_bar = [];
@@ -133,17 +131,27 @@ function show_statistics(paper_id,paper_name,paper_desc){
                     l_data_bar.push(og);
                     s_data_bar.push(origin_counts[og]);
                 }
-                statistics_html += '<tr><td rowspan="'+s_data.length+'">'+ques_index+'</td>\
-                <td rowspan="'+s_data.length+'">'+question.title+'</td>\
-                <td rowspan="'+s_data.length+'">'+type_list[question.type]+'</td>';
-                for(let sd in s_data){
-                    let tr = '<tr>';
-                    if(sd == 0) tr = '';
-                    statistics_html += tr+'<td>'+s_data[sd].name+'</td><td>'+s_data[sd].value+'</td></tr>'; 
-                }
+                statis_data = s_data;
             }
             question_html += '<p>'+question.title+'：'+options_html+'</p>';
-            
+            let statis_data_length = statis_data.length;
+            statistics_html += '<tr><td rowspan="'+statis_data_length+'">'+(ques_index*1+1)+'</td>\
+            <td rowspan="'+statis_data_length+'">'+question.title+'</td>\
+            <td rowspan="'+statis_data_length+'">'+type_list[question.type]+'</td>';
+            for(let sd in statis_data){
+                let pecent = (statis_data[sd].value/statis_data_length*100).toFixed(2);
+                let tr = '<tr>';
+                if(sd == 0) {
+                    tr = '';
+                    export_data.push(gen_question(ques_index*1+1,question.title,type_list[question.type],statis_data[sd].name,
+                        statis_data[sd].value+'|'+pecent+'%'));
+                    
+                } else{
+                    export_data.push(gen_question('','','',statis_data[sd].name,statis_data[sd].value+'|'+pecent+'%'));
+                }
+                statistics_html += tr+'<td>'+statis_data[sd].name+'</td>\
+                <td>'+statis_data[sd].value+',<div class="c-blue font-bold result">'+pecent+'%</div></td></tr>';
+            }
         }
         $('#div-echarts').html(echarts_html);
         $('#questions').html(question_html);
@@ -158,6 +166,20 @@ function show_statistics(paper_id,paper_name,paper_desc){
         $('#statistics_body').html(statistics_html);
         $('#question_select').html(question_select_html);
     });
+    $('#export').click(function(){
+        let title = paper_name+'统计表格';
+        JSONToCSVConvertor({data:export_data, title: title, showLabel: true});
+    });
+}
+//生成问题对象
+function gen_question(ques_index,title,type,option,statis){
+    let question = {};
+    question["序号"] = ques_index;
+    question["问题名称"] = title;
+    question["问题类型"] = type;
+    question["选项"] = option;
+    question["统计"] = statis;
+    return question;
 }
 /*id,name,type,x,s*/
 //type:line-折线图
