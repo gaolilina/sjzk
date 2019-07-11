@@ -90,7 +90,7 @@ class SearchTeamAction(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'name': forms.CharField(max_length=20),
+        'name': forms.CharField(required=False, max_length=20),
         'province': forms.CharField(required=False, max_length=20),
         'field': forms.CharField(required=False, max_length=20),
     })
@@ -150,7 +150,7 @@ class SearchLabAction(View):
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
-        'name': forms.CharField(max_length=20),
+        'name': forms.CharField(required=False, max_length=20),
         'province': forms.CharField(required=False, max_length=20),
         'field': forms.CharField(required=False, max_length=20),
     })
