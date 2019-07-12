@@ -24,6 +24,10 @@
             {% if model.user_type == 2 %}教师{% endif %}
             {% if model.user_type == 3 %}社会人员{% endif %}
         </td>
+        <td>领域</td>
+        <td>{{model.field}}</td>
+    </tr>
+    <tr>
         <td>负责人</td>
         {% if model.owner %}
         <td>{{model.owner.first.user.name}}</td>

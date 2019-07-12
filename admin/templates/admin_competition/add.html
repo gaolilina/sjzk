@@ -14,6 +14,10 @@
         <td>详细内容：</td>
         <td><textarea name="content" required></textarea></td>
     </tr>
+    <tr>
+        <td>领域：</td>
+        <td><select name="field" id="select_field"></select></td>
+    </tr>
     <!--<tr>
         <td>截至日期：</td>
         <td><input name="deadline" type="text" data-field="datetime" readonly value="" required/></td>
@@ -85,7 +89,14 @@
             </div>
         </td>
     </tr>
-    <script>var stage_count = 0;</script>
+{% block js %}
+<script src="{% static 'js/competition.js' %}"></script>
+<script src="{% static 'js/field.js' %}"></script>
+{% endblock %}
+<script>
+    var stage_count = 0;
+    get_field('select_field');//获取初始化field
+</script>
 </table>
 
 </form>
@@ -97,8 +108,4 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
-{% endblock %}
-
-{% block js %}
-<script src="{% static 'js/competition.js' %}"></script>
 {% endblock %}
