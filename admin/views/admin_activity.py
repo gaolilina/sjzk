@@ -26,6 +26,7 @@ class AdminActivityAdd(View):
     @validate_args2({
         'name': forms.CharField(max_length=50),
         'tags': forms.CharField(max_length=50),
+        'field': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
         'time_started': forms.DateTimeField(),
         'time_ended': forms.DateTimeField(),
@@ -82,6 +83,7 @@ class AdminActivityEdit(View):
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
         'tags': forms.CharField(max_length=50, required=False),
+        'field': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
         'deadline': forms.DateTimeField(required=False),
         'time_started': forms.DateTimeField(required=False),

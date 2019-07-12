@@ -48,7 +48,7 @@ class SearchUserAction(View):
         """
 
         # 获取主语是用户的动态
-        obj = UserAction.objects
+        obj = UserAction.objects.all()
         if name is not None:
             obj = obj.filter(Q(entity__name__icontains=name) | Q(action__icontains=name))
         if tag is not None:
@@ -119,7 +119,9 @@ class SearchTeamAction(View):
                 comment_count: 评论数
                 time_created: 创建时间
         """
-        qs = TeamAction.objects.filter(Q(entity__name__icontains=name) | Q(action__icontains=name))
+        qs = TeamAction.objects.all()
+        if name is not None:
+            qs = qs.filter(Q(entity__name__icontains=name) | Q(action__icontains=name))
         if province is not None:
             qs = qs.filter(entity__province=province)
         if field is not None:
@@ -154,7 +156,7 @@ class SearchLabAction(View):
         'province': forms.CharField(required=False, max_length=20),
         'field': forms.CharField(required=False, max_length=20),
     })
-    def get(self, request, offset=0, limit=10, province=None, field=None, **kwargs):
+    def get(self, request, offset=0, limit=10, province=None, field=None, name=None, **kwargs):
         """搜索与团队名或者动态名相关的动态列表
 
         :param offset: 偏移量
@@ -182,9 +184,9 @@ class SearchLabAction(View):
                 comment_count: 评论数
                 time_created: 创建时间
         """
-
-        r = LabAction.objects.filter(Q(entity__name__icontains=kwargs['name'])
-                                     | Q(action__icontains=kwargs['name']))
+        r = LabAction.objects.all()
+        if name is not None:
+            r = r.filter(Q(entity__name__icontains=name) | Q(action__icontains=name))
         if province is not None:
             r = r.filter(entity__province=province)
         if field is not None:

@@ -14,6 +14,7 @@ class AdminActivityAdd(View):
     @validate_args({
         'name': forms.CharField(max_length=50),
         'tags': forms.CharField(max_length=50),
+        'field': forms.CharField(max_length=50),
         'content': forms.CharField(max_length=1000),
         'time_started': forms.DateTimeField(),
         'time_ended': forms.DateTimeField(),
@@ -40,9 +41,7 @@ class AdminActivityAdd(View):
 
         stages = json.loads(kwargs['stages'])
         for st in stages:
-            activity.stages.create(status=int(st['status']), time_started=st['time_started'],
-                                   time_ended=st['time_ended'])
-
+            activity.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
         return JsonResponse({
             'code': 0
         })
