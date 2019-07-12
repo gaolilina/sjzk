@@ -14,6 +14,7 @@
 <script src="js/DatetimePicker-i18n-zh-CN.js"></script>
 <script src="js/jquery-confirm-3.0.3.min.js"></script>
 <script src="js/activity.js"></script>
+<script src="js/field.js"></script>
 <style type="text/css">
     @media (min-width: 700px){
         input[type="text"],input[type="textarea"],select{
@@ -44,8 +45,17 @@
         input[type="button"]{
             float:right;
         }
+        #select_field{
+            margin-bottom: 10px;
+        }
+        .btn-field{
+            margin-right: 8px;
+        }
         #add_stage{
             width: 100%;
+        }
+        .jconfirm .jconfirm-scrollpane{
+            margin-left: 10%;
         }
     }
 </style>
@@ -85,6 +95,8 @@
                 <option value="3">社会人员</option>
             </select>
         </td>
+        <td>领域：</td>
+        <td><select name="field" id="select_field"></select></td>
     </tr>
     <tr>
         <td>开始时间：</td>
@@ -133,6 +145,7 @@ var stage_count = 0;
 <div id="dtBox"></div>
     <script>
         const token = getRequest()["token"];
+        get_field('select_field');//获取初始化field
         $(document).ready(function() {
             setDateTimePicker();
             $('.dir_warn').click(function(e) {

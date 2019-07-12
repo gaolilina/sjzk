@@ -14,7 +14,7 @@
         </td>
     </tr>
     <tr>
-        <td>领域：</td>
+        <td>标签：</td>
         <td><input name="tags" type="text" value="{{ model.tags }}" maxlength="50" required/></td>
 
         <td>类型：</td>
@@ -45,6 +45,9 @@
                 <option value="3"{% if model.user_type == 3 %} selected="selected"{% endif %}>社会人员</option>
             </select>
         </td>
+
+        <td>领域：</td>
+        <td><select name="field" id="select_field"></select></td>
     </tr>
     <tr>
         <td>开始时间：</td>
@@ -116,8 +119,12 @@
         </td>
     </tr>
 </table>
+{% block js %}
+<script src="{% static 'js/activity.js' %}"></script>
+<script src="{% static 'js/field.js' %}"></script>
+{% endblock %}
 <script>
-console.log("{{model.stages}}");
+get_field('select_field','{{model.field}}');//获取初始化field
 var stage_count = {{ stages|length }};
 function verify_choose(id){
     $.confirm({
@@ -149,11 +156,10 @@ function verify_choose(id){
 function verify(id,result){
     $.post(base_url+'admin/activity/{{model.id}}/check/',{"result":result})
     .then(function() {
-        alert("审核成功");
-        window.location.reload();
+        showAlertReload('审核成功');
     })
     .fail(function() {
-        alert("审核失败");
+        showAlert('审核失败');
     });
 }
 
@@ -170,6 +176,3 @@ function verify(id,result){
 {% include 'parts/input_style.html' %}
 {% endblock %}
 
-{% block js %}
-<script src="{% static 'js/activity.js' %}"></script>
-{% endblock %}
