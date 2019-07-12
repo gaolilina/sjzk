@@ -16,3 +16,32 @@ function getRequest() {
   }
   return theRequest; 
 }
+
+/*jqueryUI
+*/
+function showAlert(info){
+  $.alert({
+        title: null,
+        content: info,
+        confirmButton: 'Okay',
+        columnClass:'width-300',
+        confirmButtonClass: 'btn-primary',
+        icon: 'fa fa-info',
+        animation: 'zoom',                                    
+        confirm: function(){}
+    });
+}
+function showAlertReload(info){
+  $.alert({
+        title: null,
+        content: info,
+        confirmButton: 'Okay',
+        columnClass:'width-300',
+        confirmButtonClass: 'btn-primary',
+        icon: 'fa fa-info',
+        animation: 'zoom',                                    
+        confirm: function(){
+            window.location.reload();
+        }
+    });
+}
