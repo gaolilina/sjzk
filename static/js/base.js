@@ -1,4 +1,5 @@
-const domain = window.location.host;
+var domain = window.location.host;
+if(domain.indexOf(':')==-1) domain += ':8000';
 const base_url = "http://"+domain+"/";
 
 function getRequest() { 
