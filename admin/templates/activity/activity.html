@@ -119,12 +119,10 @@
         </td>
     </tr>
 </table>
-{% block js %}
-<script src="{% static 'js/activity.js' %}"></script>
-<script src="{% static 'js/field.js' %}"></script>
-{% endblock %}
 <script>
-get_field('select_field','{{model.field}}');//获取初始化field
+$(document).ready(function() {
+    get_field('select_field','{{model.field}}');//获取初始化field
+});
 var stage_count = {{ stages|length }};
 function verify_choose(id){
     $.confirm({
@@ -176,3 +174,7 @@ function verify(id,result){
 {% include 'parts/input_style.html' %}
 {% endblock %}
 
+{% block js %}
+<script src="{% static 'js/activity.js' %}"></script>
+<script src="{% static 'js/field.js' %}"></script>
+{% endblock %}

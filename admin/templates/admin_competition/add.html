@@ -89,17 +89,16 @@
             </div>
         </td>
     </tr>
-{% block js %}
-<script src="{% static 'js/competition.js' %}"></script>
-<script src="{% static 'js/field.js' %}"></script>
-{% endblock %}
+
 <script>
     var stage_count = 0;
-    get_field('select_field');//获取初始化field
+    $(document).ready(function() {
+        get_field('select_field');//获取初始化field
+    });
 </script>
 </table>
-
 </form>
+
 {% endblock %}
 
 {% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %}
@@ -108,4 +107,9 @@
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/competition.js' %}"></script>
+<script src="{% static 'js/field.js' %}"></script>
 {% endblock %}

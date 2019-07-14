@@ -119,14 +119,12 @@
         </td>
     </tr>
 </table>
-{% block js %}
-<script src="{% static 'js/competition.js' %}"></script>
-<script src="{% static 'js/field.js' %}"></script>
-<!--script src="{% static 'js/ios/js/place.js' %}"></script-->
-{% endblock %}
 <script>
+$(document).ready(function() {
+    get_field('select_field','{{model.field}}');//获取初始化field
+});
 var stage_count = {{ stages|length }};
-get_field('select_field','{{model.field}}');//获取初始化field
+
 function verify_choose(id){
     $.confirm({
         title: null,
@@ -175,4 +173,10 @@ function verify(id,result){
 
 {% block css %}
 {% include 'parts/input_style.html' %}
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/competition.js' %}"></script>
+<script src="{% static 'js/field.js' %}"></script>
+<!--script src="{% static 'js/ios/js/place.js' %}"></script-->
 {% endblock %}
