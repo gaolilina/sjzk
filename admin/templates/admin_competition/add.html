@@ -12,7 +12,7 @@
     </tr>
     <tr>
         <td>详细内容：</td>
-        <td><textarea name="content" required></textarea></td>
+        <td colspan="3"><textarea name="content" required></textarea></td>
     </tr>
     <tr>
         <td>领域：</td>
@@ -89,16 +89,14 @@
             </div>
         </td>
     </tr>
-
+</table>
 <script>
     var stage_count = 0;
     $(document).ready(function() {
         get_field('select_field');//获取初始化field
     });
 </script>
-</table>
 </form>
-
 {% endblock %}
 
 {% block topbar %}{% include 'topbar.html' with tb='admin_competition' %}{% endblock %}

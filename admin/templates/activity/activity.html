@@ -70,7 +70,10 @@
         <td>机构：</td>
         <td><input name="unit" type="text" value="{{ model.unit }}"/></td>
     </tr>
-    
+    <tr>
+        <td>活动成果发布：</td>
+        <td colspan="3"><textarea name="achievement" maxlength="1000">{{ model.achievement }}</textarea></td>
+    </tr>
     <tr>
         <td>当前活动阶段：</td>
         <td>
@@ -102,10 +105,6 @@
             </td>
         </tr>
     {% endfor %}
-    <tr>
-        <td>活动成果发布：</td>
-        <td colspan="3"><textarea name="achievement" maxlength="1000">{{ model.achievement }}</textarea></td>
-    </tr>
     <tr>
         <td colspan="2">
             {{ msg }}
@@ -162,7 +161,6 @@ function verify(id,result){
 }
 
 </script>
-
 </form>
 {% endblock %}
 

@@ -59,7 +59,7 @@ function stage_gen(opt) {
 $(document).ready(function() {
     $('#add_stage').click(function() {
         var str = stage_template.replace('{{num}}', stage_count+1);
-        $("table tr:nth-last-child(2)").before(str);
+        $("table tr:nth-last-child(1)").before(str);
         stage_count++;
         stage_gen();
         setDateTimePicker();
