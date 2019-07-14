@@ -155,11 +155,10 @@ function verify_choose(id){
 function verify(id,result){
     $.post(base_url+'admin/competition/{{model.id}}/check/',{"result":result})
     .then(function() {
-        alert("审核成功");
-        window.location.reload();
+        showAlertReload('审核成功');
     })
     .fail(function() {
-        alert("审核失败");
+        showAlert('审核失败');
     });
 }
 </script>
