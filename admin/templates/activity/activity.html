@@ -109,10 +109,12 @@
         <td colspan="2">
             {{ msg }}
             <div class="buttons">
+                {% if model.state == 0 %}
                 <input type="submit" value="保存" />
                 <input type="reset" value="取消" />
-                {% if model.state == 0 %}
                 <input type="button" class="btn4 ml-10" value="审核" onclick="verify_choose({{model.id}})">
+                {% else %}
+                <input type="reset" value="取消" />
                 {% endif %}
             </div>
         </td>
