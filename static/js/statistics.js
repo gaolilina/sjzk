@@ -131,7 +131,11 @@ function show_statistics(paper_id,paper_name,paper_desc){
                     l_data_bar.push(og);
                     s_data_bar.push(origin_counts[og]);
                 }
-                statis_data = s_data;
+                statis_data = s_data.length==0?[{'name':'','value':0}]:s_data;
+            }
+            let person_count = 0;
+            for(let sd in statis_data){
+                person_count += statis_data[sd].value*1;
             }
             question_html += '<p>'+question.title+'：'+options_html+'</p>';
             let statis_data_length = statis_data.length;
@@ -139,7 +143,8 @@ function show_statistics(paper_id,paper_name,paper_desc){
             <td rowspan="'+statis_data_length+'">'+question.title+'</td>\
             <td rowspan="'+statis_data_length+'">'+type_list[question.type]+'</td>';
             for(let sd in statis_data){
-                let pecent = (statis_data[sd].value/statis_data_length*100).toFixed(2);
+                let pecent = (statis_data[sd].value/person_count*100).toFixed(2);
+                if(isNaN(pecent)) pecent = 0;
                 let tr = '<tr>';
                 if(sd == 0) {
                     tr = '';
