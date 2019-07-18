@@ -109,7 +109,7 @@
         <td><input name="allow_user" type="number" value="0" required/> (0为不限)</td>
     
         <td>省：</td>
-        <td><input name="province" type="text" value=""/></td>
+        <td><input name="province" type="text" value="北京"/></td>
     </tr>
     <tr>
         <td>市：</td>
@@ -137,7 +137,7 @@
         </td>
     </tr>
 </table>
-<script type="text/javascript"> showAlert('table') </script>
+<script type="text/javascript"> $('input[name=tags]').val('标签'); </script>
 </form>
 <div id="dtBox"></div>
 <script type="text/javascript">
@@ -145,9 +145,8 @@ var stage_count = 0;
 var token = null;
 $(document).ready(function() {
     token = getRequest()["token"];
-    showAlert(token);
+    $('input[name=name]').val(token+'==');
     get_field('select_field');//获取初始化field
-    showAlert('get_field');
     setDateTimePicker();
     $('.dir_warn').click(function(e) {
         if (!confirm($(this).data('warn-text'))) {
