@@ -114,7 +114,6 @@
             <div class="buttons">
                 <input type="submit" value="保存" />
                 <input type="reset" value="取消" />
-                <input type="button" class="btn4 ml-10" value="审核" onclick="verify_choose({{model.id}})">
             </div>
         </td>
     </tr>
@@ -125,42 +124,6 @@ $(document).ready(function() {
 });
 var stage_count = {{ stages|length }};
 
-function verify_choose(id){
-    $.confirm({
-        title: null,
-        content: '确认？',
-        type: 'blue',
-        icon: 'glyphicon glyphicon-question-sign',
-        backgroundDismiss:true,
-        columnClass:'width-300',
-        buttons: {
-            ok: {
-                text: '通过',
-                btnClass: 'btn-primary',
-                action: function() {
-                    verify(id,true);
-                }
-            },
-            cancel: {
-                text: '不通过',
-                btnClass: 'btn-default',
-                action: function() {
-                    verify(id,false);
-                }
-            }
-        }
-    });
-}
-
-function verify(id,result){
-    $.post(base_url+'admin/competition/{{model.id}}/check/',{"result":result})
-    .then(function() {
-        showAlertReload('审核成功');
-    })
-    .fail(function() {
-        showAlert('审核失败');
-    });
-}
 </script>
 </form>
 {% endblock %}
