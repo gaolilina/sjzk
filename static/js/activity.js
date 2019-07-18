@@ -1,5 +1,5 @@
 var stage_template = '<tr class="stage">\
-<td>活动阶段{{num}}：&nbsp;&nbsp;&nbsp;<input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /></td>\
+<td><b>活动阶段{{num}}</b>：&nbsp;&nbsp;&nbsp;<input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /></td>\
 <td>\
 类　　型：<select onchange="javascript:stage_gen()">\
     <option value="0">前期宣传</option>\
@@ -16,7 +16,7 @@ var stage_data = [];
 
 function stage_rerender() {
     $('.stage').each(function(idx, elem) {
-        $(elem).find('td:first-child').html('活动阶段'+(idx+1));
+        $(elem).find('td:first-child b').html('活动阶段'+(idx+1));
     });
 }
 
