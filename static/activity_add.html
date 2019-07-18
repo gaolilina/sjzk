@@ -67,7 +67,7 @@
         <td><input name="name" type="text" value="" maxlength="50" required/></td>
     </tr>
     <tr>
-        <td>领域：</td>
+        <td>标签：</td>
         <td><input name="tags" type="text" value="" maxlength="50" required/></td>
 
         <td>类型：</td>
@@ -137,70 +137,70 @@
         </td>
     </tr>
 </table>
+<script type="text/javascript"> showAlert('table') </script>
 </form>
 <div id="dtBox"></div>
-    <script>
-        var stage_count = 0;
-        var token = null;
-        $(document).ready(function() {
-            token = getRequest()["token"];
-            get_field('select_field');//获取初始化field
-            setDateTimePicker();
-            $('.dir_warn').click(function(e) {
-                if (!confirm($(this).data('warn-text'))) {
-                    e.preventDefault();
-                }
-            });
-        });
-        function displayPopup() {
-            if ($(document).width() >= 768) return false;
-            return false;
+<script type="text/javascript">
+var stage_count = 0;
+var token = null;
+$(document).ready(function() {
+    token = getRequest()["token"];
+    showAlert(token);
+    get_field('select_field');//获取初始化field
+    showAlert('get_field');
+    setDateTimePicker();
+    $('.dir_warn').click(function(e) {
+        if (!confirm($(this).data('warn-text'))) {
+            e.preventDefault();
         }
-        function setDateTimePicker() {
-            var bIsPopup = displayPopup();
-            $("#dtBox").DateTimePicker({
-                isPopup: bIsPopup,
-                language: 'zh-CN'
-            });
-        }
+    });
+});
 
-        $('form').submit(function(e) {
-            if ($('[name=time_started]').length > 0 && $('[name=time_end]').length > 0) {
-                if (new Date($('[name=time_started]').val()) > new Date($('[name=time_end]').val())) {
-                    e.preventDefault();
-                    alert('时间设置有误');
-                    return false;
-                }
-            }
-            if ($('[name=time_started]').length > 0 && $('[name=deadline]').length > 0) {
-                if (new Date($('[name=time_started]').val()) > new Date($('[name=deadline]').val())) {
-                    e.preventDefault();
-                    alert('时间设置有误');
-                    return false;
-                }
-            }
-            if ($('[name=deadline]').length > 0 && $('[name=time_end]').length > 0) {
-                if (new Date($('[name=deadline]').val()) > new Date($('[name=time_end]').val())) {
-                    e.preventDefault();
-                    alert('时间设置有误');
-                    return false;
-                }
-            }
-            $.ajax({
-                type: 'POST',
-                url: base_url+"web/activity/",
-                data:$('form').serialize(),
-                dataType: 'json',
-                headers: {'X-USER-TOKEN': token},
-                error:function(data) {alert("提交失败!");},
-                success: function(data){
-                    alert("提交成功！");
-                    window.location.reload();
-                }
-            });
+function setDateTimePicker() {
+    var bIsPopup = false;
+    $("#dtBox").DateTimePicker({
+        isPopup: bIsPopup,
+        language: 'zh-CN'
+    });
+}
+
+$('form').submit(function(e) {
+    if ($('[name=time_started]').length > 0 && $('[name=time_end]').length > 0) {
+        if (new Date($('[name=time_started]').val()) > new Date($('[name=time_end]').val())) {
+            e.preventDefault();
+            alert('时间设置有误');
             return false;
-        });
-    </script>
+        }
+    }
+    if ($('[name=time_started]').length > 0 && $('[name=deadline]').length > 0) {
+        if (new Date($('[name=time_started]').val()) > new Date($('[name=deadline]').val())) {
+            e.preventDefault();
+            alert('时间设置有误');
+            return false;
+        }
+    }
+    if ($('[name=deadline]').length > 0 && $('[name=time_end]').length > 0) {
+        if (new Date($('[name=deadline]').val()) > new Date($('[name=time_end]').val())) {
+            e.preventDefault();
+            alert('时间设置有误');
+            return false;
+        }
+    }
+    $.ajax({
+        type: 'POST',
+        url: base_url+"web/activity/",
+        data:$('form').serialize(),
+        dataType: 'json',
+        headers: {'X-USER-TOKEN': token},
+        error:function(data) {alert("提交失败!");},
+        success: function(data){
+            alert("提交成功！");
+            window.location.reload();
+        }
+    });
+    return false;
+});
+</script>
 </body>
 
 </html>
