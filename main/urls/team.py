@@ -24,8 +24,7 @@ urls = [
     # 成员
     url(r'^(?P<team_id>[0-9]+)/members/$', MemberList.as_view()),
     url(r'^(?P<team_id>[0-9]+)/members/(?P<user_id>[0-9]+)/$', Member.as_view()),
-    url(r'^(?P<team_id>[0-9]+)/member_requests/$',
-        MemberRequestList.as_view()),
+    url(r'^(?P<team_id>[0-9]+)/member_requests/$', MemberRequestList.as_view()),
     url(r'^(?P<team_id>[0-9]+)/member_requests/(?P<user_id>[0-9]+)/$', MemberRequest.as_view()),
     url(r'^(?P<team_id>[0-9]+)/invitations/(?P<user_id>[0-9]+)/$', Invitation.as_view()),
     # 动态

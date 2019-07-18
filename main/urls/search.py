@@ -4,6 +4,7 @@ from django.conf.urls import url, include
 
 from main.urls import action
 from main.views.search import SearchUser, SearchActivity, SearchCompetition, SearchTeam
+from main.views.search.achievement import SearchUserAchievement, SearchTeamAchievement
 from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
 
 urlpatterns = [
@@ -12,6 +13,8 @@ urlpatterns = [
     url(r'^team/$', SearchTeam.as_view()),
     url(r'^activity/$', SearchActivity.as_view()),
     url(r'^competition/$', SearchCompetition.as_view()),
+    url(r'^achievement/$', SearchUserAchievement.as_view()),
+    url(r'^achievement/team/$', SearchTeamAchievement.as_view()),
 
     url(r'^action/', include(action.urlpatterns)),
     url(r'^user_action/$', SearchUserAction.as_view()),

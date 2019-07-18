@@ -6,6 +6,7 @@ from django.views.generic import View
 
 from main.utils import abort, save_uploaded_image
 from main.utils.dfa import check_bad_words
+from main.views.search.achievement import SearchUserAchievement
 from ..models import Achievement
 from ..utils.decorators import *
 
@@ -34,47 +35,8 @@ class AchievementDoWhoView(View):
 class AllUserAchievementListView(View):
     ORDERS = ('time_created', '-time_created')
 
-    @require_token
-    @validate_args({
-        'offset': forms.IntegerField(required=False, min_value=0),
-        'limit': forms.IntegerField(required=False, min_value=0),
-        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-    })
     def get(self, request, offset=0, limit=10, order=1):
-        """获取所有用户发布的成果
-
-        :param offset: 偏移量
-        :param limit: 数量上限
-        :param order: 排序方式
-            0: 发布时间升序
-            1: 发布时间降序（默认值）
-        :return:
-            count: 成果总数
-            list: 成果列表
-                id: 成果ID
-                user_id: 团队ID
-                user_name: 团队名称
-                icon_url: 团队头像
-                description: 成果描述
-                picture: 图片
-                time_created: 发布时间
-        """
-        i, j, k = offset, offset + limit, self.ORDERS[order]
-        c = Achievement.objects.count()
-        achievements = Achievement.objects.filter(team=None).order_by(k)[i:j]
-        l = [{'id': a.id,
-              'user_id': a.user.id,
-              'user_name': a.user.unit1 if a.user.is_role_verified else a.user.name,
-              'icon_url': a.user.icon,
-              'description': a.description,
-              'picture': a.picture,
-              'time_created': a.time_created,
-              'yes_count': a.likers.count(),
-              'is_yes': request.user in a.likers.all(),
-              'require_count': a.requirers.count(),
-              'is_require': request.user in a.requirers.all(),
-              } for a in achievements]
-        return JsonResponse({'count': c, 'list': l})
+        return SearchUserAchievement().get(request, offset, limit, order)
 
     @require_role_token
     @validate_args({
