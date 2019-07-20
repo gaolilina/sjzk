@@ -73,7 +73,7 @@
 
         <td>类型：</td>
         <td>
-            <select name="type">
+            <select name="type" required>
                 <option value="" selected="selected">--请选择--</option>
                 <option value="0">会议</option>
                 <option value="1">讲座</option>
@@ -88,7 +88,7 @@
     <tr>
         <td>参与者类型：</td>
         <td>
-            <select name="user_type">
+            <select name="user_type" required>
                 <option value="0" selected="selected">不限</option>
                 <option value="1">学生</option>
                 <option value="2">教师</option>
@@ -100,24 +100,24 @@
     </tr>
     <tr>
         <td>开始时间：</td>
-        <td><input name="time_started" type="text" data-field="datetime" readonly value="" required/></td>
+        <td><input name="time_started" type="text" data-field="datetime" readonly required/></td>
     
         <td>结束时间：</td>
-        <td><input name="time_ended" type="text" data-field="datetime" readonly value="" required/></td>
+        <td><input name="time_ended" type="text" data-field="datetime" readonly required/></td>
     </tr>
     <tr>
         <td>省：</td>
-        <td><select name="province"></select></td>
+        <td><select name="province" required></select></td>
 
         <td>市：</td>
-        <td><select name="city"></select></td>
+        <td><select name="city" required></select></td>
     </tr>
     <tr>
         <td>人数上限：</td>
         <td><input name="allow_user" type="number" value="0" required/> (0为不限)</td>
 
         <td>机构：</td>
-        <td><input name="unit" type="text" value=""/></td>
+        <td><input name="unit" type="text" value="" required/></td>
     </tr>
     
     <tr>
@@ -125,7 +125,7 @@
         <td>
             <input name="stages" type="hidden" value="" required/>
             <input name="status" type="hidden" value="" required/>
-            <select id="status"></select>
+            <select id="status" required></select>
             <input id="add_stage" type="button" value="新增" style="margin-top: 0px;" />
         </td>
     </tr>
@@ -165,38 +165,51 @@ function setDateTimePicker() {
 }
 
 $('form').submit(function(e) {
-    if ($('[name=time_started]').length > 0 && $('[name=time_end]').length > 0) {
-        if (new Date($('[name=time_started]').val()) > new Date($('[name=time_end]').val())) {
+    if($('[name=time_started]').val()=="") {
+        showAlert('请设置开始时间');
+        return false;
+    }
+    if($('[name=time_ended]').val()=="") {
+        showAlert('请设置结束时间');
+        return false;
+    }
+    if ($('[name=time_started]').length > 0 && $('[name=time_ended]').length > 0) {
+        if (new Date($('[name=time_started]').val()) > new Date($('[name=time_ended]').val())) {
             e.preventDefault();
-            alert('时间设置有误');
+            showAlert('时间设置有误');
             return false;
         }
     }
-    if ($('[name=time_started]').length > 0 && $('[name=deadline]').length > 0) {
-        if (new Date($('[name=time_started]').val()) > new Date($('[name=deadline]').val())) {
-            e.preventDefault();
-            alert('时间设置有误');
+    var isSubmit = true;
+    $('.stage').each(function(idx, elem) {
+        if($(elem).find('input:nth(1)').val()==""){
+            showAlert('请设置阶段开始时间');
+            isSubmit = false;
             return false;
         }
-    }
-    if ($('[name=deadline]').length > 0 && $('[name=time_end]').length > 0) {
-        if (new Date($('[name=deadline]').val()) > new Date($('[name=time_end]').val())) {
-            e.preventDefault();
-            alert('时间设置有误');
+        if($(elem).find('input:nth(2)').val()==""){
+            showAlert('请设置阶段结束时间');
+            isSubmit = false;
             return false;
         }
-    }
-    $.ajax({
-        type: 'POST',
-        url: base_url+"web/activity/",
-        data:$('form').serialize(),
-        dataType: 'json',
-        headers: {'X-USER-TOKEN': token},
-        error:function(data) {showAlert('提交失败');},
-        success: function(data){
-            showAlertReload('提交成功');
+        if(new Date($(elem).find('input:nth(1)').val()) > new Date($(elem).find('input:nth(2)').val())){
+            showAlert('时间设置有误');
+            isSubmit = false;
+            return false;
         }
     });
+    if(isSubmit)
+        $.ajax({
+            type: 'POST',
+            url: base_url+"web/activity/",
+            data:$('form').serialize(),
+            dataType: 'json',
+            headers: {'X-USER-TOKEN': token},
+            error:function(data) {showAlert('提交失败');},
+            success: function(data){
+                showAlertReload('提交成功');
+            }
+        });
     return false;
 });
 </script>

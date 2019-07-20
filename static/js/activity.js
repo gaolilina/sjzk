@@ -40,7 +40,6 @@ function stage_gen(opt) {
             time_started: $(elem).find('input:nth(1)').val(),
             time_ended: $(elem).find('input:nth(2)').val()
         });
-        console.log(stage_data);
     });
     $('input[name=stages]').val(JSON.stringify(stage_data));
     if (!opt) {

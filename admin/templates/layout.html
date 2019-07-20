@@ -73,8 +73,16 @@
         }
 
         $('form').submit(function(e) {
-            if ($('[name=time_started]').length > 0 && $('[name=time_end]').length > 0) {
-                if (new Date($('[name=time_started]').val()) > new Date($('[name=time_end]').val())) {
+            if($('[name=time_started]').val()=="") {
+                showAlert('请设置开始时间');
+                return false;
+            }
+            if($('[name=time_ended]').val()=="") {
+                showAlert('请设置结束时间');
+                return false;
+            }
+            if ($('[name=time_started]').length > 0 && $('[name=time_ended]').length > 0) {
+                if (new Date($('[name=time_started]').val()) > new Date($('[name=time_ended]').val())) {
                     e.preventDefault();
                     alert('时间设置有误');
                     return false;
