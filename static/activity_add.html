@@ -198,7 +198,8 @@ $('form').submit(function(e) {
             return false;
         }
     });
-    if(isSubmit)
+    if(isSubmit){
+        $('input[type=submit]').prop('disabled',true);
         $.ajax({
             type: 'POST',
             url: base_url+"web/activity/",
@@ -208,12 +209,13 @@ $('form').submit(function(e) {
             error:function(data) {showAlert('提交失败');},
             success: function(data){
                 if(data.code==0){
-                    showAlertReload('提交成功');
+                    showAlert('提交成功');
                 } else{
                     showAlert(data.msg);
                 }
             }
         });
+    }
     return false;
 });
 </script>

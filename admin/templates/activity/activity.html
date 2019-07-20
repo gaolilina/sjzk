@@ -107,6 +107,7 @@
     {% endfor %}
     <tr>
         <td colspan="2">
+            {{msg}}
             <div class="buttons">
                 {% if model.state == 0 %}
                 <input type="submit" value="保存" />
@@ -155,7 +156,7 @@ function verify_choose(id){
 function verify(id,result){
     $.post(base_url+'admin/activity/{{model.id}}/check/',{"result":result})
     .then(function() {
-        showAlertReload('审核成功');
+        showAlert('审核成功');
     })
     .fail(function() {
         showAlert('审核失败');
