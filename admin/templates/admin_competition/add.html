@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="{% url 'admin:admin_competition:add' %}" method="post">
+<form role="form" action="{% url 'admin:admin_competition:add' %}" method="post" onSubmit="return form_check();">
 <table>
     <tr>
         <td>标题：</td>
@@ -16,7 +16,7 @@
     </tr>
     <tr>
         <td>领域：</td>
-        <td><select name="field" id="select_field"></select></td>
+        <td><select name="field" id="select_field" required></select></td>
     </tr>
     <!--<tr>
         <td>截至日期：</td>
@@ -30,18 +30,18 @@
         <td><input name="time_ended" type="text" data-field="datetime" readonly value="" required/></td>
     </tr>
     <tr>
-        <td>人数上限：</td>
-        <td><input name="allow_team" type="number" value="0" required/> (0为不限)</td>
-    
         <td>省：</td>
-        <td><input name="province" type="text" value=""/></td>
+        <td><select name="province" required></select></td>
+
+        <td>市：</td>
+        <td><select name="city" required></select></td>
     </tr>
     <tr>
-        <td>市：</td>
-        <td><input name="city" type="text" value=""/></td>
-    
+        <td>人数上限：</td>
+        <td><input name="allow_team" type="number" value="0" required/> (0为不限)</td>
+
         <td>机构：</td>
-        <td><input name="unit" type="text" value=""/></td>
+        <td><input name="unit" type="text" value="" required/></td>
     </tr>
     <tr>
         <td>团队最少人数：</td>
@@ -53,7 +53,7 @@
     <tr>
         <td>参与者类型：</td>
         <td>
-            <select name="user_type">
+            <select name="user_type" required>
                 <option value="0" selected="selected">不限</option>
                 <option value="1">学生</option>
                 <option value="2">教师</option>
@@ -82,7 +82,6 @@
     </tr>
     <tr>
         <td colspan="4">
-            {{ msg }}
             <div class="buttons">
                 <input type="submit" value="保存" />
                 <input type="reset" value="取消" />
@@ -91,10 +90,37 @@
     </tr>
 </table>
 <script>
-    var stage_count = 0;
-    $(document).ready(function() {
-        get_field('select_field');//获取初始化field
+var stage_count = 0;
+$(document).ready(function() {
+    get_field('select_field');//获取初始化field
+    get_province();//初始化省市
+});
+
+function form_check(){
+    isSubmit = true;
+    $('.stage').each(function(idx, elem) {
+        if($(elem).find('input:nth-of-type(2)').val()==""){
+            showAlert('请设置阶段开始时间');
+            isSubmit = false;
+            return false;
+        }
+        if($(elem).find('input:nth(3)').val()==""){
+            showAlert('请设置阶段结束时间');
+            isSubmit = false;
+            return false;
+        }
+        if(new Date($(elem).find('input:nth-of-type(2)').val()) > new Date($(elem).find('input:nth(3)').val())){
+            showAlert('时间设置有误');
+            isSubmit = false;
+            return false;
+        }
     });
+    if(isSubmit) return true;
+    else return false;
+}
+
+var msg = "{{ msg }}";
+if(msg!="") showAlert(msg);
 </script>
 </form>
 {% endblock %}
@@ -110,4 +136,5 @@
 {% block js %}
 <script src="{% static 'js/competition.js' %}"></script>
 <script src="{% static 'js/field.js' %}"></script>
+<script src="{% static 'js/province_city.js' %}"></script>
 {% endblock %}
