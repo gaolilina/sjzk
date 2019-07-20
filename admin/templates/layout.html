@@ -84,21 +84,21 @@
             if ($('[name=time_started]').length > 0 && $('[name=time_ended]').length > 0) {
                 if (new Date($('[name=time_started]').val()) > new Date($('[name=time_ended]').val())) {
                     e.preventDefault();
-                    alert('时间设置有误');
+                    showAlert('时间设置有误');
                     return false;
                 }
             }
             if ($('[name=time_started]').length > 0 && $('[name=deadline]').length > 0) {
                 if (new Date($('[name=time_started]').val()) > new Date($('[name=deadline]').val())) {
                     e.preventDefault();
-                    alert('时间设置有误');
+                    showAlert('时间设置有误');
                     return false;
                 }
             }
             if ($('[name=deadline]').length > 0 && $('[name=time_end]').length > 0) {
                 if (new Date($('[name=deadline]').val()) > new Date($('[name=time_end]').val())) {
                     e.preventDefault();
-                    alert('时间设置有误');
+                    showAlert('时间设置有误');
                     return false;
                 }
             }
