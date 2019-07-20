@@ -37,9 +37,10 @@ function stage_gen(opt) {
     $('.stage').each(function(idx, elem) {
         stage_data.push({
             status: +$(elem).find('select').val(),
-            time_started: $(elem).find('input:nth-of-type(2)').val(),
-            time_ended: $(elem).find('input:nth-of-type(3)').val()
+            time_started: $(elem).find('input:nth(1)').val(),
+            time_ended: $(elem).find('input:nth(2)').val()
         });
+        console.log(stage_data);
     });
     $('input[name=stages]').val(JSON.stringify(stage_data));
     if (!opt) {

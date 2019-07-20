@@ -16,6 +16,7 @@
 <script src="js/jquery-confirm-3.0.3.min.js"></script>
 <script src="js/activity.js"></script>
 <script src="js/field.js"></script>
+<script src="js/province_city.js"></script>
 <style type="text/css">
     input[type="text"],input[type="textarea"],select{
         width: 300px;
@@ -105,16 +106,16 @@
         <td><input name="time_ended" type="text" data-field="datetime" readonly value="" required/></td>
     </tr>
     <tr>
-        <td>人数上限：</td>
-        <td><input name="allow_user" type="number" value="0" required/> (0为不限)</td>
-    
         <td>省：</td>
-        <td><input name="province" type="text" value="北京"/></td>
+        <td><select name="province"></select></td>
+
+        <td>市：</td>
+        <td><select name="city"></select></td>
     </tr>
     <tr>
-        <td>市：</td>
-        <td><input name="city" type="text" value=""/></td>
-    
+        <td>人数上限：</td>
+        <td><input name="allow_user" type="number" value="0" required/> (0为不限)</td>
+
         <td>机构：</td>
         <td><input name="unit" type="text" value=""/></td>
     </tr>
@@ -137,16 +138,16 @@
         </td>
     </tr>
 </table>
-<script type="text/javascript"> $('input[name=tags]').val('标签'); </script>
 </form>
 <div id="dtBox"></div>
+
 <script type="text/javascript">
 var stage_count = 0;
 var token = null;
 $(document).ready(function() {
     token = getRequest()["token"];
-    $('input[name=name]').val(token+'==');
     get_field('select_field');//获取初始化field
+    get_province();//初始化省市
     setDateTimePicker();
     $('.dir_warn').click(function(e) {
         if (!confirm($(this).data('warn-text'))) {
@@ -191,10 +192,9 @@ $('form').submit(function(e) {
         data:$('form').serialize(),
         dataType: 'json',
         headers: {'X-USER-TOKEN': token},
-        error:function(data) {alert("提交失败!");},
+        error:function(data) {showAlert('提交失败');},
         success: function(data){
-            alert("提交成功！");
-            window.location.reload();
+            showAlertReload('提交成功');
         }
     });
     return false;
