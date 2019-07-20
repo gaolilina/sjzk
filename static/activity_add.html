@@ -165,6 +165,7 @@ function setDateTimePicker() {
 }
 
 $('form').submit(function(e) {
+    alert($('[name=stages]').val());
     if($('[name=time_started]').val()=="") {
         showAlert('请设置开始时间');
         return false;
@@ -205,7 +206,7 @@ $('form').submit(function(e) {
             data:$('form').serialize(),
             dataType: 'json',
             headers: {'X-USER-TOKEN': token},
-            error:function(data) {showAlert('提交失败');},
+            error:function(data) {alert(data);showAlert('提交失败');},
             success: function(data){
                 showAlertReload('提交成功');
             }
