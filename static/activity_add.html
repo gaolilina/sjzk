@@ -206,7 +206,7 @@ $('form').submit(function(e) {
             data:$('form').serialize(),
             dataType: 'json',
             headers: {'X-USER-TOKEN': token},
-            error:function(data) {alert(data);showAlert('提交失败');},
+            error:function(data) {alert(JSON.stringify(data));showAlert('提交失败');},
             success: function(data){
                 showAlertReload('提交成功');
             }
