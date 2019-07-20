@@ -64,7 +64,7 @@ class ActivityView(View):
                 model.stages.create(status=int(st['status']), time_started=st['time_started'],
                                     time_ended=st['time_ended'])
 
-        template = loader.get_template("admin_activity/edit.html")
+        template = loader.get_template("activity/activity.html")
         context = Context({'model': model, 'msg': '保存成功', 'user': request.user,
                            'stages': ActivityStage.objects.filter(activity=model)})
         return HttpResponse(template.render(context))
