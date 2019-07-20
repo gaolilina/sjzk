@@ -40,6 +40,8 @@ class AdminActivityAdd(View):
         activity.save()
 
         stages = json.loads(kwargs['stages'])
+        print(kwargs['stages'])
+        print(stages)
         for st in stages:
             activity.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
         return JsonResponse({
