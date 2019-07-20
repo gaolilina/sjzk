@@ -30,7 +30,10 @@ class AdminActivityAdd(View):
     def post(self, request, **kwargs):
         user = request.user
         if kwargs['type'] not in Activity.TYPES:
-            return HttpResponseForbidden()
+            return JsonResponse({
+            'code': -1,
+            'msg':'%s不在范围内'%str(kwargs['type'])
+        })
 
         activity = Activity(owner_user=user)
 

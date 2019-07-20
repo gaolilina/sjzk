@@ -206,9 +206,13 @@ $('form').submit(function(e) {
             data:$('form').serialize(),
             dataType: 'json',
             headers: {'X-USER-TOKEN': token},
-            error:function(data) {alert(JSON.stringify(data));showAlert('提交失败');},
+            error:function(data) {showAlert('提交失败');},
             success: function(data){
-                showAlertReload('提交成功');
+                if(data.code==-1){
+                    showAlert(data.msg);
+                } else{
+                    showAlertReload('提交成功');
+                }
             }
         });
     return false;
