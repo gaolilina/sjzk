@@ -43,6 +43,11 @@ def add_sys_op():
     user.phone_number = '18301018512'
     user.role = 'z'
     user.save_and_generate_name()
+    from modellib.models.control.system_role import CMSRole
+    role = CMSRole(id=CMSRole.ID_ADMIN, name='admin', enable=True, category='admin', level=0)
+    role.save()
+    user.system_role = role
+    user.save()
 
 
 if __name__ == "__main__":

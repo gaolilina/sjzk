@@ -10,9 +10,11 @@ from admin.utils.decorators import *
 
 from admin.models.admin_user import AdminUser
 
+
 class Main(View):
     def get(self, request):
         return HttpResponseRedirect(reverse("admin:admin_users:info"))
+
 
 class Login(View):
     def get(self, request):
@@ -28,9 +30,11 @@ class Login(View):
         try:
             user = AdminUser.enabled.get(username=username)
             if user.check_password(password):
+                user.update_token()
                 response = HttpResponseRedirect(reverse("admin:admin_users:info"))
                 response.set_cookie("usr", username)
                 response.set_cookie("pwd", user.password[18:24])
+                response.set_cookie("token", user.token)
                 return response
             else:
                 template = loader.get_template("login.html")
@@ -40,6 +44,7 @@ class Login(View):
             template = loader.get_template("login.html")
             context = Context({'msg': '无此用户'})
             return HttpResponseForbidden(template.render(context))
+
 
 class Register(View):
     @require_cookie

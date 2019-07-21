@@ -123,7 +123,7 @@ def validate_args(d):
     return decorator
 
 
-def fetch_object(model, object_name):
+def fetch_object(model, object_name, key_name=None):
     """根据参数 "xxx_id" 在执行view函数前提前取出某个模型实例，
     作为参数 "xxx" 传入，若对象不存在则直接返回404 Not Found；
     若关键字参数中没有 "xxx_id" 则忽略
@@ -132,10 +132,10 @@ def fetch_object(model, object_name):
     def decorator(function):
         @wraps(function)
         def inner(*args, **kwargs):
-            arg = object_name + '_id'
+            arg = object_name + '_id' if key_name is None else key_name
             if arg in kwargs:
                 try:
-                    obj_id = int(kwargs.pop(arg))
+                    obj_id = kwargs.pop(arg)
                     obj = model.get(id=obj_id)
                 except ObjectDoesNotExist:
                     abort(404)

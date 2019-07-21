@@ -6,7 +6,6 @@ from django.utils import timezone
 
 from ..models import EnabledManager
 
-
 __all__ = ['AdminUser']
 
 
@@ -17,8 +16,13 @@ class AdminUser(models.Model):
     username = models.CharField(max_length=20, unique=True, db_index=True)
     password = models.CharField(max_length=128)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
+    # 角色，弃用，以后使用 system_role 那套系统
     # a - 竞赛, b - 活动, c - 广告, x - 运营 , y - 管理, z - 超级管理
     role = models.CharField(default='', max_length=26)
+    # 系统角色
+    system_role = models.ForeignKey('modellib.CMSRole', related_name='users', default=None)
+    # token
+    token = models.CharField(max_length=254, default='')
 
     name = models.CharField(max_length=15, default='', db_index=True)
     icon = models.CharField(max_length=100, default='')
@@ -56,12 +60,16 @@ class AdminUser(models.Model):
 
     def can_a(self):
         return self.premission_chk('a')
+
     def can_b(self):
         return self.premission_chk('b')
+
     def can_x(self):
         return self.premission_chk('x')
+
     def can_y(self):
         return self.premission_chk('y')
+
     def can_z(self):
         return self.premission_chk('z')
 
@@ -82,3 +90,11 @@ class AdminUser(models.Model):
             elif target in self.role:
                 return True
         return False
+
+    def update_token(self):
+        """更新用户令牌"""
+
+        random_content = self.phone_number + timezone.now().isoformat()
+        hasher = hashlib.md5()
+        hasher.update(random_content.encode())
+        self.token = hasher.hexdigest()

@@ -5,11 +5,13 @@ from . import user, current_user, team, forum, activity, competition, system, la
     friend
 from admin.urls import urlpatterns as admin_urls
 from web.urls import urlpatterns as web_urls
+from cms.urls import urlpatterns as cms_urls
 
 urlpatterns = [
     # 这两个是导入其他工程
     url(r'^admin/', include(admin_urls, namespace='admin')),
     url(r'^web/', include(web_urls, namespace='web')),
+    url(r'^cms/', include(cms_urls)),
 
     # 当前工程 url
     url(r'^users/', include(user.urls, namespace='user')),

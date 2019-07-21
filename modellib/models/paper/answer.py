@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-from django.utils import timezone
 
 from django.db import models
 
@@ -12,4 +11,4 @@ class PaperAnswer(models.Model):
     paper = models.ForeignKey('Paper', related_name='answers')
     content = models.TextField()
     user = models.ForeignKey('main.User', related_name='answers', default=None)
-    time_created = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    time_created = models.DateTimeField(auto_now_add=True)
