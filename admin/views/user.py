@@ -8,12 +8,13 @@ from admin.utils.decorators import *
 from main.models.action import UserAction, UserActionLiker, UserActionComment
 from main.models.user import *
 from util.decorator.auth import admin_auth
+from util.decorator.permission import admin_permission
 
 
 class UserView(View):
-    @fetch_record(User.objects, 'mod', 'id')
     @admin_auth
-    @require_role('yz')
+    @admin_permission('userInfo')
+    @fetch_record(User.objects, 'mod', 'id')
     def get(self, request, mod):
         template = loader.get_template("user/user.html")
         context = Context({'mod': mod, 'user': request.user})
