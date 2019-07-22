@@ -7,11 +7,12 @@ from django.views.generic import View
 from admin.models.admin_user import *
 
 from admin.utils.decorators import *
+from util.decorator.auth import admin_auth
 
 
 class AdminUserView(View):
     @fetch_record(AdminUser.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("admin_user/admin_user.html")
@@ -19,7 +20,7 @@ class AdminUserView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(AdminUser.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('z')
     @validate_args2({
         'is_enabled': forms.BooleanField(required=False),
@@ -50,7 +51,7 @@ class AdminUserView(View):
 
 
 class AdminUserList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),

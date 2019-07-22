@@ -98,3 +98,4 @@ class AdminUser(models.Model):
         hasher = hashlib.md5()
         hasher.update(random_content.encode())
         self.token = hasher.hexdigest()
+        self.save()

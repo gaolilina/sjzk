@@ -8,7 +8,8 @@ from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.template import loader, Context
 from django.views.generic.base import View
 
-from admin.utils.decorators import require_cookie, require_role, validate_args2
+from admin.utils.decorators import require_role, validate_args2
+from util.decorator.auth import admin_auth
 from main.utils import abort
 from main.utils.decorators import fetch_object, validate_args
 from modellib.models.paper.paper import Paper
@@ -16,7 +17,7 @@ from modellib.models.paper.paper import Paper
 
 class PaperAdd(View):
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     def get(self, request):
         template = loader.get_template("paper/add.html")
@@ -25,7 +26,7 @@ class PaperAdd(View):
         })
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50),
@@ -54,7 +55,7 @@ class PaperAdd(View):
 
 class PaperList(View):
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args2({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -86,7 +87,7 @@ class PaperList(View):
 
 class PaperDetail(View):
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args({
         'paper_id': forms.IntegerField(min_value=0),
@@ -101,7 +102,7 @@ class PaperDetail(View):
         })
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args({
         'paper_id': forms.IntegerField(min_value=0),
@@ -141,7 +142,7 @@ class PaperDetail(View):
 
 class PaperSwitch(View):
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args({
         'paper_id': forms.IntegerField(min_value=0),

@@ -15,10 +15,11 @@ from admin.models.admin_user import AdminUser
 
 from admin.utils.decorators import *
 from main.utils import *
+from util.decorator.auth import admin_auth
 
 
 class AdminCompetitionAdd(View):
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     def get(self, request):
         template = loader.get_template("admin_competition/add.html")
@@ -28,7 +29,7 @@ class AdminCompetitionAdd(View):
         })
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50),
@@ -78,7 +79,7 @@ class AdminCompetitionAdd(View):
 
 class AdminCompetitionEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     def get(self, request, model):
         # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
@@ -96,7 +97,7 @@ class AdminCompetitionEdit(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(Competition.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
@@ -155,7 +156,7 @@ class AdminCompetitionEdit(View):
 
 
 class AdminCompetitionList(View):
-    @require_cookie
+    @admin_auth
     @require_role('axyz')
     def get(self, request):
         try:
@@ -173,7 +174,7 @@ class AdminCompetitionList(View):
 
 class AdminCompetitionView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('axyz')
     def get(self, request, model):
         # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
@@ -187,7 +188,7 @@ class AdminCompetitionView(View):
 
 class AdminCompetitionFilesView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('axyz')
     def get(self, request, model, status):
         # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
@@ -212,7 +213,7 @@ class AdminCompetitionFilesView(View):
 
 class AdminCompetitionExcelView(View):
     @fetch_record(Competition.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('axyz')
     def get(self, request, model):
         # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
@@ -226,7 +227,7 @@ class AdminCompetitionExcelView(View):
 
 class AdminCompetitionAwardEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('axyz')
     def get(self, request, model):
         # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
@@ -237,7 +238,7 @@ class AdminCompetitionAwardEdit(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(Competition.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('axyz')
     @validate_args2({
         'awards': forms.CharField(),
@@ -262,7 +263,7 @@ class AdminCompetitionAwardEdit(View):
 class CompetitionFileExpert(View):
     @fetch_object(Competition.enabled, 'competition')
     @fetch_object(Team.enabled, 'team')
-    @require_cookie
+    @admin_auth
     @validate_args({
         'expert_id': forms.IntegerField(),
     })
@@ -277,7 +278,7 @@ class CompetitionFileExpert(View):
 
 class CompetitionExpertList(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_cookie
+    @admin_auth
     @validate_args({
         'api': forms.IntegerField(required=False),
     })
@@ -325,7 +326,7 @@ class CompetitionExpertList(View):
         return HttpResponse(template.render(context))
 
     @fetch_object(Competition.enabled, 'competition')
-    @require_cookie
+    @admin_auth
     @validate_args({
         'expert_id': forms.IntegerField(),
     })
@@ -337,7 +338,7 @@ class CompetitionExpertList(View):
 
 class CompetitionTeamFinal(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_cookie
+    @admin_auth
     @validate_args({
         'team_id': forms.CharField(),
     })
@@ -350,7 +351,7 @@ class CompetitionTeamFinal(View):
 
 class CompetitionTeamList(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_cookie
+    @admin_auth
     @validate_args({
         'final': forms.BooleanField(required=False),
     })

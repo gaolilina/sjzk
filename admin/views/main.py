@@ -5,10 +5,10 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.template import loader, Context
 from django.views.generic import View
 
-from main.utils.decorators import validate_args
-from admin.utils.decorators import *
-
 from admin.models.admin_user import AdminUser
+from admin.utils.decorators import *
+from main.utils.decorators import validate_args
+from util.decorator.auth import admin_auth
 
 
 class Main(View):
@@ -32,8 +32,6 @@ class Login(View):
             if user.check_password(password):
                 user.update_token()
                 response = HttpResponseRedirect(reverse("admin:admin_users:info"))
-                response.set_cookie("usr", username)
-                response.set_cookie("pwd", user.password[18:24])
                 response.set_cookie("token", user.token)
                 return response
             else:
@@ -47,14 +45,14 @@ class Login(View):
 
 
 class Register(View):
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     def get(self, request):
         template = loader.get_template("register.html")
         context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args({
         'username': forms.CharField(),

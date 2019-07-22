@@ -4,7 +4,8 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic.base import View
 
-from admin.utils.decorators import require_cookie, require_role
+from admin.utils.decorators import require_role
+from util.decorator.auth import admin_auth
 from main.models import Activity
 from main.utils import abort
 from main.utils.decorators import fetch_object, validate_args
@@ -12,7 +13,7 @@ from main.utils.decorators import fetch_object, validate_args
 
 class ActivityCheck(View):
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args({
         'activity_id': forms.IntegerField(),

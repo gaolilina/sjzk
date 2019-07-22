@@ -6,35 +6,9 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from main.utils import abort
-from admin.models.admin_user import AdminUser
 from admin.models.operation_log import OperationLog
 
-__all__ = ['require_cookie', 'require_role', 'fetch_record', 'validate_args2', 'admin_log']
-
-
-def require_cookie(function):
-    """验证cookie，对非登陆用户跳转到登陆页面
-    """
-
-    @wraps(function)
-    def decorator(self, request, *args, **kwargs):
-        username = request.COOKIES.get('usr')
-        password = request.COOKIES.get('pwd')
-        if not username:
-            return HttpResponseRedirect(reverse("admin:login"))
-        try:
-            user = AdminUser.objects.get(username=username)
-            if user.is_enabled:
-                if user.password[18:24] == password:
-                    request.user = user
-                    return function(self, request, *args, **kwargs)
-                else:
-                    return HttpResponseRedirect(reverse("admin:login"))
-            return HttpResponseRedirect(reverse("admin:login"))
-        except AdminUser.DoesNotExist:
-            return HttpResponseRedirect(reverse("admin:login"))
-
-    return decorator
+__all__ = ['require_role', 'fetch_record', 'validate_args2', 'admin_log']
 
 
 def require_role(role=None):

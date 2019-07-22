@@ -5,23 +5,22 @@ from django.views.generic import View
 
 import json
 
-from main.utils import abort
-from main.utils.decorators import validate_args
 from main.models.activity import *
 from admin.models.activity_owner import *
 
 from admin.utils.decorators import *
+from util.decorator.auth import admin_auth
 
 
 class AdminActivityAdd(View):
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     def get(self, request):
         template = loader.get_template("admin_activity/add.html")
         context = Context({'user': request.user})
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50),
@@ -66,7 +65,7 @@ class AdminActivityAdd(View):
 
 class AdminActivityEdit(View):
     @fetch_record(Activity.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     def get(self, request, model):
         if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
@@ -78,7 +77,7 @@ class AdminActivityEdit(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(Activity.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
@@ -129,7 +128,7 @@ class AdminActivityEdit(View):
 
 
 class AdminActivityList(View):
-    @require_cookie
+    @admin_auth
     @require_role('bxyz')
     def get(self, request):
         try:
@@ -144,7 +143,7 @@ class AdminActivityList(View):
 
 class AdminActivityView(View):
     @fetch_record(Activity.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('bxyz')
     def get(self, request, model):
         if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:
@@ -158,7 +157,7 @@ class AdminActivityView(View):
 
 class AdminActivityExcelView(View):
     @fetch_record(Activity.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('bxyz')
     def get(self, request, model):
         if len(ActivityOwner.objects.filter(activity=model, user=request.user)) == 0:

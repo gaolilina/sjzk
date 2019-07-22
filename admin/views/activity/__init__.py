@@ -10,10 +10,11 @@ from django.views.generic import View
 
 from admin.utils.decorators import *
 from main.models.activity import *
+from util.decorator.auth import admin_auth
 
 
 class ActivityView(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @fetch_record(Activity.objects, 'mod', 'id')
     def get(self, request, mod):
@@ -21,7 +22,7 @@ class ActivityView(View):
         context = Context({'model': mod, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=mod)})
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args2({
         'name': forms.CharField(max_length=50, required=False),
@@ -71,7 +72,7 @@ class ActivityView(View):
 
 
 class ActivityList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -115,7 +116,7 @@ class ActivityList(View):
 
 class ActivityCommentView(View):
     @fetch_record(ActivityComment.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("activity/activity_comment.html")
@@ -123,7 +124,7 @@ class ActivityCommentView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(ActivityComment.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -141,7 +142,7 @@ class ActivityCommentView(View):
 
 
 class ActivityCommentList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -186,7 +187,7 @@ class ActivityCommentList(View):
 
 class ActivityLikerView(View):
     @fetch_record(ActivityLiker.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("activity/activity_liker.html")
@@ -194,7 +195,7 @@ class ActivityLikerView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(ActivityLiker.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -212,7 +213,7 @@ class ActivityLikerView(View):
 
 
 class ActivityLikerList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -257,7 +258,7 @@ class ActivityLikerList(View):
 
 class ActivityStageView(View):
     @fetch_record(ActivityStage.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("activity/activity_stage.html")
@@ -265,7 +266,7 @@ class ActivityStageView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(ActivityStage.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'status': forms.IntegerField(required=False, ), 'time_started': forms.DateTimeField(required=False, ),
@@ -284,7 +285,7 @@ class ActivityStageView(View):
 
 
 class ActivityStageList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -329,7 +330,7 @@ class ActivityStageList(View):
 
 class ActivityUserParticipatorView(View):
     @fetch_record(ActivityUserParticipator.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("activity/activity_user_participator.html")
@@ -337,7 +338,7 @@ class ActivityUserParticipatorView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(ActivityUserParticipator.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -355,7 +356,7 @@ class ActivityUserParticipatorView(View):
 
 
 class ActivityUserParticipatorList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),

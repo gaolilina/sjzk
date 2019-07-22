@@ -1,6 +1,7 @@
 from functools import wraps
 
-from django.http import JsonResponse
+from django.core.urlresolvers import reverse
+from django.http import JsonResponse, HttpResponseRedirect
 
 from admin.models import AdminUser
 
@@ -23,6 +24,25 @@ def cms_auth(function):
                 'code': -4
             })
         # 用户正常
+        request.user = user
+        return function(self, request, *args, **kwargs)
+
+    return decorator
+
+
+def admin_auth(function):
+    """验证cookie，对非登陆用户跳转到登陆页面
+    """
+
+    @wraps(function)
+    def decorator(self, request, *args, **kwargs):
+        token = request.COOKIES.get('token')
+        if not token or AdminUser.objects.filter(token=token).count() <= 0:
+            return HttpResponseRedirect(reverse("admin:login"))
+        user = AdminUser.objects.get(token=token)
+        if not user.is_enabled:
+            return HttpResponseRedirect(reverse("admin:login"))
+        # 用户验证通过
         request.user = user
         return function(self, request, *args, **kwargs)
 

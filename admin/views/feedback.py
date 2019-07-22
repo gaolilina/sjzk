@@ -1,33 +1,36 @@
 from django import forms
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
-from main.models.report import Report as ReportModel
-from main.models.user import User, UserFeedback
-from main.models.system import System
-
 from admin.utils.decorators import *
+from main.models.report import Report as ReportModel
+from main.models.system import System
+from main.models.user import User, UserFeedback
+from util.decorator.auth import admin_auth
+
 
 class Feedback(View):
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     def get(self, request):
         template = loader.get_template("feedback/feedback.html")
         context = Context({'list': UserFeedback.objects.all(), 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class Report(View):
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     def get(self, request):
         template = loader.get_template("feedback/report.html")
         context = Context({'list': ReportModel.enabled.all(), 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class ReportDeal(View):
     @fetch_record(ReportModel.enabled, 'model', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args2({
         'ban': forms.CharField(),

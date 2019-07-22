@@ -4,16 +4,16 @@ from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
-from main.models import Achievement
-from main.models.team import *
-from main.models.action import TeamAction, TeamActionComment, TeamActionLiker
-
 from admin.utils.decorators import *
+from main.models import Achievement
+from main.models.action import TeamAction, TeamActionComment, TeamActionLiker
+from main.models.team import *
+from util.decorator.auth import admin_auth
 
 
 class ExternalTaskView(View):
     @fetch_record(ExternalTask.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/external_task.html")
@@ -21,7 +21,7 @@ class ExternalTaskView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(ExternalTask.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'title': forms.CharField(max_length=20, ), 'content': forms.CharField(required=False, ),
@@ -44,7 +44,7 @@ class ExternalTaskView(View):
 
 
 class ExternalTaskList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -85,7 +85,7 @@ class ExternalTaskList(View):
 
 class InternalTaskView(View):
     @fetch_record(InternalTask.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/internal_task.html")
@@ -93,7 +93,7 @@ class InternalTaskView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(InternalTask.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'title': forms.CharField(max_length=20, ), 'content': forms.CharField(required=False, ),
@@ -114,7 +114,7 @@ class InternalTaskView(View):
 
 
 class InternalTaskList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -155,7 +155,7 @@ class InternalTaskList(View):
 
 class TeamView(View):
     @fetch_record(Team.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team.html")
@@ -163,7 +163,7 @@ class TeamView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(Team.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'name': forms.CharField(max_length=20, ), 'icon': forms.CharField(max_length=100, required=False, ),
@@ -189,7 +189,7 @@ class TeamView(View):
 
 
 class TeamList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -230,7 +230,7 @@ class TeamList(View):
 
 class TeamAchievementView(View):
     @fetch_record(Achievement.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_achievement.html")
@@ -238,7 +238,7 @@ class TeamAchievementView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(Achievement.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'description': forms.CharField(max_length=100, required=False, ),
@@ -258,7 +258,7 @@ class TeamAchievementView(View):
 
 
 class TeamAchievementList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -299,7 +299,7 @@ class TeamAchievementList(View):
 
 
 class TeamActionView(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @fetch_record(TeamAction.objects, 'mod', 'id')
     def get(self, request, mod):
@@ -307,7 +307,7 @@ class TeamActionView(View):
         context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'action': forms.CharField(max_length=20, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -329,7 +329,7 @@ class TeamActionView(View):
 
 
 class TeamActionList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -369,7 +369,7 @@ class TeamActionList(View):
 
 
 class TeamActionCommentView(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @fetch_record(TeamActionComment.objects, 'mod', 'id')
     def get(self, request, mod):
@@ -377,7 +377,7 @@ class TeamActionCommentView(View):
         context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -396,7 +396,7 @@ class TeamActionCommentView(View):
 
 
 class TeamActionCommentList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -437,7 +437,7 @@ class TeamActionCommentList(View):
 
 
 class TeamActionLikerView(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @fetch_record(TeamActionLiker.objects, 'mod', 'id')
     def get(self, request, mod):
@@ -445,7 +445,7 @@ class TeamActionLikerView(View):
         context = Context({'mod': mod, 'user': request.user})
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -464,7 +464,7 @@ class TeamActionLikerView(View):
 
 
 class TeamActionLikerList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -506,7 +506,7 @@ class TeamActionLikerList(View):
 
 class TeamCommentView(View):
     @fetch_record(TeamComment.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_comment.html")
@@ -514,7 +514,7 @@ class TeamCommentView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamComment.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -532,7 +532,7 @@ class TeamCommentView(View):
 
 
 class TeamCommentList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -573,7 +573,7 @@ class TeamCommentList(View):
 
 class TeamFeatureView(View):
     @fetch_record(TeamFeature.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_feature.html")
@@ -581,7 +581,7 @@ class TeamFeatureView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamFeature.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'data': forms.CharField(required=False, ),
@@ -599,7 +599,7 @@ class TeamFeatureView(View):
 
 
 class TeamFeatureList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -640,7 +640,7 @@ class TeamFeatureList(View):
 
 class TeamFollowerView(View):
     @fetch_record(TeamFollower.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_follower.html")
@@ -648,7 +648,7 @@ class TeamFollowerView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamFollower.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -666,7 +666,7 @@ class TeamFollowerView(View):
 
 
 class TeamFollowerList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -707,7 +707,7 @@ class TeamFollowerList(View):
 
 class TeamInvitationView(View):
     @fetch_record(TeamInvitation.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_invitation.html")
@@ -715,7 +715,7 @@ class TeamInvitationView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamInvitation.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'description': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -733,7 +733,7 @@ class TeamInvitationView(View):
 
 
 class TeamInvitationList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -774,7 +774,7 @@ class TeamInvitationList(View):
 
 class TeamLikerView(View):
     @fetch_record(TeamLiker.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_liker.html")
@@ -782,7 +782,7 @@ class TeamLikerView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamLiker.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -800,7 +800,7 @@ class TeamLikerView(View):
 
 
 class TeamLikerList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -841,7 +841,7 @@ class TeamLikerList(View):
 
 class TeamMemberView(View):
     @fetch_record(TeamMember.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_member.html")
@@ -849,7 +849,7 @@ class TeamMemberView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamMember.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -867,7 +867,7 @@ class TeamMemberView(View):
 
 
 class TeamMemberList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -908,7 +908,7 @@ class TeamMemberList(View):
 
 class TeamMemberRequestView(View):
     @fetch_record(TeamMemberRequest.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_member_request.html")
@@ -916,7 +916,7 @@ class TeamMemberRequestView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamMemberRequest.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'description': forms.CharField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -934,7 +934,7 @@ class TeamMemberRequestView(View):
 
 
 class TeamMemberRequestList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -976,7 +976,7 @@ class TeamMemberRequestList(View):
 
 class TeamNeedView(View):
     @fetch_record(TeamNeed.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_need.html")
@@ -984,7 +984,7 @@ class TeamNeedView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamNeed.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'type': forms.IntegerField(required=False, ), 'title': forms.CharField(required=False, ),
@@ -1014,7 +1014,7 @@ class TeamNeedView(View):
 
 
 class TeamNeedList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -1055,7 +1055,7 @@ class TeamNeedList(View):
 
 class TeamScoreView(View):
     @fetch_record(TeamScore.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_score_record.html")
@@ -1063,7 +1063,7 @@ class TeamScoreView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamScore.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'score': forms.IntegerField(required=False, ), 'description': forms.CharField(max_length=100, required=False, ),
@@ -1082,7 +1082,7 @@ class TeamScoreView(View):
 
 
 class TeamScoreList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -1124,7 +1124,7 @@ class TeamScoreList(View):
 
 class TeamTagView(View):
     @fetch_record(TeamTag.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_tag.html")
@@ -1132,7 +1132,7 @@ class TeamTagView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamTag.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'name': forms.CharField(max_length=20, ), 'order': forms.IntegerField(required=False, ),
@@ -1150,7 +1150,7 @@ class TeamTagView(View):
 
 
 class TeamTagList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -1191,7 +1191,7 @@ class TeamTagList(View):
 
 class TeamVisitorView(View):
     @fetch_record(TeamVisitor.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("team/team_visitor.html")
@@ -1199,7 +1199,7 @@ class TeamVisitorView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(TeamVisitor.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_updated': forms.DateTimeField(required=False, ),
@@ -1217,7 +1217,7 @@ class TeamVisitorView(View):
 
 
 class TeamVisitorList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),

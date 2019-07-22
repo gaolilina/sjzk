@@ -6,12 +6,13 @@ from django.template import loader, Context
 from django.views.generic.base import View
 
 from admin.models.security_log import SecurityLog
-from admin.utils.decorators import validate_args2, require_cookie, require_role
+from admin.utils.decorators import validate_args2, require_role
+from util.decorator.auth import admin_auth
 
 
 class SecurityLogList(View):
 
-    @require_cookie
+    @admin_auth
     @require_role('xyz')
     @validate_args2({
         'username': forms.CharField(max_length=50, required=False),

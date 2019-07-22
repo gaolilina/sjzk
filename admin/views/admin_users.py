@@ -7,17 +7,17 @@ from main.utils.decorators import validate_args
 from main.utils import save_uploaded_image
 from main.models import UserValidationCode
 
-from admin.utils.decorators import require_cookie
+from util.decorator.auth import admin_auth
 
 
 class AdminUsersInfo(View):
-    @require_cookie
+    @admin_auth
     def get(self, request):
         template = loader.get_template("admin_user/info.html")
         context = Context({'u': request.user, 'user': request.user})
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @validate_args({
         'name': forms.CharField(max_length=15, required=False),
         'gender': forms.CharField(max_length=1, required=False),
@@ -37,7 +37,7 @@ class AdminUsersInfo(View):
 
 
 class AdminUsersIcon(View):
-    @require_cookie
+    @admin_auth
     def post(self, request):
         """上传用户头像"""
 
@@ -57,13 +57,13 @@ class AdminUsersIcon(View):
 
 
 class AdminUsersIndentify(View):
-    @require_cookie
+    @admin_auth
     def get(self, request):
         template = loader.get_template("admin_user/identify.html")
         context = Context({'u': request.user, 'user': request.user})
         return HttpResponse(template.render(context))
 
-    @require_cookie
+    @admin_auth
     @validate_args({
         'phone_number': forms.CharField(max_length=11),
         'old_pass': forms.CharField(min_length=6, max_length=20, strip=False),

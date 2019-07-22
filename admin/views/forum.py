@@ -4,12 +4,14 @@ from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
-from main.models.forum import *
-
 from admin.utils.decorators import *
+from main.models.forum import *
+from util.decorator.auth import admin_auth
+
+
 class ForumBoardView(View):
     @fetch_record(ForumBoard.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("forum/forum_board.html")
@@ -17,10 +19,12 @@ class ForumBoardView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(ForumBoard.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
-        'name': forms.CharField(max_length=20,),'description': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),'is_system_board': forms.BooleanField(required=False),'is_enabled': forms.BooleanField(required=False),
+        'name': forms.CharField(max_length=20, ), 'description': forms.CharField(max_length=100, ),
+        'time_created': forms.DateTimeField(required=False, ), 'is_system_board': forms.BooleanField(required=False),
+        'is_enabled': forms.BooleanField(required=False),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -33,8 +37,9 @@ class ForumBoardView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class ForumBoardList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -54,9 +59,10 @@ class ForumBoardList(View):
             context = Context({'user': request.user})
             return HttpResponse(template.render(context))
 
+
 class ForumPostView(View):
     @fetch_record(ForumPost.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("forum/forum_post.html")
@@ -64,10 +70,11 @@ class ForumPostView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(ForumPost.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
-        'title': forms.CharField(max_length=20,),'content': forms.CharField(max_length=300,),'time_created': forms.DateTimeField(required=False,),
+        'title': forms.CharField(max_length=20, ), 'content': forms.CharField(max_length=300, ),
+        'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
         for k in kwargs:
@@ -80,8 +87,9 @@ class ForumPostView(View):
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
         return HttpResponse(template.render(context))
 
+
 class ForumPostList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -100,4 +108,3 @@ class ForumPostList(View):
             template = loader.get_template("forum/forum_post_index.html")
             context = Context({'user': request.user})
             return HttpResponse(template.render(context))
-

@@ -4,15 +4,15 @@ from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
+from admin.utils.decorators import *
 from main.models.action import UserAction, UserActionLiker, UserActionComment
 from main.models.user import *
-
-from admin.utils.decorators import *
+from util.decorator.auth import admin_auth
 
 
 class UserView(View):
     @fetch_record(User.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user.html")
@@ -20,7 +20,7 @@ class UserView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(User.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'is_enabled': forms.BooleanField(required=False),
@@ -63,7 +63,7 @@ class UserView(View):
 
 
 class UserList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -112,7 +112,7 @@ class UserList(View):
 
 
 class UserActionView(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @fetch_record(UserAction.objects, 'mod', 'id')
     def get(self, request, mod):
@@ -121,7 +121,7 @@ class UserActionView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserAction.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'action': forms.CharField(max_length=20, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -142,7 +142,7 @@ class UserActionView(View):
 
 
 class UserActionList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -189,7 +189,7 @@ class UserActionList(View):
 
 class UserActionCommentView(View):
     @fetch_record(UserActionComment.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_action_comment.html")
@@ -197,7 +197,7 @@ class UserActionCommentView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserActionComment.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -215,7 +215,7 @@ class UserActionCommentView(View):
 
 
 class UserActionCommentList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -263,7 +263,7 @@ class UserActionCommentList(View):
 
 class UserActionLikerView(View):
     @fetch_record(UserActionLiker.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_action_liker.html")
@@ -271,7 +271,7 @@ class UserActionLikerView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserActionLiker.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -289,7 +289,7 @@ class UserActionLikerView(View):
 
 
 class UserActionLikerList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -337,7 +337,7 @@ class UserActionLikerList(View):
 
 class UserBehaviorView(View):
     @fetch_record(UserBehavior.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_behavior.html")
@@ -345,7 +345,7 @@ class UserBehaviorView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserBehavior.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'behavior': forms.CharField(max_length=10, ), 'object_type': forms.CharField(max_length=20, ),
@@ -364,7 +364,7 @@ class UserBehaviorView(View):
 
 
 class UserBehaviorList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -411,7 +411,7 @@ class UserBehaviorList(View):
 
 class UserCommentView(View):
     @fetch_record(UserComment.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_comment.html")
@@ -419,7 +419,7 @@ class UserCommentView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserComment.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -437,7 +437,7 @@ class UserCommentView(View):
 
 
 class UserCommentList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -484,7 +484,7 @@ class UserCommentList(View):
 
 class UserExperienceView(View):
     @fetch_record(UserExperience.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_experience.html")
@@ -492,7 +492,7 @@ class UserExperienceView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserExperience.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'type': forms.CharField(max_length=20, ), 'unit': forms.CharField(max_length=20, required=False, ),
@@ -514,7 +514,7 @@ class UserExperienceView(View):
 
 
 class UserExperienceList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -561,7 +561,7 @@ class UserExperienceList(View):
 
 class UserFeatureView(View):
     @fetch_record(UserFeature.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_feature.html")
@@ -569,7 +569,7 @@ class UserFeatureView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFeature.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'data': forms.CharField(required=False, ),
@@ -587,7 +587,7 @@ class UserFeatureView(View):
 
 
 class UserFeatureList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -634,7 +634,7 @@ class UserFeatureList(View):
 
 class UserFeedbackView(View):
     @fetch_record(UserFeedback.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_feedback.html")
@@ -642,7 +642,7 @@ class UserFeedbackView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFeedback.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'content': forms.CharField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -660,7 +660,7 @@ class UserFeedbackView(View):
 
 
 class UserFeedbackList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -707,7 +707,7 @@ class UserFeedbackList(View):
 
 class UserFollowerView(View):
     @fetch_record(UserFollower.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_follower.html")
@@ -715,7 +715,7 @@ class UserFollowerView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFollower.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -733,7 +733,7 @@ class UserFollowerView(View):
 
 
 class UserFollowerList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -780,7 +780,7 @@ class UserFollowerList(View):
 
 class UserFriendView(View):
     @fetch_record(UserFriend.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_friend.html")
@@ -788,7 +788,7 @@ class UserFriendView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFriend.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -806,7 +806,7 @@ class UserFriendView(View):
 
 
 class UserFriendList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -853,7 +853,7 @@ class UserFriendList(View):
 
 class UserFriendRequestView(View):
     @fetch_record(UserFriendRequest.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_friend_request.html")
@@ -861,7 +861,7 @@ class UserFriendRequestView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserFriendRequest.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'description': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
@@ -879,7 +879,7 @@ class UserFriendRequestView(View):
 
 
 class UserFriendRequestList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -927,7 +927,7 @@ class UserFriendRequestList(View):
 
 class UserLikerView(View):
     @fetch_record(UserLiker.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_liker.html")
@@ -935,7 +935,7 @@ class UserLikerView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserLiker.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_created': forms.DateTimeField(required=False, ),
@@ -953,7 +953,7 @@ class UserLikerView(View):
 
 
 class UserLikerList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -1000,7 +1000,7 @@ class UserLikerList(View):
 
 class UserScoreView(View):
     @fetch_record(UserScore.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_score_record.html")
@@ -1008,7 +1008,7 @@ class UserScoreView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserScore.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'score': forms.IntegerField(required=False, ), 'description': forms.CharField(max_length=100, required=False, ),
@@ -1027,7 +1027,7 @@ class UserScoreView(View):
 
 
 class UserScoreList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -1075,7 +1075,7 @@ class UserScoreList(View):
 
 class UserTagView(View):
     @fetch_record(UserTag.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_tag.html")
@@ -1083,7 +1083,7 @@ class UserTagView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserTag.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'name': forms.CharField(max_length=20, ), 'order': forms.IntegerField(required=False, ),
@@ -1101,7 +1101,7 @@ class UserTagView(View):
 
 
 class UserTagList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -1148,7 +1148,7 @@ class UserTagList(View):
 
 class UserValidationCodeView(View):
     @fetch_record(UserValidationCode.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_validation_code.html")
@@ -1156,7 +1156,7 @@ class UserValidationCodeView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserValidationCode.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'phone_number': forms.CharField(max_length=11, ), 'code': forms.CharField(max_length=6, ),
@@ -1175,7 +1175,7 @@ class UserValidationCodeView(View):
 
 
 class UserValidationCodeList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
@@ -1223,7 +1223,7 @@ class UserValidationCodeList(View):
 
 class UserVisitorView(View):
     @fetch_record(UserVisitor.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     def get(self, request, mod):
         template = loader.get_template("user/user_visitor.html")
@@ -1231,7 +1231,7 @@ class UserVisitorView(View):
         return HttpResponse(template.render(context))
 
     @fetch_record(UserVisitor.objects, 'mod', 'id')
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'time_updated': forms.DateTimeField(required=False, ),
@@ -1249,7 +1249,7 @@ class UserVisitorView(View):
 
 
 class UserVisitorList(View):
-    @require_cookie
+    @admin_auth
     @require_role('yz')
     @validate_args2({
         'page': forms.IntegerField(required=False, min_value=0),
