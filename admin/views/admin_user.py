@@ -8,6 +8,7 @@ from admin.models.admin_user import *
 
 from admin.utils.decorators import *
 from util.decorator.auth import admin_auth
+from util.decorator.param import old_validate_args
 
 
 class AdminUserView(View):
@@ -22,7 +23,7 @@ class AdminUserView(View):
     @fetch_record(AdminUser.objects, 'mod', 'id')
     @admin_auth
     @require_role('z')
-    @validate_args2({
+    @old_validate_args({
         'is_enabled': forms.BooleanField(required=False),
         'username': forms.CharField(max_length=20, ),
         'password': forms.CharField(max_length=128, ),
@@ -53,7 +54,7 @@ class AdminUserView(View):
 class AdminUserList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):

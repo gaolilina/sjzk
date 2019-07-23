@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 from main.models import Competition
-from main.utils.decorators import validate_args
+from util.decorator.param import validate_args
 
 
 class SearchCompetition(View):

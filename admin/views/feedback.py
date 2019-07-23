@@ -8,6 +8,7 @@ from main.models.report import Report as ReportModel
 from main.models.system import System
 from main.models.user import User, UserFeedback
 from util.decorator.auth import admin_auth
+from util.decorator.param import old_validate_args
 
 
 class Feedback(View):
@@ -32,7 +33,7 @@ class ReportDeal(View):
     @fetch_record(ReportModel.enabled, 'model', 'id')
     @admin_auth
     @require_role('xyz')
-    @validate_args2({
+    @old_validate_args({
         'ban': forms.CharField(),
     })
     def post(self, request, **kwargs):

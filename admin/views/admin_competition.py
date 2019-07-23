@@ -6,7 +6,7 @@ from django.template import loader, Context
 from django.views.generic import View
 import json
 
-from main.utils.decorators import *
+from util.decorator.param import validate_args, fetch_object, old_validate_args
 from main.models.competition import *
 from main.models.team import *
 from main.models.user import *
@@ -31,7 +31,7 @@ class AdminCompetitionAdd(View):
 
     @admin_auth
     @require_role('xyz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=50),
         'tags': forms.CharField(max_length=50),
         'field': forms.CharField(max_length=50),
@@ -99,7 +99,7 @@ class AdminCompetitionEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @admin_auth
     @require_role('xyz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=50, required=False),
         'tags': forms.CharField(max_length=50, required=False),
         'field': forms.CharField(max_length=50, required=False),
@@ -240,7 +240,7 @@ class AdminCompetitionAwardEdit(View):
     @fetch_record(Competition.enabled, 'model', 'id')
     @admin_auth
     @require_role('axyz')
-    @validate_args2({
+    @old_validate_args({
         'awards': forms.CharField(),
     })
     def post(self, request, **kwargs):

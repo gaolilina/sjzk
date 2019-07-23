@@ -8,7 +8,8 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 from main.utils import abort
-from main.utils.decorators import validate_args, fetch_object, require_token
+from main.utils.decorators import require_token
+from util.decorator.param import validate_args, fetch_object
 from modellib.models.paper import Paper, PaperAnswer
 
 

@@ -5,7 +5,8 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.views.generic import View
 
 from main.models.activity import *
-from main.utils.decorators import validate_args, require_role_token
+from main.utils.decorators import require_role_token
+from util.decorator.param import validate_args
 
 
 class AdminActivityAdd(View):

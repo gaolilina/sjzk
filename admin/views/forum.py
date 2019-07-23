@@ -7,6 +7,7 @@ from django.views.generic import View
 from admin.utils.decorators import *
 from main.models.forum import *
 from util.decorator.auth import admin_auth
+from util.decorator.param import old_validate_args
 
 
 class ForumBoardView(View):
@@ -21,7 +22,7 @@ class ForumBoardView(View):
     @fetch_record(ForumBoard.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=20, ), 'description': forms.CharField(max_length=100, ),
         'time_created': forms.DateTimeField(required=False, ), 'is_system_board': forms.BooleanField(required=False),
         'is_enabled': forms.BooleanField(required=False),
@@ -41,7 +42,7 @@ class ForumBoardView(View):
 class ForumBoardList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -72,7 +73,7 @@ class ForumPostView(View):
     @fetch_record(ForumPost.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'title': forms.CharField(max_length=20, ), 'content': forms.CharField(max_length=300, ),
         'time_created': forms.DateTimeField(required=False, ),
     })
@@ -91,7 +92,7 @@ class ForumPostView(View):
 class ForumPostList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):

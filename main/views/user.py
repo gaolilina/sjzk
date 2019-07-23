@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
 
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
+from util.decorator.param import fetch_object, validate_args
 from ..models import *
 from ..utils import abort, get_score_stage, send_message
 from ..utils.decorators import *

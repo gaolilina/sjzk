@@ -8,6 +8,7 @@ from admin.utils.decorators import *
 from main.models.action import UserAction, UserActionLiker, UserActionComment
 from main.models.user import *
 from util.decorator.auth import admin_auth
+from util.decorator.param import old_validate_args
 from util.decorator.permission import admin_permission
 
 
@@ -23,7 +24,7 @@ class UserView(View):
     @fetch_record(User.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'is_enabled': forms.BooleanField(required=False),
         'username': forms.CharField(max_length=20, required=False, ),
         'phone_number': forms.CharField(max_length=11, ),
@@ -66,7 +67,7 @@ class UserView(View):
 class UserList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -124,7 +125,7 @@ class UserActionView(View):
     @fetch_record(UserAction.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'action': forms.CharField(max_length=20, ), 'time_created': forms.DateTimeField(required=False, ),
         'object_type': forms.CharField(max_length=20, ), 'object_id': forms.IntegerField(required=False, ),
         'related_object_type': forms.CharField(max_length=20, required=False, ),
@@ -145,7 +146,7 @@ class UserActionView(View):
 class UserActionList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -200,7 +201,7 @@ class UserActionCommentView(View):
     @fetch_record(UserActionComment.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -218,7 +219,7 @@ class UserActionCommentView(View):
 class UserActionCommentList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -274,7 +275,7 @@ class UserActionLikerView(View):
     @fetch_record(UserActionLiker.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -292,7 +293,7 @@ class UserActionLikerView(View):
 class UserActionLikerList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -348,7 +349,7 @@ class UserBehaviorView(View):
     @fetch_record(UserBehavior.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'behavior': forms.CharField(max_length=10, ), 'object_type': forms.CharField(max_length=20, ),
         'object_id': forms.IntegerField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
@@ -367,7 +368,7 @@ class UserBehaviorView(View):
 class UserBehaviorList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -422,7 +423,7 @@ class UserCommentView(View):
     @fetch_record(UserComment.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -440,7 +441,7 @@ class UserCommentView(View):
 class UserCommentList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -495,7 +496,7 @@ class UserExperienceView(View):
     @fetch_record(UserExperience.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'type': forms.CharField(max_length=20, ), 'unit': forms.CharField(max_length=20, required=False, ),
         'profession': forms.CharField(max_length=20, required=False, ),
         'degree': forms.CharField(max_length=20, required=False, ),
@@ -517,7 +518,7 @@ class UserExperienceView(View):
 class UserExperienceList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -572,7 +573,7 @@ class UserFeatureView(View):
     @fetch_record(UserFeature.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'data': forms.CharField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -590,7 +591,7 @@ class UserFeatureView(View):
 class UserFeatureList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -645,7 +646,7 @@ class UserFeedbackView(View):
     @fetch_record(UserFeedback.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'content': forms.CharField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -663,7 +664,7 @@ class UserFeedbackView(View):
 class UserFeedbackList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -718,7 +719,7 @@ class UserFollowerView(View):
     @fetch_record(UserFollower.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -736,7 +737,7 @@ class UserFollowerView(View):
 class UserFollowerList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -791,7 +792,7 @@ class UserFriendView(View):
     @fetch_record(UserFriend.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -809,7 +810,7 @@ class UserFriendView(View):
 class UserFriendList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -864,7 +865,7 @@ class UserFriendRequestView(View):
     @fetch_record(UserFriendRequest.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'description': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -882,7 +883,7 @@ class UserFriendRequestView(View):
 class UserFriendRequestList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -938,7 +939,7 @@ class UserLikerView(View):
     @fetch_record(UserLiker.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -956,7 +957,7 @@ class UserLikerView(View):
 class UserLikerList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -1011,7 +1012,7 @@ class UserScoreView(View):
     @fetch_record(UserScore.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'score': forms.IntegerField(required=False, ), 'description': forms.CharField(max_length=100, required=False, ),
         'type': forms.CharField(max_length=10, required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
@@ -1030,7 +1031,7 @@ class UserScoreView(View):
 class UserScoreList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -1086,7 +1087,7 @@ class UserTagView(View):
     @fetch_record(UserTag.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=20, ), 'order': forms.IntegerField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -1104,7 +1105,7 @@ class UserTagView(View):
 class UserTagList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -1159,7 +1160,7 @@ class UserValidationCodeView(View):
     @fetch_record(UserValidationCode.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'phone_number': forms.CharField(max_length=11, ), 'code': forms.CharField(max_length=6, ),
         'time_expired': forms.DateTimeField(required=False, ),
     })
@@ -1178,7 +1179,7 @@ class UserValidationCodeView(View):
 class UserValidationCodeList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -1234,7 +1235,7 @@ class UserVisitorView(View):
     @fetch_record(UserVisitor.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_updated': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -1252,7 +1253,7 @@ class UserVisitorView(View):
 class UserVisitorList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):

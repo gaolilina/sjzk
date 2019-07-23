@@ -1,11 +1,12 @@
 from django import forms
-from django.db import transaction, IntegrityError
+from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
-from ChuangYi.settings import DEFAULT_ICON_URL, SERVER_URL
+from ChuangYi.settings import DEFAULT_ICON_URL
 from im.huanxin import register_to_huanxin
 from main.models import User, UserValidationCode
+from util.decorator.param import validate_args
 from ..utils import abort, identity_verify, get_score_stage, eid_verify, save_uploaded_image
 from ..utils.decorators import *
 from ..views.user import Profile as Profile_

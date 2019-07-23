@@ -2,6 +2,7 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
+from util.decorator.param import validate_args, fetch_object
 from ..models import Activity
 from ..utils import abort
 from ..utils.decorators import *

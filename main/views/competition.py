@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views.generic import View
 
+from util.decorator.param import validate_args, fetch_object
 from ..models import Competition, Team, CompetitionFile as File, CompetitionTeamParticipator
 from ..utils import abort, save_uploaded_file
 from ..utils.decorators import *

@@ -9,6 +9,7 @@ from main.models import User
 from main.utils import *
 from main.utils.decorators import *
 from main.utils.http import *
+from util.decorator.param import fetch_object, validate_args
 
 
 class FriendCheck(View):

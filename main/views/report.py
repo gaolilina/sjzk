@@ -4,6 +4,7 @@ from django.views.generic import View
 from main.models import Report as ReportModel
 from main.utils import abort
 from main.utils.decorators import *
+from util.decorator.param import validate_args
 
 __all__ = ['Report']
 

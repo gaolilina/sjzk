@@ -18,6 +18,7 @@ from main.utils.recommender import record_view_team
 from main.utils.dfa import check_bad_words
 import json
 from main.utils.http import notify_user
+from util.decorator.param import validate_args, fetch_object
 
 __all__ = ('TeamCreate', 'Screen', 'Profile', 'Icon', 'MemberList',
            'Member', 'MemberRequestList', 'MemberRequest', 'Invitation',

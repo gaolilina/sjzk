@@ -8,7 +8,7 @@ from admin.utils.decorators import require_role
 from util.decorator.auth import admin_auth
 from main.models import Activity
 from main.utils import abort
-from main.utils.decorators import fetch_object, validate_args
+from util.decorator.param import fetch_object, validate_args
 
 
 class ActivityCheck(View):

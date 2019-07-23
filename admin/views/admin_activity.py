@@ -10,6 +10,7 @@ from admin.models.activity_owner import *
 
 from admin.utils.decorators import *
 from util.decorator.auth import admin_auth
+from util.decorator.param import old_validate_args
 
 
 class AdminActivityAdd(View):
@@ -22,7 +23,7 @@ class AdminActivityAdd(View):
 
     @admin_auth
     @require_role('xyz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=50),
         'tags': forms.CharField(max_length=50),
         'field': forms.CharField(max_length=50),
@@ -79,7 +80,7 @@ class AdminActivityEdit(View):
     @fetch_record(Activity.enabled, 'model', 'id')
     @admin_auth
     @require_role('xyz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=50, required=False),
         'tags': forms.CharField(max_length=50, required=False),
         'field': forms.CharField(max_length=50, required=False),

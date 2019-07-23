@@ -6,7 +6,8 @@ from django.template import loader, Context
 from django.views.generic.base import View
 
 from admin.models.security_log import SecurityLog
-from admin.utils.decorators import validate_args2, require_role
+from admin.utils.decorators import require_role
+from util.decorator.param import old_validate_args
 from util.decorator.auth import admin_auth
 
 
@@ -14,7 +15,7 @@ class SecurityLogList(View):
 
     @admin_auth
     @require_role('xyz')
-    @validate_args2({
+    @old_validate_args({
         'username': forms.CharField(max_length=50, required=False),
         'ip': forms.CharField(max_length=50, required=False),
         'action': forms.CharField(max_length=50, required=False),

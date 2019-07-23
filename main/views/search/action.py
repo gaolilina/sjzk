@@ -7,7 +7,7 @@ from django.views.generic import View
 
 from main.models.action import UserAction, TeamAction, LabAction
 from main.utils import action
-from main.utils.decorators import validate_args
+from util.decorator.param import validate_args
 
 
 class SearchUserAction(View):

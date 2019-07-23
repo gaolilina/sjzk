@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.generic import View
 
+from util.decorator.param import validate_args, fetch_object
 from ..models import Topic
 from ..utils import abort
 from ..utils.decorators import *
@@ -71,8 +72,8 @@ class List(View):
 
 
 class Detail(View):
-    @fetch_object(Topic.enabled, 'topic')
     @require_token
+    @fetch_object(Topic.enabled, 'topic')
     def get(self, request, topic):
         """获取课题详情
         :return:

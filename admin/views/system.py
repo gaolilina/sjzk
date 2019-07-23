@@ -5,7 +5,7 @@ from django.views.generic import View
 
 from admin.utils.decorators import *
 from main.models import System as SystemModel, SystemNotification
-from main.utils.decorators import validate_args
+from util.decorator.param import validate_args
 from util.decorator.auth import admin_auth
 
 

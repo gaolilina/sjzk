@@ -2,7 +2,7 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic.base import View
 
-from main.utils.decorators import validate_args, fetch_object
+from util.decorator.param import validate_args, fetch_object
 from modellib.models import CMSFunction
 from util.decorator.auth import cms_auth
 from util.decorator.permission import cms_permission

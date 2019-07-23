@@ -6,6 +6,7 @@ from main.models import Team, Achievement
 from main.utils import abort, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
 from main.utils.dfa import check_bad_words
+from util.decorator.param import validate_args, fetch_object
 
 __all__ = ('AllTeamAchievementView', 'TeamAchievementList',)
 

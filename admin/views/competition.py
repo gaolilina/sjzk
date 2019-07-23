@@ -8,6 +8,7 @@ from main.models.competition import *
 
 from admin.utils.decorators import *
 from util.decorator.auth import admin_auth
+from util.decorator.param import old_validate_args
 
 
 class CompetitionView(View):
@@ -22,7 +23,7 @@ class CompetitionView(View):
     @fetch_record(Competition.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=50,),'status': forms.IntegerField(required=False,),'content': forms.CharField(max_length=1000,),'deadline': forms.DateTimeField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),'allow_team': forms.IntegerField(required=False,),'province': forms.CharField(max_length=20,required=False,),'city': forms.CharField(max_length=20,required=False,),'min_member': forms.IntegerField(required=False,),'max_member': forms.IntegerField(required=False,),'unit': forms.CharField(max_length=20,required=False,),'user_type': forms.IntegerField(required=False,),'is_enabled': forms.BooleanField(required=False),
     })
     def post(self, request, mod, **kwargs):
@@ -39,7 +40,7 @@ class CompetitionView(View):
 class CompetitionList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -89,7 +90,7 @@ class CompetitionCommentView(View):
     @fetch_record(CompetitionComment.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'content': forms.CharField(max_length=100,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
@@ -106,7 +107,7 @@ class CompetitionCommentView(View):
 class CompetitionCommentList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -156,7 +157,7 @@ class CompetitionFileView(View):
     @fetch_record(CompetitionFile.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'status': forms.IntegerField(required=False,),'file': forms.CharField(max_length=100,required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
@@ -173,7 +174,7 @@ class CompetitionFileView(View):
 class CompetitionFileList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -223,7 +224,7 @@ class CompetitionLikerView(View):
     @fetch_record(CompetitionLiker.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
@@ -240,7 +241,7 @@ class CompetitionLikerView(View):
 class CompetitionLikerList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -290,7 +291,7 @@ class CompetitionNotificationView(View):
     @fetch_record(CompetitionNotification.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'status': forms.IntegerField(required=False,),'notification': forms.CharField(max_length=1000,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
@@ -307,7 +308,7 @@ class CompetitionNotificationView(View):
 class CompetitionNotificationList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -357,7 +358,7 @@ class CompetitionStageView(View):
     @fetch_record(CompetitionStage.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'status': forms.IntegerField(required=False,),'time_started': forms.DateTimeField(required=False,),'time_ended': forms.DateTimeField(required=False,),'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
@@ -374,7 +375,7 @@ class CompetitionStageView(View):
 class CompetitionStageList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -424,7 +425,7 @@ class CompetitionTeamParticipatorView(View):
     @fetch_record(CompetitionTeamParticipator.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False,),
     })
     def post(self, request, mod, **kwargs):
@@ -441,7 +442,7 @@ class CompetitionTeamParticipatorView(View):
 class CompetitionTeamParticipatorList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):

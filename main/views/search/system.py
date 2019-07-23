@@ -6,7 +6,7 @@ from django.views.generic.base import View
 
 from main.models import SystemAction
 from main.utils import action
-from main.utils.decorators import validate_args
+from util.decorator.param import validate_args
 
 
 class SearchSystemActionList(View):

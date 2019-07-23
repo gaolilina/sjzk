@@ -6,8 +6,8 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic.base import View
 
-from main.utils.decorators import validate_args, fetch_object
 from modellib.models.paper import Paper
+from util.decorator.param import fetch_object, validate_args
 
 
 class PaperAnalysis(View):

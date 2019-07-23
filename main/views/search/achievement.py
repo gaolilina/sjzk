@@ -7,7 +7,8 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 from main.models import Achievement
-from main.utils.decorators import require_token, validate_args
+from main.utils.decorators import require_token
+from util.decorator.param import validate_args
 
 
 class SearchUserAchievement(View):

@@ -7,6 +7,7 @@ from django.views.generic import View
 from main.utils import abort, save_uploaded_image
 from main.utils.dfa import check_bad_words
 from main.views.search.achievement import SearchUserAchievement
+from util.decorator.param import validate_args, fetch_object
 from ..models import Achievement
 from ..utils.decorators import *
 

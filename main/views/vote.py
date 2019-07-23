@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.generic import View
 
+from util.decorator.param import fetch_object, validate_args
 from ..models import UserVote, UserVoteOption, UserVoteOptionAdvocator, LabVote, LabVoteOption, LabVoteOptionAdvocator, User, Lab
 from ..utils import abort
 from ..utils.decorators import *

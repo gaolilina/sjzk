@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader, Context
 from django.views.generic import View
 
-from main.utils.decorators import validate_args
+from util.decorator.param import validate_args
 from main.utils import save_uploaded_image
 from main.models import UserValidationCode
 

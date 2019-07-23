@@ -5,7 +5,8 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 from main.models import Lab
-from main.utils.decorators import fetch_user_by_token, validate_args
+from main.utils.decorators import fetch_user_by_token
+from util.decorator.param import validate_args
 from main.utils.recommender import calculate_ranking_score
 
 

@@ -9,6 +9,7 @@ from main.models import Achievement
 from main.models.action import TeamAction, TeamActionComment, TeamActionLiker
 from main.models.team import *
 from util.decorator.auth import admin_auth
+from util.decorator.param import old_validate_args
 
 
 class ExternalTaskView(View):
@@ -23,7 +24,7 @@ class ExternalTaskView(View):
     @fetch_record(ExternalTask.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'title': forms.CharField(max_length=20, ), 'content': forms.CharField(required=False, ),
         'expend': forms.IntegerField(required=False, ), 'expend_actual': forms.IntegerField(required=False, ),
         'status': forms.IntegerField(required=False, ), 'deadline': forms.DateField(required=False, ),
@@ -46,7 +47,7 @@ class ExternalTaskView(View):
 class ExternalTaskList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -95,7 +96,7 @@ class InternalTaskView(View):
     @fetch_record(InternalTask.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'title': forms.CharField(max_length=20, ), 'content': forms.CharField(required=False, ),
         'status': forms.IntegerField(required=False, ), 'deadline': forms.DateField(required=False, ),
         'assign_num': forms.IntegerField(required=False, ), 'submit_num': forms.IntegerField(required=False, ),
@@ -116,7 +117,7 @@ class InternalTaskView(View):
 class InternalTaskList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -165,7 +166,7 @@ class TeamView(View):
     @fetch_record(Team.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=20, ), 'icon': forms.CharField(max_length=100, required=False, ),
         'description': forms.CharField(max_length=100, required=False, ), 'url': forms.CharField(max_length=100, ),
         'field1': forms.CharField(max_length=10, required=False, ),
@@ -191,7 +192,7 @@ class TeamView(View):
 class TeamList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -240,7 +241,7 @@ class TeamAchievementView(View):
     @fetch_record(Achievement.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'description': forms.CharField(max_length=100, required=False, ),
         'picture': forms.CharField(max_length=100, required=False, ),
         'time_created': forms.DateTimeField(required=False, ),
@@ -260,7 +261,7 @@ class TeamAchievementView(View):
 class TeamAchievementList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -309,7 +310,7 @@ class TeamActionView(View):
 
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'action': forms.CharField(max_length=20, ), 'time_created': forms.DateTimeField(required=False, ),
         'object_type': forms.CharField(max_length=20, ), 'object_id': forms.IntegerField(required=False, ),
         'related_object_type': forms.CharField(max_length=20, required=False, ),
@@ -331,7 +332,7 @@ class TeamActionView(View):
 class TeamActionList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -379,7 +380,7 @@ class TeamActionCommentView(View):
 
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     @fetch_record(TeamActionComment.objects, 'mod', 'id')
@@ -398,7 +399,7 @@ class TeamActionCommentView(View):
 class TeamActionCommentList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -447,7 +448,7 @@ class TeamActionLikerView(View):
 
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     @fetch_record(TeamActionLiker.objects, 'mod', 'id')
@@ -466,7 +467,7 @@ class TeamActionLikerView(View):
 class TeamActionLikerList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -516,7 +517,7 @@ class TeamCommentView(View):
     @fetch_record(TeamComment.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -534,7 +535,7 @@ class TeamCommentView(View):
 class TeamCommentList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -583,7 +584,7 @@ class TeamFeatureView(View):
     @fetch_record(TeamFeature.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'data': forms.CharField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -601,7 +602,7 @@ class TeamFeatureView(View):
 class TeamFeatureList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -650,7 +651,7 @@ class TeamFollowerView(View):
     @fetch_record(TeamFollower.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -668,7 +669,7 @@ class TeamFollowerView(View):
 class TeamFollowerList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -717,7 +718,7 @@ class TeamInvitationView(View):
     @fetch_record(TeamInvitation.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'description': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -735,7 +736,7 @@ class TeamInvitationView(View):
 class TeamInvitationList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -784,7 +785,7 @@ class TeamLikerView(View):
     @fetch_record(TeamLiker.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -802,7 +803,7 @@ class TeamLikerView(View):
 class TeamLikerList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -851,7 +852,7 @@ class TeamMemberView(View):
     @fetch_record(TeamMember.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -869,7 +870,7 @@ class TeamMemberView(View):
 class TeamMemberList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -918,7 +919,7 @@ class TeamMemberRequestView(View):
     @fetch_record(TeamMemberRequest.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'description': forms.CharField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -936,7 +937,7 @@ class TeamMemberRequestView(View):
 class TeamMemberRequestList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -986,7 +987,7 @@ class TeamNeedView(View):
     @fetch_record(TeamNeed.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'type': forms.IntegerField(required=False, ), 'title': forms.CharField(required=False, ),
         'description': forms.CharField(max_length=200, required=False, ),
         'status': forms.IntegerField(required=False, ), 'number': forms.IntegerField(required=False, ),
@@ -1016,7 +1017,7 @@ class TeamNeedView(View):
 class TeamNeedList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -1065,7 +1066,7 @@ class TeamScoreView(View):
     @fetch_record(TeamScore.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'score': forms.IntegerField(required=False, ), 'description': forms.CharField(max_length=100, required=False, ),
         'type': forms.CharField(max_length=10, required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
@@ -1084,7 +1085,7 @@ class TeamScoreView(View):
 class TeamScoreList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -1134,7 +1135,7 @@ class TeamTagView(View):
     @fetch_record(TeamTag.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=20, ), 'order': forms.IntegerField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -1152,7 +1153,7 @@ class TeamTagView(View):
 class TeamTagList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -1201,7 +1202,7 @@ class TeamVisitorView(View):
     @fetch_record(TeamVisitor.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_updated': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -1219,7 +1220,7 @@ class TeamVisitorView(View):
 class TeamVisitorList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):

@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 
+from util.decorator.param import validate_args
 from ..models import System as SystemModel, SystemNotification, SystemNotificationRecord
 from ..utils import abort
 from ..utils.decorators import *

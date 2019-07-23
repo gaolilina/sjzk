@@ -17,6 +17,7 @@ from main.utils.decorators import *
 from main.utils.dfa import check_bad_words
 from main.utils.http import notify_user
 from main.utils.recommender import calculate_ranking_score
+from util.decorator.param import validate_args, fetch_object
 
 __all__ = ('List', 'Screen', 'Profile', 'Icon', 'MemberList',
            'Member', 'MemberRequestList', 'MemberRequest', 'Invitation',

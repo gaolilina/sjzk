@@ -8,10 +8,10 @@ from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.template import loader, Context
 from django.views.generic.base import View
 
-from admin.utils.decorators import require_role, validate_args2
+from admin.utils.decorators import require_role
 from util.decorator.auth import admin_auth
 from main.utils import abort
-from main.utils.decorators import fetch_object, validate_args
+from util.decorator.param import fetch_object, validate_args, old_validate_args
 from modellib.models.paper.paper import Paper
 
 
@@ -28,7 +28,7 @@ class PaperAdd(View):
 
     @admin_auth
     @require_role('xyz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=50),
         'desc': forms.CharField(max_length=250, required=False),
         'questions': forms.CharField(max_length=1000),
@@ -57,7 +57,7 @@ class PaperList(View):
 
     @admin_auth
     @require_role('xyz')
-    @validate_args2({
+    @old_validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'name': forms.CharField(max_length=50, required=False),

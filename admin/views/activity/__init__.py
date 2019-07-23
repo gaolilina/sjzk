@@ -11,6 +11,7 @@ from django.views.generic import View
 from admin.utils.decorators import *
 from main.models.activity import *
 from util.decorator.auth import admin_auth
+from util.decorator.param import old_validate_args
 
 
 class ActivityView(View):
@@ -24,7 +25,7 @@ class ActivityView(View):
 
     @admin_auth
     @require_role('xyz')
-    @validate_args2({
+    @old_validate_args({
         'name': forms.CharField(max_length=50, required=False),
         'tags': forms.CharField(max_length=50, required=False),
         'content': forms.CharField(max_length=1000, required=False),
@@ -74,7 +75,7 @@ class ActivityView(View):
 class ActivityList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -126,7 +127,7 @@ class ActivityCommentView(View):
     @fetch_record(ActivityComment.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'content': forms.CharField(max_length=100, ), 'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -144,7 +145,7 @@ class ActivityCommentView(View):
 class ActivityCommentList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -197,7 +198,7 @@ class ActivityLikerView(View):
     @fetch_record(ActivityLiker.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -215,7 +216,7 @@ class ActivityLikerView(View):
 class ActivityLikerList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -268,7 +269,7 @@ class ActivityStageView(View):
     @fetch_record(ActivityStage.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'status': forms.IntegerField(required=False, ), 'time_started': forms.DateTimeField(required=False, ),
         'time_ended': forms.DateTimeField(required=False, ), 'time_created': forms.DateTimeField(required=False, ),
     })
@@ -287,7 +288,7 @@ class ActivityStageView(View):
 class ActivityStageList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
@@ -340,7 +341,7 @@ class ActivityUserParticipatorView(View):
     @fetch_record(ActivityUserParticipator.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
@@ -358,7 +359,7 @@ class ActivityUserParticipatorView(View):
 class ActivityUserParticipatorList(View):
     @admin_auth
     @require_role('yz')
-    @validate_args2({
+    @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
     def get(self, request, page=0, **kwargs):
