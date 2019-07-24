@@ -54,7 +54,6 @@ class AdminUser(models.Model):
     def save_and_generate_name(self):
         """保存当前实例并生成序列用户名"""
 
-        self.save()
         self.name = '智库后台用户 #{}'.format(self.id)
         self.save()
 

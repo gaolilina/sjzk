@@ -30,7 +30,6 @@ class Login(View):
         try:
             user = AdminUser.enabled.get(username=username)
             if user.check_password(password):
-                user.update_token()
                 response = HttpResponseRedirect(reverse("admin:admin_users:info"))
                 response.set_cookie("token", user.token)
                 return response
@@ -68,6 +67,7 @@ class Register(View):
                 user.phone_number = phone_number
                 user.role = role
                 user.save_and_generate_name()
+                user.update_token()
 
                 response = HttpResponseRedirect(reverse("admin:admin_users:info"))
                 # response.set_cookie("usr", username)
