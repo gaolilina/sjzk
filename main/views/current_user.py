@@ -4,6 +4,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
+from main.models.need import TeamNeed
 from util.decorator.param import validate_args, fetch_object
 from ..models import *
 from ..utils import abort, save_uploaded_image, get_score_stage

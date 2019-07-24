@@ -4,13 +4,14 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from util.decorator.param import validate_args, fetch_object
-from ..models import User, Team, Lab, TeamNeed, UserComment as UserCommentModel, \
+from ..models import User, Team, Lab, UserComment as UserCommentModel, \
     TeamComment as TeamCommentModel, LabComment as LabCommentModel, \
     Activity, ActivityComment as ActivityCommentModel, \
     Competition, CompetitionComment as CompetitionCommentModel, \
     SystemAction, \
     LabAchievementLiker, \
     Achievement, LabAchievement
+from main.models.need import TeamNeed
 from main.models.action import UserAction, TeamAction, LabAction
 from ..utils import abort, action
 from ..utils.decorators import *

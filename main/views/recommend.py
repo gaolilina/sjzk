@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.generic import View
 
-from main.models import Team, User, TeamNeed
+from main.models import Team, User
+from main.models.need import TeamNeed
 from util.decorator.param import validate_args, fetch_object
 from ..utils import abort
 from main.utils.decorators import *

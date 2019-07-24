@@ -1,12 +1,16 @@
 from django.conf.urls import url
 
+from main.views.need import NeedSearch, NeedUserList, MemberNeedRequest, NeedInvitationList, NeedScreen, AllNeedList, \
+    Need, NeedTeamList, NeedList, NeedRequest, MemberNeedRequestList, NeedRequestList, NeedInvitation
 from main.views.search import SearchTeam
-from ..views.team import *
+from main.views.task import InternalTaskList, InternalTasks, ExternalTaskList, ExternalTasks, TeamInternalTask, \
+    TeamExternalTask
 from ..views.common import TeamActionList, TeamCommentList, TeamComment, \
     TeamFollowerList, TeamFollower, TeamLikerList, TeamLiker, \
     TeamVisitorList, TeamNeedFollowerList
 from ..views.recommend import TeamRecommend, OutsourceNeedTeamRecommend, \
     UndertakeNeedTeamRecommend
+from ..views.team import *
 
 urls = [
     # 需求搜索，迁移到 /search/ 上

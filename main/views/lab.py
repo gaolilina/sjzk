@@ -10,8 +10,8 @@ from django.utils import timezone
 from django.views.generic import View
 
 from ChuangYi.settings import UPLOADED_URL
-from main.models import Lab, User, LabAchievement, LabNeed, InternalTask, \
-    ExternalTask
+from main.models import Lab, User, LabAchievement, LabNeed
+from main.models.task import InternalTask, ExternalTask
 from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
 from main.utils.dfa import check_bad_words

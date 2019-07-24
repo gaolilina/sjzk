@@ -7,6 +7,8 @@ from django.views.generic import View
 from admin.utils.decorators import *
 from main.models import Achievement
 from main.models.action import TeamAction, TeamActionComment, TeamActionLiker
+from main.models.need import TeamNeed
+from main.models.task import ExternalTask, InternalTask
 from main.models.team import *
 from util.decorator.auth import admin_auth
 from util.decorator.param import old_validate_args

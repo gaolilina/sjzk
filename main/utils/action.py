@@ -5,8 +5,10 @@ from django.core.exceptions import ObjectDoesNotExist
 import json
 from main.utils.http import notify_user
 
-from main.models import User, Team, TeamNeed, SystemAction, Activity, \
-    Competition, ForumBoard, InternalTask, ExternalTask
+from main.models import User, Team, SystemAction, Activity, \
+    Competition, ForumBoard
+from main.models.task import InternalTask, ExternalTask
+from main.models.need import TeamNeed
 
 
 @transaction.atomic
