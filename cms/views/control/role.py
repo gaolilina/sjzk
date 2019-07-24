@@ -37,5 +37,5 @@ class RoleList(BaseView):
         'enable': forms.NullBooleanField(required=False)
     })
     def post(self, request, name, category='', enable=False, **kwargs):
-        CMSRole.objects.create(name=name, category=category, enable=enable, level=request.user.role.level + 1)
+        CMSRole.objects.create(name=name, category=category, enable=enable, level=request.user.system_role.level + 1)
         return self.success()
