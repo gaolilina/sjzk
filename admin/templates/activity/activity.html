@@ -112,7 +112,7 @@
                 {% if model.state == 0 %}
                 <input type="submit" value="保存" />
                 <input type="reset" value="取消" />
-                <input type="button" class="btn4 ml-10" value="审核" onclick="verify_choose({{model.id}})">
+                <input id="verify" type="button" class="btn4 ml-10" value="审核" onclick="verify_choose({{model.id}})">
                 {% else %}
                 <input type="reset" value="取消" />
                 {% endif %}
@@ -155,11 +155,14 @@ function verify_choose(id){
 
 function verify(id,result){
     $.post(base_url+'admin/activity/{{model.id}}/check/',{"result":result})
-    .then(function() {
+    .then(function(data) {
         showAlert('审核成功');
+        $('#verify').hide();
+        $('input[type=submit]').hide();
     })
-    .fail(function() {
-        showAlert('审核失败');
+    .fail(function(err) {
+        console.log(err);
+        showAlert('审核失败:'+err.responseText);
     });
 }
 
