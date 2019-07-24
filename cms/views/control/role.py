@@ -1,27 +1,27 @@
 from django import forms
-from django.http import JsonResponse
-from django.views.generic.base import View
 
-from util.decorator.param import validate_args
 from modellib.models import CMSRole
+from util.base.view import BaseView
+from util.constant.param import CONSTANT_DEFAULT_LIMIT
 from util.decorator.auth import cms_auth
+from util.decorator.param import validate_args
 from util.decorator.permission import cms_permission
 
 
-class RoleList(View):
+class RoleList(BaseView):
 
     @cms_auth
     @cms_permission('roleList')
     @validate_args({
-        'offset': forms.IntegerField(required=False),
+        'page': forms.IntegerField(required=False),
         'limit': forms.IntegerField(required=False),
     })
-    def get(self, request, offset=0, limit=10, **kwargs):
+    def get(self, request, page=0, limit=CONSTANT_DEFAULT_LIMIT, **kwargs):
         qs = CMSRole.objects.all()
-        totalCount = qs.count()
-        roles = qs[offset:offset + limit] if totalCount > limit else qs
-        return JsonResponse({
-            'totalCount': totalCount,
+        total_count = qs.count()
+        roles = qs[page * limit:(page + 1) * limit]
+        return self.success({
+            'totalCount': total_count,
             'list': [{
                 'name': r.name,
                 'enable': r.enable,
@@ -38,6 +38,4 @@ class RoleList(View):
     })
     def post(self, request, name, category='', enable=False, **kwargs):
         CMSRole.objects.create(name=name, category=category, enable=enable, level=request.user.role.level + 1)
-        return JsonResponse({
-            'code': 0
-        })
+        return self.success()

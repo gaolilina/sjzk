@@ -17,6 +17,5 @@ def validate(self, value):
         raise ValidationError(self.error_messages['required'], code='required')
 
 
-print('修复 django.forms.BooleanField 不能传 FALSE 的 bug')
 BooleanField.to_python = to_python
 BooleanField.validate = validate
