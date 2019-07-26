@@ -68,7 +68,7 @@ class MyFunctionList(BaseView):
             filter_param = {}
             if category is not None:
                 filter_param['category'] = category
-            qs = (my_role.functions if my_role.is_admin() else CMSFunction.objects.all()).filter(**filter_param)
+            qs = (CMSFunction.objects if my_role.is_admin() else my_role.functions).filter(**filter_param)
             total_count = qs.count()
             functions = qs[page * limit:(page + 1) + limit]
         result = {

@@ -1,11 +1,17 @@
 from django.conf.urls import url
 
-from cms.views.control.role import RoleList, RoleDetail
+from cms.views.control.role import AllRoleList, RoleDetail, MyRoleList
 from cms.views.control.role_function import RoleFunction, ManageRoleFunction
 
 urlpatterns = [
-    url(r'^$', RoleList.as_view()),
+    # 所有角色列表
+    url(r'^$', AllRoleList.as_view()),
+    # 我管理的角色列表
+    url(r'^my/$', MyRoleList.as_view()),
+    # 角色详情
     url(r'^(?P<role_id>\d+)/$', RoleDetail.as_view()),
+    # 角色拥有的功能
     url(r'^(?P<role_id>\d+)/function/$', RoleFunction.as_view()),
+    # 管理角色的功能
     url(r'^(?P<role_id>\d+)/function/(?P<function_id>\w+)/$', ManageRoleFunction.as_view()),
 ]
