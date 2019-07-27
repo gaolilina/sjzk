@@ -1,199 +1,227 @@
 {% extends "layout.html" %}
 {% load staticfiles %}
 {% block content %}
-<form role="form" action="{% url 'admin:activity:activity' model.id %}" method="post" onSubmit="return form_check();">
-<table>
-    <tr>
-        <td>标题：</td>
-        <td><input name="name" type="text" value="{{ model.name }}" maxlength="50" required/></td>
-        <td>状态：</td>
-        <td>
-            {% if model.state == 0 %} 审核中 {% endif %} 
-            {% if model.state == 100 %} 审核通过 {% endif %} 
-            {% if model.state == 10 %} 审核未通过 {% endif %} 
-        </td>
-    </tr>
-    <tr>
-        <td>标签：</td>
-        <td><input name="tags" type="text" value="{{ model.tags }}" maxlength="50" required/></td>
+    <form role="form" action="{% url 'admin:activity:activity' model.id %}" method="post"
+          onSubmit="return form_check();">
+        <table>
+            <tr>
+                <td>标题：</td>
+                <td><input name="name" type="text" value="{{ model.name }}" maxlength="50" required/></td>
+                <td>状态：</td>
+                <td>
+                    {% if model.state == 0 %} 审核中 {% endif %}
+                    {% if model.state == 100 %} 审核通过 {% endif %}
+                    {% if model.state == 10 %} 审核未通过 {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>标签：</td>
+                <td><input name="tags" type="text" value="{{ model.tags }}" maxlength="50" required/></td>
 
-        <td>类型：</td>
-        <td>
-            <select name="type" required>
-                <option value="" selected="selected">--请选择--</option>
-                <option value="0"{% if model.type == 0 %} selected="selected"{% endif %}>会议</option>
-                <option value="1"{% if model.type == 1 %} selected="selected"{% endif %}>讲座</option>
-                <option value="2"{% if model.type == 2 %} selected="selected"{% endif %}>培训</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>详细内容：</td>
-        <td colspan="3"><textarea name="content" maxlength="1000" required>{{ model.content }}</textarea></td>
-    </tr>
-    <tr>
-        <!--
+                <td>类型：</td>
+                <td>
+                    <select name="type" required>
+                        <option value="" selected="selected">--请选择--</option>
+                        <option value="0"{% if model.type == 0 %} selected="selected"{% endif %}>会议</option>
+                        <option value="1"{% if model.type == 1 %} selected="selected"{% endif %}>讲座</option>
+                        <option value="2"{% if model.type == 2 %} selected="selected"{% endif %}>培训</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>详细内容：</td>
+                <td colspan="3"><textarea name="content" maxlength="1000" required>{{ model.content }}</textarea></td>
+            </tr>
+            <tr>
+                <!--
         <td>截至日期：</td>
         <td><input name="deadline" type="text" data-field="datetime" readonly value="{{ model.deadline }}" required/></td>
         -->
-        <td>参与者类型：</td>
-        <td>
-            <select name="user_type" required>
-                <option value="0"{% if model.user_type == 0 %} selected="selected"{% endif %}>不限</option>
-                <option value="1"{% if model.user_type == 1 %} selected="selected"{% endif %}>学生</option>
-                <option value="2"{% if model.user_type == 2 %} selected="selected"{% endif %}>教师</option>
-                <option value="3"{% if model.user_type == 3 %} selected="selected"{% endif %}>社会人员</option>
-            </select>
-        </td>
+                <td>参与者类型：</td>
+                <td>
+                    <select name="user_type" required>
+                        <option value="0"{% if model.user_type == 0 %} selected="selected"{% endif %}>不限</option>
+                        <option value="1"{% if model.user_type == 1 %} selected="selected"{% endif %}>学生</option>
+                        <option value="2"{% if model.user_type == 2 %} selected="selected"{% endif %}>教师</option>
+                        <option value="3"{% if model.user_type == 3 %} selected="selected"{% endif %}>社会人员</option>
+                    </select>
+                </td>
 
-        <td>领域：</td>
-        <td><select name="field" id="select_field" required></select></td>
-    </tr>
-    <tr>
-        <td>开始时间：</td>
-        <td><input name="time_started" type="text" data-field="datetime" readonly value="{{ model.time_started }}" required/></td>
-    
-        <td>结束时间：</td>
-        <td><input name="time_ended" type="text" data-field="datetime" readonly value="{{ model.time_ended }}" required/></td>
-    </tr>
-    <tr>
-        <td>省：</td>
-        <td><select name="province" required></select></td>
+                <td>领域：</td>
+                <td><select name="field" id="select_field" required></select></td>
+            </tr>
+            <tr>
+                <td>开始时间：</td>
+                <td><input name="time_started" type="text" data-field="datetime" readonly
+                           value="{{ model.time_started }}" required/></td>
 
-        <td>市：</td>
-        <td><select name="city" required></select></td>
-    </tr>
-    <tr>
-        <td>人数上限：</td>
-        <td><input name="allow_user" type="number" value="{{ model.allow_user }}" required/> (0为不限)</td>
+                <td>结束时间：</td>
+                <td><input name="time_ended" type="text" data-field="datetime" readonly value="{{ model.time_ended }}"
+                           required/></td>
+            </tr>
+            <tr>
+                <td>省：</td>
+                <td><select name="province" required></select></td>
 
-        <td>机构：</td>
-        <td><input name="unit" type="text" value="{{ model.unit }}" required/></td>
-    </tr>
-    <tr>
-        <td>活动成果发布：</td>
-        <td colspan="3"><textarea name="achievement" maxlength="1000">{{ model.achievement }}</textarea></td>
-    </tr>
-    <tr>
-        <td>当前活动阶段：</td>
-        <td>
-            <input name="stages" type="hidden" value="" required/>
-            <input name="status" type="hidden" value="{{ model.status }}" required/>
-            <select id="status" required>
-                {% for stage in stages %}
-                    <option value="{{ stage.status }}"{% if stage.status == model.status %} selected="selected"{% endif %}>
-                        {% if stage.status == 0 %}前期宣传{% endif %}
-                        {% if stage.status == 1 %}报名{% endif %}
-                        {% if stage.status == 2 %}结束{% endif %}
-                    </option>
-                {% endfor %}
-            </select>
-            <input id="add_stage" type="button" value="新增" style="margin-top: 0px;" />
-        </td>
-    </tr>
-    {% for stage in stages %}
-        <tr class="stage">
-            <td>活动阶段{{forloop.counter}}：<input class="remove_stage" type="button" value="删除" style="margin-top: 0px;" /></td>
-            <td>
-                类　　型：<select onchange="javascript:stage_gen()">
-                    <option value="0"{% if stage.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
-                    <option value="1"{% if stage.status == 1 %} selected="selected"{% endif %}>报名</option>
-                    <option value="2"{% if stage.status == 2 %} selected="selected"{% endif %}>结束</option>
-                </select><br/>
-                开始时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_started }}" /><br/>
-                结束时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_ended }}" />
-            </td>
-        </tr>
-    {% endfor %}
-    <tr>
-        <td colspan="2">
-            {{msg}}
-            <div class="buttons">
-                {% if model.state == 0 %}
-                <input type="submit" value="保存" />
-                <input type="reset" value="取消" />
-                <input id="verify" type="button" class="btn4 ml-10" value="审核" onclick="verify_choose({{model.id}})">
-                {% else %}
-                <input type="reset" value="取消" />
-                {% endif %}
-            </div>
-        </td>
-    </tr>
-</table>
-<script>
-$(document).ready(function() {
-    get_field('select_field','{{model.field}}');//获取初始化field
-    get_province("{{ model.province }}","{{ model.city }}");//初始化省市
-});
-var stage_count = {{ stages|length }};
-function verify_choose(id){
-    $.confirm({
-        title: null,
-        content: '确认？',
-        type: 'blue',
-        icon: 'glyphicon glyphicon-question-sign',
-        backgroundDismiss:true,
-        columnClass:'width-300',
-        buttons: {
-            ok: {
-                text: '通过',
-                btnClass: 'btn-primary',
-                action: function() {
-                    verify(id,true);
-                }
-            },
-            cancel: {
-                text: '不通过',
-                btnClass: 'btn-default',
-                action: function() {
-                    verify(id,false);
-                }
+                <td>市：</td>
+                <td><select name="city" required></select></td>
+            </tr>
+            <tr>
+                <td>人数上限：</td>
+                <td><input name="allow_user" type="number" value="{{ model.allow_user }}" required/> (0为不限)</td>
+
+                <td>机构：</td>
+                <td><input name="unit" type="text" value="{{ model.unit }}" required/></td>
+            </tr>
+            <tr>
+                <td>活动成果发布：</td>
+                <td colspan="3"><textarea name="achievement" maxlength="1000">{{ model.achievement }}</textarea></td>
+            </tr>
+            <tr>
+                <td>当前活动阶段：</td>
+                <td>
+                    <input name="stages" type="hidden" value="" required/>
+                    <input name="status" type="hidden" value="{{ model.status }}" required/>
+                    <select id="status" required>
+                        {% for stage in stages %}
+                            <option value="{{ stage.status }}"{% if stage.status == model.status %}
+                                    selected="selected"{% endif %}>
+                                {% if stage.status == 0 %}前期宣传{% endif %}
+                                {% if stage.status == 1 %}报名{% endif %}
+                                {% if stage.status == 2 %}结束{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <input id="add_stage" type="button" value="新增" style="margin-top: 0px;"/>
+                </td>
+            </tr>
+            {% for stage in stages %}
+                <tr class="stage">
+                    <td>活动阶段{{ forloop.counter }}：<input class="remove_stage" type="button" value="删除"
+                                                         style="margin-top: 0px;"/></td>
+                    <td>
+                        类　　型：<select onchange="javascript:stage_gen()">
+                        <option value="0"{% if stage.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
+                        <option value="1"{% if stage.status == 1 %} selected="selected"{% endif %}>报名</option>
+                        <option value="2"{% if stage.status == 2 %} selected="selected"{% endif %}>结束</option>
+                    </select><br/>
+                        开始时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_started }}"/><br/>
+                        结束时间：<input type="datetime" onchange="javascript:stage_gen()" value="{{ stage.time_ended }}"/>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2">
+                    {{ msg }}
+                    <div class="buttons">
+                        {% if model.state == 0 %}
+                            <input type="submit" value="保存"/>
+                            <input type="reset" value="取消"/>
+                            <input id="verify" type="button" class="btn4 ml-10" value="审核"
+                                   onclick="verify_choose({{ model.id }})">
+                        {% else %}
+                            <input type="reset" value="取消"/>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <script>
+            $(document).ready(function () {
+                get_field('select_field', '{{model.field}}');//获取初始化field
+                get_province("{{ model.province }}", "{{ model.city }}");//初始化省市
+            });
+            var stage_count = {{ stages|length }};
+
+            function verify_choose(id) {
+                $.confirm({
+                    title: null,
+                    content: '确认？',
+                    type: 'blue',
+                    icon: 'glyphicon glyphicon-question-sign',
+                    backgroundDismiss: true,
+                    columnClass: 'width-300',
+                    buttons: {
+                        ok: {
+                            text: '通过',
+                            btnClass: 'btn-primary',
+                            action: function () {
+                                verify(id, true);
+                            }
+                        },
+                        cancel: {
+                            text: '不通过',
+                            btnClass: 'btn-default',
+                            action: function () {
+                                verify(id, false);
+                            }
+                        }
+                    }
+                });
             }
-        }
-    });
-}
 
-function verify(id,result){
-    $.post(base_url+'admin/activity/{{model.id}}/check/',{"result":result})
-    .then(function(data) {
-        showAlert('审核成功');
-        $('#verify').hide();
-        $('input[type=submit]').hide();
-    })
-    .fail(function(err) {
-        console.log(err);
-        showAlert('审核失败:'+err.responseText);
-    });
-}
+            function getCookie(name) {
+                var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
 
-function form_check(){
-    isSubmit = true;
-    $('.stage').each(function(idx, elem) {
-        if($(elem).find('input:nth(1)').val()==""){
-            showAlert('请设置阶段开始时间');
-            isSubmit = false;
-            return false;
-        }
-        if($(elem).find('input:nth(2)').val()==""){
-            showAlert('请设置阶段结束时间');
-            isSubmit = false;
-            return false;
-        }
-        if(new Date($(elem).find('input:nth(1)').val()) > new Date($(elem).find('input:nth(2)').val())){
-            showAlert('时间设置有误');
-            isSubmit = false;
-            return false;
-        }
-    });
-    if(isSubmit) return true;
-    else return false;
-}
+                if (arr = document.cookie.match(reg))
 
-var msg = "{{ msg }}";
-if(msg!="") showAlert(msg);
+                    return unescape(arr[2]);
+                else
+                    return null;
+            }
 
-</script>
-</form>
+            function verify(id, result) {
+                $.ajax({
+                    type: 'POST',
+                    url: base_url + 'admin/activity/{{model.id}}/check/',
+                    data: {"result": result},
+                    dataType: 'json',
+                    headers: {'X-USER-TOKEN': getCookie('token')},
+                    error: function (data) {
+                        showAlert('提交失败');
+                        console.log(err);
+                        showAlert('审核失败:' + err.responseText);
+                    },
+                    success: function (data) {
+                        if (data.code == 0) {
+                            showAlert('审核成功');
+                            $('#verify').hide();
+                            $('input[type=submit]').hide();
+                        } else {
+                            showAlert(data.msg);
+                        }
+                    }
+                });
+            }
+
+            function form_check() {
+                isSubmit = true;
+                $('.stage').each(function (idx, elem) {
+                    if ($(elem).find('input:nth(1)').val() == "") {
+                        showAlert('请设置阶段开始时间');
+                        isSubmit = false;
+                        return false;
+                    }
+                    if ($(elem).find('input:nth(2)').val() == "") {
+                        showAlert('请设置阶段结束时间');
+                        isSubmit = false;
+                        return false;
+                    }
+                    if (new Date($(elem).find('input:nth(1)').val()) > new Date($(elem).find('input:nth(2)').val())) {
+                        showAlert('时间设置有误');
+                        isSubmit = false;
+                        return false;
+                    }
+                });
+                if (isSubmit) return true;
+                else return false;
+            }
+
+            var msg = "{{ msg }}";
+            if (msg != "") showAlert(msg);
+
+        </script>
+    </form>
 {% endblock %}
 
 {% block topbar %}{% include 'topbar.html' with tb='activity_admin' %}{% endblock %}
@@ -201,11 +229,11 @@ if(msg!="") showAlert(msg);
 {% block rightbar %}{% include 'rightbar.html' with tb='activity_admin' lb='activity' rb='activity' %}{% endblock %}
 
 {% block css %}
-{% include 'parts/input_style.html' %}
+    {% include 'parts/input_style.html' %}
 {% endblock %}
 
 {% block js %}
-<script src="{% static 'js/activity.js' %}"></script>
-<script src="{% static 'js/field.js' %}"></script>
-<script src="{% static 'js/province_city.js' %}"></script>
+    <script src="{% static 'js/activity.js' %}"></script>
+    <script src="{% static 'js/field.js' %}"></script>
+    <script src="{% static 'js/province_city.js' %}"></script>
 {% endblock %}
