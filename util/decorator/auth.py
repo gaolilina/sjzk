@@ -7,6 +7,7 @@ from admin.models import AdminUser
 from main.models import User, System
 from main.models.role import Role
 from main.utils import abort
+from util.code import error
 
 
 def cms_auth(function):
@@ -19,12 +20,12 @@ def cms_auth(function):
         token = request.META.get('HTTP_X_USER_TOKEN')
         if not token or AdminUser.objects.filter(token=token).count() <= 0:
             return JsonResponse({
-                'code': -1
+                'code': error.NO_USER
             })
         user = AdminUser.objects.get(token=token)
         if not user.is_enabled:
             return JsonResponse({
-                'code': -4
+                'code': error.USER_DISABLED
             })
         # 用户正常
         request.user = user
