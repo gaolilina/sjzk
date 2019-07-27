@@ -1,7 +1,8 @@
 from django.conf.urls import url
 
+from main.views.activity.info import Detail, ActivityStage
 from main.views.search import SearchActivity
-from ..views.activity import *
+from main.views.activity import *
 from ..views.common import ActivityCommentList, ActivityComment, ActivityFollowerList
 
 urls = [
@@ -16,7 +17,7 @@ urls = [
     url(r'^(?P<activity_id>[0-9]+)/comments/$', ActivityCommentList.as_view(), name='comments'),
     url(r'^comments/(?P<comment_id>[0-9]+)/$', ActivityComment.as_view(), name='comment'),
     # 活动的阶段
-    url(r'^stage/$', ActivityStage.as_view(), name='stage'),
+    url(r'^(?P<activity_id>[0-9]+)/stage/$', ActivityStage.as_view(), name='stage'),
     # 粉丝
     url(r'^(?P<activity_id>[0-9]+)/followers/$', ActivityFollowerList.as_view(), name='followers'),
     url(r'^(?P<activity_id>[0-9]+)/sign/$', ActivitySignList.as_view(), name='sign'),

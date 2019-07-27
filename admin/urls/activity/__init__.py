@@ -5,6 +5,7 @@ from django.conf.urls import url
 
 from admin.views.activity.check import ActivityCheck
 from admin.views.activity import *
+from admin.views.activity.list_detail import ActivityView, ActivityList
 
 urls = [
     url(r'^(?P<activity_id>\d+)?/check/$', ActivityCheck.as_view(), name='activity_check'),
