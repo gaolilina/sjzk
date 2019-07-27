@@ -8,14 +8,14 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 from main.utils import abort
-from main.utils.decorators import require_token
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 from modellib.models.paper import Paper, PaperAnswer
 
 
 class PaperDetail(View):
 
-    @require_token
+    @app_auth
     @validate_args({
         'paper_id': forms.IntegerField(min_value=0),
     })
@@ -33,7 +33,7 @@ class PaperDetail(View):
 
 class AnswerThePaper(View):
 
-    @require_token
+    @app_auth
     @validate_args({
         'paper_id': forms.IntegerField(min_value=0),
         'answers': forms.CharField(max_length=1000),

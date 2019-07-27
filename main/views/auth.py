@@ -6,9 +6,9 @@ from django.views.generic import View
 from ChuangYi.settings import DEFAULT_ICON_URL
 from im.huanxin import register_to_huanxin
 from main.models import User, UserValidationCode
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args
 from ..utils import abort, identity_verify, get_score_stage, eid_verify, save_uploaded_image
-from ..utils.decorators import *
 from ..views.user import Profile as Profile_
 
 
@@ -122,7 +122,7 @@ class Account(View):
 
 # noinspection PyClassHasNoInit
 class IdentityVerificationView(Profile_):
-    @require_token
+    @app_auth
     @validate_args({
         'real_name': forms.CharField(max_length=20),
         'id_number': forms.CharField(min_length=18, max_length=18),
@@ -155,7 +155,7 @@ class IdentityVerificationView(Profile_):
 
 # noinspection PyClassHasNoInit
 class EidIdentityVerificationView(Profile_):
-    @require_token
+    @app_auth
     @validate_args({
         'real_name': forms.CharField(max_length=20),
         'id_number': forms.CharField(min_length=18, max_length=18),
@@ -218,7 +218,7 @@ class EidIdentityVerificationView(Profile_):
 
 # noinspection PyClassHasNoInit
 class OtherIdentityVerificationView(Profile_):
-    @require_token
+    @app_auth
     @validate_args({
         'role': forms.CharField(max_length=20),
         'unit1': forms.CharField(max_length=20),
@@ -249,7 +249,7 @@ class OtherIdentityVerificationView(Profile_):
 
 
 class IDCardView(View):
-    @require_token
+    @app_auth
     def get(self, request):
         """检查是否已上传身份证照片"""
 
@@ -257,7 +257,7 @@ class IDCardView(View):
             abort(200)
         abort(404, '未设置头像')
 
-    @require_token
+    @app_auth
     def post(self, request):
         """上传身份证照片"""
 
@@ -285,7 +285,7 @@ class IDCardView(View):
 
 
 class OtherCardView(View):
-    @require_token
+    @app_auth
     def get(self, request):
         """检查是否已上传其他证件照片"""
 
@@ -293,7 +293,7 @@ class OtherCardView(View):
             abort(200)
         abort(404, '未上传图片')
 
-    @require_token
+    @app_auth
     def post(self, request):
         """上传其他证件照片"""
         checkIdVerified(request.user)

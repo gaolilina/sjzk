@@ -7,6 +7,7 @@ from django.views.generic import View
 from main.utils import abort, save_uploaded_image
 from main.utils.dfa import check_bad_words
 from main.views.search.achievement import SearchUserAchievement
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 from ..models import Achievement
 from ..utils.decorators import *
@@ -19,13 +20,13 @@ class AchievementDoWhoView(View):
     需要添加或移除 who 中的成员，请使用该类
     """
 
-    @require_token
+    @app_auth
     @fetch_object(Achievement.objects, 'achievement')
     def post(self, request, achievement, who):
         achievement[who].add(request.user)
         return JsonResponse({})
 
-    @require_token
+    @app_auth
     @fetch_object(Achievement.objects, 'achievement')
     def delete(self, request, achievement, who):
         achievement[who].remove(request.user)

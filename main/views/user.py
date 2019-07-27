@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.views.generic import View
 
 from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
+from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object, validate_args
 from ..models import *
 from ..utils import abort, get_score_stage, send_message
@@ -29,8 +30,8 @@ class Icon(View):
 
 
 class Profile(View):
-    @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
+    @fetch_object(User.enabled, 'user', force=False)
     def get(self, request, user=None):
         """获取用户的基本资料
 
@@ -68,7 +69,7 @@ class Profile(View):
             profession: 专业
             score: 积分
         """
-        user = user or request.user
+        user = user
 
         # 更新访客记录
         # if user != request.user:
@@ -119,7 +120,7 @@ class Profile(View):
 # noinspection PyShadowingBuiltins
 class ExperienceList(View):
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     def get(self, request, type, user=None):
         """获取用户的某类经历
 
@@ -150,7 +151,7 @@ class ExperienceList(View):
 
 class Experience(View):
     @fetch_object(UserExperience.objects, 'exp')
-    @require_token
+    @app_auth
     @validate_args({
         'description': forms.CharField(max_length=100),
         'unit': forms.CharField(max_length=20),
@@ -172,7 +173,7 @@ class Experience(View):
         abort(200)
 
     @fetch_object(UserExperience.objects, 'exp')
-    @require_token
+    @app_auth
     def delete(self, request, exp):
         """删除用户的某条经历"""
 
@@ -300,7 +301,7 @@ class TeamOwnedList(View):
               'name', '-name')
 
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -351,7 +352,7 @@ class TeamJoinedList(View):
               'team__name', '-team__name')
 
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -401,7 +402,7 @@ class ActivityList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -452,7 +453,7 @@ class CompetitionList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -507,7 +508,7 @@ class CompetitionJoinedList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -557,7 +558,7 @@ class CompetitionJoinedList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     @validate_args({
         'competition_id': forms.IntegerField(),
     })

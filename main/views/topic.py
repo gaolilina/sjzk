@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.generic import View
 
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 from ..models import Topic
 from ..utils import abort
@@ -72,7 +73,7 @@ class List(View):
 
 
 class Detail(View):
-    @require_token
+    @app_auth
     @fetch_object(Topic.enabled, 'topic')
     def get(self, request, topic):
         """获取课题详情
@@ -114,7 +115,7 @@ class Detail(View):
 
 class TopicStage(View):
     @fetch_object(Topic.enabled, 'topic')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -153,7 +154,7 @@ class UserParticipatorList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @fetch_object(Topic.enabled, 'topic')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

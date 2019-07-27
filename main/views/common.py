@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic import View
 
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 from ..models import User, Team, Lab, UserComment as UserCommentModel, \
     TeamComment as TeamCommentModel, LabComment as LabCommentModel, \
@@ -151,7 +152,7 @@ class SystemActionsList(View):
 
 
 class FollowedUserActionList(View):
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -211,7 +212,7 @@ class FollowedUserActionList(View):
 
 
 class FollowedTeamActionList(View):
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -266,7 +267,7 @@ class FollowedTeamActionList(View):
 
 
 class FollowedLabActionList(View):
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -323,7 +324,7 @@ class FollowedLabActionList(View):
 # noinspection PyMethodOverriding
 class UserActionList(ActionList):
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     def get(self, request, user=None):
         user = user or request.user
         return super().get(request, user)
@@ -332,7 +333,7 @@ class UserActionList(ActionList):
 # noinspection PyMethodOverriding
 class TeamActionList(ActionList):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     def get(self, request, team):
         return super(TeamActionList, self).get(request, team)
 
@@ -340,7 +341,7 @@ class TeamActionList(ActionList):
 # noinspection PyMethodOverriding
 class LabActionList(ActionList):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     def get(self, request, lab):
         return super(LabActionList, self).get(request, lab)
 
@@ -641,7 +642,7 @@ class ScreenLabActionList(View):
 
 # noinspection PyMethodOverriding
 class ActionsList(ActionList):
-    @require_token
+    @app_auth
     def get(self, request):
         return super(ActionsList, self).get(request)
 
@@ -690,7 +691,7 @@ class CommentList(View):
 # noinspection PyMethodOverriding
 class UserCommentList(CommentList):
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     def get(self, request, user=None):
         user = user or request.user
         return super().get(request, user)
@@ -705,7 +706,7 @@ class UserCommentList(CommentList):
 # noinspection PyMethodOverriding
 class TeamCommentList(CommentList):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     def get(self, request, team):
         """获取团队的评论信息列表
 
@@ -732,7 +733,7 @@ class TeamCommentList(CommentList):
 # noinspection PyMethodOverriding
 class LabCommentList(CommentList):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     def get(self, request, lab):
         """获取团队的评论信息列表
 
@@ -759,7 +760,7 @@ class LabCommentList(CommentList):
 # noinspection PyMethodOverriding
 class ActivityCommentList(CommentList):
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @app_auth
     def get(self, request, activity):
         """获取活动的评论信息列表
 
@@ -786,7 +787,7 @@ class ActivityCommentList(CommentList):
 # noinspection PyMethodOverriding
 class CompetitionCommentList(CommentList):
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     def get(self, request, competition):
         """获取竞赛的评论信息列表
 
@@ -813,7 +814,7 @@ class CompetitionCommentList(CommentList):
 # noinspection PyMethodOverriding
 class UserActionCommentList(CommentList):
     @fetch_object(UserAction.objects, 'action')
-    @require_token
+    @app_auth
     def get(self, request, action):
         """获取用户动态的评论信息列表
 
@@ -840,7 +841,7 @@ class UserActionCommentList(CommentList):
 # noinspection PyMethodOverriding
 class TeamActionCommentList(CommentList):
     @fetch_object(TeamAction.objects, 'action')
-    @require_token
+    @app_auth
     def get(self, request, action):
         """获取团队动态的评论信息列表
 
@@ -867,7 +868,7 @@ class TeamActionCommentList(CommentList):
 # noinspection PyMethodOverriding
 class LabActionCommentList(CommentList):
     @fetch_object(LabAction.objects, 'action')
-    @require_token
+    @app_auth
     def get(self, request, action):
         """获取团队动态的评论信息列表
 
@@ -894,7 +895,7 @@ class LabActionCommentList(CommentList):
 # noinspection PyMethodOverriding
 class SystemActionCommentList(CommentList):
     @fetch_object(SystemAction.objects, 'action')
-    @require_token
+    @app_auth
     def get(self, request, action):
         """获取系统动态的评论信息列表
 
@@ -1021,7 +1022,7 @@ class FollowerList(View):
 # noinspection PyMethodOverriding
 class UserFollowerList(FollowerList):
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     def get(self, request, user=None):
         user = user or request.user
         return super().get(request, user)
@@ -1030,7 +1031,7 @@ class UserFollowerList(FollowerList):
 # noinspection PyMethodOverriding
 class TeamFollowerList(FollowerList):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     def get(self, request, team):
         return super().get(request, team)
 
@@ -1038,7 +1039,7 @@ class TeamFollowerList(FollowerList):
 # noinspection PyMethodOverriding
 class LabFollowerList(FollowerList):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     def get(self, request, lab):
         return super().get(request, lab)
 
@@ -1046,7 +1047,7 @@ class LabFollowerList(FollowerList):
 # noinspection PyMethodOverriding
 class TeamNeedFollowerList(FollowerList):
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @app_auth
     def get(self, request, need):
         return super().get(request, need)
 
@@ -1054,7 +1055,7 @@ class TeamNeedFollowerList(FollowerList):
 # noinspection PyMethodOverriding
 class ActivityFollowerList(FollowerList):
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @app_auth
     def get(self, request, activity):
         return super().get(request, activity)
 
@@ -1062,7 +1063,7 @@ class ActivityFollowerList(FollowerList):
 # noinspection PyMethodOverriding
 class CompetitionFollowerList(FollowerList):
     @fetch_object(Competition, 'competition')
-    @require_token
+    @app_auth
     def get(self, request, competition):
         return super().get(request, competition)
 
@@ -1080,7 +1081,7 @@ class Follower(View):
 # noinspection PyMethodOverriding
 class UserFollower(Follower):
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     def get(self, request, user=None):
         user = user or request.user
         return super().get(request, user)
@@ -1089,7 +1090,7 @@ class UserFollower(Follower):
 # noinspection PyMethodOverriding
 class TeamFollower(Follower):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     def get(self, request, team):
         return super().get(request, team)
 
@@ -1097,7 +1098,7 @@ class TeamFollower(Follower):
 # noinspection PyMethodOverriding
 class LabFollower(Follower):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     def get(self, request, lab):
         return super().get(request, lab)
 
@@ -1144,7 +1145,7 @@ class LikerList(View):
 
 # noinspection PyMethodOverriding
 class UserLikerList(LikerList):
-    @require_token
+    @app_auth
     @fetch_object(User.enabled, 'user')
     def get(self, request, user=None):
         user = user or request.user
@@ -1153,7 +1154,7 @@ class UserLikerList(LikerList):
 
 # noinspection PyMethodOverriding
 class TeamLikerList(LikerList):
-    @require_token
+    @app_auth
     @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         return super().get(request, team)
@@ -1161,7 +1162,7 @@ class TeamLikerList(LikerList):
 
 # noinspection PyMethodOverriding
 class LabLikerList(LikerList):
-    @require_token
+    @app_auth
     @fetch_object(Lab.enabled, 'lab')
     def get(self, request, lab):
         return super().get(request, lab)
@@ -1169,7 +1170,7 @@ class LabLikerList(LikerList):
 
 # noinspection PyMethodOverriding
 class LabAchievementLikerList(LikerList):
-    @require_token
+    @app_auth
     @fetch_object(LabAchievement.objects, 'achievement')
     def get(self, request, achievement):
         return super().get(request, achievement)
@@ -1187,7 +1188,7 @@ class Liker(View):
 class UserLiker(Liker):
     @fetch_object(User.enabled, 'user')
     @fetch_object(User.enabled, 'other_user')
-    @require_token
+    @app_auth
     def get(self, request, other_user, user=None):
         user = user or request.user
         return super(UserLiker, self).get(request, user, other_user)
@@ -1196,7 +1197,7 @@ class UserLiker(Liker):
 class TeamLiker(Liker):
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'other_user')
-    @require_token
+    @app_auth
     def get(self, request, team, other_user):
         return super(TeamLiker, self).get(request, team, other_user)
 
@@ -1204,7 +1205,7 @@ class TeamLiker(Liker):
 class LabLiker(Liker):
     @fetch_object(Lab.enabled, 'lab')
     @fetch_object(User.enabled, 'other_user')
-    @require_token
+    @app_auth
     def get(self, request, lab, other_user):
         return super(LabLiker, self).get(request, lab, other_user)
 
@@ -1212,7 +1213,7 @@ class LabLiker(Liker):
 class UserAchievementLiker(Liker):
     @fetch_object(Achievement.objects, 'achievement')
     @fetch_object(User.enabled, 'other_user')
-    @require_token
+    @app_auth
     def get(self, request, achievement, other_user):
         return super(UserAchievementLiker, self).get(request, achievement, other_user)
 
@@ -1220,7 +1221,7 @@ class UserAchievementLiker(Liker):
 class LabAchievementLiker(Liker):
     @fetch_object(LabAchievement.objects, 'achievement')
     @fetch_object(User.enabled, 'other_user')
-    @require_token
+    @app_auth
     def get(self, request, achievement, other_user):
         return super(LabAchievementLiker, self).get(request, achievement, other_user)
 
@@ -1256,7 +1257,7 @@ class VisitorList(View):
 
 # noinspection PyMethodOverriding
 class UserVisitorList(VisitorList):
-    @require_token
+    @app_auth
     @fetch_object(User.enabled, 'user')
     def get(self, request, user=None):
         user = user or request.user
@@ -1265,7 +1266,7 @@ class UserVisitorList(VisitorList):
 
 # noinspection PyMethodOverriding
 class TeamVisitorList(VisitorList):
-    @require_token
+    @app_auth
     @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         return super().get(request, team)
@@ -1273,7 +1274,7 @@ class TeamVisitorList(VisitorList):
 
 # noinspection PyMethodOverriding
 class LabVisitorList(VisitorList):
-    @require_token
+    @app_auth
     @fetch_object(Lab.enabled, 'lab')
     def get(self, request, lab):
         return super().get(request, lab)
@@ -1343,28 +1344,28 @@ class FavoredActionList(View):
 
 # noinspection PyMethodOverriding
 class FavoredUserActionList(FavoredActionList):
-    @require_token
+    @app_auth
     def get(self, request):
         return super().get(request, request.user.favored_user_actions)
 
 
 # noinspection PyMethodOverriding
 class FavoredTeamActionList(FavoredActionList):
-    @require_token
+    @app_auth
     def get(self, request):
         return super().get(request, request.user.favored_team_actions)
 
 
 # noinspection PyMethodOverriding
 class FavoredLabActionList(FavoredActionList):
-    @require_token
+    @app_auth
     def get(self, request):
         return super().get(request, request.user.favored_lab_actions)
 
 
 # noinspection PyMethodOverriding
 class FavoredSystemActionList(FavoredActionList):
-    @require_token
+    @app_auth
     def get(self, request):
         return super().get(request, request.user.favored_system_actions)
 
@@ -1377,7 +1378,7 @@ class FavoredActivityList(View):
     }
     ORDERS = ('time_created', '-time_created')
 
-    @require_token
+    @app_auth
     @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """获取活动收藏列表
@@ -1424,7 +1425,7 @@ class FavoredCompetitionList(View):
     }
     ORDERS = ('time_created', '-time_created')
 
-    @require_token
+    @app_auth
     @validate_args(get_dict)
     def get(self, request, offset=0, limit=10, order=1):
         """获取竞赛收藏列表

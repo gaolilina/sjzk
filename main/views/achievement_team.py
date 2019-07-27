@@ -6,6 +6,7 @@ from main.models import Team, Achievement
 from main.utils import abort, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
 from main.utils.dfa import check_bad_words
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 
 __all__ = ('AllTeamAchievementView', 'TeamAchievementList',)
@@ -42,7 +43,7 @@ class TeamAchievementList(View):
     ORDERS = ('time_created', '-time_created')
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

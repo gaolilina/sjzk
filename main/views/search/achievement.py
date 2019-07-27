@@ -7,14 +7,14 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 from main.models import Achievement
-from main.utils.decorators import require_token
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args
 
 
 class SearchUserAchievement(View):
     ORDERS = ('time_created', '-time_created')
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -60,7 +60,7 @@ class SearchUserAchievement(View):
 class SearchTeamAchievement(View):
     ORDERS = ('time_created', '-time_created')
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

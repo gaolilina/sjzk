@@ -9,13 +9,14 @@ from main.models import User
 from main.utils import *
 from main.utils.decorators import *
 from main.utils.http import *
+from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object, validate_args
 
 
 class FriendCheck(View):
+    @app_auth
     @fetch_object(User.enabled, 'user')
     @fetch_object(User.enabled, 'other_user')
-    @require_token
     def get(self, request, other_user, user=None):
         """检查两个用户是否为好友关系"""
 
@@ -88,7 +89,7 @@ class FriendRequestList(View):
     好友请求和列表
     """
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -169,7 +170,7 @@ class FriendList(View):
         'friend__name', '-friend__name',
     )
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

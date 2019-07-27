@@ -2,6 +2,7 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 from ..models import Activity
 from ..utils import abort
@@ -16,7 +17,7 @@ class ActivitySignList(View):
     """
 
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -42,7 +43,7 @@ class ActivitySignList(View):
 
 class Detail(View):
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @app_auth
     def get(self, request, activity):
         """获取活动详情
         :return:
@@ -94,7 +95,7 @@ class Detail(View):
 
 class ActivityStage(View):
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -133,7 +134,7 @@ class UserParticipatorList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

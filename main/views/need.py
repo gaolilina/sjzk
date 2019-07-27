@@ -8,7 +8,8 @@ from django.views.generic import View
 from main.models import User, Team
 from main.models.need import TeamNeed
 from main.utils import abort, get_score_stage, action
-from main.utils.decorators import require_verification_token, require_token
+from main.utils.decorators import require_verification_token
+from util.decorator.auth import app_auth
 from main.utils.dfa import check_bad_words
 from util.decorator.param import validate_args, fetch_object
 
@@ -376,7 +377,7 @@ class Need(View):
                       'deadline', 'province', 'city', 'county')
 
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @app_auth
     def get(self, request, need):
         """获取需求详情
 
@@ -689,7 +690,7 @@ class NeedUserList(View):
     )
 
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -752,7 +753,7 @@ class NeedTeamList(View):
     )
 
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -808,7 +809,7 @@ class NeedTeamList(View):
 
 class MemberNeedRequestList(View):
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -928,7 +929,7 @@ class MemberNeedRequest(View):
 class NeedRequestList(View):
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -979,7 +980,7 @@ class NeedRequestList(View):
 
 class NeedRequest(View):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1069,7 +1070,7 @@ class NeedRequest(View):
 class NeedInvitationList(View):
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1118,7 +1119,7 @@ class NeedInvitationList(View):
 
 class NeedInvitation(View):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

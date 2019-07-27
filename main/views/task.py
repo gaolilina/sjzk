@@ -9,14 +9,15 @@ from django.views.generic import View
 from main.models import Team, User
 from main.models.task import InternalTask, ExternalTask
 from main.utils import abort, get_score_stage, action
-from main.utils.decorators import require_token, require_verification_token
+from main.utils.decorators import require_verification_token
+from util.decorator.auth import app_auth
 from main.utils.dfa import check_bad_words
 from util.decorator.param import fetch_object, validate_args
 
 
 class InternalTaskList(View):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -109,7 +110,7 @@ class InternalTaskList(View):
 
 
 class InternalTasks(View):
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -188,7 +189,7 @@ class TeamInternalTask(View):
             'submit_num', 'finish_time', 'time_created')
 
     @fetch_object(InternalTask.objects, 'task')
-    @require_token
+    @app_auth
     def get(self, request, task):
         """获取内部任务详情
 
@@ -300,7 +301,7 @@ class TeamInternalTask(View):
 
 class ExternalTaskList(View):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -463,7 +464,7 @@ class TeamExternalTask(View):
             'time_created')
 
     @fetch_object(ExternalTask.objects, 'task')
-    @require_token
+    @app_auth
     def get(self, request, task):
         """获取外部任务详情
 

@@ -29,7 +29,7 @@ CRONJOBS = [
      '>> /var/log/run.log'),
 ]
 
-ROOT_URLCONF = 'main.urls'
+ROOT_URLCONF = 'ChuangYi.urls'
 MIDDLEWARE_CLASSES = ['main.utils.abort.AbortExceptionHandler']
 TEMPLATES = [
     {
