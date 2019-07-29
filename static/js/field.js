@@ -8,7 +8,7 @@ function get_field(select_id,field=null,init=true){
     let fields = data.fields;
     for(let field_index in fields){
       let field = fields[field_index];
-      inner_html += '<option value="'+field.name+'">'+field.name+'</option>';
+      inner_html += '<option title="'+field.id+'" value="'+field.name+'">'+field.name+'</option>';
     }
     $('#'+select_id).html(inner_html);
     if(init){
@@ -72,7 +72,7 @@ function delete_field(select_id){
           text: '确认',
           btnClass: 'btn-primary',
           action: function() {
-              let field_id = $('#'+select_id).val();
+              let field_id = $('#'+select_id+' option:selected').attr('title');
                 $.ajax({
                   type:'DELETE',
                   url: base_url+'web/field/'+field_id+'/',
