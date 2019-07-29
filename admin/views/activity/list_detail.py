@@ -1,7 +1,5 @@
-import json
-
 from django import forms
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
@@ -14,10 +12,11 @@ from util.decorator.param import old_validate_args
 class ActivityView(View):
     @admin_auth
     @require_role('yz')
-    @fetch_record(Activity.objects, 'mod', 'id')
-    def get(self, request, mod):
+    @fetch_record(Activity.objects, 'activity', 'id')
+    def get(self, request, activity):
         template = loader.get_template("activity/activity.html")
-        context = Context({'model': mod, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=mod)})
+        context = Context(
+            {'model': activity, 'user': request.user, 'stages': ActivityStage.objects.filter(activity=activity)})
         return HttpResponse(template.render(context))
 
     @admin_auth
@@ -39,30 +38,17 @@ class ActivityView(View):
         'stages': forms.CharField(required=False),
         'achievement': forms.CharField(required=False),
     })
-    @fetch_record(Activity.enabled, 'model', 'id')
-    def post(self, request, **kwargs):
-        user = request.user
-        model = kwargs["model"]
-        if model.state == Activity.STATE_PASSED \
-                or 'type' in kwargs and kwargs['type'] not in Activity.TYPES:
-            return HttpResponseForbidden()
-
-        for k in kwargs:
-            if k != "stages":
-                setattr(model, k, kwargs[k])
-        model.save()
-
-        if 'stages' in kwargs and kwargs['stages'] != "":
-            ActivityStage.objects.filter(activity=model).delete()
-
-            stages = json.loads(kwargs['stages'])
-            for st in stages:
-                model.stages.create(status=int(st['status']), time_started=st['time_started'],
-                                    time_ended=st['time_ended'])
-
+    @fetch_record(Activity.enabled, 'activity', 'id')
+    def post(self, request, activity, status=None, **kwargs):
+        update_params = {}
+        if status is not None:
+            update_params['status'] = status
+        # 更新数据，尽量使用 QuerySet.update，不要使用 Model.save
+        if len(update_params) > 0:
+            Activity.objects.filter(id=activity.id).update(**update_params)
         template = loader.get_template("activity/activity.html")
-        context = Context({'model': model, 'msg': '保存成功', 'user': request.user,
-                           'stages': ActivityStage.objects.filter(activity=model)})
+        context = Context({'model': activity, 'msg': '保存成功', 'user': request.user,
+                           'stages': ActivityStage.objects.filter(activity=activity)})
         return HttpResponse(template.render(context))
 
 
