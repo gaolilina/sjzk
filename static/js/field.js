@@ -8,7 +8,7 @@ function get_field(select_id,field=null,init=true){
     let fields = data.fields;
     for(let field_index in fields){
       let field = fields[field_index];
-      inner_html += '<option value="'+field.name+'">'+field.name+'</option>';
+      inner_html += '<option value="'+field.id+'">'+field.name+'</option>';
     }
     $('#'+select_id).html(inner_html);
     if(init){
