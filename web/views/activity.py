@@ -27,8 +27,8 @@ class AdminActivityAdd(BaseView):
         'user_type': forms.IntegerField(),
         'stages': forms.CharField(),
     })
-    def post(self, request, time_started, time_ended, **kwargs):
-        if time_ended <= time_started:
+    def post(self, request, **kwargs):
+        if kwargs['time_ended'] <= kwargs['time_started']:
             return self.fail(1, '开始时间要早于结束时间')
         user = request.user
         if kwargs['type'] not in Activity.TYPES:

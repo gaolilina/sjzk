@@ -45,7 +45,7 @@ def validate_args(d):
                     # 参数值错误
                     return JsonResponse({
                         'code': error.INVALIDE_VALUE,
-                        'msg': '不合法参数 "%s" 值 "%s"' % (k, request_value)
+                        'msg': '不合法参数 {} 值 {}，正确类型为 {}'.format(k, request_value, type(v).__name__)
                     })
             return function(self, request, *args, **kwargs)
 
