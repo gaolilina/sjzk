@@ -17,6 +17,7 @@ from main.utils.decorators import *
 from main.utils.dfa import check_bad_words
 from main.utils.http import notify_user
 from main.utils.recommender import calculate_ranking_score
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 
 __all__ = ('List', 'Screen', 'Profile', 'Icon', 'MemberList',
@@ -242,7 +243,7 @@ class Screen(View):
 
 class Profile(View):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     def get(self, request, lab):
         """获取实验室的基本资料
 
@@ -428,7 +429,7 @@ class MemberList(View):
     )
 
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -468,7 +469,7 @@ class MemberList(View):
 class Member(View):
     @fetch_object(Lab.enabled, 'lab')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     def get(self, request, lab, user):
         """检查用户是否为实验室成员"""
 
@@ -520,7 +521,7 @@ class MemberRequestList(View):
         'offset': forms.IntegerField(required=False),
         'limit': forms.IntegerField(required=False, min_value=0),
     })
-    @require_token
+    @app_auth
     def get(self, request, lab, offset=0, limit=10):
         """获取实验室的加入申请列表
 
@@ -587,7 +588,7 @@ class MemberRequestList(View):
 class MemberRequest(View):
     @fetch_object(Lab.enabled, 'lab')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     def delete(self, request, lab, user):
         """忽略某用户的加实验室请求"""
 
@@ -643,7 +644,7 @@ class Invitation(View):
 class AllAchievementList(View):
     ORDERS = ('time_created', '-time_created')
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -701,7 +702,7 @@ class AchievementList(View):
     ORDERS = ('time_created', '-time_created')
 
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1135,7 +1136,7 @@ class Need(View):
                       'deadline', 'province', 'city', 'county')
 
     @fetch_object(LabNeed.objects, 'need')
-    @require_token
+    @app_auth
     def get(self, request, need):
         """获取需求详情
 
@@ -1448,7 +1449,7 @@ class NeedUserList(View):
     )
 
     @fetch_object(LabNeed.objects, 'need')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1511,7 +1512,7 @@ class NeedLabList(View):
     )
 
     @fetch_object(LabNeed.objects, 'need')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1567,7 +1568,7 @@ class NeedLabList(View):
 
 class MemberNeedRequestList(View):
     @fetch_object(LabNeed.objects, 'need')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1687,7 +1688,7 @@ class MemberNeedRequest(View):
 class NeedRequestList(View):
     @fetch_object(LabNeed.objects, 'need')
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1738,7 +1739,7 @@ class NeedRequestList(View):
 
 class NeedRequest(View):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1828,7 +1829,7 @@ class NeedRequest(View):
 class NeedInvitationList(View):
     @fetch_object(LabNeed.objects, 'need')
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1877,7 +1878,7 @@ class NeedInvitationList(View):
 
 class NeedInvitation(View):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1965,7 +1966,7 @@ class NeedInvitation(View):
 
 class InternalTaskList(View):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -2058,7 +2059,7 @@ class InternalTaskList(View):
 
 
 class InternalTasks(View):
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -2137,7 +2138,7 @@ class LabInternalTask(View):
             'submit_num', 'finish_time', 'time_created')
 
     @fetch_object(InternalTask.objects, 'task')
-    @require_token
+    @app_auth
     def get(self, request, task):
         """获取内部任务详情
 
@@ -2249,7 +2250,7 @@ class LabInternalTask(View):
 
 class ExternalTaskList(View):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -2412,7 +2413,7 @@ class LabExternalTask(View):
             'time_created')
 
     @fetch_object(ExternalTask.objects, 'task')
-    @require_token
+    @app_auth
     def get(self, request, task):
         """获取外部任务详情
 
@@ -2549,7 +2550,7 @@ class LabExternalTask(View):
 
 class CompetitionList(View):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -2577,7 +2578,7 @@ class LabScoreRecord(View):
     ORDERS = ('time_created', '-time_created')
 
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -2609,7 +2610,7 @@ class LabScoreRecord(View):
 
 class LabAwardList(View):
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

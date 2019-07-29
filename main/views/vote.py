@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.generic import View
 
+from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object, validate_args
 from ..models import UserVote, UserVoteOption, UserVoteOptionAdvocator, LabVote, LabVoteOption, LabVoteOptionAdvocator, User, Lab
 from ..utils import abort
@@ -34,13 +35,13 @@ class UserList(View):
               'is_closed': a.is_closed} for a in qs]
         return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     @validate_args({
         'content': forms.CharField(required=False),
         'deadline': forms.DateTimeField(required=False),
         'is_closed': forms.IntegerField(required=False),
     })
+    @fetch_object(User.enabled, 'user')
     def post(self, request, user, content='', deadline=None, is_closed=None):
         if request.user == user:
             v = UserVote.objects.create(
@@ -54,7 +55,7 @@ class UserList(View):
 
 class UserDetail(View):
     @fetch_object(UserVote.objects, 'vote')
-    @require_token
+    @app_auth
     def get(self, request, vote):
         c = vote.options.count()
         qs = vote.options.all()
@@ -64,7 +65,7 @@ class UserDetail(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(UserVote.objects, 'vote')
-    @require_token
+    @app_auth
     @validate_args({
         'content': forms.CharField(required=False),
         'deadline': forms.DateTimeField(required=False),
@@ -87,7 +88,7 @@ class UserDetail(View):
 
 class UserOption(View):
     @fetch_object(UserVoteOption.objects, 'option')
-    @require_token
+    @app_auth
     def get(self, request, option):
         c = option.advocators.count()
         qs = option.advocators.all()
@@ -98,7 +99,7 @@ class UserOption(View):
         return JsonResponse({'count': c, 'list': l})
     
     @fetch_object(UserVoteOption.objects, 'option')
-    @require_token
+    @app_auth
     @validate_args({
         'content': forms.CharField(required=False),
     })
@@ -138,7 +139,7 @@ class LabList(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
+    @app_auth
     @validate_args({
         'content': forms.CharField(required=False),
         'deadline': forms.DateTimeField(required=False),
@@ -157,7 +158,7 @@ class LabList(View):
 
 class LabDetail(View):
     @fetch_object(LabVote.objects, 'vote')
-    @require_token
+    @app_auth
     def get(self, request, vote):
         c = vote.options.count()
         qs = vote.options.all()
@@ -167,7 +168,7 @@ class LabDetail(View):
         return JsonResponse({'count': c, 'list': l})
 
     @fetch_object(LabVote.objects, 'vote')
-    @require_token
+    @app_auth
     @validate_args({
         'content': forms.CharField(required=False),
         'deadline': forms.DateTimeField(required=False),
@@ -190,7 +191,7 @@ class LabDetail(View):
 
 class LabOption(View):
     @fetch_object(LabVoteOption.objects, 'option')
-    @require_token
+    @app_auth
     def get(self, request, option):
         c = option.advocators.count()
         qs = option.advocators.all()
@@ -201,7 +202,7 @@ class LabOption(View):
         return JsonResponse({'count': c, 'list': l})
     
     @fetch_object(LabVoteOption.objects, 'option')
-    @require_token
+    @app_auth
     @validate_args({
         'content': forms.CharField(required=False),
     })

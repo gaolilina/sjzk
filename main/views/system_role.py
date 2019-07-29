@@ -4,12 +4,12 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 from main.models.role import Role
-from main.utils.decorators import require_token
+from util.decorator.auth import app_auth
 
 
 class RoleList(View):
 
-    @require_token
+    @app_auth
     def get(self, request, **kwargs):
         roles = Role.objects.filter(name__isnull=False)
         return JsonResponse({

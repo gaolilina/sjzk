@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.models.need import TeamNeed
+from util.base.view import BaseView
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 from ..models import *
 from ..utils import abort, save_uploaded_image, get_score_stage
@@ -12,19 +14,19 @@ from ..utils import action
 from ..utils.decorators import *
 from ..utils.dfa import check_bad_words
 from ..utils.recommender import record_like_user, record_like_team
-from ..views.user import Icon as Icon_, Profile as Profile_, ExperienceList as \
+from ..views.user import Icon as Icon_, ExperienceList as \
     ExperienceList_
 
 
 class Username(View):
-    @require_token
+    @app_auth
     def get(self, request):
         """获取当前用户的用户名"""
 
         request.user.save()
         return JsonResponse({'username': request.user.username})
 
-    @require_token
+    @app_auth
     @validate_args({
         'username': forms.RegexField(r'^[a-zA-Z0-9_]{4,15}$', strip=True)
     })
@@ -50,7 +52,7 @@ class Username(View):
 
 
 class Password(View):
-    @require_token
+    @app_auth
     @validate_args({
         'new_password': forms.CharField(min_length=6, max_length=20),
         'old_password': forms.CharField(min_length=6, max_length=20),
@@ -71,7 +73,7 @@ class Password(View):
 
 # noinspection PyClassHasNoInit
 class Icon(Icon_):
-    @require_token
+    @app_auth
     def post(self, request):
         """上传用户头像"""
 
@@ -93,7 +95,7 @@ class Icon(Icon_):
 
 
 class Getui(View):
-    @require_token
+    @app_auth
     @validate_args({
         'client_id': forms.CharField(max_length=50),
     })
@@ -105,8 +107,94 @@ class Getui(View):
 
 
 # noinspection PyClassHasNoInit
-class Profile(Profile_):
-    @require_token
+class Profile(BaseView):
+
+    @app_auth
+    def get(self, request, **kwargs):
+        """获取用户的基本资料
+
+        :return:
+            id: 用户ID
+            name: 昵称
+            icon_url: 头像
+            time_created: 注册时间
+            description: 个人简介
+            qq:
+            wechat:
+            email: 电子邮箱
+            gender: 性别（0-保密，1-男，2-女）
+            birthday: 生日
+            province: 所在省
+            city: 所在市
+            county: 所在区/县
+            tag_ids: 标签id，格式：[id1, id2, ...]
+            tag_likers: 标签点赞数，格式：[count1, count2, ...]
+            tags: 标签，格式：['tag1', 'tag2', ...]
+            x_counts 各种计数
+                x: follower | followed | friend | liker | visitor
+            is_verified: 是否实名，0：未提交，1：待审核，2：身份认证通过，
+                3：审核未通过，请重新提交，4：通过Eid认证
+            is_role_verified: 是否实名，
+                0：未提交，1：待审核，2：审核通过，3：审核未通过，请重新提交
+            role: 角色
+            adept_field: 擅长领域
+            adept_skill: 擅长技能
+            expect_role: 期望角色
+            follow_field: 关注领域
+            follow_skill: 关注技能
+            unit1: 机构名（学校或公司等）
+            unit2: 二级机构名（学院或部门等）
+            profession: 专业
+            score: 积分
+        """
+        user = request.user
+
+        # 更新访客记录
+        # if user != request.user:
+        #     UserVisitor.objects.update_or_create(visited=user, visitor=request.user)
+        #     record_view_user(request.user, user)
+
+        arr1 = []
+        arr2 = []
+        arr3 = []
+        for t in user.tags.all():
+            arr1.append(t.id)
+            arr2.append(t.name)
+            arr3.append(t.likers.count())
+        r = {'id': user.id,
+             'time_created': user.time_created,
+             'name': user.name,
+             'icon_url': user.icon,
+             'description': user.description,
+             'email': user.email,
+             'gender': user.gender,
+             'birthday': user.birthday,
+             'province': user.province,
+             'city': user.city,
+             'county': user.county,
+             'tag_ids': arr1,
+             'tag_likers': arr3,
+             'tags': arr2,
+             'follower_count': user.followers.count(),
+             'followed_count': user.followed_users.count() + user.followed_teams.count(),
+             'friend_count': user.friends.count(),
+             'liker_count': user.likers.count(),
+             'visitor_count': user.visitors.count(),
+             'is_verified': user.is_verified,
+             'is_role_verified': user.is_role_verified,
+             'role': user.role,
+             'adept_field': user.adept_field,
+             'adept_skill': user.adept_skill,
+             'expect_role': user.expect_role,
+             'follow_field': user.follow_field,
+             'follow_skill': user.follow_skill,
+             'unit1': user.unit1,
+             'unit2': user.unit2,
+             'profession': user.profession,
+             'score': user.score}
+        return JsonResponse(r)
+
+    @app_auth
     @validate_args({
         'name': forms.CharField(required=False, min_length=1, max_length=15),
         'description': forms.CharField(required=False, max_length=100),
@@ -206,7 +294,7 @@ class Profile(Profile_):
 
 # noinspection PyClassHasNoInit,PyShadowingBuiltins
 class ExperienceList(ExperienceList_):
-    @require_token
+    @app_auth
     @validate_args({
         'description': forms.CharField(max_length=100),
         'unit': forms.CharField(max_length=20),
@@ -231,7 +319,7 @@ class ExperienceList(ExperienceList_):
         request.user.save()
         abort(200)
 
-    @require_token
+    @app_auth
     def delete(self, request, type):
         """删除当前用户某类的所有经历"""
 
@@ -245,7 +333,7 @@ class FollowedUserList(View):
         'followed__name', '-followed__name',
     ]
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -281,8 +369,8 @@ class FollowedUserList(View):
 
 
 class FollowedUser(View):
+    @app_auth
     @fetch_object(User.enabled, 'user')
-    @require_token
     def get(self, request, user):
         """判断当前用户是否关注了user"""
 
@@ -290,8 +378,8 @@ class FollowedUser(View):
             abort(200)
         abort(404, '未关注该用户')
 
+    @app_auth
     @fetch_object(User.enabled, 'user')
-    @require_token
     def post(self, request, user):
         """令当前用户关注user"""
 
@@ -309,8 +397,8 @@ class FollowedUser(View):
         user.save()
         abort(200)
 
+    @app_auth
     @fetch_object(User.enabled, 'user')
-    @require_token
     def delete(self, request, user):
         """令当前用户取消关注user"""
 
@@ -337,7 +425,7 @@ class FollowedTeamList(View):
         'followed__name', '-followed__name',
     ]
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -371,8 +459,8 @@ class FollowedTeamList(View):
 
 
 class FollowedTeam(View):
+    @app_auth
     @fetch_object(Team.enabled, 'team')
-    @require_token
     def get(self, request, team):
         """判断当前用户是否关注了team"""
 
@@ -380,8 +468,8 @@ class FollowedTeam(View):
             abort(200)
         abort(404, '未关注该团队')
 
+    @app_auth
     @fetch_object(Team.enabled, 'team')
-    @require_token
     def post(self, request, team):
         """令当前用户关注team"""
 
@@ -398,8 +486,8 @@ class FollowedTeam(View):
         team.save()
         abort(200)
 
+    @app_auth
     @fetch_object(Team.enabled, 'team')
-    @require_token
     def delete(self, request, team):
         """令当前用户取消关注team"""
 
@@ -427,7 +515,7 @@ class FollowedLabList(View):
         'followed__name', '-followed__name',
     ]
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -445,8 +533,8 @@ class FollowedLabList(View):
 
 
 class FollowedLab(View):
+    @app_auth
     @fetch_object(Lab.enabled, 'Lab')
-    @require_token
     def get(self, request, lab):
         """判断当前用户是否关注了team"""
 
@@ -454,8 +542,8 @@ class FollowedLab(View):
             abort(200)
         abort(404, '未关注该实验室')
 
+    @app_auth
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
     def post(self, request, lab):
         if request.user.followed_labs.filter(followed=lab).exists():
             abort(403, '已经关注过该实验室')
@@ -470,8 +558,8 @@ class FollowedLab(View):
         lab.save()
         abort(200)
 
+    @app_auth
     @fetch_object(Lab.enabled, 'lab')
-    @require_token
     def delete(self, request, lab):
         qs = request.user.followed_labs.filter(followed=lab)
         if qs.exists():
@@ -492,7 +580,7 @@ class FollowedLab(View):
 
 
 class FollowedTeamNeedList(View):
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -556,7 +644,7 @@ class FollowedTeamNeedList(View):
 
 class FollowedTeamNeed(View):
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @app_auth
     def get(self, request, need):
         """判断当前用户是否关注了need"""
 
@@ -565,7 +653,7 @@ class FollowedTeamNeed(View):
         abort(404, '未关注该需求')
 
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @app_auth
     def post(self, request, need):
         """令当前用户关注need"""
 
@@ -579,7 +667,7 @@ class FollowedTeamNeed(View):
         abort(200)
 
     @fetch_object(TeamNeed.objects, 'need')
-    @require_token
+    @app_auth
     def delete(self, request, need):
         """令当前用户取消关注need"""
 
@@ -598,7 +686,7 @@ class FollowedTeamNeed(View):
 class FollowedActivityList(View):
     ORDERS = ['time_created', '-time_created', 'name', '-name']
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -646,7 +734,7 @@ class FollowedActivityList(View):
 
 class FollowedActivity(View):
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @app_auth
     def get(self, request, activity):
         """判断当前用户是否关注了activity"""
 
@@ -656,7 +744,7 @@ class FollowedActivity(View):
         abort(404, '未关注该活动')
 
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @app_auth
     def post(self, request, activity):
         """令当前用户关注activity"""
 
@@ -671,7 +759,7 @@ class FollowedActivity(View):
         abort(200)
 
     @fetch_object(Activity.enabled, 'activity')
-    @require_token
+    @app_auth
     def delete(self, request, activity):
         """令当前用户取消关注activity"""
 
@@ -690,7 +778,7 @@ class FollowedActivity(View):
 class FollowedCompetitionList(View):
     ORDERS = ['time_created', '-time_created', 'name', '-name']
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -738,7 +826,7 @@ class FollowedCompetitionList(View):
 
 class FollowedCompetition(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     def get(self, request, competition):
         """判断当前用户是否关注了competition"""
 
@@ -748,7 +836,7 @@ class FollowedCompetition(View):
         abort(404, '未关注该竞赛')
 
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     def post(self, request, competition):
         """令当前用户关注competition"""
 
@@ -763,7 +851,7 @@ class FollowedCompetition(View):
         abort(200)
 
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     def delete(self, request, competition):
         """令当前用户取消关注competition"""
 
@@ -782,7 +870,7 @@ class FollowedCompetition(View):
 class LikedEntity(View):
     """与当前用户点赞行为相关的View"""
 
-    @require_token
+    @app_auth
     def get(self, request, entity):
         """判断当前用户是否对某个对象点过赞"""
 
@@ -790,7 +878,7 @@ class LikedEntity(View):
             abort(200)
         abort(404, '未点过赞')
 
-    @require_token
+    @app_auth
     def post(self, request, entity):
         """对某个对象点赞"""
 
@@ -815,7 +903,7 @@ class LikedEntity(View):
             request.user.save()
         abort(200)
 
-    @require_token
+    @app_auth
     def delete(self, request, entity):
         """对某个对象取消点赞"""
 
@@ -1028,7 +1116,7 @@ class RelatedTeamList(View):
               'team__name', '-team__name')
 
     # noinspection PyUnusedLocal
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1078,7 +1166,7 @@ class OwnedTeamList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     # noinspection PyUnusedLocal
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1129,7 +1217,7 @@ class RelatedLabList(View):
               'lab__name', '-lab__name')
 
     # noinspection PyUnusedLocal
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1179,7 +1267,7 @@ class OwnedLabList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
     # noinspection PyUnusedLocal
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1228,7 +1316,7 @@ class OwnedLabList(View):
 class ActivityList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1276,7 +1364,7 @@ class ActivityList(View):
 class CompetitionList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1361,7 +1449,7 @@ class CompetitionList(View):
 
 # noinspection PyClassHasNoInit
 class InvitationList(View):
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1441,7 +1529,7 @@ class Invitation(View):
 
 
 class Feedback(View):
-    @require_token
+    @app_auth
     @validate_args({
         'content': forms.CharField(max_length=200),
     })
@@ -1462,7 +1550,7 @@ class Feedback(View):
 
 
 class InvitationCode(View):
-    @require_token
+    @app_auth
     def get(self, request):
         """获取用户自己的邀请码
 
@@ -1473,7 +1561,7 @@ class InvitationCode(View):
 
 
 class Inviter(View):
-    @require_token
+    @app_auth
     def get(self, request):
         """获取用户自己的邀请者信息
 
@@ -1519,7 +1607,7 @@ class Inviter(View):
 
 
 class BindPhoneNumber(View):
-    @require_token
+    @app_auth
     @validate_args({
         'phone_number': forms.CharField(min_length=11, max_length=11),
         'password': forms.CharField(min_length=6, max_length=32),
@@ -1551,7 +1639,7 @@ class BindPhoneNumber(View):
 class UserScoreRecord(View):
     ORDERS = ('time_created', '-time_created')
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -1585,7 +1673,7 @@ class UserScoreRecord(View):
 class FavoredEntity(View):
     """与当前用户收藏行为相关的View"""
 
-    @require_token
+    @app_auth
     def get(self, request, entity):
         """判断当前用户是否收藏过某个对象"""
 
@@ -1593,7 +1681,7 @@ class FavoredEntity(View):
             abort(200)
         abort(404, '未收藏过')
 
-    @require_token
+    @app_auth
     def post(self, request, entity):
         """收藏某个对象"""
 
@@ -1603,7 +1691,7 @@ class FavoredEntity(View):
             request.user.save()
         abort(200)
 
-    @require_token
+    @app_auth
     def delete(self, request, entity):
         """对某个对象取消点赞"""
 
@@ -1705,7 +1793,7 @@ class FavoredSystemAction(FavoredEntity):
 class AchievementList(View):
     ORDERS = ('time_created', '-time_created')
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

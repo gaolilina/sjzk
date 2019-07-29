@@ -1,15 +1,14 @@
 import json
 
 from django import forms
-from django.http import HttpResponseForbidden, JsonResponse
-from django.views.generic import View
 
 from main.models.activity import *
 from main.utils.decorators import require_role_token
+from util.base.view import BaseView
 from util.decorator.param import validate_args
 
 
-class AdminActivityAdd(View):
+class AdminActivityAdd(BaseView):
 
     @require_role_token
     @validate_args({
@@ -28,13 +27,12 @@ class AdminActivityAdd(View):
         'user_type': forms.IntegerField(),
         'stages': forms.CharField(),
     })
-    def post(self, request, **kwargs):
+    def post(self, request, time_started, time_ended, **kwargs):
+        if time_ended <= time_started:
+            return self.fail(1, '开始时间要早于结束时间')
         user = request.user
         if kwargs['type'] not in Activity.TYPES:
-            return JsonResponse({
-            'code': -1,
-            'msg':'%s不在范围内'%str(kwargs['type'])
-        })
+            return self.fail(2, '{} 活动类型不存在'.format(kwargs['type']))
 
         activity = Activity(owner_user=user)
 
@@ -45,7 +43,6 @@ class AdminActivityAdd(View):
 
         stages = json.loads(kwargs['stages'])
         for st in stages:
-            activity.stages.create(status=int(st['status']), time_started=st['time_started'], time_ended=st['time_ended'])
-        return JsonResponse({
-            'code': 0
-        })
+            activity.stages.create(status=int(st['status']), time_started=st['time_started'],
+                                   time_ended=st['time_ended'])
+        return self.success()

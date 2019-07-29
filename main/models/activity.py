@@ -45,7 +45,6 @@ class Activity(models.Model):
     type = models.IntegerField(default=TYPE_CONFERENCE)
     # 活动成果
     achievement = models.CharField(max_length=100, default='')
-    # 活动当前阶段：0:前期宣传, 1:报名, 2:结束
     status = models.IntegerField(default=0, db_index=True)
     content = models.CharField(max_length=1000, null=True)
     deadline = models.DateTimeField(db_index=True, null=True)
@@ -85,8 +84,15 @@ class Activity(models.Model):
 class ActivityStage(models.Model):
     """活动阶段"""
 
+    # 活动阶段
+    # 宣传
+    STAGE_PROPAGANDA = 0
+    # 报名
+    STAGE_APPLY = 1
+    # 结束
+    STAGE_END = 2
+
     activity = models.ForeignKey('Activity', models.CASCADE, 'stages')
-    # 0:前期宣传, 1:报名, 2:结束
     status = models.IntegerField(default=0, db_index=True)
     time_started = models.DateTimeField(db_index=True)
     time_ended = models.DateTimeField(db_index=True)

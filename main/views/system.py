@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args
 from ..models import System as SystemModel, SystemNotification, SystemNotificationRecord
 from ..utils import abort
@@ -58,7 +59,7 @@ class SystemNotificationList(View):
 
 class SystemParam(View):
 
-    @require_token
+    @app_auth
     def get(self, request):
         return JsonResponse({
             'VERSION_NUMBER': request.param.VERSION_NUMBER,  # 系统版本号

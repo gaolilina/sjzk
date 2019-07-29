@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.http import JsonResponse, HttpResponseRedirect
 
 from modellib.models import CMSFunction
+from util.code import error
 
 
 def cms_permission(function_name):
@@ -18,20 +19,20 @@ def cms_permission(function_name):
             # 函数未上线，认为没有权限
             if CMSFunction.objects.filter(id=function_name).count() <= 0:
                 return JsonResponse({
-                    'code': -5
+                    'code': error.NO_PERMISSION
                 })
             cms_function = CMSFunction.objects.get(id=function_name)
             # 没登录
             if cms_function.needVerify and user is None:
                 return JsonResponse({
-                    'code': -1
+                    'code': error.NO_USER
                 })
 
             if cms_function.needVerify:
                 # 未分配角色，或（不是超管且未授予权限），则没有权限
                 if not role or role.functions.filter(id=cms_function.id).count() <= 0:
                     return JsonResponse({
-                        'code': -5
+                        'code': error.NO_PERMISSION
                     })
             # 不需要验证，或有权限，允许访问
             return function(self, request, *args, **kwargs)

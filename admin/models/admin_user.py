@@ -20,7 +20,7 @@ class AdminUser(models.Model):
     # a - 竞赛, b - 活动, c - 广告, x - 运营 , y - 管理, z - 超级管理
     role = models.CharField(default='', max_length=26)
     # 系统角色
-    system_role = models.ForeignKey('modellib.CMSRole', related_name='users', default=None)
+    system_role = models.ForeignKey('modellib.CMSRole', related_name='users', default=None, null=True)
     # token
     token = models.CharField(max_length=254, default='')
 

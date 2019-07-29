@@ -2,6 +2,9 @@ from functools import wraps
 
 from django.http import JsonResponse
 
+from cms.util.role import compare_role
+from util.code import error
+
 
 def cms_permission_role(role_param='role'):
     '''
@@ -14,20 +17,13 @@ def cms_permission_role(role_param='role'):
         def inner(self, request, *args, **kwargs):
             child = kwargs[role_param]
             parent = request.user.system_role
-            # 向上递归找，被操作角色是不是操作者角色的子孙
-            while child is not None:
-                # 先判断级别，限制同级或越级修改（也包括超管的权限不允许被修改
-                if parent.level >= child.level:
-                    return JsonResponse({
-                        'code': -5
-                    })
-                # 判断父子关系
-                if child.parent_role == parent:
-                    return function(self, request, *args, **kwargs)
-                child = child.parent_role
-            return JsonResponse({
-                'code': -5
-            })
+            has_permission = compare_role(parent, child)
+            if has_permission:
+                return function(self, request, *args, **kwargs)
+            else:
+                return JsonResponse({
+                    'code': error.NO_PERMISSION
+                })
 
         return inner
 

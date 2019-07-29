@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import QueryDict, JsonResponse
 
 from main.utils import abort
+from util.code import error
 
 
 def validate_args(d):
@@ -33,7 +34,7 @@ def validate_args(d):
                     # 缺少必须参数
                     if v.required:
                         return JsonResponse({
-                            'code': -7,
+                            'code': error.LACK_PARAM,
                             'msg': k
                         })
                     else:
@@ -43,7 +44,7 @@ def validate_args(d):
                 except ValidationError:
                     # 参数值错误
                     return JsonResponse({
-                        'code': -8,
+                        'code': error.INVALIDE_VALUE,
                         'msg': '不合法参数 "%s" 值 "%s"' % (k, request_value)
                     })
             return function(self, request, *args, **kwargs)
@@ -78,7 +79,7 @@ def fetch_object(model, object_name, key_name=None, force=True):
                 except ObjectDoesNotExist:
                     if force:
                         return JsonResponse({
-                            'code': -6
+                            'code': error.OBJECT_NOT_FOUNT
                         })
             # else:
             # else 分支 force 一定为 FALSE，即忽略错误

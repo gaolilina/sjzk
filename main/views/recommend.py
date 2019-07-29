@@ -5,6 +5,7 @@ from django.views.generic import View
 
 from main.models import Team, User
 from main.models.need import TeamNeed
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 from ..utils import abort
 from main.utils.decorators import *
@@ -16,7 +17,7 @@ __all__ = ('UserRecommend', 'TeamRecommend', 'OutsourceNeedTeamRecommend',
 class UserRecommend(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -79,7 +80,7 @@ class UserRecommend(View):
 class TeamRecommend(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -141,7 +142,7 @@ class TeamRecommend(View):
 class OutsourceNeedTeamRecommend(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
+    @app_auth
     @fetch_object(TeamNeed.objects, 'need')
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
@@ -218,7 +219,7 @@ class OutsourceNeedTeamRecommend(View):
 class UndertakeNeedTeamRecommend(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
-    @require_token
+    @app_auth
     @fetch_object(TeamNeed.objects, 'need')
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),

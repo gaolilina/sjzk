@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views.generic import View
 
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 from ..models import Competition, Team, CompetitionFile as File, CompetitionTeamParticipator
 from ..utils import abort, save_uploaded_file
@@ -16,7 +17,7 @@ __all__ = ['Detail', 'CompetitionStageList', 'CompetitionFile', 'CompetitionFile
 
 class CompetitionSignList(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -48,7 +49,7 @@ class CompetitionSignList(View):
 
 class Detail(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     def get(self, request, competition):
         """获取竞赛详情
         :return:
@@ -99,7 +100,7 @@ class Detail(View):
 
 class CompetitionStageList(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -131,7 +132,7 @@ class CompetitionStageList(View):
 
 class CompetitionAwardList(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -165,7 +166,7 @@ class CompetitionAwardList(View):
 
 class CompetitionNotification(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -196,7 +197,7 @@ class CompetitionNotification(View):
 
 class CompetitionFileList(View):
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -220,7 +221,7 @@ class CompetitionFileList(View):
 
 class CompetitionFile(View):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -387,7 +388,7 @@ class TeamParticipatorList(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name', '-score')
 
     @fetch_object(Competition.enabled, 'competition')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),

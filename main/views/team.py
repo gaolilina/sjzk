@@ -15,6 +15,7 @@ from main.utils.recommender import record_view_team
 from main.utils.dfa import check_bad_words
 import json
 from main.utils.http import notify_user
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 
 __all__ = ('TeamCreate', 'Screen', 'Profile', 'Icon', 'MemberList',
@@ -187,7 +188,7 @@ class Screen(View):
 
 
 class Profile(View):
-    @require_token
+    @app_auth
     @fetch_object(Team.enabled, 'team')
     def get(self, request, team):
         """获取团队的基本资料
@@ -374,7 +375,7 @@ class MemberList(View):
     )
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -414,7 +415,7 @@ class MemberList(View):
 class Member(View):
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     def get(self, request, team, user):
         """检查用户是否为团队成员"""
 
@@ -466,7 +467,7 @@ class MemberRequestList(View):
         'offset': forms.IntegerField(required=False),
         'limit': forms.IntegerField(required=False, min_value=0),
     })
-    @require_token
+    @app_auth
     def get(self, request, team, offset=0, limit=10):
         """获取团队的加入申请列表
 
@@ -533,7 +534,7 @@ class MemberRequestList(View):
 class MemberRequest(View):
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
-    @require_token
+    @app_auth
     def delete(self, request, team, user):
         """忽略某用户的加团队请求"""
 
@@ -588,7 +589,7 @@ class Invitation(View):
 # noinspection PyUnusedLocal
 class CompetitionList(View):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -614,7 +615,7 @@ class TeamScoreRecord(View):
     ORDERS = ('time_created', '-time_created')
 
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -646,7 +647,7 @@ class TeamScoreRecord(View):
 
 class TeamAwardList(View):
     @fetch_object(Team.enabled, 'team')
-    @require_token
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
