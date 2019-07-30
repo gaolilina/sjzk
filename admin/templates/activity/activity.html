@@ -129,9 +129,6 @@ $(document).ready(function () {
         $('textarea').prop('readonly',true);
         $('select').prop('disabled',true);
         $('#status').prop('disabled',false);
-        $('input[type=datetime]').onclick=function(event){
-            event.stopPropagation();
-        };
     }
 });
 var stage_count = {{ stages|length }};
