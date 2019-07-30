@@ -107,15 +107,12 @@
     {% endfor %}
     <tr>
         <td colspan="2">
-            {{ msg }}
             <div class="buttons">
+                <input type="submit" value="保存"/>
+                <input type="reset" value="取消"/>
                 {% if model.state == 0 %}
-                    <input type="submit" value="保存"/>
-                    <input type="reset" value="取消"/>
                     <input id="verify" type="button" class="btn4 ml-10" value="审核"
                            onclick="verify_choose({{ model.id }})">
-                {% else %}
-                    <input type="reset" value="取消"/>
                 {% endif %}
             </div>
         </td>
@@ -123,8 +120,19 @@
 </table>
 <script>
 $(document).ready(function () {
-    get_field('select_field', '{{model.field}}');//获取初始化field
     get_province("{{ model.province }}", "{{ model.city }}");//初始化省市
+    if("{{model.state}}" == 0){
+        get_field('select_field', '{{model.field}}');//获取初始化field
+    } else{
+        get_field('select_field', '{{model.field}}',false);//获取初始化field
+        $('input').prop('readonly',true);
+        $('textarea').prop('readonly',true);
+        $('select').prop('disabled',true);
+        $('#status').prop('disabled',false);
+        $('input[type=datetime]').onclick=function(event){
+            event.stopPropagation();
+        };
+    }
 });
 var stage_count = {{ stages|length }};
 
