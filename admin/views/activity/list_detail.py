@@ -1,3 +1,5 @@
+import json
+
 from django import forms
 from django.http import HttpResponse
 from django.template import loader, Context
@@ -40,7 +42,25 @@ class ActivityView(View):
     })
     @fetch_record(Activity.enabled, 'activity', 'id')
     def post(self, request, activity, status=None, **kwargs):
+        # 未通过审核
+        if activity.state == Activity.STATE_NO:
+            template = loader.get_template("activity/activity.html")
+            context = Context({'model': activity, 'msg': '活动未通过审核，不允许进行修改', 'user': request.user,
+                               'stages': ActivityStage.objects.filter(activity=activity)})
+            return HttpResponse(template.render(context))
         update_params = {}
+        # 只有审核中的活动才能修改属性
+        if activity.state == Activity.STATE_CHECKING:
+            for k in kwargs:
+                if k != "stages":
+                    update_params[k] = kwargs[k]
+            if 'stages' in kwargs and kwargs['stages'] != "":
+                ActivityStage.objects.filter(activity=activity).delete()
+                stages = json.loads(kwargs['stages'])
+                for st in stages:
+                    activity.stages.create(status=int(st['status']), time_started=st['time_started'],
+                                           time_ended=st['time_ended'])
+        # 当前活动状态，审核中和通过审核的都可以修改
         if status is not None:
             update_params['status'] = status
         # 更新数据，尽量使用 QuerySet.update，不要使用 Model.save
