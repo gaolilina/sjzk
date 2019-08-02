@@ -87,15 +87,15 @@
                     </option>
                 {% endfor %}
             </select>
-            <input id="add_stage" type="button" value="新增" style="margin-top: 0px;"/>
+            <!--input id="add_stage" type="button" value="新增" style="margin-top: 0px;"/-->
         </td>
     </tr>
     {% for stage in stages %}
         <tr class="stage">
-            <td>活动阶段{{ forloop.counter }}：<input class="remove_stage" type="button" value="删除"
-                                                 style="margin-top: 0px;"/></td>
+            <td><!--活动阶段{{ forloop.counter }}：<input class="remove_stage" type="button" value="删除"
+                                                 style="margin-top: 0px;"/--></td>
             <td>
-                类　　型：<select onchange="javascript:stage_gen()">
+                类　　型：<select onchange="javascript:stage_gen()" class="select_stages">
                 <option value="0"{% if stage.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
                 <option value="1"{% if stage.status == 1 %} selected="selected"{% endif %}>报名</option>
                 <option value="2"{% if stage.status == 2 %} selected="selected"{% endif %}>结束</option>
@@ -121,14 +121,15 @@
 <script>
 $(document).ready(function () {
     get_province("{{ model.province }}", "{{ model.city }}");//初始化省市
+    $('input').prop('readonly',true);
+    $('textarea').prop('readonly',true);
+    $('select').prop('disabled',true);
+    $('#status').prop('disabled',false);
+    $('.select_stages').prop('disabled',false);
     if("{{model.state}}" == 0){
         get_field('select_field', '{{model.field}}');//获取初始化field
     } else{
         get_field('select_field', '{{model.field}}',false);//获取初始化field
-        $('input').prop('readonly',true);
-        $('textarea').prop('readonly',true);
-        $('select').prop('disabled',true);
-        $('#status').prop('disabled',false);
     }
 });
 var stage_count = {{ stages|length }};
