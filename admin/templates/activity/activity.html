@@ -108,7 +108,9 @@
     <tr>
         <td colspan="2">
             <div class="buttons">
-                <input type="submit" value="保存"/>
+                {% if model.state != 10 %}
+                    <input type="submit" value="保存"/>
+                {% endif %}
                 <input type="reset" value="取消"/>
                 {% if model.state == 0 %}
                     <input id="verify" type="button" class="btn4 ml-10" value="审核"
@@ -121,14 +123,19 @@
 <script>
 $(document).ready(function () {
     get_province("{{ model.province }}", "{{ model.city }}");//初始化省市
-    $('input').prop('readonly',true);
-    $('textarea').prop('readonly',true);
-    $('select').prop('disabled',true);
-    $('#status').prop('disabled',false);
-    $('.select_stages').prop('disabled',false);
-    if("{{model.state}}" == 0){
+    if("{{model.state}}" == 0){ //审核中
         get_field('select_field', '{{model.field}}');//获取初始化field
-    } else{
+    } else if("{{model.state}}" == 10) { //审核未通过
+        $('input').prop('readonly',true);
+        $('textarea').prop('readonly',true);
+        $('select').prop('disabled',true);
+        get_field('select_field', '{{model.field}}',false);//获取初始化field
+    } else{ //审核通过
+        $('input').prop('readonly',true);
+        $('textarea').prop('readonly',true);
+        $('select').prop('disabled',true);
+        $('#status').prop('disabled',false);
+        $('.select_stages').prop('disabled',false);
         get_field('select_field', '{{model.field}}',false);//获取初始化field
     }
 });
