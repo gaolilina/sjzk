@@ -41,22 +41,30 @@ class ActivityView(View):
         'achievement': forms.CharField(required=False),
     })
     @fetch_record(Activity.enabled, 'activity', 'id')
-    def post(self, request, activity, status=None, **kwargs):
+    def post(self, request, activity, status=None, stages=None, **kwargs):
         # 未通过审核
         if activity.state == Activity.STATE_NO:
             template = loader.get_template("activity/activity.html")
             context = Context({'model': activity, 'msg': '活动未通过审核，不允许进行修改', 'user': request.user,
                                'stages': ActivityStage.objects.filter(activity=activity)})
             return HttpResponse(template.render(context))
+
+        # 如果修改活动阶段，检查活动阶段正确性
+        if stages:
+            stages = json.loads(stages)
+            if stages is not list or len(stages) <= 0:
+                template = loader.get_template("activity/activity.html")
+                context = Context({'model': activity, 'msg': '活动阶段不能为空', 'user': request.user,
+                                   'stages': ActivityStage.objects.filter(activity=activity)})
+                return HttpResponse(template.render(context))
+
         update_params = {}
         # 只有审核中的活动才能修改属性
         if activity.state == Activity.STATE_CHECKING:
             for k in kwargs:
-                if k != "stages":
-                    update_params[k] = kwargs[k]
-            if 'stages' in kwargs and kwargs['stages'] != "":
+                update_params[k] = kwargs[k]
+            if stages:
                 ActivityStage.objects.filter(activity=activity).delete()
-                stages = json.loads(kwargs['stages'])
                 for st in stages:
                     activity.stages.create(status=int(st['status']), time_started=st['time_started'],
                                            time_ended=st['time_ended'])

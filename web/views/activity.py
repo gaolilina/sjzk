@@ -28,20 +28,24 @@ class AdminActivityAdd(BaseView):
         'stages': forms.CharField(),
     })
     def post(self, request, **kwargs):
+        # 活动时间的检查
         if kwargs['time_ended'] <= kwargs['time_started']:
             return self.fail(1, '开始时间要早于结束时间')
-        user = request.user
+        # 活动类型检查
         if kwargs['type'] not in Activity.TYPES:
             return self.fail(2, '{} 活动类型不存在'.format(kwargs['type']))
+        # 活动阶段检查
+        stages = json.loads(kwargs['stages'])
+        if type(stages) is not list or len(stages) <= 0:
+            return self.fail(3, '活动阶段不能为空')
 
+        user = request.user
         activity = Activity(owner_user=user)
 
         for k in kwargs:
-            if k != "stages":
-                setattr(activity, k, kwargs[k])
+            setattr(activity, k, kwargs[k])
         activity.save()
 
-        stages = json.loads(kwargs['stages'])
         for st in stages:
             activity.stages.create(status=int(st['status']), time_started=st['time_started'],
                                    time_ended=st['time_ended'])
