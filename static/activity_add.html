@@ -181,6 +181,11 @@ $('form').submit(function(e) {
         }
     }
     var isSubmit = true;
+    if ($('[name=stages]').val()=="[]") {
+        showAlert('请添加一个活动阶段');
+        isSubmit = false;
+        return false;
+    }
     $('.stage').each(function(idx, elem) {
         if($(elem).find('input:nth(1)').val()==""){
             showAlert('请设置阶段开始时间');

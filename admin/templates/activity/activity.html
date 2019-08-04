@@ -209,13 +209,18 @@ function verify(id, result) {
 
 function form_check() {
     isSubmit = true;
+    if ($('[name=stages]').val()=="[]") {
+        showAlert('请添加一个活动阶段');
+        isSubmit = false;
+        return false;
+    }
     $('.stage').each(function (idx, elem) {
-        if ($(elem).find('input:nth(1)').val() == "") {
+        if ($(elem).find('input:nth(-2)').val() == "") {
             showAlert('请设置阶段开始时间');
             isSubmit = false;
             return false;
         }
-        if ($(elem).find('input:nth(2)').val() == "") {
+        if ($(elem).find('input:nth(-1)').val() == "") {
             showAlert('请设置阶段结束时间');
             isSubmit = false;
             return false;
