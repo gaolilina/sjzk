@@ -1,10 +1,12 @@
+from datetime import datetime
+
 from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
-from main.models import Activity
+from main.models import Activity, ActivityStage
 from main.utils import abort
 from main.utils.decorators import *
 
@@ -76,8 +78,13 @@ class UserParticipatorList(View):
     def post(self, request, activity):
         """报名"""
 
-        if activity.status != 1:
-            abort(403, '非报名阶段')
+        if activity.status == ActivityStage.STAGE_END:
+            abort(403, '活动结束')
+        if ActivityStage.objects.filter(
+                activity=activity, status=ActivityStage.STAGE_APPLY,
+                time_started__lte=datetime.now(), time_ended__gte=datetime.now()
+        ).count() <= 0:
+            abort(403, '活动在非报名阶段')
         c = activity.user_participators.count()
         if activity.allow_user != 0 and c >= activity.allow_user:
             abort(403, '参与者已满')
