@@ -15,6 +15,8 @@ __all__ = ['User', 'UserComment', 'UserExperience', 'UserFollower', 'UserFriend'
 class User(models.Model):
     """用户模型"""
 
+    GENDERS = ['未知', '男', '女']
+
     is_enabled = models.BooleanField(default=True, db_index=True)
     # 用户名
     username = models.CharField(max_length=20, default=None, null=True, unique=True)

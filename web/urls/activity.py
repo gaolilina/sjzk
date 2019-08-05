@@ -3,9 +3,9 @@
 
 from django.conf.urls import url
 
-from web.views.activity import AdminActivityAdd
-from web.views.paper import PaperDetail, AnswerThePaper
+from web.views.activity import AdminActivityAdd, ActivityAnalysis
 
 urls = [
-    url(r'^$', AdminActivityAdd.as_view(), name='detail'),
+    url(r'^$', AdminActivityAdd.as_view()),
+    url(r'^(?P<activity_id>\d+)/analysis/$', ActivityAnalysis.as_view()),
 ]
