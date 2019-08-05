@@ -211,12 +211,13 @@ $('form').submit(function(e) {
             data:$('form').serialize(),
             dataType: 'json',
             headers: {'X-USER-TOKEN': token},
-            error:function(data) {showAlert('提交失败');},
+            error:function(data) {console.log(data);console.log(data.responseText);showAlert('操作失败');},
             success: function(data){
                 if(data.code==0){
                     showAlert('提交成功');
                 } else{
-                    showAlert(data.msg);
+                    $('input[type=submit]').prop('disabled',false);
+                    showAlert(data.msg || '提示失败');
                 }
             }
         });
