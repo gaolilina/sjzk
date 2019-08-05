@@ -63,6 +63,7 @@ def adminuser_to_json(u):
     if u.system_role is not None:
         role = u.system_role
         role_json = {
+            'id': role.id,
             'name': role.name,
             'enable': role.enable,
             'category': role.category

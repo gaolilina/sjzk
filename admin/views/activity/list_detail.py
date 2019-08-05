@@ -52,7 +52,7 @@ class ActivityView(View):
         # 如果修改活动阶段，检查活动阶段正确性
         if stages:
             stages = json.loads(stages)
-            if stages is not list or len(stages) <= 0:
+            if type(stages) is not list or len(stages) <= 0:
                 template = loader.get_template("activity/activity.html")
                 context = Context({'model': activity, 'msg': '活动阶段不能为空', 'user': request.user,
                                    'stages': ActivityStage.objects.filter(activity=activity)})

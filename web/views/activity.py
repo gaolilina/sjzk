@@ -27,7 +27,7 @@ class AdminActivityAdd(BaseView):
         'user_type': forms.IntegerField(),
         'stages': forms.CharField(),
     })
-    def post(self, request, **kwargs):
+    def post(self, request, stages, **kwargs):
         # 活动时间的检查
         if kwargs['time_ended'] <= kwargs['time_started']:
             return self.fail(1, '开始时间要早于结束时间')
@@ -35,7 +35,7 @@ class AdminActivityAdd(BaseView):
         if kwargs['type'] not in Activity.TYPES:
             return self.fail(2, '{} 活动类型不存在'.format(kwargs['type']))
         # 活动阶段检查
-        stages = json.loads(kwargs['stages'])
+        stages = json.loads(stages)
         if type(stages) is not list or len(stages) <= 0:
             return self.fail(3, '活动阶段不能为空')
 
