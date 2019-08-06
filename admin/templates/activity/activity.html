@@ -190,10 +190,10 @@ function verify(id, result) {
         data: {"result": result},
         dataType: 'json',
         headers: {'X-USER-TOKEN': getCookie('token')},
-        error: function (data) {
-            showAlert('提交失败');
+        error: function (err) {
             console.log(err);
-            showAlert('审核失败:' + err.responseText);
+            console.log(err.responseText);
+            showAlert('审核失败');
         },
         success: function (data) {
             if (data.code == 0) {
