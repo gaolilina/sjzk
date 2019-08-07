@@ -98,12 +98,13 @@
 <script type="text/javascript">
 $(document).ready(function(){
     let id = getRequest()['id'];
+    let token = getRequest()['token'];
     $.ajax({
         type: 'GET',
         url: base_url+'web/activity/'+id+'/analysis/',
         data: {},
         dataType: 'json',
-        headers: {'X-USER-TOKEN': getCookie('token')},
+        headers: {'X-USER-TOKEN': token},
         error: function (err) {
             console.log(err);
             showAlert('无法获取分析结果');
