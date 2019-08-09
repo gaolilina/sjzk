@@ -2,7 +2,7 @@
 领域
  */
 function get_field(select_id,field=null,init=true){
-  $.get(base_url+'web/field/')
+  $.get(base_url+'field/')
   .then(function(data){
     let inner_html = '';
     let fields = data.fields;
@@ -37,7 +37,7 @@ function add_field(select_id){
         btnClass: 'btn-primary',
         action: function() {
             var name = $('.jconfirm-box').find('input').val();
-            $.post(base_url+'web/field/',{'name':name})
+            $.post(base_url+'field/',{'name':name})
             .then(function(data){
               if(data.code==-1) showAlert(data.msg);
               else {
@@ -75,7 +75,7 @@ function delete_field(select_id){
               let field_id = $('#'+select_id+' option:selected').attr('title');
                 $.ajax({
                   type:'DELETE',
-                  url: base_url+'web/field/'+field_id+'/',
+                  url: base_url+'field/'+field_id+'/',
                   dataType:'json',
                   error:function(){showAlert('删除失败');},
                   success: function(data){

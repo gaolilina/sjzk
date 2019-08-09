@@ -1,6 +1,7 @@
-var domain = window.location.host;
-if(domain.indexOf(':')==-1) domain += ':8000';
-const base_url = "http://"+domain+"/";
+// var domain = window.location.host;
+// if(domain.indexOf(':')==-1) domain += ':8000';
+// const base_url = "http://"+domain+"/";
+const base_url = "http://pre.api.web.chuangyh.com/";
 
 function getRequest() { 
   var url = location.search; //获取url中"?"符后的字串 
