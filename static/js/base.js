@@ -1,7 +1,7 @@
 var domain = window.location.host;
-var prefix = 'api';
-if(domain.indexOf("pre") == 0) prefix = 'pre.api'
-const base_url = "http://"+prefix+"."+domain+"/";
+if(domain.indexOf("pre") == 0) domain = domain.replace(/pre/,'pre.api');
+else domain = 'api.' + domain;
+const base_url = "http://"+domain+"/";
 
 function getRequest() { 
   var url = location.search; //获取url中"?"符后的字串 
