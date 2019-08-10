@@ -23,7 +23,7 @@
             <td>{{ item.name }}</td>
             <td>
                 <a href="{% url redir item.id %}"><i class="icon Hui-iconfont">&#xe725;</i>查看</a>
-                <a onclick="show_statistics('{{item.id}}')">统计数据</a>
+                <!--a onclick="show_statistics('{{item.id}}')">统计数据</a-->
             </td>
         </tr>
         {% endfor %}
@@ -44,8 +44,8 @@
 {% endblock %}
 {% block js %}
 <script type="text/javascript">
-function show_statistics(id){
-    window.open(base_url+"static/activity_statistics.html?id="+id,'_blank');
-}
+// function show_statistics(id){
+//     window.open(base_page_url+"static/activity_statistics.html?id="+id,'_blank');
+// }
 </script>
 {% endblock %}
