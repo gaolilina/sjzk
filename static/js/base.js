@@ -1,6 +1,7 @@
 var domain = window.location.host;
 if(domain.indexOf("pre") == 0) domain = domain.replace(/pre/,'pre.api');
-else domain = 'api.' + domain;
+else if(domain=='') domain = 'pre.api.web.chuangyh.com';
+else  domain = 'api.' + domain;
 const base_url = "http://"+domain+"/";
 
 function getRequest() { 
