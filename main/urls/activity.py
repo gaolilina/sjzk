@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.activity.action import UserParticipatorList, ActivitySignList
 from main.views.activity.info import Detail, ActivityStage
 from main.views.search import SearchActivity
 from main.views.activity import *

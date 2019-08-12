@@ -1,20 +1,11 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.utils import timezone
 
-from . import EnabledManager, Comment, Liker, Follower, Favorer
+from main.models import EnabledManager, Comment
 
-__all__ = ['Activity', 'ActivityStage', 'ActivityUserParticipator',
-           'ActivityComment', 'ActivityLiker', 'ActivityFollower',
-           'ActivityFavorer', 'ActivitySign']
-
-
-class ActivitySign(models.Model):
-    class Meta:
-        db_table = 'activity_sign'
-
-    activity = models.ForeignKey('Activity', related_name='signers')
-    user = models.ForeignKey('User', related_name='+')
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
+__all__ = ['Activity', 'ActivityStage', 'ActivityComment']
 
 
 class Activity(models.Model):
@@ -80,17 +71,49 @@ class Activity(models.Model):
         db_table = 'activity'
         ordering = ['-time_created']
 
+    def get_current_state(self):
+        time_now = timezone.now()
+        # 结束
+        if time_now > self.time_ended:
+            return ActivityStage.STAGE_END
+        # 未开始
+        if time_now < self.time_started:
+            return ActivityStage.STATE_NO_STARTED
+        stages = self.stages.all()
+        stage_apply = None
+        stage_pro = None
+        for s in stages:
+            if s.status == ActivityStage.STAGE_APPLY:
+                stage_apply = s
+            elif s.status == ActivityStage.STAGE_PROPAGANDA:
+                stage_pro = s
+        # 报名
+        if stage_apply is not None and self.is_in_stage(stage_apply, time_now):
+            return ActivityStage.STAGE_APPLY
+        # 宣传
+        if stage_pro is not None and self.is_in_stage(stage_pro, time_now):
+            return ActivityStage.STAGE_PROPAGANDA
+        # 进行中，不知道哪个阶段
+        return ActivityStage.STATE_RUNNING
+
+    def is_in_stage(self, stage, time):
+        return stage.time_started <= time <= stage.time_ended
+
 
 class ActivityStage(models.Model):
     """活动阶段"""
 
     # 活动阶段
+    # 未开始
+    STATE_NO_STARTED = -1
     # 宣传
     STAGE_PROPAGANDA = 0
     # 报名
     STAGE_APPLY = 1
     # 结束
     STAGE_END = 2
+    # 进行中
+    STATE_RUNNING = 3
 
     activity = models.ForeignKey('Activity', models.CASCADE, 'stages')
     status = models.IntegerField(default=0, db_index=True)
@@ -102,20 +125,6 @@ class ActivityStage(models.Model):
         db_table = 'activity_stage'
 
 
-class ActivityUserParticipator(models.Model):
-    """活动参与者（用户）"""
-
-    activity = models.ForeignKey(
-        'Activity', models.CASCADE, 'user_participators')
-    user = models.ForeignKey('User', models.CASCADE, 'activities')
-
-    time_created = models.DateTimeField(default=timezone.now, db_index=True)
-
-    class Meta:
-        db_table = 'activity_user_participator'
-        ordering = ['-time_created']
-
-
 class ActivityComment(Comment):
     """活动评论"""
 
@@ -124,34 +133,3 @@ class ActivityComment(Comment):
     class Meta:
         db_table = 'activity_comment'
         ordering = ['time_created']
-
-
-class ActivityLiker(Liker):
-    """活动点赞记录"""
-
-    liked = models.ForeignKey('Activity', models.CASCADE, 'likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_activities')
-
-    class Meta:
-        db_table = 'activity_liker'
-
-
-class ActivityFollower(Follower):
-    """活动关注记录"""
-
-    followed = models.ForeignKey('Activity', models.CASCADE, 'followers')
-    follower = models.ForeignKey('User', models.CASCADE,
-                                 'followed_activities')
-
-    class Meta:
-        db_table = 'activity_follower'
-
-
-class ActivityFavorer(Favorer):
-    """活动收藏记录"""
-
-    favored = models.ForeignKey('Activity', models.CASCADE, 'favorers')
-    favorer = models.ForeignKey('User', models.CASCADE, 'favored_activities')
-
-    class Meta:
-        db_table = 'activity_favorer'

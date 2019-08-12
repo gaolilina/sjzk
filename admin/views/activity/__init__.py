@@ -9,6 +9,7 @@ from django.views.generic import View
 
 from admin.utils.decorators import *
 from main.models.activity import *
+from main.models.activity.people import ActivityLiker, ActivityUserParticipator
 from util.decorator.auth import admin_auth
 from util.decorator.param import old_validate_args
 

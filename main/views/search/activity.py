@@ -76,7 +76,7 @@ class SearchActivity(View):
               'time_ended': a.time_ended,
               'user_participator_count': a.user_participators.count(),
               'time_created': a.time_created,
-              'status': a.status,
+              'status': a.get_current_state(),
               'field': a.field,
               'province': a.province} for a in qs.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
