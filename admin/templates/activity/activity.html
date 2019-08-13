@@ -186,7 +186,7 @@ function getCookie(name) {
 function verify(id, result) {
     $.ajax({
         type: 'POST',
-        url: base_url + 'activity/{{model.id}}/check/',
+        url: base_admin_url + 'activity/{{model.id}}/check/',
         data: {"result": result},
         dataType: 'json',
         headers: {'X-USER-TOKEN': getCookie('token')},
