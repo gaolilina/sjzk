@@ -1,5 +1,7 @@
 from django.conf.urls import url
 
+from main.views.activity.user_activity import FollowedActivityList, FollowedActivity, LikedActivity, FavoredActivity, \
+    ActivityList
 from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
 from main.views.auth import IdentityVerificationView
 from main.views.friend import FriendAction, FriendRequestList, FriendRequestAction, FriendList

@@ -440,7 +440,7 @@ class ActivityList(View):
         l = [{'id': a.activity.id,
               'name': a.activity.name,
               'liker_count': a.activity.likers.count(),
-              'status': a.activity.status,
+              'status': a.activity.get_current_state(),
               'time_started': a.activity.time_started,
               'time_ended': a.activity.time_ended,
               'deadline': a.activity.deadline,

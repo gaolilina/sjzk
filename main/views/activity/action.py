@@ -4,7 +4,7 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
-from main.models import Activity
+from main.models import Activity, ActivityStage
 from main.utils import abort
 from main.utils.decorators import require_verification_token
 from util.decorator.auth import app_auth
@@ -76,7 +76,7 @@ class UserParticipatorList(View):
     def post(self, request, activity):
         """报名"""
 
-        if activity.status != 1:
+        if activity.get_current_state() != ActivityStage.STAGE_APPLY:
             abort(403, '非报名阶段')
         c = activity.user_participators.count()
         if activity.allow_user != 0 and c >= activity.allow_user:
