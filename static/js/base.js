@@ -3,7 +3,7 @@ if(domain.indexOf("pre") == 0) domain = domain.replace(/pre/,'pre.api');
 else if(domain=='' || domain.indexOf('localhost')!=-1) domain = 'pre.api.web.chuangyh.com';
 else  domain = 'api.' + domain;
 const base_url = "http://"+domain+"/";
-const base_admin_url = "http://chuangyh.com:8000/admin/";
+const base_admin_url = "http://pre.api.admin.chuangyh.com/";
 
 function getRequest() { 
   var url = location.search; //获取url中"?"符后的字串 
