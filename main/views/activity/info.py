@@ -94,14 +94,9 @@ class ActivityStage(View):
         c = activity.stages.count()
         qs = activity.stages.all().order_by("status")[offset: offset + limit]
         l = [{'id': p.id,
-              'status': p.get_current_stage(),
+              'status': p.status,
               'time_started': p.time_started,
               'time_ended': p.time_ended,
               'time_created': p.time_created,
-              'stages': [{
-                  'status': s.status,
-                  'time_started': s.time_started,
-                  'time_ended': s.time_ended,
-              } for s in p.stages.all()],
               } for p in qs]
         return JsonResponse({'count': c, 'list': l})

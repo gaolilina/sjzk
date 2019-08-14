@@ -4,6 +4,7 @@ from django import forms
 
 from main.models import User
 from main.models.activity import *
+from main.models.activity.people import ActivityUserParticipator
 from main.utils.decorators import require_role_token
 from util.base.view import BaseView
 from util.decorator.auth import client_auth

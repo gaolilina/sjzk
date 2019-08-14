@@ -34,7 +34,6 @@ class PaperAnalysis(View):
         if count_answer > 0:
             answers = paper.answers.filter(**condititon)
             for a in answers:
-                print(a.time_created)
                 self.__analysis_an_answer(questions, json.loads(a.content))
         return JsonResponse({
             'sum': count_answer,
