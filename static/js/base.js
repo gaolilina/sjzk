@@ -2,6 +2,7 @@ var domain = window.location.host;
 if(domain.indexOf("pre") == 0) domain = domain.replace(/pre/,'pre.api');
 else if(domain=='' || domain.indexOf('localhost')!=-1) domain = 'pre.api.web.chuangyh.com';
 else  domain = 'api.' + domain;
+domain = domain.replace('admin','web');
 const base_url = "http://"+domain+"/";
 const base_admin_url = "http://pre.api.admin.chuangyh.com/";
 
