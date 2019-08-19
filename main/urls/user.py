@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
-from main.views.friend import FriendRequestList, FriendCheck, FriendList
+from main.views.friend import FriendCheck, MyFriendList
+from main.views.friend.request import FriendRequestList
 from main.views.search import SearchUser
 from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
 from ..views.user import *
@@ -44,7 +45,7 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/followers/$', UserFollowerList.as_view()),
     url(r'^(?P<user_id>[0-9]+)/followers/(?P<other_user_id>[0-9]+)/$', UserFollower.as_view()),
     # 好友
-    url(r'^(?P<user_id>[0-9]+)/friends/$', FriendList.as_view()),
+    url(r'^(?P<user_id>[0-9]+)/friends/$', MyFriendList.as_view()),
     url(r'^(?P<user_id>[0-9]+)/friends/(?P<other_user_id>[0-9]+)/$', FriendCheck.as_view()),
     url(r'^(?P<user_id>[0-9]+)/friend_requests/$', FriendRequestList.as_view()),
     # 点赞

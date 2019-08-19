@@ -4,7 +4,8 @@ from main.views.activity.user_activity import FollowedActivityList, FollowedActi
     ActivityList
 from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
 from main.views.auth import IdentityVerificationView
-from main.views.friend import FriendAction, FriendRequestList, FriendRequestAction, FriendList
+from main.views.friend import FriendAction, MyFriendList
+from main.views.friend.request import FriendRequestList, FriendRequestAction
 from ..views.current_user import *
 from ..views.common import *
 from ..views.forum import BoardList
@@ -52,7 +53,7 @@ urls = [
     url(r'^followed/competitions/$', FollowedCompetitionList.as_view()),
     url(r'^followed/competitions/(?P<competition_id>[0-9]+)/$', FollowedCompetition.as_view()),
     # 好友
-    url(r'^friends/$', FriendList.as_view()),
+    url(r'^friends/$', MyFriendList.as_view()),
     url(r'^friends/(?P<other_user_id>[0-9]+)/$', FriendAction.as_view()),
     url(r'^friend_requests/$', FriendRequestList.as_view()),
     url(r'^friend_requests/(?P<req_id>[0-9]+)/$', FriendRequestAction.as_view()),
