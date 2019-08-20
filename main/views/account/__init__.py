@@ -65,7 +65,7 @@ class Account(View):
 
         if method == 'phone':
             if User.objects.filter(phone_number=phone_number).count() > 0:
-                abort(400, '用户已经注册')
+                abort(403, '用户已经注册')
                 return
         elif method == 'wechat':
             if wechatid is None or nickname is None:
@@ -73,7 +73,7 @@ class Account(View):
                 return
             # 防止绑定过微信的用户重复绑定
             if User.objects.filter(wechat_id=wechatid).count() > 0:
-                abort(400, '用户已经注册')
+                abort(403, '用户已经注册')
                 return
             user = User.objects.filter(phone_number=phone_number).first()
             if user is not None:
