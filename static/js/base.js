@@ -5,6 +5,8 @@ else  domain = 'api.' + domain;
 domain = domain.replace('admin','web');
 const base_url = "http://"+domain+"/";
 const base_admin_url = "http://pre.api.admin.chuangyh.com/";
+const base_page_url = "http://pre.web.chuangyh.com/";
+const base_static_url = "http://static.chuangyh.com/";
 
 function getRequest() { 
   var url = location.search; //获取url中"?"符后的字串 

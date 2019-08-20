@@ -61,9 +61,6 @@
 </style>
 {% endblock %}
 {% block js %}
-<script src="{% static 'js/statistics.js' %}" type="text/javascript"></script>
-<script src="{% static 'js/echarts.min.js' %}" type="text/javascript"></script>
-<script src="{% static 'js/JsonExportToCSV.js' %}" type="text/javascript"></script>
 <script type="text/javascript">
     $("#del").click(function(){
         var r = confirm("确认删除？")
@@ -106,6 +103,9 @@
         .fail(function() {
             alert("失败");
         });
+    }
+    function show_statistics(paper_id, paper_name, paper_desc){
+        window.open(base_static_url+"paper/paper_statistics.html?id="+paper_id+'&name='+paper_name,'_blank');
     }
 </script>
 {% endblock %}
