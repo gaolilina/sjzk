@@ -65,7 +65,7 @@ function show_statistics(paper_id,paper_name,paper_desc){
     const type_list = ['问答题','单选题','多选题'];
     var statis_data = [];//用于生成统计表格
     var export_data = [];
-    $.get(base_url+'admin/paper/'+paper_id+'/analysis/',{},function(data){
+    $.get(base_admin_url+'paper/'+paper_id+'/analysis/',{},function(data){
         // console.log(data);
         result = data.result;
         $('#question_count').html('问题：'+result.length);
