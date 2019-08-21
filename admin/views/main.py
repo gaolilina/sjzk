@@ -1,5 +1,4 @@
 from django import forms
-from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseForbidden
 from django.template import loader, Context
@@ -13,7 +12,7 @@ from util.decorator.auth import admin_auth
 
 class Main(View):
     def get(self, request):
-        return HttpResponseRedirect(reverse("admin:admin_users:info"))
+        return HttpResponseRedirect('/admin_users/')
 
 
 class Login(View):
@@ -30,7 +29,7 @@ class Login(View):
         try:
             user = AdminUser.enabled.get(username=username)
             if user.check_password(password):
-                response = HttpResponseRedirect(reverse("admin:admin_users:info"))
+                response = HttpResponseRedirect('/admin_users/')
                 response.set_cookie("token", user.token)
                 return response
             else:
@@ -69,7 +68,7 @@ class Register(View):
                 user.save_and_generate_name()
                 user.update_token()
 
-                response = HttpResponseRedirect(reverse("admin:admin_users:info"))
+                response = HttpResponseRedirect('/admin_users/')
                 # response.set_cookie("usr", username)
                 # response.set_cookie("pwd", user.password[:6])
                 return response

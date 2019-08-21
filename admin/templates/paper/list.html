@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% block content %}
 <div id="main">
-<form role="form" action="{% url 'admin:paper:list' %}" method="get">
+<form role="form" action="/paper/list/" method="get">
     <span>问卷名：</span><input type="text" name="name" value="{{name}}" /><br/>
     <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
 </form>

@@ -40,7 +40,7 @@ def add_sys_op():
     from admin.models.admin_user import AdminUser
     user = AdminUser(username='admin')
     user.set_password('cyhadmin')
-    user.phone_number = '18301018512'
+    user.phone_number = '18600281228'
     user.role = 'z'
     user.save_and_generate_name()
     from modellib.models.control.system_role import CMSRole

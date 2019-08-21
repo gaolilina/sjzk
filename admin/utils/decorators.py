@@ -1,7 +1,6 @@
 from functools import wraps
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from main.utils import abort
@@ -28,7 +27,7 @@ def require_role(role=None):
                 if check_role(request.user.role, role):
                     return function(self, request, *args, **kwargs)
                 else:
-                    return HttpResponseRedirect(reverse("admin:login"))
+                    return HttpResponseRedirect('/login/')
 
         return inner
 

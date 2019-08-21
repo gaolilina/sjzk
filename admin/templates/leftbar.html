@@ -1,68 +1,68 @@
 {% if tb == 1 %}
 <ul>
-    <li{% if lb == 1 %} class="active"{% endif %}><a class="dir_warn" data-warn-text="是否注销？" href="{% url 'admin:login' %}">登录注销</a></li>
+    <li{% if lb == 1 %} class="active"{% endif %}><a class="dir_warn" data-warn-text="是否注销？" href="/login/">登录注销</a></li>
     {% if user != None %}
-        <li{% if lb == 2 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:info' %}">个人信息修改</a></li>
-        <li{% if lb == 3 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:identify' %}">修改手机号、密码</a></li>
+        <li{% if lb == 2 %} class="active"{% endif %}><a href="/admin_users/info/">个人信息修改</a></li>
+        <li{% if lb == 3 %} class="active"{% endif %}><a href="/admin_users/identify/">修改手机号、密码</a></li>
         {% if user.can_x %}
-            <li{% if lb == 4 %} class="active"{% endif %}><a href="{% url 'admin:register' %}">注册</a></li>
+            <li{% if lb == 4 %} class="active"{% endif %}><a href="/register/">注册</a></li>
         {% endif %}
     {% endif %}
 </ul>
 {% endif %}
 {% if tb == 'admin_competition' %}
 <ul>
-    <li class="active"><a href="{% url 'admin:admin_competition:list' %}">竞赛管理</a></li>
+    <li class="active"><a href="/admin_competition/list/">竞赛管理</a></li>
 </ul>
 {% endif %}
 {% if tb == 'admin_activity' %}
 <ul>
-    <li class="active"><a href="{% url 'admin:admin_activity:list' %}">活动管理</a></li>
+    <li class="active"><a href="/admin_activity/list/">活动管理</a></li>
 </ul>
 {% endif %}
 {% if tb == 'power' %}
 <ul>
-    <li{% if lb == 'system' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">系统权限</a></li>
-    <li{% if lb == 'role' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">角色权限</a></li>
-    <li{% if lb == 'notification' %} class="active"{% endif %}><a href="{% url 'admin:notification' %}">系统通知</a></li>
+    <li{% if lb == 'system' %} class="active"{% endif %}><a href="/system/">系统权限</a></li>
+    <li{% if lb == 'role' %} class="active"{% endif %}><a href="/system/">角色权限</a></li>
+    <li{% if lb == 'notification' %} class="active"{% endif %}><a href="/notification/">系统通知</a></li>
 </ul>
 {% endif %}
 {% if tb == 'feedback' %}
 <ul>
-    <li{% if lb == 'feedback' %} class="active"{% endif %}><a href="{% url 'admin:feedback:feedback' %}">用户反馈</a></li>
-    <li{% if lb == 'report' %} class="active"{% endif %}><a href="{% url 'admin:feedback:report' %}">用户举报</a></li>
+    <li{% if lb == 'feedback' %} class="active"{% endif %}><a href="/feedback/feedback/">用户反馈</a></li>
+    <li{% if lb == 'report' %} class="active"{% endif %}><a href="/feedback/report/">用户举报</a></li>
 </ul>
 {% endif %}
 {% if tb == 'user_admin' %}
 <ul>
-    <li{% if lb == 'user' %} class="active"{% endif %}><a href="{% url 'admin:user:user_list' %}">创友</a></li>
-    <li{% if lb == 'team' %} class="active"{% endif %}><a href="{% url 'admin:team:team_list' %}">团队</a></li>
+    <li{% if lb == 'user' %} class="active"{% endif %}><a href="/user/user_list/">创友</a></li>
+    <li{% if lb == 'team' %} class="active"{% endif %}><a href="/team/team_list/">团队</a></li>
 </ul>
 {% endif %}
 {% if tb == 'activity_admin' %}
 <ul>
-    <li{% if lb == 'activity' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动</a></li>
-    <li{% if lb == 'competition' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_list' %}">竞赛</a></li>
-    <li{% if lb == 'paper' %} class="active"{% endif %}><a href="{% url 'admin:paper:list' %}">问卷调查</a></li>
+    <li{% if lb == 'activity' %} class="active"{% endif %}><a href="/activity/activity_list/">活动</a></li>
+    <li{% if lb == 'competition' %} class="active"{% endif %}><a href="/competition/competition_list/">竞赛</a></li>
+    <li{% if lb == 'paper' %} class="active"{% endif %}><a href="/paper/list/">问卷调查</a></li>
 </ul>
 {% endif %}
 {% if tb == 'forum_admin' %}
 <ul>
-    <li{% if lb == 'forum' %} class="active"{% endif %}><a href="{% url 'admin:forum:forum_board_list' %}">论坛</a></li>
+    <li{% if lb == 'forum' %} class="active"{% endif %}><a href="/forum/forum_board_list/">论坛</a></li>
 </ul>
 {% endif %}
 {% if tb == 'admin_user_admin' %}
 <ul>
-    <li class="active"><a href="{% url 'admin:admin_user:admin_user_list' %}">后台用户</a></li>
+    <li class="active"><a href="/admin_user/admin_user_list/">后台用户</a></li>
 </ul>
 {% endif %}
 {% if tb == 'op_log' %}
 <ul>
-    <li class="active"><a href="{% url 'admin:op_log' %}">操作日志</a></li>
+    <li class="active"><a href="/op_log/">操作日志</a></li>
 </ul>
 {% endif %}
 {% if tb == 'net_police' %}
 <ul>
-    <li class="active"><a href="{% url 'admin:security_log:list' %}">网警查询</a></li>
+    <li class="active"><a href="/security_log/list/">网警查询</a></li>
 </ul>
 {% endif %}

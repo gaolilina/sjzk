@@ -22,10 +22,10 @@ class PaperDetail(View):
     @fetch_object(Paper.objects, 'paper')
     def get(self, request, paper, **kwargs):
         return JsonResponse({
-            'id': paper.id,
-            'name': paper.name,
-            'desc': paper.desc,
-            'enable': paper.enable,
+            'id': paper.id, # id
+            'name': paper.name, # 名称
+            'desc': paper.desc, # 详情
+            'enable': paper.enable,#
             'count': paper.count_question,
             'questions': json.loads(paper.questions),
         })
