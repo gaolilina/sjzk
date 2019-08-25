@@ -3,60 +3,7 @@ import urllib.request
 import json
 import tencentyun
 from qcloud_image import Client
-from qcloud_image import CIUrl, CIFile, CIBuffer, CIUrls, CIFiles, CIBuffers
-
-from PIL import Image
-
-
-"""
-def send_message(data, m="GET"):
-    # 第三方短信调用api(云信)
-    data['uid'] = 'zq353996852' # 填写“云信”账号的id
-    data['pwd'] = 'c334c800ae8802557106fe09d70f3eb8' # 填写“云信”账号的密码
-    data['ac'] = 'send'
-    url = "http://api.sms.cn/sms/"
-    params = urllib.parse.urlencode(data)
-    if m == "GET":
-        urllib.request.urlopen("%s?%s" % (url, params))
-    else:
-        urllib.request.urlopen(url, params)
-"""
-
-
-def send_message(mobile, tpl_value, m="GET"):
-    """第三方短信调用api"""
-    data = dict()
-    data['tpl_id'] = "30517"
-    data['key'] = 'c2b426f88a99c9fdf9a2a55d617e4f0d'
-    data['mobile'] = mobile
-    data['tpl_value'] = tpl_value
-    params = urllib.parse.urlencode(data)
-    url = "http://v.juhe.cn/sms/send"
-    if m == "GET":
-        urllib.request.urlopen("%s?%s" % (url, params))
-    else:
-        urllib.request.urlopen(url, params)
-
-
-"""
-def identity_verify(id_number, m="GET"):
-    # 第三方身份证验证api(聚合数据)
-    appkey = 'b5b4cdc54bd373c66ed391d8ba1c5cc1' # 填写你申请的账号的appkey
-    url = "http://apis.juhe.cn/idcard/index"
-    params = {
-        "cardno": id_number,  # 身份证号码
-        "dtype": "json",  # 返回数据格式：json或xml,默认json
-        "key": appkey,  # 申请的appkey
-    }
-    params = urllib.parse.urlencode(params)
-    if m == "GET":
-        f = urllib.request.urlopen("%s?%s" % (url, params))
-    else:
-        f = urllib.request.urlopen(url, params)
-    content = f.read().decode('utf-8')
-    res = json.loads(content)
-    return res
-"""
+from qcloud_image import CIUrls
 
 
 def identity_verify(id_number, real_number, m="GET"):
@@ -123,6 +70,7 @@ def eid_verify(data):
         return 1
     else:
         return int(res['result_detail'])
+
 
 def notify_user(user, msg):
     """调用个推通知"""

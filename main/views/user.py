@@ -8,7 +8,8 @@ from ChuangYi.settings import UPLOADED_URL, SERVER_URL, DEFAULT_ICON_URL
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object, validate_args
 from ..models import *
-from ..utils import abort, get_score_stage, send_message
+from ..utils import abort, get_score_stage
+from util.message import send_message
 from ..utils.decorators import *
 from ..utils.dfa import check_bad_words
 from ..utils.recommender import calculate_ranking_score

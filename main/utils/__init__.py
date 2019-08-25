@@ -4,10 +4,11 @@ from PIL import Image
 from django.utils import timezone
 
 from .abort import abort
-from .http import send_message, identity_verify, picture_verify, eid_verify
+from .http import identity_verify, picture_verify, eid_verify
+from util.message import send_message
 from .system import get_score_stage
 
-__all__ = ['abort', 'send_message', 'identity_verify', 'picture_verify',
+__all__ = ['abort', 'identity_verify', 'picture_verify',
            'save_uploaded_image', 'get_score_stage', 'save_uploaded_file',
            'eid_verify']
 
