@@ -41,9 +41,8 @@ class AdminUser(models.Model):
 
     def set_password(self, password):
         """设置密码"""
-
         hasher = PBKDF2PasswordHasher()
-        self.password = hasher.encode(password, hasher.salt())
+        AdminUser.objects.filter(id=self.id).update(password=hasher.encode(password, hasher.salt()))
 
     def check_password(self, password):
         """检查密码"""
@@ -96,5 +95,4 @@ class AdminUser(models.Model):
         random_content = self.phone_number + timezone.now().isoformat()
         hasher = hashlib.md5()
         hasher.update(random_content.encode())
-        self.token = hasher.hexdigest()
-        self.save()
+        AdminUser.objects.filter(id=self.id).update(token=hasher.hexdigest())

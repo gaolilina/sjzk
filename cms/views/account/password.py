@@ -46,7 +46,6 @@ class ChangePassword(BaseView):
         """
         更换密码
         :param request:
-        :param phone_number:
         :param old_psd:
         :param password:
         :param validation_code:
@@ -59,6 +58,5 @@ class ChangePassword(BaseView):
         if not user.check_password(old_psd):
             return self.fail(2, '原密码错误')
         user.set_password(password)
-        user.save()
         user.update_token()
         return self.success()
