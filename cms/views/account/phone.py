@@ -16,7 +16,8 @@ class ChangePhone(BaseView):
     })
     def get(self, request, phone, **kwargs):
         """
-        绑定或更换手机号，需先获取验证码
+        未绑定的，是绑定手机号
+        已绑定的，则是更换手机号
         :param request:
         :param phone:
         :param kwargs:
@@ -47,7 +48,12 @@ class ChangePhone(BaseView):
         :param kwargs:
         :return:
         """
-        if not UserValidationCode.verify(phone_number, validation_code):
+        if not phone_number.isdigit():
+            return self.fail(1, '新手机号码格式不正确')
+        user = request.user
+        # 如果 user.phone_number 不为空，则是则更换手机号，需要验证原手机号和验证码
+        # 如果 user.phone_number 为空，则是绑定手机，需验证新手机号和验证码
+        if not UserValidationCode.verify(user.phone_number or phone_number, validation_code):
             return self.fail(1, '验证码错误')
         if AdminUser.objects.filter(phone_number=phone_number).exists() \
                 or AdminUser.objects.filter(username=phone_number).exists():
@@ -55,7 +61,6 @@ class ChangePhone(BaseView):
         update_params = {
             'phone_number': phone_number
         }
-        user = request.user
         # 一般人的用户名和手机号都是相同的
         # 但超管的 username 是 admin
         if user.username == user.phone_number:

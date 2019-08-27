@@ -38,12 +38,11 @@ class ChangePassword(BaseView):
 
     @cms_auth
     @validate_args({
-        'phone_number': forms.CharField(max_length=11, min_length=11),
         'validation_code': forms.CharField(min_length=6, max_length=6),
         'old_psd': forms.CharField(min_length=6, max_length=32),
         'password': forms.CharField(min_length=6, max_length=32),
     })
-    def post(self, request, phone_number, old_psd, password, validation_code, **kwargs):
+    def post(self, request, old_psd, password, validation_code, **kwargs):
         """
         更换密码
         :param request:
@@ -54,9 +53,9 @@ class ChangePassword(BaseView):
         :param kwargs:
         :return:
         """
-        if not UserValidationCode.verify(phone_number, validation_code):
-            return self.fail(1, '验证码错误')
         user = request.user
+        if not UserValidationCode.verify(user.phone_number, validation_code):
+            return self.fail(1, '验证码错误')
         if not user.check_password(old_psd):
             return self.fail(2, '原密码错误')
         user.set_password(password)
