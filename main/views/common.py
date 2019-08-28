@@ -5,8 +5,8 @@ from django.views.generic import View
 
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
-from ..models import User, Team, Lab, UserComment as UserCommentModel, \
-    TeamComment as TeamCommentModel, LabComment as LabCommentModel, \
+from ..models import User, Lab, UserComment as UserCommentModel, \
+    LabComment as LabCommentModel, \
     Activity, ActivityComment as ActivityCommentModel, \
     Competition, CompetitionComment as CompetitionCommentModel, \
     SystemAction, \
@@ -331,11 +331,6 @@ class UserActionList(ActionList):
 
 
 # noinspection PyMethodOverriding
-class TeamActionList(ActionList):
-    @fetch_object(Team.enabled, 'team')
-    @app_auth
-    def get(self, request, team):
-        return super(TeamActionList, self).get(request, team)
 
 
 # noinspection PyMethodOverriding
@@ -704,30 +699,6 @@ class UserCommentList(CommentList):
 
 
 # noinspection PyMethodOverriding
-class TeamCommentList(CommentList):
-    @fetch_object(Team.enabled, 'team')
-    @app_auth
-    def get(self, request, team):
-        """获取团队的评论信息列表
-
-        :return:
-            count: 评论总数
-            list: 评论列表
-                id: 评论ID
-                author_id: 评论者ID
-                author_name: 评论者昵称
-                icon_url: 头像
-                content: 内容
-                time_created: 发布时间
-        """
-        return super().get(request, team)
-
-    @fetch_object(Team.enabled, 'team')
-    @require_verification_token
-    def post(self, request, team):
-        """当前用户对团队进行评论"""
-
-        return super().post(request, team)
 
 
 # noinspection PyMethodOverriding
@@ -931,19 +902,6 @@ class UserComment(View):
         abort(403, '非法操作')
 
 
-class TeamComment(View):
-    @fetch_object(TeamCommentModel.objects, 'comment')
-    @require_verification_token
-    def delete(self, request, comment):
-        """删除团队评论"""
-
-        if comment.entity.owner == request.user \
-                or comment.author == request.user:
-            comment.delete()
-            abort(200)
-        abort(403, '非法操作')
-
-
 class LabComment(View):
     @fetch_object(LabCommentModel.objects, 'comment')
     @require_verification_token
@@ -1029,11 +987,6 @@ class UserFollowerList(FollowerList):
 
 
 # noinspection PyMethodOverriding
-class TeamFollowerList(FollowerList):
-    @fetch_object(Team.enabled, 'team')
-    @app_auth
-    def get(self, request, team):
-        return super().get(request, team)
 
 
 # noinspection PyMethodOverriding
@@ -1088,11 +1041,6 @@ class UserFollower(Follower):
 
 
 # noinspection PyMethodOverriding
-class TeamFollower(Follower):
-    @fetch_object(Team.enabled, 'team')
-    @app_auth
-    def get(self, request, team):
-        return super().get(request, team)
 
 
 # noinspection PyMethodOverriding
@@ -1153,11 +1101,6 @@ class UserLikerList(LikerList):
 
 
 # noinspection PyMethodOverriding
-class TeamLikerList(LikerList):
-    @app_auth
-    @fetch_object(Team.enabled, 'team')
-    def get(self, request, team):
-        return super().get(request, team)
 
 
 # noinspection PyMethodOverriding
@@ -1192,14 +1135,6 @@ class UserLiker(Liker):
     def get(self, request, other_user, user=None):
         user = user or request.user
         return super(UserLiker, self).get(request, user, other_user)
-
-
-class TeamLiker(Liker):
-    @fetch_object(Team.enabled, 'team')
-    @fetch_object(User.enabled, 'other_user')
-    @app_auth
-    def get(self, request, team, other_user):
-        return super(TeamLiker, self).get(request, team, other_user)
 
 
 class LabLiker(Liker):
@@ -1265,11 +1200,6 @@ class UserVisitorList(VisitorList):
 
 
 # noinspection PyMethodOverriding
-class TeamVisitorList(VisitorList):
-    @app_auth
-    @fetch_object(Team.enabled, 'team')
-    def get(self, request, team):
-        return super().get(request, team)
 
 
 # noinspection PyMethodOverriding

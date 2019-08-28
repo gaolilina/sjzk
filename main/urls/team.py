@@ -1,36 +1,42 @@
 from django.conf.urls import url
 
-from main.views.need import NeedSearch, NeedUserList, MemberNeedRequest, NeedInvitationList, NeedScreen, AllNeedList, \
+from main.views.need import NeedUserList, MemberNeedRequest, NeedInvitationList, NeedScreen, AllNeedList, \
     Need, NeedTeamList, NeedList, NeedRequest, MemberNeedRequestList, NeedRequestList, NeedInvitation
+from main.views.search.need import NeedSearch
 from main.views.search import SearchTeam
 from main.views.task import InternalTaskList, InternalTasks, ExternalTaskList, ExternalTasks, TeamInternalTask, \
     TeamExternalTask
-from ..views.common import TeamActionList, TeamCommentList, TeamComment, \
-    TeamFollowerList, TeamFollower, TeamLikerList, TeamLiker, \
-    TeamVisitorList, TeamNeedFollowerList
+from main.views.team.competition import CompetitionList, TeamAwardList
+from main.views.team.info import Profile, Icon, TeamScoreRecord
+from main.views.team.member import MemberList, Member, MemberRequestList, MemberRequest, Invitation
+from ..views.common import TeamNeedFollowerList
+from main.views.team.social import TeamActionList, TeamCommentList, TeamComment, TeamFollowerList, TeamFollower, \
+    TeamLiker, TeamVisitorList, TeamLikerList
 from ..views.recommend import TeamRecommend, OutsourceNeedTeamRecommend, \
     UndertakeNeedTeamRecommend
 from ..views.team import *
 
 urls = [
-    # 需求搜索，迁移到 /search/ 上
-    url(r'^needs/search/$', NeedSearch.as_view()),
-    url(r'^needs/screen/$', NeedScreen.as_view()),
     # 团队搜索
     url(r'^search/$', SearchTeam.as_view()),
     # 筛选
     url(r'^screen/$', Screen.as_view()),
 
     url(r'^$', TeamCreate.as_view()),
+    ##########################信息
     # 基本
     url(r'^(?P<team_id>[0-9]+)/profile/$', Profile.as_view()),
     url(r'^(?P<team_id>[0-9]+)/icon/$', Icon.as_view()),
+    # 积分明细
+    url(r'^(?P<team_id>[0-9]+)/score_records/$', TeamScoreRecord.as_view()),
     # 成员
     url(r'^(?P<team_id>[0-9]+)/members/$', MemberList.as_view()),
     url(r'^(?P<team_id>[0-9]+)/members/(?P<user_id>[0-9]+)/$', Member.as_view()),
     url(r'^(?P<team_id>[0-9]+)/member_requests/$', MemberRequestList.as_view()),
     url(r'^(?P<team_id>[0-9]+)/member_requests/(?P<user_id>[0-9]+)/$', MemberRequest.as_view()),
     url(r'^(?P<team_id>[0-9]+)/invitations/(?P<user_id>[0-9]+)/$', Invitation.as_view()),
+
+    ########################社交
     # 动态
     url(r'^(?P<team_id>[0-9]+)/actions/$', TeamActionList.as_view()),
     # 点赞
@@ -45,6 +51,16 @@ urls = [
     # 访客
     url(r'^(?P<team_id>[0-9]+)/visitors/$', TeamVisitorList.as_view()),
 
+    #######################竞赛
+    # 竞赛
+    url(r'^(?P<team_id>[0-9]+)/competition/$', CompetitionList.as_view()),
+    # 团队参加的竞赛评比列表
+    url(r'^(?P<team_id>[0-9]+)/awards/$', TeamAwardList.as_view()),
+
+    ########################需求
+    # 需求搜索，迁移到 /search/ 上
+    url(r'^needs/search/$', NeedSearch.as_view()),
+    url(r'^needs/screen/$', NeedScreen.as_view()),
     # 需求
     url(r'^needs/$', AllNeedList.as_view()),
     url(r'^needs/(?P<need_id>[0-9]+)/$', Need.as_view()),
@@ -82,10 +98,7 @@ urls = [
     url(r'^(?P<team_id>[0-9]+)/recommend/', TeamRecommend.as_view()),
     url(r'^(?P<need_id>[0-9]+)/outsource/recommend/', OutsourceNeedTeamRecommend.as_view()),
     url(r'^(?P<need_id>[0-9]+)/undertake/recommend/', UndertakeNeedTeamRecommend.as_view()),
-    # 竞赛
-    url(r'^(?P<team_id>[0-9]+)/competition/$', CompetitionList.as_view()),
-    # 积分明细
-    url(r'^(?P<team_id>[0-9]+)/score_records/$', TeamScoreRecord.as_view()),
-    # 团队参加的竞赛评比列表
-    url(r'^(?P<team_id>[0-9]+)/awards/$', TeamAwardList.as_view()),
+
+    #==================================弃用==================================
+
 ]
