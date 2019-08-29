@@ -2,13 +2,15 @@ from django.conf.urls import url, include
 
 from main.urls import search, paper
 from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth, \
-    friend
+    friend, need, task
 
 urlpatterns = [
     url(r'^users/', include(user.urls, namespace='user')),
     url(r'^achievement/', include(achievement.urls, namespace='achievement')),
     url(r'^users/current/', include(current_user.urls, namespace='current_user')),
-    url(r'^teams/', include(team.urls, namespace='team')),
+    url(r'^teams/', include(team.urls)),
+    url(r'^teams/', include(need.urls)),
+    url(r'^teams/', include(task.urls)),
     url(r'^forum/', include(forum.urls, namespace='forum')),
     url(r'^activity/', include(activity.urls, namespace='activity')),
     url(r'^competition/', include(competition.urls, namespace='competition')),

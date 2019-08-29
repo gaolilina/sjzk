@@ -9,6 +9,10 @@ from main.models import Follower
 class TeamNeed(models.Model):
     """团队需求信息"""
 
+    TYPE_MEMBER = 0  # 人员需求
+    TYPE_OUTSOURCE = 1  # 外包需求
+    TYPE_UNDERTAKE = 2  # 承接需求
+
     team = models.ForeignKey('Team', models.CASCADE, 'needs')
     # 0: member, 1: outsource, 2: undertake
     type = models.IntegerField(db_index=True)
