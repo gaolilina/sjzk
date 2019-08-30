@@ -1,10 +1,14 @@
 from django.conf.urls import url
 
-from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
+from main.views.action.user import FollowedUserActionList, UserActionList
+from main.views.search.action import SearchUserAction, SearchTeamAction
+from main.views.action.team import FollowedTeamActionList
 
 urlpatterns = [
-    # 用户动态
-    url(r'^user/$', SearchUserAction.as_view(), name='user'),
-    url(r'^team/$', SearchTeamAction.as_view(), name='team'),
-    url(r'^lab/$', SearchLabAction.as_view(), name='lab'),
+    # 动态
+    url(r'^user_actions/$', SearchUserAction.as_view()),
+    url(r'^team_actions/$', SearchTeamAction.as_view()),
+    url(r'^owned_actions/$', UserActionList.as_view()),
+    url(r'^followed_user/actions/$', FollowedUserActionList.as_view()),
+    url(r'^followed_team/actions/$', FollowedTeamActionList.as_view()),
 ]

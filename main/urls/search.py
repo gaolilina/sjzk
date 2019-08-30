@@ -1,8 +1,7 @@
 #!usr/bin/env python3
 # -*- coding:utf-8 _*-
-from django.conf.urls import url, include
+from django.conf.urls import url
 
-from main.urls import action
 from main.views.search import SearchUser, SearchActivity, SearchCompetition, SearchTeam
 from main.views.search.achievement import SearchUserAchievement, SearchTeamAchievement
 from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
@@ -17,9 +16,13 @@ urlpatterns = [
     url(r'^achievement/$', SearchUserAchievement.as_view()),
     url(r'^achievement/team/$', SearchTeamAchievement.as_view()),
 
-    url(r'^action/', include(action.urlpatterns)),
+    url(r'^action/user/$', SearchUserAction.as_view(), name='user'),
+    url(r'^action/team/$', SearchTeamAction.as_view(), name='team'),
     url(r'^user_action/$', SearchUserAction.as_view()),
     url(r'^team_action/$', SearchTeamAction.as_view()),
-    url(r'^lab_action/$', SearchLabAction.as_view()),
     url(r'^need/$', NeedSearch.as_view()),
+
+    ##########################弃用
+    url(r'^lab_action/$', SearchLabAction.as_view()),
+    url(r'^action/lab/$', SearchLabAction.as_view(), name='lab'),
 ]

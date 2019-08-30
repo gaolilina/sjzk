@@ -4,19 +4,23 @@ from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.generic import View
 
 from ChuangYi.settings import UPLOADED_URL
-from main.models import Lab, User, LabAchievement, LabNeed
+from main.models import Lab, User, LabAchievement, LabNeed, LabAction
 from main.models.task import InternalTask, ExternalTask
 from main.utils import abort, action, save_uploaded_image, get_score_stage
 from main.utils.decorators import *
+from main.utils.decorators import require_verification_token
 from main.utils.dfa import check_bad_words
 from main.utils.http import notify_user
 from main.utils.recommender import calculate_ranking_score
+from main.views.common import CommentList
+from main.views.favor import FavoredActionList, FavoredEntity
+from main.views.like import LikedEntity
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 
@@ -2637,4 +2641,408 @@ class LabAwardList(View):
               'competition_name': p.competition.name,
               'award': p.award,
               'time_started': p.time_started} for p in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class LabActionCommentList(CommentList):
+    @fetch_object(LabAction.objects, 'action')
+    @app_auth
+    def get(self, request, action):
+        """获取团队动态的评论信息列表
+
+        :return:
+            count: 评论总数
+            list: 评论列表
+                id: 评论ID
+                author_id: 评论者ID
+                author_name: 评论者昵称
+                icon_url: 头像
+                content: 内容
+                time_created: 发布时间
+        """
+        return super().get(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    @require_verification_token
+    def post(self, request, action):
+        """当前用户对团队动态进行评论"""
+
+        return super().post(request, action)
+
+
+class ScreenLabActionList(View):
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'name': forms.CharField(required=False, max_length=20),
+        'province': forms.CharField(required=False, max_length=20),
+        'city': forms.CharField(required=False, max_length=20),
+        'county': forms.CharField(required=False, max_length=20),
+        'field': forms.CharField(required=False, max_length=10),
+        'action': forms.CharField(required=False, max_length=20),
+    })
+    def get(self, request, offset=0, limit=10, **kwargs):
+        """筛选与团队名或者动态名相关的动态列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param kwargs: 筛选条件
+            name: 团队名或动态名包含字段
+            province: 主体的省
+            city: 主体的市
+            county: 主体的区/县
+            field: 领域
+            action: 动态动作
+
+        :return:
+            count: 动态总数（包括标记为disabled的内容）
+            last_time_created: 最近更新时间
+            list: 动态列表
+                action_id: 动态id
+                id: 主语的id
+                name: 主语的名称
+                icon: 主语的头像
+                action: 相关动作
+                object_type: 相关对象的类型
+                object_id: 相关对象的ID
+                object_name: 相关对象名称
+                icon_url: 头像
+                related_object_type: 额外相关对象的类型
+                related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
+                comment_count: 评论数
+                time_created: 创建时间
+        """
+
+        r = Labction.objects
+        name = kwargs.pop('name', '')
+        if name:
+            # 按用户昵称或动态名检索
+            r = r.filter(Q(entity__name__icontains=name) |
+                         Q(action__icontains=name))
+        province = kwargs.pop('province', '')
+        if province:
+            # 按省会筛选
+            r = r.filter(entity__province=province)
+        city = kwargs.pop('city', '')
+        if city:
+            # 按城市筛选
+            r = r.filter(entity__city=city)
+        county = kwargs.pop('county', '')
+        if county:
+            # 按区/县筛选
+            r = r.filter(entity__county=county)
+        field = kwargs.pop('field', '')
+        if field:
+            # 按机构筛选
+            r = r.filter(entity__field=field)
+        act = kwargs.pop('action', '')
+        if act:
+            # 按动作筛选
+            r = r.filter(action__icontains=act)
+
+        r = r.all()
+        c = r.count()
+        records = (i for i in r[offset:offset + limit])
+        l = [{'id': i.entity.id,
+              'action_id': i.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
+              'object_type': i.object_type,
+              'object_id': i.object_id,
+              'object_name': action.get_object_name(i),
+              'icon_url': action.get_object_icon(i),
+              'related_object_type': i.related_object_type,
+              'related_object_id': i.related_object_id,
+              'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
+              'time_created': i.time_created,
+              } for i in records]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FollowedLabActionList(View):
+    @app_auth
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+    })
+    def get(self, request, offset=0, limit=10):
+        """获取当前用户所关注的团队的动态列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :return:
+            count: 动态总数（包括标记为disabled的内容）
+            last_time_created: 最近更新时间
+            list: 动态列表
+                action_id: 动态id
+                id: 主语的id
+                name: 主语的名称
+                icon: 主语的头像
+                action: 相关动作
+                object_type: 相关对象的类型
+                object_id: 相关对象的ID
+                object_name: 相关对象名称
+                icon_url: 头像
+                related_object_type: 额外相关对象的类型
+                related_object_id: 额外相关对象的ID
+                related_object_name: 额外相关对象的名称
+                liker_count: 点赞数
+                comment_count: 评论数
+                time_created: 创建时间
+        """
+
+        r = LabAction.objects.filter(
+            Q(entity__followers__follower=request.user))
+        c = r.count()
+        records = (i for i in r[offset:offset + limit])
+        l = [{'id': i.entity.id,
+              'action_id': i.id,
+              'name': i.entity.name,
+              'icon': i.entity.icon,
+              'action': i.action,
+              'object_type': i.object_type,
+              'object_id': i.object_id,
+              'object_name': action.get_object_name(i),
+              'icon_url': action.get_object_icon(i),
+              'related_object_type': i.related_object_type,
+              'related_object_id': i.related_object_id,
+              'related_object_name': action.get_related_object_name(i),
+              'liker_count': i.likers.count(),
+              'comment_count': i.comments.count(),
+              'time_created': i.time_created,
+              } for i in records]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FollowedLabList(View):
+    ORDERS = [
+        'time_created', '-time_created',
+        'followed__name', '-followed__name',
+    ]
+
+    @app_auth
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        c = request.user.followed_labs.count()
+        qs = request.user.followed_labs.order_by(
+            self.ORDERS[order])[offset:offset + limit]
+        l = [{'id': r.followed.id,
+              'name': r.followed.name,
+              'icon_url': r.followed.icon,
+              'time_created': r.time_created} for r in qs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class FollowedLab(View):
+    @app_auth
+    @fetch_object(Lab.enabled, 'Lab')
+    def get(self, request, lab):
+        """判断当前用户是否关注了team"""
+
+        if request.user.followed_labs.filter(followed=lab).exists():
+            abort(200)
+        abort(404, '未关注该实验室')
+
+    @app_auth
+    @fetch_object(Lab.enabled, 'lab')
+    def post(self, request, lab):
+        if request.user.followed_labs.filter(followed=lab).exists():
+            abort(403, '已经关注过该实验室')
+        request.user.followed_labs.create(followed=lab)
+        request.user.score += get_score_stage(1)
+        request.user.score_records.create(
+            score=get_score_stage(1), type="活跃度", description="增加一个关注")
+        lab.score += get_score_stage(1)
+        lab.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="增加一个关注")
+        request.user.save()
+        lab.save()
+        abort(200)
+
+    @app_auth
+    @fetch_object(Lab.enabled, 'lab')
+    def delete(self, request, lab):
+        qs = request.user.followed_labs.filter(followed=lab)
+        if qs.exists():
+            # 积分
+            request.user.score -= get_score_stage(1)
+            request.user.score_records.create(
+                score=-get_score_stage(1), type="活跃度",
+                description="取消关注")
+            lab.score -= get_score_stage(1)
+            lab.score_records.create(
+                score=-get_score_stage(1), type="受欢迎度",
+                description="取消关注")
+            request.user.save()
+            lab.save()
+            qs.delete()
+            abort(200)
+        abort(403, '未关注过该团队')
+
+
+class LikedLab(LikedEntity):
+    @fetch_object(Lab.enabled, 'lab')
+    def get(self, request, lab):
+        return super().get(request, lab)
+
+    @fetch_object(Lab.enabled, 'lab')
+    def post(self, request, lab):
+        # 积分
+        lab.score += get_score_stage(1)
+        lab.score_records.create(
+            score=get_score_stage(1), type="受欢迎度", description="他人点赞")
+        lab.save()
+        return super().post(request, lab)
+
+    @fetch_object(Lab.enabled, 'lab')
+    def delete(self, request, lab):
+        # 积分
+        lab.score -= get_score_stage(1)
+        lab.score_records.create(
+            score=-get_score_stage(1), type="受欢迎度", description="他人取消点赞")
+        lab.save()
+        return super().delete(request, lab)
+
+
+class LikedLabAction(LikedEntity):
+    @fetch_object(LabAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
+
+
+class FavoredLabAction(FavoredEntity):
+    @fetch_object(LabAction.objects, 'action')
+    def get(self, request, action):
+        return super().get(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    def post(self, request, action):
+        return super().post(request, action)
+
+    @fetch_object(LabAction.objects, 'action')
+    def delete(self, request, action):
+        return super().delete(request, action)
+
+
+class FavoredLabActionList(FavoredActionList):
+    @app_auth
+    def get(self, request):
+        return super().get(request, request.user.favored_lab_actions)
+
+
+class RelatedLabList(View):
+    ORDERS = ('lab__time_created', '-lab__time_created',
+              'lab__name', '-lab__name')
+
+    # noinspection PyUnusedLocal
+    @app_auth
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取当前用户参与的团队列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 团队总数
+            list: 团队列表
+                id: 团队ID
+                name: 团队名
+                icon_url: 团队头像
+                owner_id: 创建者ID
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                member_count: 团队成员人数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        c = request.user.labs.count()
+        labs = request.user.labs.order_by(k)[i:j]
+        l = [{'id': t.lab.id,
+              'name': t.lab.name,
+              'icon_url': t.lab.icon,
+              'owner_id': t.lab.owner.id,
+              'liker_count': t.lab.likers.count(),
+              'visitor_count': t.lab.visitors.count(),
+              'member_count': t.lab.members.count(),
+              'fields': [t.lab.field1, t.lab.field2],
+              'tags': [tag.name for tag in t.lab.tags.all()],
+              'time_created': t.lab.time_created} for t in labs]
+        return JsonResponse({'count': c, 'list': l})
+
+
+class OwnedLabList(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
+
+    # noinspection PyUnusedLocal
+    @app_auth
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取当前用户创建的团队列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+        :return:
+            count: 团队总数
+            list: 团队列表
+                id: 团队ID
+                name: 团队名
+                icon_url: 团队头像
+                owner_id: 创建者ID
+                liker_count: 点赞数
+                visitor_count: 最近7天访问数
+                member_count: 团队成员人数
+                fields: 所属领域，格式：['field1', 'field2']
+                tags: 标签，格式：['tag1', 'tag2', ...]
+                time_created: 注册时间
+        """
+        i, j, k = offset, offset + limit, self.ORDERS[order]
+        c = request.user.owned_labs.count()
+        labs = request.user.owned_labs.order_by(k)[i:j]
+        l = [{'id': t.id,
+              'name': t.name,
+              'icon_url': t.icon,
+              'owner_id': t.owner.id,
+              'liker_count': t.likers.count(),
+              'visitor_count': t.visitors.count(),
+              'member_count': t.members.count(),
+              'fields': [t.field1, t.field2],
+              'tags': [tag.name for tag in t.tags.all()],
+              'time_created': t.time_created} for t in labs]
         return JsonResponse({'count': c, 'list': l})

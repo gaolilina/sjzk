@@ -2,7 +2,8 @@ from django.conf.urls import url
 
 from main.views.search.competition import SearchCompetition
 from ..views.competition import *
-from ..views.common import CompetitionCommentList, CompetitionComment, CompetitionFollowerList
+from ..views.common import CompetitionComment, CompetitionFollowerList
+from main.views.competition.comment import CompetitionCommentList
 
 urls = [
     # 暂时保留这个接口，后期变更为创建竞赛

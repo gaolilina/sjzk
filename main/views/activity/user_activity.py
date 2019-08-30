@@ -4,7 +4,7 @@ from django.views.generic import View
 
 from main.models import Activity
 from main.utils import abort, get_score_stage
-from main.views.current_user import LikedEntity, FavoredEntity
+from main.views.like import LikedEntity
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 
@@ -111,20 +111,6 @@ class LikedActivity(LikedEntity):
         return super().post(request, activity)
 
     @fetch_object(Activity.enabled, 'activity')
-    def delete(self, request, activity):
-        return super().delete(request, activity)
-
-
-class FavoredActivity(FavoredEntity):
-    @fetch_object(Activity.objects, 'activity')
-    def get(self, request, activity):
-        return super().get(request, activity)
-
-    @fetch_object(Activity.objects, 'activity')
-    def post(self, request, activity):
-        return super().post(request, activity)
-
-    @fetch_object(Activity.objects, 'activity')
     def delete(self, request, activity):
         return super().delete(request, activity)
 

@@ -3,11 +3,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views.generic import View
 
+from main.models import Competition, Team, CompetitionFile as File, CompetitionTeamParticipator
+from main.utils import abort, save_uploaded_file
+from main.utils.decorators import *
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
-from ..models import Competition, Team, CompetitionFile as File, CompetitionTeamParticipator
-from ..utils import abort, save_uploaded_file
-from ..utils.decorators import *
 
 __all__ = ['Detail', 'CompetitionStageList', 'CompetitionFile', 'CompetitionFileScore',
            'CompetitionFileList', 'TeamParticipatorList', 'Screen',
@@ -556,3 +556,89 @@ class Screen(View):
               'province': a.province,
               'status': a.status} for a in qs.order_by(k)[i:j]]
         return JsonResponse({'count': c, 'list': l})
+
+
+class CompetitionList(View):
+    ORDERS = ('time_created', '-time_created', 'name', '-name')
+
+    @app_auth
+    @validate_args({
+        'offset': forms.IntegerField(required=False, min_value=0),
+        'limit': forms.IntegerField(required=False, min_value=0),
+        'order': forms.IntegerField(required=False, min_value=0,
+                                    max_value=3),
+    })
+    def get(self, request, offset=0, limit=10, order=1):
+        """获取竞赛列表
+
+        :param offset: 偏移量
+        :param limit: 数量上限
+        :param order: 排序方式
+            0: 注册时间升序
+            1: 注册时间降序（默认值）
+            2: 昵称升序
+            3: 昵称降序
+
+        :return:
+            count: 竞赛总数
+            list: 竞赛列表
+                id: 竞赛ID
+                name: 竞赛名
+                liker_count: 点赞数
+                time_started: 开始时间
+                time_ended: 结束时间
+                deadline: 截止时间
+                team_participator_count: 已报名人数
+                time_created: 创建时间
+        """
+        k = self.ORDERS[order]
+        if request.user.role == '专家':
+            ctp = request.user.scored_competitions.all()
+            qs = ctp.order_by(k)[offset: offset + limit]
+            c = ctp.count()
+            l = [{'id': a.id,
+                  'name': a.name,
+                  'liker_count': a.likers.count(),
+                  'status': a.status,
+                  'time_started': a.time_started,
+                  'time_ended': a.time_ended,
+                  'deadline': a.deadline,
+                  'team_participator_count': a.team_participators.count(),
+                  'time_created': a.time_created,
+                  'province': a.province} for a in qs]
+            return JsonResponse({'count': c, 'list': l})
+
+        ctp = CompetitionTeamParticipator.objects.filter(
+            team__members__user=request.user).distinct()
+        qs = ctp.order_by(k)[offset: offset + limit]
+        c = ctp.count()
+        l = [{'id': a.competition.id,
+              'name': a.competition.name,
+              'liker_count': a.competition.likers.count(),
+              'time_started': a.competition.time_started,
+              'time_ended': a.competition.time_ended,
+              'deadline': a.competition.deadline,
+              'team_participator_count':
+                  a.competition.team_participators.count(),
+              'time_created': a.competition.time_created,
+              'team_id': a.team.id,
+              'team_name': a.team.name,
+              } for a in qs]
+
+        ctp2 = CompetitionTeamParticipator.objects.filter(
+            team__owner=request.user).distinct()
+        qs2 = ctp2.order_by(k)[offset: offset + limit]
+        c2 = ctp2.count()
+        l2 = [{'id': a.competition.id,
+               'name': a.competition.name,
+               'liker_count': a.competition.likers.count(),
+               'time_started': a.competition.time_started,
+               'time_ended': a.competition.time_ended,
+               'deadline': a.competition.deadline,
+               'team_participator_count':
+                   a.competition.team_participators.count(),
+               'time_created': a.competition.time_created,
+               'team_id': a.team.id,
+               'team_name': a.team.name,
+               } for a in qs2]
+        return JsonResponse({'count': c + c2, 'list': l + l2})

@@ -2,12 +2,25 @@ from django.conf.urls import url, include
 
 from main.urls import search, paper
 from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth, \
-    friend, need, task
+    friend, need, task, like, follow, favor, action, feedback, report
 
 urlpatterns = [
     url(r'^users/', include(user.urls, namespace='user')),
     url(r'^achievement/', include(achievement.urls, namespace='achievement')),
     url(r'^users/current/', include(current_user.urls, namespace='current_user')),
+    # 点赞
+    url(r'^users/current/', include(like.urls)),
+    # 粉丝
+    url(r'^users/current/', include(follow.urls)),
+    # 收藏
+    url(r'^users/current/', include(favor.urls)),
+    # 动态
+    url(r'^users/current/', include(action)),
+    # 反馈
+    url(r'^users/current/', include(feedback)),
+    # 举报
+    url(r'^users/current/', include(report)),
+    # 团队
     url(r'^teams/', include(team.urls)),
     url(r'^teams/', include(need.urls)),
     url(r'^teams/', include(task.urls)),
