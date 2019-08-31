@@ -4,6 +4,7 @@ from django.views.generic import View
 
 from main.models import Team
 from main.utils import abort, get_score_stage
+from main.views.follow import SomethingFollower
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 
@@ -96,3 +97,10 @@ class FollowedTeam(View):
             qs.delete()
             abort(200)
         abort(403, '未关注过该团队')
+
+
+class TeamFollowerList(SomethingFollower):
+    @fetch_object(Team.enabled, 'team')
+    @app_auth
+    def get(self, request, team):
+        return super().get(request, team)

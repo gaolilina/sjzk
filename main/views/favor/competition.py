@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.models import Competition
-from main.views.favor import FavoredEntity
+from main.views.favor import IFavorSomething
 
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
@@ -56,7 +56,7 @@ class FavoredCompetitionList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-class FavoredCompetition(FavoredEntity):
+class FavoredCompetition(IFavorSomething):
     @fetch_object(Competition.objects, 'competition')
     def get(self, request, competition):
         return super().get(request, competition)

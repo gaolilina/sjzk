@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.models import Activity
-from main.views.favor import FavoredEntity
+from main.views.favor import IFavorSomething
 
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
@@ -56,7 +56,7 @@ class FavoredActivityList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-class FavoredActivity(FavoredEntity):
+class FavoredActivity(IFavorSomething):
     @fetch_object(Activity.objects, 'activity')
     def get(self, request, activity):
         return super().get(request, activity)

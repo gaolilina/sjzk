@@ -4,12 +4,12 @@ from django.views.generic import View
 
 from main.models import User
 from main.utils import abort, get_score_stage
-from main.views.common import FollowerList
+from main.views.follow import SomethingFollower
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object, validate_args
 
 
-class UserFollowerList(FollowerList):
+class UserFollowerList(SomethingFollower):
     @fetch_object(User.enabled, 'user')
     @app_auth
     def get(self, request, user=None):

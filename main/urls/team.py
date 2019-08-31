@@ -4,8 +4,10 @@ from main.views.search import SearchTeam
 from main.views.team.competition import CompetitionList, TeamAwardList
 from main.views.team.info import Profile, Icon, TeamScoreRecord
 from main.views.team.member import MemberList, Member, MemberRequestList, MemberRequest, Invitation
-from main.views.team.social import TeamActionList, TeamCommentList, TeamComment, TeamFollowerList, TeamFollower, \
-    TeamLiker, TeamVisitorList, TeamLikerList
+from main.views.team.social import TeamActionList, TeamCommentList, TeamComment, TeamFollower, \
+    TeamVisitorList
+from main.views.follow.team import TeamFollowerList
+from main.views.like.team import TeamLiker, TeamLikerList
 from ..views.recommend import TeamRecommend, OutsourceNeedTeamRecommend, UndertakeNeedTeamRecommend
 from ..views.team import *
 

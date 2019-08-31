@@ -1,9 +1,9 @@
 from django.views.generic import View
 
-from main.models import Team, TeamComment as TeamCommentModel, User
+from main.models import Team, TeamComment as TeamCommentModel
 from main.utils import abort
 from main.utils.decorators import require_verification_token
-from main.views.common import ActionList, CommentList, FollowerList, Follower, Liker, VisitorList, LikerList
+from main.views.common import ActionList, CommentList, Follower, VisitorList
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object
 
@@ -54,26 +54,11 @@ class TeamComment(View):
         abort(403, '非法操作')
 
 
-class TeamFollowerList(FollowerList):
-    @fetch_object(Team.enabled, 'team')
-    @app_auth
-    def get(self, request, team):
-        return super().get(request, team)
-
-
 class TeamFollower(Follower):
     @fetch_object(Team.enabled, 'team')
     @app_auth
     def get(self, request, team):
         return super().get(request, team)
-
-
-class TeamLiker(Liker):
-    @fetch_object(Team.enabled, 'team')
-    @fetch_object(User.enabled, 'other_user')
-    @app_auth
-    def get(self, request, team, other_user):
-        return super(TeamLiker, self).get(request, team, other_user)
 
 
 class TeamVisitorList(VisitorList):
@@ -83,8 +68,3 @@ class TeamVisitorList(VisitorList):
         return super().get(request, team)
 
 
-class TeamLikerList(LikerList):
-    @app_auth
-    @fetch_object(Team.enabled, 'team')
-    def get(self, request, team):
-        return super().get(request, team)

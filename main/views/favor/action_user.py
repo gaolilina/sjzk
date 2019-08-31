@@ -1,5 +1,5 @@
 from main.models import UserAction
-from main.views.favor import FavoredActionList, FavoredEntity
+from main.views.favor import FavoredActionList, IFavorSomething
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object
 
@@ -10,7 +10,7 @@ class FavoredUserActionList(FavoredActionList):
         return super().get(request, request.user.favored_user_actions)
 
 
-class FavoredUserAction(FavoredEntity):
+class FavoredUserAction(IFavorSomething):
     @fetch_object(UserAction.objects, 'action')
     def get(self, request, action):
         return super().get(request, action)

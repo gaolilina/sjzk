@@ -2,6 +2,8 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
+from main.views.follow import SomethingFollower
+from main.views.like import SomethingLikers, Liker
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 from ..models import User, Lab, LabComment as LabCommentModel, \
@@ -301,44 +303,6 @@ class CompetitionComment(View):
         abort(403, '非法操作')
 
 
-class FollowerList(View):
-    get_dict = {
-        'offset': forms.IntegerField(required=False, min_value=0),
-        'limit': forms.IntegerField(required=False, min_value=0),
-        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-    }
-    ORDERS = ('time_created', '-time_created',
-              'follower__name', '-follower__name')
-
-    @validate_args(get_dict)
-    def get(self, request, obj, offset=0, limit=10, order=1):
-        """获取粉丝列表
-
-        :param offset: 偏移量
-        :param order: 排序方式
-            0: 关注时间升序
-            1: 关注时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
-        :return:
-            count: 粉丝总数
-            list: 粉丝列表
-                id: 用户ID
-                username: 用户名
-                name: 用户昵称
-                icon_url: 头像
-                time_created: 关注时间
-        """
-        c = obj.followers.count()
-        qs = obj.followers.order_by(self.ORDERS[order])[offset:offset + limit]
-        l = [{'id': r.follower.id,
-              'username': r.follower.username,
-              'name': r.follower.name,
-              'icon_url': r.follower.icon,
-              'time_created': r.time_created} for r in qs]
-        return JsonResponse({'count': c, 'list': l})
-
-
 # noinspection PyMethodOverriding
 
 
@@ -346,7 +310,7 @@ class FollowerList(View):
 
 
 # noinspection PyMethodOverriding
-class LabFollowerList(FollowerList):
+class LabFollowerList(SomethingFollower):
     @fetch_object(Lab.enabled, 'lab')
     @app_auth
     def get(self, request, lab):
@@ -354,7 +318,7 @@ class LabFollowerList(FollowerList):
 
 
 # noinspection PyMethodOverriding
-class TeamNeedFollowerList(FollowerList):
+class TeamNeedFollowerList(SomethingFollower):
     @fetch_object(TeamNeed.objects, 'need')
     @app_auth
     def get(self, request, need):
@@ -362,7 +326,7 @@ class TeamNeedFollowerList(FollowerList):
 
 
 # noinspection PyMethodOverriding
-class ActivityFollowerList(FollowerList):
+class ActivityFollowerList(SomethingFollower):
     @fetch_object(Activity.enabled, 'activity')
     @app_auth
     def get(self, request, activity):
@@ -370,7 +334,7 @@ class ActivityFollowerList(FollowerList):
 
 
 # noinspection PyMethodOverriding
-class CompetitionFollowerList(FollowerList):
+class CompetitionFollowerList(SomethingFollower):
     @fetch_object(Competition, 'competition')
     @app_auth
     def get(self, request, competition):
@@ -407,46 +371,6 @@ class LabFollower(Follower):
         return super().get(request, lab)
 
 
-class LikerList(View):
-    ORDERS = (
-        'time_created', '-time_created',
-        'follower__name', '-follower__name',
-    )
-
-    @validate_args({
-        'offset': forms.IntegerField(required=False, min_value=0),
-        'limit': forms.IntegerField(required=False, min_value=0),
-        'order': forms.IntegerField(required=False, min_value=0, max_value=3),
-    })
-    def get(self, request, obj, offset=0, limit=10, order=1):
-        """获取对象的点赞者列表
-
-        :param offset: 偏移量
-        :param order: 排序方式
-            0: 点赞时间升序
-            1: 点赞时间降序（默认值）
-            2: 昵称升序
-            3: 昵称降序
-        :return:
-            count: 总点赞量
-            list: 点赞者列表
-                id: 用户ID
-                username: 用户名
-                name: 用户昵称
-                icon_url: 用户头像URL
-                time_created: 点赞时间
-        """
-        i, j, k = offset, offset + limit, self.ORDERS[order]
-        c = obj.likers.count()
-        qs = obj.likers.order_by(k)[i:j]
-        l = [{'id': r.liker.id,
-              'username': r.liker.username,
-              'name': r.liker.name,
-              'icon_url': r.liker.icon,
-              'time_created': r.time_created} for r in qs]
-        return JsonResponse({'count': c, 'list': l})
-
-
 # noinspection PyMethodOverriding
 
 
@@ -454,7 +378,7 @@ class LikerList(View):
 
 
 # noinspection PyMethodOverriding
-class LabLikerList(LikerList):
+class LabLikerList(SomethingLikers):
     @app_auth
     @fetch_object(Lab.enabled, 'lab')
     def get(self, request, lab):
@@ -462,20 +386,11 @@ class LabLikerList(LikerList):
 
 
 # noinspection PyMethodOverriding
-class LabAchievementLikerList(LikerList):
+class LabAchievementLikerList(SomethingLikers):
     @app_auth
     @fetch_object(LabAchievement.objects, 'achievement')
     def get(self, request, achievement):
         return super().get(request, achievement)
-
-
-class Liker(View):
-    def get(self, request, entity, other_user):
-        """判断other_user是否对某个实体点过赞"""
-
-        if entity.likers.filter(liker=other_user).exists():
-            abort(200)
-        abort(404, '未点赞')
 
 
 class LabLiker(Liker):

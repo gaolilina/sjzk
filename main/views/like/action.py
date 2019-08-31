@@ -1,9 +1,9 @@
 from main.models import UserAction, TeamAction, SystemAction
-from main.views.like import LikedEntity
+from main.views.like import ILikeSomething
 from util.decorator.param import fetch_object
 
 
-class LikedUserAction(LikedEntity):
+class LikedUserAction(ILikeSomething):
     @fetch_object(UserAction.objects, 'action')
     def get(self, request, action):
         return super().get(request, action)
@@ -17,7 +17,7 @@ class LikedUserAction(LikedEntity):
         return super().delete(request, action)
 
 
-class LikedTeamAction(LikedEntity):
+class LikedTeamAction(ILikeSomething):
     @fetch_object(TeamAction.objects, 'action')
     def get(self, request, action):
         return super().get(request, action)
@@ -31,7 +31,7 @@ class LikedTeamAction(LikedEntity):
         return super().delete(request, action)
 
 
-class LikedSystemAction(LikedEntity):
+class LikedSystemAction(ILikeSomething):
     @fetch_object(SystemAction.objects, 'action')
     def get(self, request, action):
         return super().get(request, action)

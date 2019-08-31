@@ -19,7 +19,8 @@ urls = [
     url(r'^comments/(?P<comment_id>[0-9]+)/$', ActivityComment.as_view(), name='comment'),
     # 活动的阶段
     url(r'^(?P<activity_id>[0-9]+)/stage/$', ActivityStage.as_view(), name='stage'),
+    url(r'^(?P<activity_id>[0-9]+)/sign/$', ActivitySignList.as_view(), name='sign'),
     # 粉丝
     url(r'^(?P<activity_id>[0-9]+)/followers/$', ActivityFollowerList.as_view(), name='followers'),
-    url(r'^(?P<activity_id>[0-9]+)/sign/$', ActivitySignList.as_view(), name='sign'),
+    url(r'^(?P<activity_id>[0-9]+)/liker/$', ActivityFollowerList.as_view(), name='followers'),
 ]

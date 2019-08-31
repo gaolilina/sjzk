@@ -19,8 +19,8 @@ from main.utils.dfa import check_bad_words
 from main.utils.http import notify_user
 from main.utils.recommender import calculate_ranking_score
 from main.views.common import CommentList
-from main.views.favor import FavoredActionList, FavoredEntity
-from main.views.like import LikedEntity
+from main.views.favor import FavoredActionList, IFavorSomething
+from main.views.like import ILikeSomething
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 
@@ -2889,7 +2889,7 @@ class FollowedLab(View):
         abort(403, '未关注过该团队')
 
 
-class LikedLab(LikedEntity):
+class LikedLab(ILikeSomething):
     @fetch_object(Lab.enabled, 'lab')
     def get(self, request, lab):
         return super().get(request, lab)
@@ -2913,7 +2913,7 @@ class LikedLab(LikedEntity):
         return super().delete(request, lab)
 
 
-class LikedLabAction(LikedEntity):
+class LikedLabAction(ILikeSomething):
     @fetch_object(LabAction.objects, 'action')
     def get(self, request, action):
         return super().get(request, action)
@@ -2927,7 +2927,7 @@ class LikedLabAction(LikedEntity):
         return super().delete(request, action)
 
 
-class FavoredLabAction(FavoredEntity):
+class FavoredLabAction(IFavorSomething):
     @fetch_object(LabAction.objects, 'action')
     def get(self, request, action):
         return super().get(request, action)

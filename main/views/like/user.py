@@ -1,12 +1,13 @@
 from main.models import User
 from main.utils import get_score_stage
-from main.views.common import LikerList, Liker
-from main.views.like import LikedEntity
+from main.views.like import ILikeSomething, SomethingLikers, Liker
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object
 
 
-class LikedUser(LikedEntity):
+class LikedUser(ILikeSomething):
+    """点赞和取消点赞"""
+
     @fetch_object(User.enabled, 'user')
     def get(self, request, user):
         return super().get(request, user)
@@ -30,9 +31,8 @@ class LikedUser(LikedEntity):
         return super().delete(request, user)
 
 
-class UserLikerList(LikerList):
+class UserLikerList(SomethingLikers):
     @app_auth
-    @fetch_object(User.enabled, 'user')
     def get(self, request, user=None):
         user = user or request.user
         return super().get(request, user)

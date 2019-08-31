@@ -5,10 +5,12 @@ from main.views.account.phone import BindPhoneNumber
 from main.views.achievement import AchievementList
 from main.views.activity.user_activity import ActivityList
 from main.views.competition import CompetitionList
+from main.views.follow.user import UserFollowerList
 from main.views.friend import FriendAction, MyFriendList
 from main.views.friend.request import FriendRequestList, FriendRequestAction
 from main.views.lab import LabActionCommentList, FollowedLabActionList, FollowedLabList, FollowedLab, LikedLab, \
     LikedLabAction, RelatedLabList, OwnedLabList
+from main.views.like.user import UserLikerList
 from main.views.me.experience import ExperienceList
 from main.views.me.info import Username, Password, Icon, Getui, Profile
 from main.views.me.invite import InvitationCode, Inviter
@@ -32,6 +34,10 @@ urls = [
     url(r'^experiences/fieldwork/$', ExperienceList.as_view(), kwargs={'type': 'fieldwork'}),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view()),
+    # 对我点赞的用户
+    url(r'^liker/$', UserLikerList.as_view()),
+    # 关注我的用户，我的粉丝
+    url(r'^followers/$', UserFollowerList.as_view()),
     # 团队邀请
     url(r'^invitations/$', InvitationList.as_view()),
     url(r'^invitations/(?P<invitation_id>[0-9]+)/$', Invitation.as_view()),

@@ -1,5 +1,5 @@
 from main.models import SystemAction
-from main.views.favor import FavoredActionList, FavoredEntity
+from main.views.favor import FavoredActionList, IFavorSomething
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object
 
@@ -10,7 +10,7 @@ class FavoredSystemActionList(FavoredActionList):
         return super().get(request, request.user.favored_system_actions)
 
 
-class FavoredSystemAction(FavoredEntity):
+class FavoredSystemAction(IFavorSomething):
     @fetch_object(SystemAction.objects, 'action')
     def get(self, request, action):
         return super().get(request, action)

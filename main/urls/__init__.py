@@ -2,24 +2,18 @@ from django.conf.urls import url, include
 
 from main.urls import search, paper
 from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth, \
-    friend, need, task, like, follow, favor, action, feedback, report
+    friend, need, task, like_old, like, follow, favor, action, feedback, report
 
 urlpatterns = [
     url(r'^users/', include(user.urls, namespace='user')),
     url(r'^achievement/', include(achievement.urls, namespace='achievement')),
-    url(r'^users/current/', include(current_user.urls, namespace='current_user')),
+    url(r'^me/', include(current_user.urls)),
     # 点赞
-    url(r'^users/current/', include(like.urls)),
-    # 粉丝
-    url(r'^users/current/', include(follow.urls)),
+    url(r'^like/', include(like)),
     # 收藏
-    url(r'^users/current/', include(favor.urls)),
-    # 动态
-    url(r'^users/current/', include(action)),
-    # 反馈
-    url(r'^users/current/', include(feedback)),
-    # 举报
-    url(r'^users/current/', include(report)),
+    url(r'^favor/', include(favor)),
+    # 关注
+    url(r'^follow/', include(follow)),
     # 团队
     url(r'^teams/', include(team.urls)),
     url(r'^teams/', include(need.urls)),
@@ -35,4 +29,19 @@ urlpatterns = [
     url(r'^friend/', include(friend.urls, namespace='friend')),
     url(r'^search/', include(search.urlpatterns, namespace='search')),
     url(r'^paper/', include(paper.urls, namespace='paper')),
+
+    ###############################弃用
+    url(r'^users/current/', include(current_user.urls, namespace='current_user')),
+    # 点赞
+    url(r'^users/current/', include(like_old.urls)),
+    # 粉丝
+    url(r'^users/current/followed/', include(follow)),
+    # 收藏
+    url(r'^users/current/favored/', include(favor)),
+    # 动态
+    url(r'^users/current/', include(action)),
+    # 反馈
+    url(r'^users/current/', include(feedback)),
+    # 举报
+    url(r'^users/current/', include(report)),
 ]

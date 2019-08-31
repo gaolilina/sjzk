@@ -1,9 +1,9 @@
 from main.models import UserTag, TeamTag
-from main.views.like import LikedEntity
+from main.views.like import ILikeSomething
 from util.decorator.param import fetch_object
 
 
-class LikedUserTag(LikedEntity):
+class LikedUserTag(ILikeSomething):
     @fetch_object(UserTag.objects, 'tag')
     def get(self, request, tag):
         return super().get(request, tag)
@@ -17,7 +17,7 @@ class LikedUserTag(LikedEntity):
         return super().delete(request, tag)
 
 
-class LikedTeamTag(LikedEntity):
+class LikedTeamTag(ILikeSomething):
     @fetch_object(TeamTag.objects, 'tag')
     def get(self, request, tag):
         return super().get(request, tag)

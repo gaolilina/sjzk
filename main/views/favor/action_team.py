@@ -1,5 +1,5 @@
 from main.models import TeamAction
-from main.views.favor import FavoredActionList, FavoredEntity
+from main.views.favor import FavoredActionList, IFavorSomething
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object
 
@@ -10,7 +10,7 @@ class FavoredTeamActionList(FavoredActionList):
         return super().get(request, request.user.favored_team_actions)
 
 
-class FavoredTeamAction(FavoredEntity):
+class FavoredTeamAction(IFavorSomething):
     @fetch_object(TeamAction.objects, 'action')
     def get(self, request, action):
         return super().get(request, action)

@@ -69,7 +69,7 @@ class FavoredActionList(View):
         return JsonResponse({'count': c, 'list': l})
 
 
-class FavoredEntity(View):
+class IFavorSomething(View):
     """与当前用户收藏行为相关的View"""
 
     @app_auth
