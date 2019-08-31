@@ -9,6 +9,7 @@ from main.views.lab import ScreenLabActionList
 from main.views.comment.user import UserCommentList, UserComment
 from main.views.follow.user import UserFollowerList
 from main.views.like.user import UserLikerList, UserLiker
+from main.views.me.visit import UserVisitorList
 from main.views.search import SearchUser
 from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
 from ..views.user import *

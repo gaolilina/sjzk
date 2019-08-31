@@ -447,12 +447,6 @@ class VisitorList(View):
 
 
 # noinspection PyMethodOverriding
-class UserVisitorList(VisitorList):
-    @app_auth
-    @fetch_object(User.enabled, 'user')
-    def get(self, request, user=None):
-        user = user or request.user
-        return super().get(request, user)
 
 
 # noinspection PyMethodOverriding

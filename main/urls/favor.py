@@ -20,11 +20,11 @@ urlpatterns = [
     # 我收藏的团队动态
     url(r'^team_actions/$', FavoredTeamActionList.as_view()),
     url(r'^team_actions/(?P<action_id>[0-9]+)/$', FavoredTeamAction.as_view()),
+
+    ####################################弃用
     # 我收藏的系统动态
     url(r'^system_actions/$', FavoredSystemActionList.as_view()),
     url(r'^system_actions/(?P<action_id>[0-9]+)/$', FavoredSystemAction.as_view()),
-
-    ####################################弃用
     url(r'^lab_actions/(?P<action_id>[0-9]+)/$', FavoredLabAction.as_view()),
     url(r'^lab_actions/$', FavoredLabActionList.as_view()),
 ]

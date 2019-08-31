@@ -16,28 +16,24 @@ from main.views.me.info import Username, Password, Icon, Getui, Profile
 from main.views.me.invite import InvitationCode, Inviter
 from main.views.me.invite_team import InvitationList, Invitation
 from main.views.me.score import UserScoreRecord
+from main.views.me.visit import UserVisitorList
 from main.views.search.action import SearchLabAction
 from main.views.team.user import RelatedTeamList, OwnedTeamList
-from ..views.common import *
 from ..views.forum import BoardList
 
 urls = [
-    # 基本信息
-    url(r'^username/$', Username.as_view()),
-    url(r'^password/$', Password.as_view()),
     url(r'^icon/$', Icon.as_view()),
     url(r'^profile/$', Profile.as_view()),
     url(r'^getui/$', Getui.as_view()),
-    # 经历
-    url(r'^experiences/education/$', ExperienceList.as_view(), kwargs={'type': 'education'}),
-    url(r'^experiences/work/$', ExperienceList.as_view(), kwargs={'type': 'work'}),
-    url(r'^experiences/fieldwork/$', ExperienceList.as_view(), kwargs={'type': 'fieldwork'}),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view()),
     # 对我点赞的用户
     url(r'^liker/$', UserLikerList.as_view()),
     # 关注我的用户，我的粉丝
     url(r'^followers/$', UserFollowerList.as_view()),
+    # 积分明细
+    url(r'^score_records/$', UserScoreRecord.as_view()),
+
     # 团队邀请
     url(r'^invitations/$', InvitationList.as_view()),
     url(r'^invitations/(?P<invitation_id>[0-9]+)/$', Invitation.as_view()),
@@ -46,9 +42,6 @@ urls = [
     url(r'^inviter/$', Inviter.as_view()),
     # 绑定手机号
     url(r'^bind_phone_number/$', BindPhoneNumber.as_view()),
-
-    # 积分明细
-    url(r'^score_records/$', UserScoreRecord.as_view()),
 
     # 需要迁移走
     # 与当前用户相关的团队
@@ -80,4 +73,11 @@ urls = [
     url(r'^friends/(?P<other_user_id>[0-9]+)/$', FriendAction.as_view()),
     url(r'^friend_requests/$', FriendRequestList.as_view()),
     url(r'^friend_requests/(?P<req_id>[0-9]+)/$', FriendRequestAction.as_view()),
+    # 经历
+    url(r'^experiences/education/$', ExperienceList.as_view(), kwargs={'type': 'education'}),
+    url(r'^experiences/work/$', ExperienceList.as_view(), kwargs={'type': 'work'}),
+    url(r'^experiences/fieldwork/$', ExperienceList.as_view(), kwargs={'type': 'fieldwork'}),
+    # 基本信息
+    url(r'^username/$', Username.as_view()),
+    url(r'^password/$', Password.as_view()),
 ]
