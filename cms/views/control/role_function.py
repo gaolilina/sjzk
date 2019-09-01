@@ -13,7 +13,6 @@ from util.decorator.permission import cms_permission
 class RoleFunction(BaseView):
 
     @cms_auth
-    @cms_permission('roleFunctionList')
     @validate_args({
         'role_id': forms.IntegerField(),
         'page': forms.IntegerField(required=False),
@@ -21,6 +20,7 @@ class RoleFunction(BaseView):
         'category': forms.CharField(max_length=100, required=False),
     })
     @fetch_object(CMSRole.objects, 'role')
+    @cms_permission_role()
     def get(self, request, role, category=None, page=0, limit=CONSTANT_DEFAULT_LIMIT, **kwargs):
         filter_param = {}
         if category is not None:

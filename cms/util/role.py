@@ -39,6 +39,8 @@ def get_all_child_role(role, **filter_param):
 
 
 def role_to_json(r):
+    if r is None:
+        return None
     return {
         'id': r.id,
         'name': r.name,

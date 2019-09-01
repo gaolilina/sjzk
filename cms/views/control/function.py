@@ -1,5 +1,6 @@
 from django import forms
 
+from cms.util.decorator.permission import cms_permission_role_function
 from modellib.models import CMSFunction
 from util.base.view import BaseView
 from util.constant.param import CONSTANT_DEFAULT_LIMIT
@@ -75,11 +76,11 @@ class MyFunctionList(BaseView):
 class FunctionDetail(BaseView):
 
     @cms_auth
-    @cms_permission('functionDetail')
     @validate_args({
         'function_id': forms.CharField(max_length=100),
     })
     @fetch_object(CMSFunction.objects, 'function')
+    @cms_permission_role_function()
     def get(self, request, function, **kwargs):
         result = {
             'id': function.id,
@@ -100,6 +101,7 @@ class FunctionDetail(BaseView):
         'needVerify': forms.BooleanField(required=False),
     })
     @fetch_object(CMSFunction.objects, 'function')
+    @cms_permission_role_function()
     def post(self, request, function, **kwargs):
         param_list = []
         update_param = {}
