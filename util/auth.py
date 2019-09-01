@@ -1,13 +1,16 @@
 '''
 统一 token 规范
 '''
-import hashlib
 
 from django.utils import timezone
+
+from util.security import md5
 
 
 def generate_token(msg):
     random_content = msg + timezone.now().isoformat()
-    hasher = hashlib.md5()
-    hasher.update(random_content.encode())
-    return hasher.hexdigest()
+    return md5(random_content)
+
+
+def generate_psd(psd):
+    return md5(psd)

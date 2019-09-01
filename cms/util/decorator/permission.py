@@ -30,6 +30,30 @@ def cms_permission_role(role_param='role'):
     return decorator
 
 
+def cms_permission_user(user_param='user'):
+    '''
+    操作角色的权限
+    只有用户角色的上级角色能操作下级角色用户
+    '''
+
+    def decorator(function):
+        @wraps(function)
+        def inner(self, request, *args, **kwargs):
+            child = kwargs[user_param].system_role
+            parent = request.user.system_role
+            has_permission = compare_role(parent, child)
+            if has_permission:
+                return function(self, request, *args, **kwargs)
+            else:
+                return JsonResponse({
+                    'code': error.NO_PERMISSION
+                })
+
+        return inner
+
+    return decorator
+
+
 def cms_permission_role_function(function_param='function'):
     '''
     操作功能的权限

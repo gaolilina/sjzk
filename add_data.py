@@ -1,8 +1,7 @@
 # coding:utf-8
-import django
 import os
 
-from django.contrib.auth.hashers import PBKDF2PasswordHasher
+import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ChuangYi.settings")
 
@@ -41,8 +40,8 @@ def init_system_params():
 def add_sys_op():
     from admin.models.admin_user import AdminUser
     user = AdminUser(username='admin')
-    hasher = PBKDF2PasswordHasher()
-    user.password = hasher.encode('cyadmin', hasher.salt())
+    from util.security import md5
+    user.password = md5('cyadmin')
     user.phone_number = '18301018512'
     user.role = 'z'
     user.name = 'admin'

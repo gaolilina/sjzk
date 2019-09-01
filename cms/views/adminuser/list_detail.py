@@ -1,6 +1,8 @@
 from django import forms
 
 from admin.models import AdminUser
+from modellib.models import CMSRole
+from util.auth import generate_psd, generate_token
 from util.base.view import BaseView
 from util.constant.param import CONSTANT_DEFAULT_LIMIT
 from util.decorator.auth import cms_auth
@@ -45,6 +47,32 @@ class AllAdminUserList(BaseView):
             'totalCount': total_count,
             'list': [adminuser_to_json(u) for u in users]
         })
+
+    @cms_auth
+    @cms_permission('createManager')
+    @validate_args({
+        'phone': forms.CharField(min_length=11, max_length=11),
+        'role_id': forms.IntegerField(),
+        'name': forms.CharField(max_length=15, required=False),
+    })
+    @fetch_object(CMSRole.objects, 'role', force=False)
+    def post(self, request, phone, role, name='', **kwargs):
+        if not phone.isdigit():
+            return self.fail(1, '手机号码格式不正确')
+        if AdminUser.objects.filter(phone_number=phone).exsits():
+            return self.fail(2, '手机号已被注册')
+        # 手机号后六位
+        psd = generate_psd(phone[-6:])
+        token = generate_token(psd)
+        AdminUser.objects.create(
+            username=phone,
+            phone_number=phone,
+            name=name,
+            system_role=role,
+            password=psd,
+            token=token,
+        )
+        return self.success()
 
 
 class AdminUserDetail(BaseView):
