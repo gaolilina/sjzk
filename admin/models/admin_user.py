@@ -1,9 +1,9 @@
 import hashlib
 
-from django.contrib.auth.hashers import PBKDF2PasswordHasher
 from django.db import models
 from django.utils import timezone
 
+from util.auth import generate_psd
 from ..models import EnabledManager
 
 __all__ = ['AdminUser']
@@ -81,14 +81,12 @@ class AdminUser(models.Model):
 
     def set_password(self, password):
         """弃用，设置密码"""
-        hasher = PBKDF2PasswordHasher()
-        self.password = hasher.encode(password, hasher.salt())
+        self.password = generate_psd(password)
 
     def check_password(self, password):
         """弃用，检查密码"""
 
-        hasher = PBKDF2PasswordHasher()
-        return hasher.verify(password, self.password)
+        return self.password == generate_psd(password)
 
     def update_token(self):
         """弃用，更新用户令牌"""
