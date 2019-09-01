@@ -1,6 +1,8 @@
 from django import forms
 
 from admin.models import AdminUser
+from cms.util.decorator.permission import cms_permission_user
+from cms.util.role import compare_role, get_all_child_role
 from modellib.models import CMSRole
 from util.auth import generate_psd, generate_token
 from util.base.view import BaseView
@@ -75,13 +77,58 @@ class AllAdminUserList(BaseView):
         return self.success()
 
 
+class ManagerControlledByMe(BaseView):
+
+    @cms_auth
+    @validate_args({
+        'page': forms.IntegerField(required=False),
+        'limit': forms.IntegerField(required=False),
+        'username': forms.CharField(max_length=100, required=False),
+        'name': forms.CharField(max_length=100, required=False),
+        'phone': forms.CharField(max_length=100, required=False),
+        'role_id': forms.IntegerField(required=False),
+    })
+    @fetch_object(CMSRole.objects, 'role', force=False)
+    def get(self, request, name='', phone='', username='', role=None, page=0, limit=CONSTANT_DEFAULT_LIMIT,
+            **kwargs):
+        # 如果筛选的角色，不归我管，则肯定没有用户
+        my_role = request.user.system_role
+        if role and not compare_role(my_role, role):
+            return self.success({'totalCount': 0})
+        # 界定筛选范围
+        if role:
+            qs = AdminUser.objects.filter(system_role=role)
+        elif my_role.is_admin():
+            qs = AdminUser.objects.exclude(id=request.user.id)
+        else:
+            qs = AdminUser.objects.filter(system_role__in=get_all_child_role(my_role))
+        # 构造筛选参数
+        filter_params = {}
+        if name:
+            filter_params['name__icontains'] = name
+        if phone:
+            filter_params['phone_number__contains'] = phone
+        if username:
+            filter_params['username__icontains'] = username
+        # 开始筛选
+        qs = qs.filter(**filter_params)
+        total_count = qs.count()
+        users = []
+        if total_count > 0:
+            users = qs[page * limit:(page + 1) * limit]
+        return self.success({
+            'totalCount': total_count,
+            'list': [adminuser_to_json(u) for u in users]
+        })
+
+
 class AdminUserDetail(BaseView):
     @cms_auth
-    @cms_permission('adminuserDetail')
     @validate_args({
         'user_id': forms.IntegerField(required=False),
     })
     @fetch_object(AdminUser.objects, 'user')
+    @cms_permission_user()
     def get(self, request, user, **kwargs):
         return self.success(adminuser_to_json(user))
 
