@@ -39,17 +39,7 @@ class AdminUser(models.Model):
         db_table = 'admin_user'
         ordering = ['-time_created']
 
-    def set_password(self, password):
-        """设置密码"""
-        hasher = PBKDF2PasswordHasher()
-        AdminUser.objects.filter(id=self.id).update(password=hasher.encode(password, hasher.salt()))
-
-    def check_password(self, password):
-        """检查密码"""
-
-        hasher = PBKDF2PasswordHasher()
-        return hasher.verify(password, self.password)
-
+    ###########################################以下弃用
     def save_and_generate_name(self):
         """保存当前实例并生成序列用户名"""
 
@@ -89,8 +79,19 @@ class AdminUser(models.Model):
                 return True
         return False
 
+    def set_password(self, password):
+        """弃用，设置密码"""
+        hasher = PBKDF2PasswordHasher()
+        self.password = hasher.encode(password, hasher.salt())
+
+    def check_password(self, password):
+        """弃用，检查密码"""
+
+        hasher = PBKDF2PasswordHasher()
+        return hasher.verify(password, self.password)
+
     def update_token(self):
-        """更新用户令牌"""
+        """弃用，更新用户令牌"""
 
         random_content = self.phone_number + timezone.now().isoformat()
         hasher = hashlib.md5()

@@ -2,6 +2,7 @@ from django import forms
 
 from admin.models import AdminUser
 from main.models import UserValidationCode
+from util.auth import generate_token
 from util.base.view import BaseView
 from util.decorator.auth import cms_auth
 from util.decorator.param import validate_args
@@ -59,12 +60,12 @@ class ChangePhone(BaseView):
                 or AdminUser.objects.filter(username=phone_number).exists():
             return self.fail(2, '手机号已被绑定')
         update_params = {
-            'phone_number': phone_number
+            'phone_number': phone_number,
+            'token': generate_token(user.password),
         }
         # 一般人的用户名和手机号都是相同的
         # 但超管的 username 是 admin
         if user.username == user.phone_number:
             update_params['username'] = phone_number
         AdminUser.objects.filter(id=user.id).update(**update_params)
-        user.update_token()
         return self.success()

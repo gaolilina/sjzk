@@ -1,6 +1,8 @@
 from django import forms
 
+from admin.models import AdminUser
 from main.models import UserValidationCode
+from util.auth import generate_token
 from util.base.view import BaseView
 from util.decorator.auth import cms_auth
 from util.decorator.param import validate_args
@@ -28,7 +30,7 @@ class ChangePassword(BaseView):
         user = request.user
         if user.phone_number and user.phone_number != phone:
             return self.fail(2, '您输入的手机号与当前用户手机号不符，请确认')
-        if not user.check_password(password):
+        if user.password != password:
             return self.fail(3, '原密码错误')
         # 发送验证码
         code = UserValidationCode.generate(phone)
@@ -55,8 +57,8 @@ class ChangePassword(BaseView):
         user = request.user
         if not UserValidationCode.verify(user.phone_number, validation_code):
             return self.fail(1, '验证码错误')
-        if not user.check_password(old_psd):
+        if user.password != old_psd:
             return self.fail(2, '原密码错误')
-        user.set_password(password)
-        user.update_token()
+        token = generate_token(user.password)
+        AdminUser.objects.filter(id=user.id).update(password=password, token=token)
         return self.success()

@@ -6,6 +6,9 @@ urlpatterns = [
     url(r'^role/', include(role)),
     url(r'^function/', include(function)),
     url(r'^permission/', include(permission)),
-    url(r'^adminuser/', include(adminuser)),
+    url(r'^manager/', include(adminuser)),
     url(r'^account/', include(account)),
+
+    # 弃用
+    url(r'^adminuser/', include(adminuser)),
 ]

@@ -2,6 +2,8 @@
 import django
 import os
 
+from django.contrib.auth.hashers import PBKDF2PasswordHasher
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ChuangYi.settings")
 
 if django.VERSION >= (1, 7):  # 自动判断版本
@@ -39,10 +41,11 @@ def init_system_params():
 def add_sys_op():
     from admin.models.admin_user import AdminUser
     user = AdminUser(username='admin')
-    user.set_password('cyhadmin')
+    hasher = PBKDF2PasswordHasher()
+    user.password = hasher.encode('cyadmin', hasher.salt())
     user.phone_number = '18301018512'
     user.role = 'z'
-    user.save_and_generate_name()
+    user.name = 'admin'
     from modellib.models.control.system_role import CMSRole
     role = CMSRole(id=CMSRole.ID_ADMIN, name='admin', enable=True, category='admin', level=0)
     role.save()

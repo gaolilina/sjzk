@@ -31,7 +31,7 @@ class Login(BaseView):
         if not qs.exists():
             return self.fail(1, '用户不存在')
         user = qs.first()
-        if not user.check_password(password):
+        if user.password != password:
             return self.fail(2, '密码错误')
         return self.success({
             'token': user.token
