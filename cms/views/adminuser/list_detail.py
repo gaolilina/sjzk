@@ -59,7 +59,7 @@ class AllAdminUserList(BaseView):
     def post(self, request, phone, role, name='', **kwargs):
         if not phone.isdigit():
             return self.fail(1, '手机号码格式不正确')
-        if AdminUser.objects.filter(phone_number=phone).exsits():
+        if AdminUser.objects.filter(phone_number=phone).exists():
             return self.fail(2, '手机号已被注册')
         # 手机号后六位
         psd = generate_psd(phone[-6:])

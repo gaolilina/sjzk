@@ -26,13 +26,7 @@ class AllFunctionList(BaseView):
         functions = qs[page * limit:(page + 1) + limit]
         result = {
             'totalCount': total_count,
-            'list': [{
-                'id': f.id,
-                'name': f.name,
-                'enable': f.enable,
-                'needVerity': f.needVerify,
-                'category': f.category
-            } for f in functions]
+            'list': [function_to_json(f) for f in functions]
         }
         return self.success(result)
 
@@ -73,13 +67,7 @@ class MyFunctionList(BaseView):
             functions = qs[page * limit:(page + 1) + limit]
         result = {
             'totalCount': total_count,
-            'list': [{
-                'id': f.id,
-                'name': f.name,
-                'enable': f.enable,
-                'needVerity': f.needVerify,
-                'category': f.category
-            } for f in functions]
+            'list': [function_to_json(f) for f in functions]
         }
         return self.success(result)
 
@@ -121,3 +109,13 @@ class FunctionDetail(BaseView):
         if len(update_param) > 0:
             CMSFunction.objects.filter(id=function.id).update(**update_param)
         return self.success()
+
+
+def function_to_json(f):
+    return {
+        'id': f.id,
+        'name': f.name,
+        'enable': f.enable,
+        'needVerity': f.needVerify,
+        'category': f.category
+    }

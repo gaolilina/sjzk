@@ -1,12 +1,13 @@
 from django import forms
 
+from cms.util.decorator.permission import cms_permission_role
+from cms.util.role import role_to_json, get_all_child_role
 from modellib.models import CMSRole
 from util.base.view import BaseView
 from util.constant.param import CONSTANT_DEFAULT_LIMIT
 from util.decorator.auth import cms_auth
 from util.decorator.param import validate_args, fetch_object
 from util.decorator.permission import cms_permission
-from cms.util.decorator.permission import cms_permission_role
 
 
 class AllRoleList(BaseView):
@@ -27,12 +28,7 @@ class AllRoleList(BaseView):
         roles = qs[page * limit:(page + 1) * limit]
         return self.success({
             'totalCount': total_count,
-            'list': [{
-                'id': r.id,
-                'name': r.name,
-                'enable': r.enable,
-                'category': r.category
-            } for r in roles]
+            'list': [role_to_json(r) for r in roles]
         })
 
     @cms_auth
@@ -60,34 +56,15 @@ class MyRoleList(BaseView):
     def get(self, request, page=0, limit=CONSTANT_DEFAULT_LIMIT, **kwargs):
         # 获取我的角色列表
         my_role = request.user.system_role
-        total_count = 0
-        roles = []
-        if my_role is not None:
-            qs = self.filter_my_role(my_role, **kwargs)
-            total_count = qs.count()
-            roles = qs[page * limit:(page + 1) + limit]
-        return self.success({
-            'totalCount': total_count,
-            'list': [{
-                'id': r.id,
-                'name': r.name,
-                'enable': r.enable,
-                'category': r.category
-            } for r in roles]
-        })
-
-    def filter_my_role(self, role, **kwargs):
         filter_param = {}
         if 'category' in kwargs:
             filter_param['category'] = kwargs['category']
+        roles = get_all_child_role(my_role, **filter_param)
 
-        if role.is_admin():
-            return CMSRole.objects.filter(**filter_param)
-        qs = role.child_roles.filter(**filter_param)
-        for r in qs:
-            qs.extend(r.child_roles.filter(**filter_param))
-
-        return qs
+        return self.success({
+            'totalCount': len(roles),
+            'list': [role_to_json(r) for r in roles[page * limit:(page + 1) + limit]]
+        })
 
 
 class RoleDetail(BaseView):
@@ -99,12 +76,7 @@ class RoleDetail(BaseView):
     })
     @fetch_object(CMSRole.objects, 'role')
     def get(self, request, role, **kwargs):
-        result = {
-            'name': role.name,
-            'enable': role.enable,
-            'category': role.category,
-        }
-        return self.success(result)
+        return self.success(role_to_json(role))
 
     @cms_auth
     @cms_permission('updateRoleInfo')

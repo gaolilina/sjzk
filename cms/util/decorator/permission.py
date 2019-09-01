@@ -32,7 +32,7 @@ def cms_permission_role(role_param='role'):
 
 def cms_permission_user(user_param='user'):
     '''
-    操作角色的权限
+    操作用户的权限
     只有用户角色的上级角色能操作下级角色用户
     '''
 
@@ -65,7 +65,7 @@ def cms_permission_role_function(function_param='function'):
         def inner(self, request, *args, **kwargs):
             f = kwargs[function_param]
             role = request.user.system_role
-            if not role.is_admin() and not role.functions.contains(f):
+            if not role.is_admin() and not role.functions.filter(id=f.id).exists():
                 return JsonResponse({
                     'code': 1,
                     'msg': '当前用户没有这个功能，所以不能对该功能进行操作'

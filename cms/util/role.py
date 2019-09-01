@@ -1,3 +1,6 @@
+from modellib.models import CMSRole
+
+
 def compare_role(high, low):
     '''
     角色 high 是否比 low 角色等级高
@@ -19,3 +22,26 @@ def compare_role(high, low):
             return True
         low = low.parent_role
     return False
+
+
+def get_all_child_role(role, **filter_param):
+    """获取一个角色的所有子角色，递归获取"""
+    if role is None:
+        return []
+    if role.is_admin():
+        return CMSRole.objects.exclude(parent_role__isnull=True).filter(**filter_param)
+    role_list = [role]
+    # 递归获取
+    for r in role_list:
+        role_list.extend(r.child_roles.filter(**filter_param))
+    role_list.remove(role)
+    return role_list
+
+
+def role_to_json(r):
+    return {
+        'id': r.id,
+        'name': r.name,
+        'enable': r.enable,
+        'category': r.category
+    }

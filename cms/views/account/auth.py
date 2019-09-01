@@ -14,7 +14,7 @@ class Login(BaseView):
         'method': forms.CharField(max_length=10),
         'username': forms.CharField(max_length=20, required=False),
         'phone': forms.CharField(max_length=11, min_length=11, required=False),
-        'password': forms.CharField(min_length=6, max_length=20, strip=False),
+        'password': forms.CharField(min_length=6, max_length=32, strip=False),
     })
     def get(self, request, method, password, phone=None, username=None):
         if method == Login.TYPE_USERNAME:

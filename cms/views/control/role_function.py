@@ -1,12 +1,13 @@
 from django import forms
 
+from cms.util.decorator.permission import cms_permission_role, cms_permission_role_function
+from cms.util.role import get_all_child_role
 from modellib.models import CMSRole, CMSFunction
 from util.base.view import BaseView
 from util.constant.param import CONSTANT_DEFAULT_LIMIT
 from util.decorator.auth import cms_auth
 from util.decorator.param import validate_args, fetch_object
 from util.decorator.permission import cms_permission
-from cms.util.decorator.permission import cms_permission_role, cms_permission_role_function
 
 
 class RoleFunction(BaseView):
@@ -67,5 +68,10 @@ class ManageRoleFunction(BaseView):
     @cms_permission_role()
     @cms_permission_role_function()
     def delete(self, request, role, function, **kwargs):
+        children = get_all_child_role(role)
+        # 先移除子角色的功能
+        for r in children:
+            r.functions.remove(function)
+        # 在移除自己的功能
         role.functions.remove(function)
         return self.success()
