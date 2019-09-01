@@ -5,6 +5,10 @@ def compare_role(high, low):
     :param low:
     :return:
     '''
+    if high is None:
+        return False
+    if low is None:
+        return True
     # 向上递归找，被操作角色是不是操作者角色的子孙
     while low is not None:
         # 先判断级别，限制同级或越级修改（也包括超管的权限不允许被修改
