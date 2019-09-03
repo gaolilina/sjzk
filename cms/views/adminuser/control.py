@@ -14,7 +14,7 @@ class ResetPassword(BaseView):
     @fetch_object(AdminUser.objects, 'user')
     @cms_permission_user()
     def post(self, request, user, **kwargs):
-        psd = user.phone_numer[-6:] if user.phone_numer else '123456'
+        psd = user.phone_number[-6:] if user.phone_number else '123456'
         psd = generate_psd(psd)
         token = generate_token(psd)
         AdminUser.objects.filter(id=user.id).update(password=psd, token=token)

@@ -8,8 +8,9 @@ class Function(models.Model):
     id = models.CharField(max_length=100, null=False, primary_key=True)
     name = models.CharField(max_length=100, null=False)
     enable = models.NullBooleanField(default=True)
-    needVerify = models.NullBooleanField(default=True)
     category = models.CharField(max_length=100, default='')
+    # 是否需要验证，默认 TRUE，不需要验证的表示所有人都能访问，没有权限限制
+    needVerify = models.NullBooleanField(default=True)
 
 
 class CMSFunction(Function):

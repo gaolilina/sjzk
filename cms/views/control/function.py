@@ -103,7 +103,7 @@ class FunctionDetail(BaseView):
     @fetch_object(CMSFunction.objects, 'function')
     @cms_permission_role_function()
     def post(self, request, function, **kwargs):
-        param_list = []
+        param_list = ['name', 'category', 'enable', 'needVerify']
         update_param = {}
         for p in param_list:
             if p in kwargs:
