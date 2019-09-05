@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
-from admin.utils.decorators import require_role
 from main.models import Activity
 from util.base.view import BaseView
 from util.decorator.auth import cms_auth
 from util.decorator.param import fetch_object, validate_args
+from util.decorator.permission import admin_permission
 
 
 class ActivityCheck(BaseView):
 
     @cms_auth
-    @require_role('xyz')
+    @admin_permission('check_activity')
     @validate_args({
         'activity_id': forms.IntegerField(),
         'result': forms.BooleanField(),

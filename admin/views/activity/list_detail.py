@@ -5,15 +5,16 @@ from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
-from admin.utils.decorators import require_role, fetch_record
+from admin.utils.decorators import fetch_record
 from main.models import Activity, ActivityStage
 from util.decorator.auth import admin_auth
 from util.decorator.param import old_validate_args
+from util.decorator.permission import admin_permission
 
 
 class ActivityView(View):
     @admin_auth
-    @require_role('yz')
+    @admin_permission('activity_detail')
     @fetch_record(Activity.objects, 'activity', 'id')
     def get(self, request, activity):
         template = loader.get_template("activity/activity.html")
@@ -22,7 +23,7 @@ class ActivityView(View):
         return HttpResponse(template.render(context))
 
     @admin_auth
-    @require_role('xyz')
+    @admin_permission('modify_activity')
     @old_validate_args({
         'name': forms.CharField(max_length=50, required=False),
         'tags': forms.CharField(max_length=50, required=False),
@@ -82,7 +83,7 @@ class ActivityView(View):
 
 class ActivityList(View):
     @admin_auth
-    @require_role('yz')
+    @admin_permission('activity_list')
     @old_validate_args({
         'page': forms.IntegerField(required=False, min_value=0),
     })
