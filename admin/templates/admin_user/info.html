@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<form role="form" action="{% url 'admin:admin_users:info' %}" method="post">
+<table>
+    <tr>
+        <td rowspan="5">{% ifequal u.icon '' %}<img src="{% static 'img/user.png' %}" />{% else %}<img src="{{ u.icon }}" />{% endifequal %}</td>
+        <td>昵称：</td>
+        <td><input class="" name="name" type="text" value="{{ u.name }}" maxlength="15"/></td>
+    </tr>
+    <tr>
+        <td>性别：</td>
+        <td><input name="gender" type="radio" value="男" {% ifequal u.gender '男' %}checked="checked" {% endifequal %}/>男 <input name="gender" type="radio" value="女" {% ifequal u.gender '女' %}checked="checked" {% endifequal %}/>女</td>
+    </tr>
+    <tr>
+        <td>电子邮箱：</td>
+        <td><input name="email" type="email" value="{{ u.email }}"/></td>
+    </tr>
+    <tr>
+        <td>QQ：</td>
+        <td><input name="qq" type="text" value="{{ u.qq }}"/></td>
+    </tr>
+    <tr>
+        <td>微信：</td>
+        <td><input name="wechat" type="text" value="{{ u.wechat }}"/></td>
+    </tr>
+    <tr>
+        <td colspan="2">{{ msg }}</td>
+        <td>
+            <div class="buttons">
+                <input type="submit" value="保存" />
+                <input type="reset" value="取消" />
+            </div>
+        </td>
+    </tr>
+</table>
+
+</form>
+
+<form id="f2" role="form" action="{% url 'admin:admin_users:icon' %}" method="post" style="display:none;">
+<input type="file" onchange="javascript:upload()" />
+</form>
+
+<script>
+document.querySelector('form img').onclick = function() {
+    document.querySelector('#f2 input[type=file]').click();
+}
+function upload() {
+    document.querySelector('#f2').submit();
+}
+</script>
+{% endblock %}
+
+{% block topbar %}{% include 'topbar.html' with tb=1 %}{% endblock %}
+{% block leftbar %}{% include 'leftbar.html' with tb=1 lb=2 %}{% endblock %}
+{% block rightbar %}{% include 'rightbar.html' with tb=1 lb=2 rb=1 %}{% endblock %}
+
+{% block css %}
+<style>
+    input[type=text], input[type=email], textarea {
+        display: block;
+        width: 100%;
+    }
+
+    .buttons {
+        float: right;
+    }
+
+    input[type=text], input[type=email] {
+        width: 250px;
+    }
+
+    @media (max-width: 361px) {
+        form img {
+            width: 80px;
+            height: 80px;
+        }
+        input[type=text], input[type=email], input[type=datetime], input[type=date], input[type=number], textarea {
+            width: 145px;
+        }
+    }
+</style>
+{% endblock %}
