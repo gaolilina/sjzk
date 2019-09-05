@@ -1,6 +1,7 @@
 {% if tb == 1 %}
 <ul>
     <li{% if lb == 1 %} class="active"{% endif %}><a class="dir_warn" data-warn-text="是否注销？" href="{% url 'admin:login' %}">登录注销</a></li>
+    <li{% if lb == 2 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:info' %}">个人信息</a></li>
     <!--{% if user != None %}
         <li{% if lb == 4 %} class="active"{% endif %}><a href="{% url 'admin:register' %}">注册</a></li>
     {% endif %}-->

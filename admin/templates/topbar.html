@@ -1,6 +1,6 @@
 <ul>
     {% if user != None %}
-        <li{% if tb == 1 %} class="active"{% endif %}><a href="{% url 'admin:register' %}">登录注册</a></li>
+        <li{% if tb == 1 %} class="active"{% endif %}><a href="{% url 'admin:admin_users:info' %}">个人信息</a></li>
         
         <li{% if tb == 'admin_competition' %} class="active"{% endif %}><a href="{% url 'admin:admin_competition:list' %}">竞赛</a></li>
         
@@ -15,11 +15,13 @@
         <li{% if tb == 'forum_admin' %} class="active"{% endif %}><a href="{% url 'admin:forum:forum_board_list' %}">论坛管理</a></li>
         <!--<li{% if tb == 'power' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">权限管理</a></li>-->
         
-        <!--<li{% if tb == 'admin_user_admin' %} class="active"{% endif %}><a href="{% url 'admin:admin_user:admin_user_list' %}">后台用户管理</a></li>-->
+        <li{% if tb == 'admin_user_admin' %} class="active"{% endif %}><a href="{% url 'admin:admin_user:admin_user_list' %}">后台用户管理</a></li>
         <li{% if tb == 'op_log' %} class="active"{% endif %}><a href="{% url 'admin:op_log' %}">操作日志</a></li>
         
         
         <li{% if tb == 'net_police' %} class="active"{% endif %}><a href="{% url 'admin:security_log:list' %}">网警查询</a></li>
+
+        <li><a href="http://pre.cms.chuangyh.com/login">新管理端</a></li>
         
     {% endif %}
 </ul>
