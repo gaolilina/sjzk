@@ -13,6 +13,7 @@ from util.decorator.permission import cms_permission
 class RoleFunction(BaseView):
 
     @cms_auth
+    @cms_permission('getRoleFunctions')
     @validate_args({
         'role_id': forms.IntegerField(),
         'page': forms.IntegerField(required=False),
