@@ -29,7 +29,7 @@ class Detail(View):
             time_created: 创建时间
         """
 
-        owner = activity.owner.first()
+        owner = activity.owner_user
         return JsonResponse({
             'id': activity.id,
             'name': activity.name,
@@ -47,9 +47,9 @@ class Detail(View):
             'unit': activity.unit,
             'user_type': activity.user_type,
             'time_created': activity.time_created,
-            'owner': owner.user.name if owner is not None else "",
-            'owner_id': owner.user.id if owner is not None else -1,
-            'owner_user': activity.owner_user.id if activity.owner_user is not None else -1,
+            'owner': owner.name if owner is not None else "",
+            'owner_id': owner.id if owner is not None else -1,
+            'owner_user': -1,
             'expense': activity.expense,
             'experts': [{
                 'name': ex.name,

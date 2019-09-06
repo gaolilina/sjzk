@@ -6,6 +6,6 @@ from web.urls import paper, activity, field
 
 urlpatterns = [
     url(r'^paper/', include(paper.urls)),
-    url(r'^activity/', include(activity.urls)),
+    url(r'^activity/', include(activity)),
     url(r'^field/', include(field.urls)),
 ]

@@ -3,9 +3,10 @@
 
 from django.conf.urls import url
 
-from web.views.activity import AdminActivityAdd, ActivityAnalysis
+from web.views.activity import AdminActivityAdd, ActivityAnalysis, ActivityModify
 
-urls = [
+urlpatterns = [
     url(r'^$', AdminActivityAdd.as_view()),
     url(r'^(?P<activity_id>\d+)/analysis/$', ActivityAnalysis.as_view()),
+    url(r'^(?P<activity_id>\d+)/$', ActivityModify.as_view()),
 ]
