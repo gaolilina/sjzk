@@ -3,7 +3,7 @@ from django.conf.urls import url
 from main.views.account.auth import IdentityVerificationView
 from main.views.account.phone import BindPhoneNumber
 from main.views.achievement import AchievementList
-from main.views.activity.user_activity import ActivityList
+from main.views.activity.user_activity import MyJoinedActivityList
 from main.views.competition import CompetitionList
 from main.views.follow.user import UserFollowerList
 from main.views.friend import FriendAction, MyFriendList
@@ -48,7 +48,7 @@ urls = [
     url(r'^teams/$', RelatedTeamList.as_view()),
     url(r'^teams/owned/$', OwnedTeamList.as_view()),
     # 活动
-    url(r'^activity/$', ActivityList.as_view()),
+    url(r'^activity/$', MyJoinedActivityList.as_view()),
     # 竞赛
     url(r'^competition/$', CompetitionList.as_view()),
     url(r'^achievements/$', AchievementList.as_view()),

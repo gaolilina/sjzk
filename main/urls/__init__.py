@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^teams/', include(team.urls)),
     url(r'^teams/', include(need.urls)),
     url(r'^teams/', include(task.urls)),
-    url(r'^activity/', include(activity.urls, namespace='activity')),
+    url(r'^activity/', include(activity)),
     url(r'^competition/', include(competition.urls, namespace='competition')),
     url(r'^system/', include(system.urls, namespace='system')),
 
