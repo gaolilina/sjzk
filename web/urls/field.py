@@ -3,9 +3,8 @@
 
 from django.conf.urls import url
 
-from web.views.field import FieldList, FieldDelete
+from web.views.field import FieldList
 
 urls = [
     url(r'^$', FieldList.as_view()),
-    url(r'^(?P<field_id>\d+)/$', FieldDelete.as_view()),
 ]
