@@ -1,7 +1,7 @@
 /*
 领域
  */
-function get_field(select_id,field=null,init=true){
+function get_field(select_id,field=null,init=false){
   $.get(base_url+'field/')
   .then(function(data){
     let inner_html = '';
