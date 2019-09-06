@@ -64,7 +64,7 @@ class ActivityModify(BaseView):
         'activity_id': forms.IntegerField(),
     })
     @fetch_object(Activity.objects, 'activity')
-    def post(self, request, activity, **kwargs):
+    def get(self, request, activity, **kwargs):
         owner = activity.owner_user
         return self.success({
             'id': activity.id,
