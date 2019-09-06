@@ -69,6 +69,8 @@ class ActivityModify(BaseView):
         return self.success({
             'id': activity.id,
             'name': activity.name,
+            'type': activity.type,
+            'tags': activity.tags,
             'liker_count': activity.likers.count(),
             'content': activity.content,
             'time_started': activity.time_started,
@@ -142,7 +144,7 @@ class ActivityModify(BaseView):
         activity.save()
 
         if stages:
-            activity.stages.clear()
+            ActivityStage.objects.filter(activity=activity).delete()
             for st in stages:
                 activity.stages.create(status=int(st['status']), time_started=st['time_started'],
                                        time_ended=st['time_ended'])
