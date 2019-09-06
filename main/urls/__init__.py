@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 
 from main.urls import search, paper
 from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth, \
-    friend, need, task, like_old, like, follow, favor, action, feedback, report, experience
+    friend, need, task, like_old, like, follow, favor, action, feedback, report, experience, word
 
 urlpatterns = [
     url(r'^users/', include(user.urls, namespace='user')),
@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^friend/', include(friend.urls, namespace='friend')),
     url(r'^search/', include(search.urlpatterns, namespace='search')),
     url(r'^paper/', include(paper.urls, namespace='paper')),
+    url(r'^word/', include(word)),
 
     ###############################弃用
     url(r'^users/current/', include(current_user.urls, namespace='current_user')),
