@@ -20,9 +20,10 @@ class SearchUser(View):
         'is_expert': forms.BooleanField(required=False),
         'name': forms.CharField(max_length=20, required=False),
         'tag': forms.CharField(max_length=20, required=False),
+        'role': forms.CharField(max_length=20, required=False),
     })
     def get(self, request, offset=0, limit=10, order=1, province=None, field=None, is_expert=False, name=None,
-            tag=None):
+            role=None, tag=None):
         """获取用户列表
 
         :param offset: 偏移量
@@ -61,6 +62,9 @@ class SearchUser(View):
             'role': '专家'
         }
         if is_expert:
+            qs = User.enabled.filter(**condition).filter(**condition_expert)
+        elif role:
+            condition_expert['role'] = role
             qs = User.enabled.filter(**condition).filter(**condition_expert)
         else:
             qs = User.enabled.filter(**condition).exclude(**condition_expert)
