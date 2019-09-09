@@ -1,4 +1,0 @@
-﻿{{ model.name }} 报名信息
-用户,报名时间,联系方式,省 市 区
-{% for user in model.user_participators.all %}{{ user.user.username }},{{ user.time_created }},{{ user.user.phone_number }},{{ user.user.province }} {{ user.user.city }} {{ user.user.county }}
-{% endfor %}

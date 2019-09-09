@@ -93,7 +93,7 @@
     {% if lb == 'activity' %}
         <ul>
             <li{% if rb == 'activity' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动信息</a></li>
-            <li{% if rb == 'activity_comment' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_comment_list' %}">活动评论</a></li>
+{#            <li{% if rb == 'activity_comment' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_comment_list' %}">活动评论</a></li>#}
         </ul>
     {% endif %}
     {% if lb == 'competition' %}

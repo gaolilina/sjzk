@@ -4,7 +4,6 @@
 from django.conf.urls import url
 
 from admin.views.activity.check import ActivityCheck
-from admin.views.activity import *
 from admin.views.activity.list_detail import ActivityView, ActivityList
 
 urls = [
@@ -13,12 +12,4 @@ urls = [
     # 老接口
     url(r'^activity/list/(?P<id>\w+)?$', ActivityList.as_view(), name='activity_list'),
     url(r'^activity/(?P<id>\w+)$', ActivityView.as_view(), name='activity'),
-    url(r'^activity_comment/list/(?P<id>\w+)?$', ActivityCommentList.as_view(), name='activity_comment_list'),
-    url(r'^activity_comment/(?P<id>\w+)$', ActivityCommentView.as_view(), name='activity_comment'),
-    url(r'^activity_liker/list/(?P<id>\w+)?$', ActivityLikerList.as_view(), name='activity_liker_list'),
-    url(r'^activity_liker/(?P<id>\w+)$', ActivityLikerView.as_view(), name='activity_liker'),
-    url(r'^activity_stage/list/(?P<id>\w+)?$', ActivityStageList.as_view(), name='activity_stage_list'),
-    url(r'^activity_stage/(?P<id>\w+)$', ActivityStageView.as_view(), name='activity_stage'),
-    url(r'^activity_user_participator/list/(?P<id>\w+)?$', ActivityUserParticipatorList.as_view(), name='activity_user_participator_list'),
-    url(r'^activity_user_participator/(?P<id>\w+)$', ActivityUserParticipatorView.as_view(), name='activity_user_participator'),
 ]
