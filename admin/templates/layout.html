@@ -5,26 +5,26 @@
 <head>
     <title>{% block title %}创易汇{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/global.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/DateTimePicker.min.css' %}" />
-    <link rel="stylesheet" href="{% static 'lib/Hui-iconfont/1.0.8/iconfont.css' %}">
-    <link rel="stylesheet" href="{% static 'css/jquery-confirm-3.0.3.min.css' %}">
+    <link rel="stylesheet" href="http://static.chuangyh.com/css/style.css" />
+    <link rel="stylesheet" href="http://static.chuangyh.com/css/global.css" />
+    <link rel="stylesheet" href="http://static.chuangyh.com/css/DateTimePicker.min.css" />
+    <link rel="stylesheet" href="http://static.chuangyh.com/lib/Hui-iconfont/1.0.8/iconfont.css">
+    <link rel="stylesheet" href="http://static.chuangyh.com/css/jquery-confirm-3.0.3.min.css">
     {% block css %}{% endblock %}
-    <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
-    <script src="{% static 'js/base.js' %}"></script>
-    <script src="{% static 'js/DateTimePicker.min.js' %}"></script>
-    <script src="{% static 'js/DatetimePicker-i18n-zh-CN.js' %}"></script>
-    <script src="{% static 'js/jquery-confirm-3.0.3.min.js' %}"></script>
+    <script src="http://static.chuangyh.com/js/jquery-3.1.1.min.js"></script>
+    <script src="http://static.chuangyh.com/js/base.js"></script>
+    <script src="http://static.chuangyh.com/js/DateTimePicker.min.js"></script>
+    <script src="http://static.chuangyh.com/js/DatetimePicker-i18n-zh-CN.js"></script>
+    <script src="http://static.chuangyh.com/js/jquery-confirm-3.0.3.min.js"></script>
     <script>
         if (navigator.userAgent.indexOf('Mobile') >= 0) {
             var link = document.createElement('link');
-            link.setAttribute('href', '{% static 'css/mobile.css' %}');
+            link.setAttribute('href', 'http://static.chuangyh.com/css/mobile.css');
             link.setAttribute('rel', 'stylesheet');
             document.head.appendChild(link);
             
             var script = document.createElement('script');
-            script.setAttribute('src', '{% static 'js/mobile.js' %}');
+            script.setAttribute('src', 'http://static.chuangyh.com/js/mobile.js');
             document.head.appendChild(script);
         }
     </script>
@@ -32,7 +32,7 @@
 
 <body>
     <div class="top">
-        <img src="{% static 'img/logo.png' %}" />
+        <img src="http://static.chuangyh.com/img/logo.png" />
         <div class="topbar">{% block topbar %}{% include 'topbar.html' %}{% endblock %}</div>
         <div class="mobile">后台管理</div>
     </div>
