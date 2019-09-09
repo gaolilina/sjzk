@@ -24,7 +24,7 @@ class AllFunctionList(BaseView):
             filter_param['category'] = category
         qs = CMSFunction.objects.filter(**filter_param)
         total_count = qs.count()
-        functions = qs[page * limit:(page + 1) + limit]
+        functions = qs[page * limit:(page + 1) * limit]
         result = {
             'totalCount': total_count,
             'list': [function_to_json(f) for f in functions]
@@ -65,7 +65,7 @@ class MyFunctionList(BaseView):
                 filter_param['category'] = category
             qs = (CMSFunction.objects if my_role.is_admin() else my_role.functions).filter(**filter_param)
             total_count = qs.count()
-            functions = qs[page * limit:(page + 1) + limit]
+            functions = qs[page * limit:(page + 1) * limit]
         result = {
             'totalCount': total_count,
             'list': [function_to_json(f) for f in functions]

@@ -22,7 +22,7 @@ class UserInfo(BaseView):
     @cms_auth
     @validate_args({
         'name': forms.CharField(max_length=100, required=False),
-        'gender': forms.IntegerField(required=False)
+        'gender': forms.CharField(max_length=1, required=False),
     })
     def post(self, request, **kwargs):
         update_param_list = ['name', 'gender']
