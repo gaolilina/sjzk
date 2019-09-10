@@ -63,7 +63,7 @@ class MyCreatedActivityList(View):
             'owner_user': request.user,
         }
         if state is not None:
-            filter_param[state] = state
+            filter_param['state'] = state
         qs = Activity.objects.filter(**filter_param).order_by(self.ORDERS[order])
         c = qs.count()
         l = [activity_to_json(a) for a in qs[offset: offset + limit]]
