@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 
 from main.urls import search, paper
 from . import user, current_user, team, forum, activity, competition, system, lab, topic, vote, achievement, auth, \
-    friend, need, task, like_old, like, follow, favor, action, feedback, report, experience, word, comment
+    friend, need, task, like_old, like, follow, favor, action, feedback, report, experience, word, comment, invite
 
 urlpatterns = [
     url(r'^users/', include(user.urls, namespace='user')),
@@ -23,6 +23,8 @@ urlpatterns = [
     url(r'^activity/', include(activity)),
     url(r'^competition/', include(competition.urls, namespace='competition')),
     url(r'^system/', include(system.urls, namespace='system')),
+    # 邀请
+    url(r'^invite/', include(invite)),
 
     url(r'^auth/', include(auth.urls, namespace='auth')),
     url(r'^friend/', include(friend.urls, namespace='friend')),

@@ -13,8 +13,6 @@ from main.views.lab import LabActionCommentList, FollowedLabActionList, Followed
 from main.views.like.user import UserLikerList
 from main.views.me.experience import ExperienceList
 from main.views.me.info import Username, Password, Icon, Getui, Profile
-from main.views.me.invite import InvitationCode, Inviter
-from main.views.me.invite_team import InvitationList, Invitation
 from main.views.me.score import UserScoreRecord
 from main.views.me.visit import UserVisitorList
 from main.views.search.action import SearchLabAction
@@ -34,12 +32,6 @@ urls = [
     # 积分明细
     url(r'^score_records/$', UserScoreRecord.as_view()),
 
-    # 团队邀请
-    url(r'^invitations/$', InvitationList.as_view()),
-    url(r'^invitations/(?P<invitation_id>[0-9]+)/$', Invitation.as_view()),
-    # 邀请码
-    url(r'^invitation_code/$', InvitationCode.as_view()),
-    url(r'^inviter/$', Inviter.as_view()),
     # 绑定手机号
     url(r'^bind_phone_number/$', BindPhoneNumber.as_view()),
 
