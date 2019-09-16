@@ -3,7 +3,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
-from main.models import action
+from main.models import action, TeamInvitation
 from main.utils import abort, get_score_stage
 from main.utils.decorators import require_verification_token
 from util.decorator.auth import app_auth
@@ -29,7 +29,6 @@ class InvitationList(View):
                 description: 附带消息
                 time_created: 邀请发出的时间
         """
-        from ..models import TeamInvitation
         # 拉取来自团队的邀请信息
         c = TeamInvitation.objects.filter(user=request.user).count()
         qs = TeamInvitation.objects.filter(
@@ -45,7 +44,6 @@ class InvitationList(View):
 
 
 class Invitation(View):
-    from main.models import TeamInvitation
 
     @fetch_object(TeamInvitation.objects, 'invitation')
     @require_verification_token
