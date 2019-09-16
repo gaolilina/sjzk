@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from main.views.account import Account, AccountCheck
 from main.views.account.auth import *
+from main.views.account.find_id import FindUserId
 
 urls = [
     # 检查账户是否存在
@@ -16,4 +17,6 @@ urls = [
     # 资格认证
     url(r'^qualification/$', OtherIdentityVerificationView.as_view()),
     url(r'^qualification/pic/$', OtherCardView.as_view()),
+    # 查询用户ID
+    url(r'^id/$', FindUserId.as_view()),
 ]
