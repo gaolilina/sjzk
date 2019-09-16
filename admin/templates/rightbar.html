@@ -76,15 +76,15 @@
     {% if lb == 'user' %}
         <ul>
             <li{% if rb == 'user' %} class="active"{% endif %}><a href="{% url 'admin:user:user_list' %}">用户信息</a></li>
-            <li{% if rb == 'user_comment' %} class="active"{% endif %}><a href="{% url 'admin:user:user_comment_list' %}">用户评论</a></li>
-            <li{% if rb == 'user_action_comment' %} class="active"{% endif %}><a href="{% url 'admin:user:user_action_comment_list' %}">用户动态评论</a></li>
+            <!--<li{% if rb == 'user_comment' %} class="active"{% endif %}><a href="{% url 'admin:user:user_comment_list' %}">用户评论</a></li>
+            <li{% if rb == 'user_action_comment' %} class="active"{% endif %}><a href="{% url 'admin:user:user_action_comment_list' %}">用户动态评论</a></li>-->
         </ul>
     {% endif %}
     {% if lb == 'team' %}
         <ul>
             <li{% if rb == 'team' %} class="active"{% endif %}><a href="{% url 'admin:team:team_list' %}">团队信息</a></li>
-            <li{% if rb == 'team_comment' %} class="active"{% endif %}><a href="{% url 'admin:team:team_comment_list' %}">团队评论</a></li>
-            <li{% if rb == 'team_action_comment' %} class="active"{% endif %}><a href="{% url 'admin:team:team_action_comment_list' %}">团队动态评论</a></li>
+            <!--<li{% if rb == 'team_comment' %} class="active"{% endif %}><a href="{% url 'admin:team:team_comment_list' %}">团队评论</a></li>
+            <li{% if rb == 'team_action_comment' %} class="active"{% endif %}><a href="{% url 'admin:team:team_action_comment_list' %}">团队动态评论</a></li>-->
         </ul>
     {% endif %}
 {% endif %}
@@ -93,9 +93,10 @@
     {% if lb == 'activity' %}
         <ul>
             <li{% if rb == 'activity' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_list' %}">活动信息</a></li>
-{#            <li{% if rb == 'activity_comment' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_comment_list' %}">活动评论</a></li>#}
+            <!--<li{% if rb == 'activity_comment' %} class="active"{% endif %}><a href="{% url 'admin:activity:activity_comment_list' %}">活动评论</a></li>-->
         </ul>
     {% endif %}
+    <!--
     {% if lb == 'competition' %}
         <ul>
             <li{% if rb == 'competition' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_list' %}">竞赛信息</a></li>
@@ -103,6 +104,7 @@
             <li{% if rb == 'competition_comment' %} class="active"{% endif %}><a href="{% url 'admin:competition:competition_comment_list' %}">竞赛评论</a></li>
         </ul>
     {% endif %}
+    -->
     {% if lb == 'paper' %}
         <ul>
             <li{% if rb == 'list' %} class="active"{% endif %}><a href="{% url 'admin:paper:list' %}">查看</a></li>
