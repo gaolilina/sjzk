@@ -11,11 +11,9 @@
             <tr>
                 <td style="min-width: 200px;">{{ item.competition.name }}</td>
                 <td>
-                    <a href="{% url 'admin:admin_competition:view' item.competition.id %}">
-                        <i class="icon Hui-iconfont">&#xe725;</i>查看</a>
+                    <a href="{% url 'admin:admin_competition:view' item.competition.id %}">查看</a>
                     {% if user.can_a %}
-                    &nbsp;&nbsp;&nbsp;<a href="{% url 'admin:admin_competition:edit' item.competition.id %}">
-                        <i class="icon Hui-iconfont">&#xe692;</i>修改</a>
+                    &nbsp;&nbsp;&nbsp;<a href="{% url 'admin:admin_competition:edit' item.competition.id %}">修改</a>
                     {% endif %}
                 </td>
             </tr>
