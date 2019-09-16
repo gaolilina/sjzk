@@ -28,7 +28,7 @@ def __refresh_access_token():
         ServerConfig.objects.update(huanxin_token=response.json().get('access_token'))
 
 
-def register_to_huanxin(userid, psd):
+def register_to_huanxin(userid, psd, nickname):
     url = URL + 'users'
     token = ServerConfig.objects.first().huanxin_token
     header = {
@@ -39,6 +39,7 @@ def register_to_huanxin(userid, psd):
         {
             "username": userid,
             "password": psd,
+            "nickname": nickname,
         }
     ]
     response = requests.post(url, data=json.dumps(param), headers=header)

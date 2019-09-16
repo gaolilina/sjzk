@@ -93,7 +93,7 @@ class Account(View):
                 user.set_password(password)
                 user.generate_info(phone_number)
                 user.save()
-                code, desc = register_to_huanxin(phone_number, password)
+                code, desc = register_to_huanxin(phone_number, password, user.name)
                 if code != 200:
                     raise RuntimeError(desc)
                 if invitation_code:
