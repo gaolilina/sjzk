@@ -17,13 +17,6 @@
     <li class="active"><a href="{% url 'admin:admin_activity:list' %}">活动管理</a></li>
 </ul>
 {% endif %}
-<!--{% if tb == 'power' %}
-<ul>
-    <li{% if lb == 'system' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">系统权限</a></li>
-    <li{% if lb == 'role' %} class="active"{% endif %}><a href="{% url 'admin:system' %}">角色权限</a></li>
-    <li{% if lb == 'notification' %} class="active"{% endif %}><a href="{% url 'admin:notification' %}">系统通知</a></li>
-</ul>
-{% endif %}-->
 {% if tb == 'feedback' %}
 <ul>
     <li{% if lb == 'feedback' %} class="active"{% endif %}><a href="{% url 'admin:feedback:feedback' %}">用户反馈</a></li>
