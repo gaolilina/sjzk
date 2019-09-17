@@ -13,11 +13,9 @@ urlpatterns = [
     url(r'^login', Login.as_view(), name='login'),
     url(r'^register', Register.as_view(), name='register'),
     url(r'^admin_users/', include(admin_users.urls, namespace="admin_users")),
-    url(r'^admin_competition/', include(admin_competition.urls, namespace="admin_competition")),
     url(r'^feedback/', include(feedback.urls, namespace="feedback")),
     url(r'^user_admin/', include(user.urls, namespace="user")),
     url(r'^team_admin/', include(team.urls, namespace="team")),
-    url(r'^competition_admin/', include(competition.urls, namespace="competition")),
     url(r'^forum_admin/', include(forum.urls, namespace="forum")),
     url(r'^system_admin/', Setting.as_view(), name='system'),
     url(r'^system_notification/', Notification.as_view(), name='notification'),
@@ -25,6 +23,9 @@ urlpatterns = [
     url(r'^op_log/', OpLog.as_view(), name='op_log'),
     url(r'^paper/', include(paper.urls, namespace='paper')),
     url(r'^security_log/', include(security.urls, namespace='security_log')),
+
+    url(r'^competition_admin/', include(competition, namespace="competition")),
+    url(r'^admin_competition/', include(admin_competition.urls, namespace="admin_competition")),
 
     # 活动，以后仅在 activity 这个 url，另外两个不在维护
     url(r'^admin_activity/', include(client.urls, namespace="admin_activity")),
