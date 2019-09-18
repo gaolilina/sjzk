@@ -6,3 +6,4 @@ from .independency import *
 from .log import *
 from .paper import *
 from .recommend import *
+from .lottery import *
