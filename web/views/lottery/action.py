@@ -21,8 +21,8 @@ class JoinLottery(BaseView):
             return self.fail(1, '已结束')
         # 已签到，无需再次签到
         user = request.user
-        if not Lottery.objects.filter(user=user, lottery=lottery).exists():
-            Lottery.objects.create(user=user, lottery=lottery)
+        if not LotteryParticipant.objects.filter(user=user, lottery=lottery).exists():
+            LotteryParticipant.objects.create(user=user, lottery=lottery)
         return self.success({
             'name': user.name,
             'id': user.id,
@@ -40,7 +40,7 @@ class LotteryAction(BaseView):
     def get(self, request, lottery, **kwargs):
         if lottery.user != request.user:
             return self.fail(1, '无权查看')
-        victories = lottery.users.filter(is_victor=True)
+        victories = lottery.users.filter(is_victory=True)
         return self.success({
             'list': [{
                 'is_handled': v.is_handled,
@@ -62,7 +62,7 @@ class LotteryAction(BaseView):
             return self.fail(2, '抽奖已结束')
         if lottery.user != request.user:
             return self.fail(3, '无权操作')
-        qs = lottery.users.filter(is_victor=False)
+        qs = lottery.users.filter(is_victory=False)
         all_count = qs.count()
         if count > all_count:
             return self.fail(1, '中奖数量大于参与人数')

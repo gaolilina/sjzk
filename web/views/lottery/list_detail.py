@@ -67,6 +67,7 @@ class LotteryInfo(BaseView):
 
 def lottery_to_json(lottery):
     return {
+        'id': lottery.id,
         'name': lottery.name,
         'finished': lottery.finished,
         'count_participant': lottery.users.all().count(),
