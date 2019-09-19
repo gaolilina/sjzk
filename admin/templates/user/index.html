@@ -13,11 +13,11 @@
     <option value="1" {% ifequal is_verified 1 %}checked="checked"{% endifequal %}>待审核</option>
     <option value="2" {% ifequal is_verified 2 %}checked="checked"{% endifequal %}>身份证审核通过</option>
     <option value="3" {% ifequal is_verified 3 %}checked="checked"{% endifequal %}>未通过</option>
-    <option value="4" {% ifequal is_verified 3 %}checked="checked"{% endifequal %}>eid审核通过</option>
+    <option value="4" {% ifequal is_verified 4 %}checked="checked"{% endifequal %}>eid审核通过</option>
     </select><br/>
     <span></span><input type="submit" class="mt-10 mr-5" value="搜索" /><input type="reset" class="mt-10" value="取消" />
 </form>
-{% if list %}
+
 <table style="width:1200px;margin:0 auto;">
     <thead>
         <tr>
@@ -28,6 +28,7 @@
             <th>地区</th>
             <th class="min-width-100">操作</th>
         </tr>
+        {% if list %}
         {% for item in list.all %}
         <tr>
             <td>{{ item.id }}</td>
@@ -38,9 +39,14 @@
             <td><a href="{% url redir item.id %}">查看</a></td>
         </tr>
         {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="6" style="text-align:left;">没有数据</td>
+        </tr>
+        {% endif %}
     </thead>
 </table>
-{% endif %}
+
 {% endblock %}
 
 {% block topbar %}{% include 'topbar.html' with tb='user_admin' %}{% endblock %}
