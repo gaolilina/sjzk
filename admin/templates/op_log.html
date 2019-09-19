@@ -26,15 +26,9 @@
             {% endif %}
             </td>
             <td>
-                {% if item.operate_type == 1 %}
-                <i class="icon Hui-iconfont">&#xe692;</i>修改
-                {% endif %}
-                {% if item.operate_type == 2 %}
-                <i class="icon Hui-iconfont">&#xe600;</i>新增
-                {% endif %}
-                {% if item.operate_type == 3 %}
-                <i class="icon Hui-iconfont">&#xe6e2;</i>删除
-                {% endif %}
+                {% if item.operate_type == 1 %}修改{% endif %}
+                {% if item.operate_type == 2 %}新增{% endif %}
+                {% if item.operate_type == 3 %}删除{% endif %}
             </td>
             <td>{{ item.time }}</td>
         </tr>
