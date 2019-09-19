@@ -3,6 +3,7 @@ from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
+from im.huanxin import update_nickname
 from main.models import User
 from main.utils import abort, save_uploaded_image, get_score_stage
 from main.utils.dfa import check_bad_words
@@ -156,6 +157,7 @@ class Profile(BaseView):
         r = {'id': user.id,
              'time_created': user.time_created,
              'name': user.name,
+             'phone': user.phone_number,
              'icon_url': user.icon,
              'description': user.description,
              'email': user.email,
@@ -238,47 +240,49 @@ class Profile(BaseView):
         """
 
         name = kwargs.pop('name', '')
+        user = request.user
         if len(name) > 0:
             # 昵称唯一性验证
             if User.enabled.filter(name=name).exclude(
-                    id=request.user.id).count() != 0:
+                    id=user.id).count() != 0:
                 abort(403, '昵称已存在')
             # 昵称非法词验证
             if check_bad_words(name):
                 abort(403, '昵称含非法词汇')
             # 首次修改昵称增加积分
-            if (request.user.name == "创易汇用户 #" + str(request.user.id)) and \
-                    (request.user.name != name):
-                request.user.score += get_score_stage(3)
-                request.user.score_records.create(
+            if (user.name == "创易汇用户 #" + str(user.id)) and \
+                    (user.name != name):
+                user.score += get_score_stage(3)
+                user.score_records.create(
                     score=get_score_stage(3), type="初始数据",
                     description="首次更换昵称")
-            request.user.name = name
+            user.name = name
+            update_nickname(user.phone_number, name)
         normal_keys = ('description', 'qq', 'wechat', 'email', 'gender',
                        'birthday', 'province', 'city', 'county', 'adept_field',
                        'adept_skill', 'expect_role', 'follow_field',
                        'follow_skill')
         for k in normal_keys:
             if k in kwargs:
-                setattr(request.user, k, kwargs[k])
+                setattr(user, k, kwargs[k])
 
         tags = kwargs.pop('tags', None)
         if tags:
             tags = tags.split('|')[:5]
             with transaction.atomic():
-                request.user.tags.all().delete()
+                user.tags.all().delete()
                 order = 0
                 for tag in tags:
                     tag = tag.strip()
                     if tag:
-                        request.user.tags.create(name=tag, order=order)
+                        user.tags.create(name=tag, order=order)
                         order += 1
 
         role_keys = ('role', 'other_number', 'unit1', 'unit2', 'profession')
-        if not request.user.is_role_verified:
+        if not user.is_role_verified:
             for k in role_keys:
                 if k in kwargs:
-                    setattr(request.user, k, kwargs[k])
+                    setattr(user, k, kwargs[k])
 
-        request.user.save()
+        user.save()
         abort(200)

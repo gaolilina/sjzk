@@ -84,5 +84,6 @@ class SearchUser(View):
               'time_created': u.time_created,
               'role': u.role,
               'username': u.username,
+              'phone': u.phone_number,
               } for u in users]
         return JsonResponse({'count': c, 'list': l})
