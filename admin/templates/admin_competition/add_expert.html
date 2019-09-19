@@ -53,15 +53,31 @@
 <!-- <script src="http://static.chuangyh.com/ios/js/bootstrap.min.js"></script> -->
 <!-- <script src="http://static.chuangyh.com/ios/js/bootstrap-dialog.min.js"></script> -->
 <script>
-    competitionId = location.pathname.split('/')[3]
+    competitionId = location.pathname.split('/')[3];
     function setExpert(expertId) {
         // 为竞赛设定评委
-        post(base_admin_url+'admin_competition/'+competitionId+'/experts/',{
-            expert_id:expertId
-        }).then(function(params) {
-            alert('设定成功！');
-            $('#button'+expertId).prop('disabled', true);
-        }).fail(errorHandler);
+        $.ajax({
+            type: 'POST',
+            url: base_admin_url + 'admin_competition/'+competitionId+'/experts/',
+            data: {"expert_id": expertId},
+            dataType: 'json',
+            headers: {'X-USER-TOKEN': getCookie('token')},
+            error: function (err) {
+                console.log(err);
+                console.log(err.responseText);
+                showAlert('设定评委失败');
+            },
+            success: function (data) {
+                // if (data.code == 0) {
+                //     showAlert('设定成功');
+                //     $('#button'+expertId).prop('disabled', true);
+                // } else {
+                //     showAlert(data.msg);
+                // }
+                showAlert('设定成功');
+                $('#button'+expertId).prop('disabled', true);
+            }
+        });
     }
 
 </script> 
