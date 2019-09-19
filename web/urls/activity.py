@@ -3,10 +3,13 @@
 
 from django.conf.urls import url
 
-from web.views.activity import AdminActivityAdd, ActivityAnalysis, ActivityModify
+from web.views.activity.analysis import ActivityAnalysis
+from web.views.activity.create_edit import AdminActivityAdd, ActivityModify
+from web.views.activity.experts import ActivityExpert
 
 urlpatterns = [
     url(r'^$', AdminActivityAdd.as_view()),
     url(r'^(?P<activity_id>\d+)/analysis/$', ActivityAnalysis.as_view()),
     url(r'^(?P<activity_id>\d+)/$', ActivityModify.as_view()),
+    url(r'^(?P<activity_id>\d+)/expert/$', ActivityExpert.as_view()),
 ]

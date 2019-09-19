@@ -2,13 +2,11 @@ import json
 
 from django import forms
 
-from main.models import User
-from main.models.activity import *
-from main.models.activity.people import ActivityUserParticipator
+from main.models import Activity, ActivityStage
 from main.utils.decorators import require_role_token
 from util.base.view import BaseView
-from util.decorator.auth import client_auth
 from util.decorator.param import validate_args, fetch_object
+from web.views.activity import activity_owner
 
 
 class AdminActivityAdd(BaseView):
@@ -90,7 +88,7 @@ class ActivityModify(BaseView):
             'expense': activity.expense,
             'experts': [{
                 'name': ex.name,
-                'username': ex.username,
+                'phone': ex.phone_number,
                 'id': ex.id
             } for ex in activity.experts.all()],
             'stages': [{
@@ -119,16 +117,15 @@ class ActivityModify(BaseView):
         'stages': forms.CharField(required=False),
     })
     @fetch_object(Activity.objects, 'activity')
+    @activity_owner()
     def post(self, request, activity, stages=None, **kwargs):
-        if activity.owner_user != request.user:
-            return self.fail(5, '只有创建者才能修改')
         if activity.state != Activity.STATE_NO:
             return self.fail(4, '只有审核未通过的活动才能修改')
         # 活动时间的检查
         time_start = kwargs.get('time_started') or activity.time_started
         time_end = kwargs.get('time_ended') or activity.time_ended
         if time_end <= time_start:
-            return self.fail(1, '开始时间要早于结束时间')
+            return self.fail(5, '开始时间要早于结束时间')
         # 活动类型检查
         if 'type' in kwargs and kwargs['type'] not in Activity.TYPES:
             return self.fail(2, '{} 活动类型不存在'.format(kwargs['type']))
@@ -149,116 +146,3 @@ class ActivityModify(BaseView):
                 activity.stages.create(status=int(st['status']), time_started=st['time_started'],
                                        time_ended=st['time_ended'])
         return self.success()
-
-
-class ActivityAnalysis(BaseView):
-    """活动分析"""
-
-    KEY_ROLE = 'role'
-    KEY_GENDER = 'gender'
-    KEY_PROFESSION = 'profession'
-    KEY_PROVINCE = 'province'
-    KEY_UNIT = 'unit'
-
-    KEY_OTHER = '其他'
-    KEY_EMPTY = '未设置'
-
-    KEY_SCHOOL = '学校'
-    KEY_HOSPITAL = '医院'
-    KEY_COMPANY = '企业'
-
-    KEY_SCHOOLS = ['学校', '大学', '中学', '小学']
-    KEY_HOSPITALS = ['医院']
-    KEY_COMPANIES = ['公司']
-
-    @client_auth
-    @validate_args({
-        'activity_id': forms.IntegerField()
-    })
-    @fetch_object(Activity.objects, 'activity')
-    def get(self, request, activity, **kwargs):
-        if activity.owner_user != request.user:
-            return self.fail(1, '您不是活动的创办者')
-        result = self.__init_result_template()
-        users = ActivityUserParticipator.objects.filter(activity=activity)
-        for u in users:
-            self.__analysis_on_person(u.user, result)
-        result['sum'] = users.count()
-        return self.success(result)
-
-    def __analysis_on_person(self, user, result):
-        # 性别
-        result[ActivityAnalysis.KEY_GENDER][User.GENDERS[user.gender]] += 1
-        # 角色
-        if user.is_role_verified != 2 or not user.role:
-            # 未设置
-            result[ActivityAnalysis.KEY_ROLE][ActivityAnalysis.KEY_EMPTY] += 1
-        elif user.role in result[ActivityAnalysis.KEY_ROLE]:
-            result[ActivityAnalysis.KEY_ROLE][user.role] += 1
-        else:
-            # 其他角色
-            result[ActivityAnalysis.KEY_ROLE][ActivityAnalysis.KEY_OTHER] += 1
-        # 专业
-        if not user.profession:
-            result[ActivityAnalysis.KEY_PROFESSION][ActivityAnalysis.KEY_EMPTY] += 1
-        elif user.profession in result[ActivityAnalysis.KEY_PROFESSION]:
-            result[ActivityAnalysis.KEY_PROFESSION][user.profession] += 1
-        else:
-            result[ActivityAnalysis.KEY_PROFESSION][user.profession] = 1
-
-        # 地区
-        if not user.province:
-            result[ActivityAnalysis.KEY_PROVINCE][ActivityAnalysis.KEY_EMPTY] += 1
-        elif user.province in result[ActivityAnalysis.KEY_PROVINCE]:
-            result[ActivityAnalysis.KEY_PROVINCE][user.province] += 1
-        else:
-            result[ActivityAnalysis.KEY_PROVINCE][user.province] = 1
-
-        # 组织类型
-        result[ActivityAnalysis.KEY_UNIT][self.__get_unit_category(user.unit1)] += 1
-        pass
-
-    def __init_result_template(self):
-        return {
-            ActivityAnalysis.KEY_ROLE: {
-                '专家': 0,
-                '学生': 0,
-                ActivityAnalysis.KEY_OTHER: 0,
-                ActivityAnalysis.KEY_EMPTY: 0,
-            },
-            ActivityAnalysis.KEY_GENDER: {
-                '男': 0,
-                '女': 0,
-                '未知': 0,
-            },
-            ActivityAnalysis.KEY_PROFESSION: {
-                ActivityAnalysis.KEY_EMPTY: 0,
-            },
-            ActivityAnalysis.KEY_PROVINCE: {},
-            ActivityAnalysis.KEY_UNIT: {
-                ActivityAnalysis.KEY_SCHOOL: 0,
-                ActivityAnalysis.KEY_COMPANY: 0,
-                ActivityAnalysis.KEY_HOSPITAL: 0,
-                ActivityAnalysis.KEY_OTHER: 0,
-                ActivityAnalysis.KEY_EMPTY: 0,
-            },
-        }
-
-    def __get_unit_category(self, unit):
-        if not unit:
-            return ActivityAnalysis.KEY_EMPTY
-        unit = ''
-        # 判断学校
-        for k in ActivityAnalysis.KEY_SCHOOLS:
-            if k in unit:
-                return ActivityAnalysis.KEY_SCHOOL
-        # 判断企业
-        for k in ActivityAnalysis.KEY_COMPANIES:
-            if k in unit:
-                return ActivityAnalysis.KEY_COMPANY
-        # 判断医院
-        for k in ActivityAnalysis.KEY_HOSPITALS:
-            if k in unit:
-                return ActivityAnalysis.KEY_HOSPITAL
-        return ActivityAnalysis.KEY_OTHER
-        pass
