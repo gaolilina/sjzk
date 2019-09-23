@@ -18,8 +18,8 @@
     <td>{{ text }}：</td>
     <td>
       <select name="{{ name }}">
-        <option value="true" {% ifequal mod.is_recruiting True %}selected="selected"{% endifequal %}>启用</option>
-        <option value="false" {% ifequal mod.is_recruiting False %}selected="selected"{% endifequal %}>不启用</optio
+        <option value="true" {% ifequal mod.is_recruiting True %}selected="selected"{% endifequal %}>招人</option>
+        <option value="false" {% ifequal mod.is_recruiting False %}selected="selected"{% endifequal %}>不招人</optio
       </select>
     </td>
   </tr>
