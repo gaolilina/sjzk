@@ -4,7 +4,7 @@
 {% block content %}
 <form role="form" action="{% url 'admin:user:user' mod.id %}" method="post">
 <table>
-    {% include "parts/input_control.html" with text="是否启用" name="is_enabled" type="checkbox" maxlen="{{maxlen}}" value=mod.is_enabled %}
+    {% include "parts/input_control.html" with text="是否启用" name="is_enabled" type="text" maxlen="{{maxlen}}" value=mod.is_enabled %}
     {% include "parts/input_control.html" with text="昵称" name="username" type="text" maxlen="20" value=mod.username %}
     {% include "parts/input_control.html" with text="手机号" name="phone_number" type="text" maxlen="11" value=mod.phone_number %}
     {% include "parts/input_control.html" with text="名字" name="name" type="text" maxlen="15" value=mod.name %}

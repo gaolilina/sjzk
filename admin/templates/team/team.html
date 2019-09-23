@@ -14,7 +14,7 @@
     {% include "parts/input_control.html" with text="省" name="province" type="text" maxlen="20" value=mod.province %}
     {% include "parts/input_control.html" with text="市" name="city" type="text" maxlen="20" value=mod.city %}
     {% include "parts/input_control.html" with text="区县" name="county" type="text" maxlen="20" value=mod.county %}
-    {% include "parts/input_control.html" with text="是否招人" name="is_recruiting" type="checkbox" maxlen="{{maxlen}}" value=mod.is_recruiting %}
+    {% include "parts/input_control.html" with text="是否招人" name="is_recruiting" type="text" maxlen="{{maxlen}}" value=mod.is_recruiting %}
     {% include "parts/input_control.html" with text="是否启用" name="is_enabled" type="checkbox" maxlen="{{maxlen}}" value=mod.is_enabled %}
     <tr>
         <td>{{ msg }}</td>

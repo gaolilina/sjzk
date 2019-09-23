@@ -3,6 +3,26 @@
   <td>{{ text }}：</td>
   <td>{% include "parts/gender.html" %}</td>
 </tr>
+{% elif name == 'is_enabled' %}
+  <tr>
+    <td>{{ text }}：</td>
+    <td>
+      <select name="{{ name }}">
+        <option value="0" {% ifequal mod.is_enabled true %}selected="selected"{% endifequal %}>启用</option>
+        <option value="100" {% ifequal mod.is_enabled false %}selected="selected"{% endifequal %}>不启用</option>
+      </select>
+    </td>
+  </tr>
+{% elif name == 'is_recruiting' %}
+  <tr>
+    <td>{{ text }}：</td>
+    <td>
+      <select name="{{ name }}">
+        <option value="0" {% ifequal mod.is_recruiting true %}selected="selected"{% endifequal %}>启用</option>
+        <option value="100" {% ifequal mod.is_recruiting false %}selected="selected"{% endifequal %}>不启用</optio
+      </select>
+    </td>
+  </tr>
 {% elif name == 'description' %}
  <tr>
   <td>{{ text }}：</td>
