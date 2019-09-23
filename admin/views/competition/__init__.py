@@ -7,7 +7,7 @@ from django.views.generic import View
 from admin.utils.decorators import fetch_record, require_role
 from main.models import Competition, Team, User
 from main.utils import abort
-from util.decorator.auth import admin_auth
+from util.decorator.auth import admin_auth, cms_auth
 from util.decorator.param import old_validate_args, fetch_object, validate_args
 
 
@@ -95,8 +95,8 @@ class CompetitionExpertList(View):
         })
         return HttpResponse(template.render(context))
 
+    @cms_auth
     @fetch_object(Competition.enabled, 'competition')
-    @admin_auth
     @validate_args({
         'expert_id': forms.IntegerField(),
     })

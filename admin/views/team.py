@@ -169,14 +169,18 @@ class TeamView(View):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
-        'name': forms.CharField(max_length=20, ), 'icon': forms.CharField(max_length=100, required=False, ),
-        'description': forms.CharField(max_length=100, required=False, ), 'url': forms.CharField(max_length=100, ),
+        'name': forms.CharField(max_length=20, ),
+        'icon': forms.CharField(max_length=100, required=False, ),
+        'description': forms.CharField(max_length=100, required=False, ),
+        'url': forms.CharField(max_length=100, ),
         'field1': forms.CharField(max_length=10, required=False, ),
         'field2': forms.CharField(max_length=10, required=False, ),
         'province': forms.CharField(max_length=20, required=False, ),
         'city': forms.CharField(max_length=20, required=False, ),
-        'county': forms.CharField(max_length=20, required=False, ), 'is_recruiting': forms.BooleanField(required=False),
-        'is_enabled': forms.BooleanField(required=False), 'score': forms.IntegerField(required=False, ),
+        'county': forms.CharField(max_length=20, required=False, ),
+        'is_recruiting': forms.BooleanField(required=False),
+        'is_enabled': forms.BooleanField(required=False),
+        'score': forms.IntegerField(required=False, ),
         'time_created': forms.DateTimeField(required=False, ),
     })
     def post(self, request, mod, **kwargs):
