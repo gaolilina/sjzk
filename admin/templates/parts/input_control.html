@@ -3,6 +3,13 @@
   <td>{{ text }}：</td>
   <td>{% include "parts/gender.html" %}</td>
 </tr>
+{% elif name == 'icon' %}
+  <tr>
+    <td>{{ text }}：</td>
+    <td>
+      <img style="width:60px;height:60px;" class="img-header-icon" src="http://static.chuangyh.com/{{ value }}"/>
+    </td>
+  </tr>
 {% elif name == 'is_enabled' %}
   <tr>
     <td>{{ text }}：</td>
