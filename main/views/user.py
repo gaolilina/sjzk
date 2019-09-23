@@ -87,6 +87,7 @@ class Profile(View):
         r = {'id': user.id,
              'time_created': user.time_created,
              'name': user.name,
+             'phone': user.phone_number,
              'icon_url': user.icon,
              'description': user.description,
              'email': user.email,
