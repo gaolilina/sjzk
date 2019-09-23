@@ -58,7 +58,6 @@
             type: 'POST',
             url: base_admin_url + 'admin_competition/'+competitionId+'/experts/',
             data: {"expert_id": expertId},
-            dataType: 'json',
             headers: {'X-USER-TOKEN': getCookie('token')},
             error: function (err) {
                 if(err.status==200) showAlert('设定成功');
