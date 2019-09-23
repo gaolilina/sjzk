@@ -16,7 +16,7 @@
     <tr>
         <td>{{ e.name }}</td>
         {% if e in experts %}
-            <td><button class="btn btn4" disabled>设定评委</button></td>
+            <td><button class="btn btn4" disabled>已设定</button></td>
         {% else %}
             <td><button class="btn btn4" id="button{{ e.id }}" onclick="setExpert({{ e.id }})">设定评委</button></td>
         {% endif %}
@@ -50,11 +50,10 @@
 {% endblock %} 
 {% block js %}
 <script src="http://static.chuangyh.com/js/lib.js"></script>
-<!-- <script src="http://static.chuangyh.com/ios/js/bootstrap.min.js"></script> -->
-<!-- <script src="http://static.chuangyh.com/ios/js/bootstrap-dialog.min.js"></script> -->
 <script>
     competitionId = location.pathname.split('/')[3];
     function setExpert(expertId) {
+        var base_admin_url = "http://localhost:8000/admin/";
         // 为竞赛设定评委
         $.ajax({
             type: 'POST',
@@ -63,22 +62,14 @@
             dataType: 'json',
             headers: {'X-USER-TOKEN': getCookie('token')},
             error: function (err) {
-                console.log(err);
-                console.log(err.responseText);
-                showAlert('设定评委失败');
+                if(err.status==200) showAlert('设定成功');
+                else showAlert('设定评委失败');
             },
-            success: function (data) {
-                // if (data.code == 0) {
-                //     showAlert('设定成功');
-                //     $('#button'+expertId).prop('disabled', true);
-                // } else {
-                //     showAlert(data.msg);
-                // }
+            success: function (res) {
                 showAlert('设定成功');
                 $('#button'+expertId).prop('disabled', true);
             }
         });
     }
-
 </script> 
 {% endblock %}
