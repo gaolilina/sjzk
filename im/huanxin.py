@@ -61,11 +61,10 @@ def update_nickname(userid, nickname):
         **JSON_HEADER,
         'Authorization': "Bearer " + token
     }
-    param = [
-        {
+    param = {
             "nickname": nickname,
-        }
-    ]
+    }
+
     response = requests.put(url, data=json.dumps(param), headers=header)
     if response.status_code == requests.codes.ok:
         return 200, response.json().get('entities')[0]

@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 
-from cms.urls import role, function, permission, adminuser, account, word
+from cms.urls import role, function, permission, adminuser, account, word, user
 
 urlpatterns = [
     url(r'^role/', include(role)),
@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^manager/', include(adminuser)),
     url(r'^account/', include(account)),
     url(r'^word/', include(word)),
+    url(r'^user/', include(user)),
 
     # 弃用
     url(r'^adminuser/', include(adminuser)),
