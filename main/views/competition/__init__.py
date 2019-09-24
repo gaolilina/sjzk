@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views.generic import View
 
-from main.models import Competition, Team, CompetitionFile as File, CompetitionTeamParticipator
+from main.models import Competition, Team, CompetitionFile as File, CompetitionTeamParticipator, User
 from main.utils import abort, save_uploaded_file
 from main.utils.decorators import *
 from util.decorator.auth import app_auth
@@ -410,9 +410,11 @@ class TeamParticipatorList(View):
               'final': p.final} for p in qs]
         return JsonResponse({'count': c, 'list': l})
 
-    @fetch_object(Competition.enabled, 'competition')
-    @validate_args({'team_id': forms.IntegerField()})
     @require_verification_token
+    @validate_args({
+        'team_id': forms.IntegerField(),
+    })
+    @fetch_object(Competition.enabled, 'competition')
     def post(self, request, competition, team_id):
         """报名"""
 
@@ -426,28 +428,25 @@ class TeamParticipatorList(View):
             team = Team.enabled.get(id=team_id)
         except Team.DoesNotExist:
             abort(400, '团队不存在')
-        else:
-            if competition.province and competition.province != team.province:
-                abort(403, '团队所在地区不符')
-            if competition.city and (
-                    competition.city != team.city and competition.city.replace('市', '') != team.city.replace('市', '')):
-                abort(403, '团队所在地区不符')
-            for m in team.members.all():
-                if m.user.is_verified not in [2, 4]:
-                    abort(403, '团队成员未实名认证')
-                if competition.user_type != 0:
-                    if competition.user_type == 1 and m.user.role != "学生":
-                        abort(403, '团队成员角色不符')
-                    elif competition.user_type == 2 and m.user.role != "教师":
-                        abort(403, '团队成员角色不符')
-                    elif competition.user_type == 3 and \
-                            m.user.role != "在职":
-                        abort(403, '团队成员角色不符')
-                if competition.unit and competition.unit != m.user.unit1:
-                    abort(403, '团队成员学校不符')
-            if not competition.team_participators.filter(team=team).exists():
-                competition.team_participators.create(team=team)
-            abort(200)
+        if competition.province and competition.province != team.province:
+            abort(403, '团队所在地区不符')
+        if competition.city and competition.city != team.city:
+            abort(403, '团队所在地区不符')
+        for m in team.members.all():
+            if m.user.is_verified not in [2, 4]:
+                abort(403, '团队成员未实名认证')
+            if competition.user_type != 0:
+                if competition.user_type == 1 and m.user.role != "学生":
+                    abort(403, '团队成员角色不符')
+                elif competition.user_type == 2 and m.user.role != "教师":
+                    abort(403, '团队成员角色不符')
+                elif competition.user_type == 3 and m.user.role != "在职":
+                    abort(403, '团队成员角色不符')
+            if competition.unit and competition.unit != m.user.unit1:
+                abort(403, '团队成员学校不符')
+        if not competition.team_participators.filter(team=team).exists():
+            competition.team_participators.create(team=team)
+        abort(200)
 
 
 class Screen(View):

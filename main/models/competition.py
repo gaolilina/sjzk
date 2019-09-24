@@ -112,11 +112,11 @@ class CompetitionFile(models.Model):
 class CompetitionTeamParticipator(models.Model):
     """竞赛参与者（团队）"""
 
-    competition = models.ForeignKey(
-        'Competition', models.CASCADE, 'team_participators')
+    competition = models.ForeignKey('Competition', models.CASCADE, 'team_participators')
     team = models.ForeignKey('Team', models.CASCADE, 'competitions')
     rater = models.ForeignKey('User', related_name='rated_team_participators', null=True)
     score = models.IntegerField(default=-1)
+    # 表示是否终止，报名阶段均是未通过
     final = models.BooleanField(default=True)
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
