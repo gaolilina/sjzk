@@ -94,7 +94,7 @@ class MyFriendList(View):
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
     })
-    def get(self, request, offset=0, limit=10, order=1):
+    def get(self, request, offset=0, limit=10, order=1, **kwargs):
         """
         获取用户的好友列表
 
@@ -121,6 +121,7 @@ class MyFriendList(View):
         l = [{'id': r.other_user.id,
               'username': r.other_user.username,
               'name': r.other_user.real_name if r.other_user.is_verified == 2 else r.other_user.name,
+              'phone': r.other_user.phone_number,
               'icon_url': r.other_user.icon,
               'time_created': r.time_created} for r in qs]
         return JsonResponse({'count': c, 'list': l})
