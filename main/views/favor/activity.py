@@ -46,7 +46,7 @@ class FavoredActivityList(View):
         l = [{'id': a.favored.id,
               'name': a.favored.name,
               'liker_count': a.favored.likers.count(),
-              'status': a.favored.status,
+              'status': a.favored.get_current_state(),
               'time_started': a.favored.time_started,
               'time_ended': a.favored.time_ended,
               'deadline': a.favored.deadline,
