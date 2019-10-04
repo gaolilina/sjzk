@@ -157,6 +157,7 @@ class Profile(BaseView):
         r = {'id': user.id,
              'time_created': user.time_created,
              'name': user.name,
+             'real_name': user.real_name,
              'phone': user.phone_number,
              'icon_url': user.icon,
              'description': user.description,
