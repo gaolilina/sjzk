@@ -2,15 +2,13 @@
 {% load staticfiles %}
  {% block content %}
 <h3 style="text-align: center;margin-top: 30px">
-    设定评委
+    晋级
 </h3>
 <table style="margin: 30px;">
     <tr>
-        <td width="200px">团队名</td>
-        <td width="100px">得分</td>
-        <td width="100px">淘汰</td>
-        <!-- <td width="150px">评分</td>
-        <td width="100px">提交评分</td> -->
+        <th width="200px">团队名</th>
+        <th width="100px">得分</th>
+        <th width="100px">淘汰</th>
     </tr>
     {% for t in teams %}
     <tr>
@@ -27,30 +25,42 @@
 {% block leftbar %}
 {% include 'leftbar.html' with tb='admin_competition' lb=1 %}
 {% endblock %}
- {% block rightbar %}
- {% include 'rightbar.html' with tb='admin_competition' lb=1 rb='' %}
- {% endblock %} 
- {% block css %}
- {% include 'parts/input_style.html' %}
- {% include 'parts/table_style.html' %}
+{% block rightbar %}
+{% include 'rightbar.html' with tb='admin_competition' lb=1 rb='' %}
+{% endblock %} 
+{% block css %}
+{% include 'parts/input_style.html' %}
+{% include 'parts/table_style.html' %}
 <style>
     
 </style>
 {% endblock %} 
 {% block js %}
 <script src="http://static.chuangyh.com/js/lib.js"></script>
-<!-- <script src="http://static.chuangyh.com/ios/js/bootstrap.min.js"></script> -->
-<!-- <script src="http://static.chuangyh.com/ios/js/bootstrap-dialog.min.js"></script> -->
 <script>
-    competitionId = location.pathname.split('/')[3]
+    competitionId = location.pathname.split('/')[3];
+    var base_admin_url1 = 'http://localhost:8000/';
     function promoteTeam(teamId) {
         // 设定晋级团队
-        post('/admin/admin_competition/'+competitionId+'/final/',{
-            team_id:teamId
-        }).then(function(params) {
-            alert('该队伍被淘汰！');
-            $('#button'+teamId).prop('disabled', true);
-        }).fail(errorHandler);
+        // $.post(base_admin_url + 'admin/admin_competition/'+competitionId+'/final/',{
+        //     team_id:teamId
+        // }).then(function(params) {
+        //     alert('该队伍被淘汰！');
+        //     $('#button'+teamId).prop('disabled', true);
+        // }).fail(errorHandler);
+        $.ajax({
+            type: 'POST',
+            url: base_admin_url1 + 'admin/admin_competition/'+competitionId+'/final/',
+            data: {"team_id": teamId},
+            headers: {'X-USER-TOKEN': getCookie('token')},
+            error: function (err) {
+                showAlert('发生未知错误');
+            },
+            success: function (res) {
+                alert('该队伍被淘汰！');
+                $('#button'+teamId).prop('disabled', true);
+            }
+        });
     }
 
 </script> 

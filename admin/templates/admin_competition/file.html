@@ -14,12 +14,9 @@
 </h3>
 <table>
     <tr>
-        <td width="100px">团队名</td>
-        <td width="150">评委</td>
-        <td width="100px">设定评委</td>
-        <!-- <td width="50px">下载</td> -->
-        <!-- <td width="150px">评分</td>
-        <td width="100px">提交评分</td> -->
+        <th width="100px">团队名</th>
+        <th width="150">评委</th>
+        <th width="100px">设定评委</th>
     </tr>
     {% for team in teams %}
     <tr>
@@ -52,6 +49,7 @@
  {% endblock %} 
  {% block css %}
  {% include 'parts/input_style.html' %}
+ {% include 'parts/table_style.html' %}
 <style>
     table {
         border-collapse: collapse;
@@ -65,40 +63,71 @@
 {% endblock %} 
 {% block js %}
 <script src="http://static.chuangyh.com/js/lib.js"></script>
-<!-- <script src="http://static.chuangyh.com/ios/js/bootstrap.min.js"></script> -->
-<!-- <script src="http://static.chuangyh.com/ios/js/bootstrap-dialog.min.js"></script> -->
 <script>
 
     competitionId = location.pathname.split('/')[4];
     getExperts();
-
+    var base_admin_url1 = 'http://localhost:8000/';
     function getExperts(params) {
-        get('/admin/admin_competition/' + competitionId + '/experts/?api=1').then(function (data) {
-            if (data.count == 0) {
-                return;
+        // $.get(base_admin_url+'admin/admin_competition/' + competitionId + '/experts/?api=1').then(function (data) {
+        //     if (data.count == 0) {
+        //         return;
+        //     }
+        //     t = '';
+        //     data.list.map((v, i) => {
+        //         t += '<option value="' + v.id + '">' + v.name + '</option>';
+        //     });
+        //     $('select').html(t);
+        // }).fail(errorHandler);
+        $.ajax({
+            type: 'GET',
+            url: base_admin_url1 + 'admin/admin_competition/'+competitionId+'/experts/?api=1',
+            data: {},
+            headers: {'X-USER-TOKEN': getCookie('token')},
+            error: function (err) {
+                showAlert('发生未知错误');
+            },
+            success: function (res) {
+                console.log(res);
+                if (res.count == 0) {
+                    return;
+                }
+                t = '';
+                res.list.map((v, i) => {
+                    t += '<option value="' + v.id + '">' + v.name + '</option>';
+                });
+                $('select').html(t);
             }
-            t = '';
-            data.list.map((v, i) => {
-                t += '<option value="' + v.id + '">' + v.name + '</option>'
-            });
-
-            $('select').html(t);
-        }).fail(errorHandler);
+        });
     }
 
     function setExpert(teamId) {
         expertId = $('#select'+teamId).val();
         if(expertId==null || expertId==''){
-            alert('请选择评委');
+            showAlert('请选择评委');
             return;
         }
-        post('/admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/',{
-            expert_id:expertId
-        }).then(function(params) {
-            $('#button'+teamId).prop('disabled',true);
-            $('#select'+teamId).prop('disabled',true);
-            alert('设定成功');
-        }).fail(errorHandler);
+        // $.post(base_admin_url+'admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/',{
+        //     expert_id:expertId
+        // }).then(function(params) {
+        //     $('#button'+teamId).prop('disabled',true);
+        //     $('#select'+teamId).prop('disabled',true);
+        //     alert('设定成功');
+        // }).fail(errorHandler);
+        $.ajax({
+            type: 'POST',
+            url: base_admin_url1 + 'admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/',
+            data: {"expert_id": expertId},
+            headers: {'X-USER-TOKEN': getCookie('token')},
+            error: function (err) {
+                showAlert('发生未知错误');
+            },
+            success: function (res) {
+                $('#button'+teamId).prop('disabled',true);
+                $('#select'+teamId).prop('disabled',true);
+                showAlert('设定成功');
+            }
+        });
     }
 </script> 
 {% endblock %}

@@ -3,18 +3,18 @@
 {% block content %}
 <table style="width:1000px;margin:30px">
     <tr>
+        <th>ID</th>
         <th>标题</th>
         <th class="min-width-150">操作</th>
     </tr>
     {% if list %}
         {% for item in list %}
             <tr>
+                <td style="min-width: 200px;">{{ item.competition.id }}</td>
                 <td style="min-width: 200px;">{{ item.competition.name }}</td>
                 <td>
                     <a href="{% url 'admin:admin_competition:view' item.competition.id %}">查看</a>
-                    {% if user.can_a %}
                     &nbsp;&nbsp;&nbsp;<a href="{% url 'admin:admin_competition:edit' item.competition.id %}">修改</a>
-                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
