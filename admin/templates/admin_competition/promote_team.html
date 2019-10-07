@@ -39,7 +39,6 @@
 <script src="http://static.chuangyh.com/js/lib.js"></script>
 <script>
     competitionId = location.pathname.split('/')[3];
-    var base_admin_url1 = 'http://localhost:8000/';
     function promoteTeam(teamId) {
         // 设定晋级团队
         // $.post(base_admin_url + 'admin/admin_competition/'+competitionId+'/final/',{
@@ -50,7 +49,7 @@
         // }).fail(errorHandler);
         $.ajax({
             type: 'POST',
-            url: base_admin_url1 + 'admin/admin_competition/'+competitionId+'/final/',
+            url: base_admin_url + 'admin/admin_competition/'+competitionId+'/final/',
             data: {"team_id": teamId},
             headers: {'X-USER-TOKEN': getCookie('token')},
             error: function (err) {

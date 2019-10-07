@@ -67,7 +67,6 @@
 
     competitionId = location.pathname.split('/')[4];
     getExperts();
-    var base_admin_url1 = 'http://localhost:8000/';
     function getExperts(params) {
         // $.get(base_admin_url+'admin/admin_competition/' + competitionId + '/experts/?api=1').then(function (data) {
         //     if (data.count == 0) {
@@ -81,7 +80,7 @@
         // }).fail(errorHandler);
         $.ajax({
             type: 'GET',
-            url: base_admin_url1 + 'admin/admin_competition/'+competitionId+'/experts/?api=1',
+            url: base_admin_url + 'admin/admin_competition/'+competitionId+'/experts/?api=1',
             data: {},
             headers: {'X-USER-TOKEN': getCookie('token')},
             error: function (err) {
@@ -116,7 +115,7 @@
         // }).fail(errorHandler);
         $.ajax({
             type: 'POST',
-            url: base_admin_url1 + 'admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/',
+            url: base_admin_url + 'admin/admin_competition/'+teamId+'/file/'+competitionId+'/expert/',
             data: {"expert_id": expertId},
             headers: {'X-USER-TOKEN': getCookie('token')},
             error: function (err) {
