@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.competition.award import CompetitionAwardList
 from main.views.search.competition import SearchCompetition
 from ..views.competition import *
 from ..views.common import CompetitionComment, CompetitionFollowerList
@@ -18,7 +19,7 @@ urls = [
     url(r'^comments/(?P<comment_id>[0-9]+)/$', CompetitionComment.as_view()),
     # 竞赛的阶段
     url(r'^(?P<competition_id>[0-9]+)/stage/$', CompetitionStageList.as_view()),
-    # 竞赛的评比列表
+    # 竞赛的评比列表，获奖名单
     url(r'^(?P<competition_id>[0-9]+)/awards/$', CompetitionAwardList.as_view()),
     # 竞赛的通知
     url(r'^(?P<competition_id>[0-9]+)/notifications/$', CompetitionNotification.as_view()),

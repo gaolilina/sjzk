@@ -1,49 +1,11 @@
-import json
-
 from django import forms
 from django.http import JsonResponse
 from django.views.generic import View
 
-from admin.utils.decorators import fetch_record, require_role
-from main.models import Competition, Team, User
+from main.models import Competition, User
 from main.utils import abort
 from util.decorator.auth import admin_auth, cms_auth
-from util.decorator.param import old_validate_args, fetch_object, validate_args
-
-
-class AdminCompetitionAwardEdit(View):
-    @fetch_record(Competition.enabled, 'model', 'id')
-    @admin_auth
-    @require_role('axyz')
-    def get(self, request, model):
-        # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-        #    return HttpResponseForbidden()
-
-        template = loader.get_template("admin_competition/award.html")
-        context = Context({'model': model, 'user': request.user})
-        return HttpResponse(template.render(context))
-
-    @fetch_record(Competition.enabled, 'model', 'id')
-    @admin_auth
-    @require_role('axyz')
-    @old_validate_args({
-        'awards': forms.CharField(),
-    })
-    def post(self, request, **kwargs):
-        user = request.user
-        model = kwargs["model"]
-
-        # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-        #    return HttpResponseForbidden()
-
-        awards = json.loads(kwargs['awards'])
-        for a in awards:
-            for id in awards[a]:
-                model.awards.create(award=a, team=Team.objects.filter(id=int(id))[0])
-
-        template = loader.get_template("admin_competition/award.html")
-        context = Context({'model': model, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+from util.decorator.param import fetch_object, validate_args
 
 
 class CompetitionExpertList(View):
@@ -103,19 +65,6 @@ class CompetitionExpertList(View):
     def post(self, request, competition, expert_id):
         expert = User.objects.filter(pk=expert_id).get()
         competition.experts.add(expert)
-        abort(200)
-
-
-class CompetitionTeamFinal(View):
-    @fetch_object(Competition.enabled, 'competition')
-    @admin_auth
-    @validate_args({
-        'team_id': forms.CharField(),
-    })
-    def post(self, request, competition, team_id):
-        teams = team_id.split(',')
-        for t in teams:
-            CompetitionTeamParticipator.objects.filter(competition=competition, team_id=int(t)).update(final=False)
         abort(200)
 
 
