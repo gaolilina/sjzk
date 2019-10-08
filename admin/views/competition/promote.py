@@ -1,12 +1,28 @@
 from django import forms
+from django.http import HttpResponse
+from django.template import Context, loader
 
 from main.models import Competition, CompetitionTeamParticipator
 from util.base.view import BaseView
-from util.decorator.auth import cms_auth
+from util.decorator.auth import cms_auth, admin_auth
 from util.decorator.param import fetch_object, validate_args
 
 
 class CompetitionTeamFinal(BaseView):
+    @fetch_object(Competition.enabled, 'competition')
+    @admin_auth
+    @validate_args({
+        'final': forms.BooleanField(required=False),
+    })
+    def get(self, request, competition, final=False):
+        template = loader.get_template("admin_competition/promote_team.html")
+        c = CompetitionTeamParticipator.objects.filter(competition=competition, final=final).all().count()
+        qs = CompetitionTeamParticipator.objects.filter(competition=competition, final=final).all()
+        context = Context({
+            'teams': qs,
+        })
+        return HttpResponse(template.render(context))
+
     @cms_auth
     @validate_args({
         'team_id': forms.CharField(),
