@@ -1,11 +1,12 @@
 from django.conf.urls import url
 
-from admin.views.competition import CompetitionExpertList, CompetitionTeamList
+from admin.views.competition import CompetitionTeamList
 from admin.views.competition.award import AdminCompetitionAwardEdit
-from admin.views.competition.promote import CompetitionTeamFinal
 from admin.views.competition.create_edit import AdminCompetitionAdd, AdminCompetitionEdit
+from admin.views.competition.expert import CompetitionExpertList, CompetitionAddExpert
 from admin.views.competition.file import AdminCompetitionFilesView, AdminCompetitionExcelView, CompetitionFileExpert
 from admin.views.competition.list_detail import AdminCompetitionList, AdminCompetitionView
+from admin.views.competition.promote import CompetitionTeamFinal
 
 urls = [
     # 列表和详情
@@ -20,6 +21,7 @@ urls = [
     url(r'^view/(?P<id>\w+)/excel.csv$', AdminCompetitionExcelView.as_view(), name='excel'),
     # 竞赛专家
     url(r'^(?P<competition_id>[0-9]+)/experts/$', CompetitionExpertList.as_view()),
+    url(r'^(?P<competition_id>[0-9]+)/addexperts/$', CompetitionAddExpert.as_view()),
     # 参赛团队
     url(r'^(?P<competition_id>[0-9]+)/team/$', CompetitionTeamList.as_view()),
     # 淘汰团队
