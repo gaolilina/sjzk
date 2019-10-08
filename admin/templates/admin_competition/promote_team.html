@@ -10,6 +10,9 @@
         <th width="100px">得分</th>
         <th width="100px">淘汰</th>
     </tr>
+    {% if teams.count == 0 %}
+        <tr><td colspan="3">无记录</td></tr>
+    {% endif %}
     {% for t in teams %}
     <tr>
         <td>{{ t.team.name }}</td>
@@ -40,24 +43,40 @@
 <script>
     competitionId = location.pathname.split('/')[3];
     function promoteTeam(teamId) {
-        // 设定晋级团队
-        // $.post(base_admin_url + 'admin/admin_competition/'+competitionId+'/final/',{
-        //     team_id:teamId
-        // }).then(function(params) {
-        //     alert('该队伍被淘汰！');
-        //     $('#button'+teamId).prop('disabled', true);
-        // }).fail(errorHandler);
-        $.ajax({
-            type: 'POST',
-            url: base_admin_url + 'admin/admin_competition/'+competitionId+'/final/',
-            data: {"team_id": teamId},
-            headers: {'X-USER-TOKEN': getCookie('token')},
-            error: function (err) {
-                showAlert('发生未知错误');
-            },
-            success: function (res) {
-                alert('该队伍被淘汰！');
-                $('#button'+teamId).prop('disabled', true);
+        $.confirm({
+            title: null,
+            content: '确认淘汰该队伍？',
+            type: 'blue',
+            icon: 'glyphicon glyphicon-question-sign',
+            backgroundDismiss: true,
+            columnClass: 'width-300',
+            buttons: {
+                ok: {
+                    text: '确认',
+                    btnClass: 'btn-primary',
+                    action: function () {
+                        // 设定晋级团队
+                        $.ajax({
+                            type: 'POST',
+                            url: base_admin_url + 'admin/admin_competition/'+competitionId+'/final/',
+                            data: {"team_id": teamId},
+                            headers: {'X-USER-TOKEN': getCookie('token')},
+                            error: function (err) {
+                                showAlert('发生未知错误');
+                            },
+                            success: function (res) {
+                                showAlert('该队伍被淘汰！');
+                                $('#button'+teamId).prop('disabled', true);
+                                $('#button'+teamId).html('已淘汰');
+                            }
+                        });
+                    }
+                },
+                cancel: {
+                    text: '点错了',
+                    btnClass: 'btn-default',
+                    action: function () {}
+                }
             }
         });
     }
