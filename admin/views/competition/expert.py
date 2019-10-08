@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.template import loader, Context
 from django.views.generic import View
 
-from admin.utils.decorators import fetch_record
 from main.models import Competition, User, CompetitionTeamParticipator, CompetitionFile, Team
 from util.base.view import BaseView
 from util.decorator.auth import admin_auth, cms_auth
@@ -76,23 +75,27 @@ class CompetitionExpertList(BaseView):
 
 class TeamExpert(BaseView):
     @admin_auth
-    @fetch_record(Competition.enabled, 'model', 'id')
-    def get(self, request, model, status):
+    @validate_args({
+        'competition_id': forms.IntegerField(),
+        'status': forms.IntegerField(),
+    })
+    @fetch_object(Competition.enabled, 'competition')
+    def get(self, request, competition, status, **kwargs):
         template = loader.get_template("admin_competition/file.html")
         context = Context({
-            'model': model, 'user': request.user,
+            'model': competition, 'user': request.user,
             'files': [{
                 'team': file.team,
                 'file': file.file,
                 'id': file.id,
                 'time_created': file.time_created,
-                'participator': CompetitionTeamParticipator.objects.filter(competition=model,
+                'participator': CompetitionTeamParticipator.objects.filter(competition=competition,
                                                                            team=file.team).get(),
                 'type': file.type,
                 'score': file.score,
                 'comment': file.comment,
-            } for file in CompetitionFile.objects.filter(competition=model, status=status)],
-            'teams': CompetitionTeamParticipator.objects.filter(competition=model, final=False).all()
+            } for file in CompetitionFile.objects.filter(competition=competition, status=status)],
+            'teams': CompetitionTeamParticipator.objects.filter(competition=competition, final=False).all()
         })
         return HttpResponse(template.render(context))
 
