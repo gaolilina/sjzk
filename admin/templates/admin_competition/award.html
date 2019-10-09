@@ -28,7 +28,11 @@
     };
 
     function add(_name) {
-        var name = _name || prompt("请输入奖项名");
+        var name = _name || prompt("请输入奖项名（数字）");
+        if(isNaN(name)) {
+            showAlert('请输入数字');
+            return;
+        }
         if (name != '' && name != null) {
           $("#target").before("<tr class='a'><td>" + name + "</td>\
             <td><select data-name='" + name + "'></select>\
@@ -44,6 +48,7 @@
         if(result[key]) continue;
         o += "<option value='" + key + "'>" + team[key] + "</option>";
       }
+      console.log(o);
       $('select').html(o);
     }
 
