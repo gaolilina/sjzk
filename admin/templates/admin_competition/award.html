@@ -12,7 +12,7 @@
     <tr id="target">
         <td colspan="2" style="border-left:none;border-right:none;border-bottom:none;">
             {{ msg }}
-            <div style="margin: 0 auto;">
+            <div style="">
                 <input type="submit" onclick="javascript:submit()" value="保存" />
             </div>
         </td>
@@ -32,7 +32,7 @@
         if (name != '' && name != null) {
           $("#target").before("<tr class='a'><td>" + name + "</td>\
             <td><select data-name='" + name + "'></select>\
-            <button class='btn btn4 ml-20' style='margin-top:-3px;' onclick='javascript:addTeam(\"" + name + "\")'>添加团队</button></td></tr>");
+            <button class='btn btn4 ml-20' style='margin-top:-3px;' onclick='javascript:addTeam(\"" + name + "\")'>添加团队</button><br/></td></tr>");
           genOption();
           result2[name] = [];
         }
@@ -53,7 +53,7 @@
         if(!_team) result[t] = r;
         result2[r].push(t);
         $('input[name=awards]').val(JSON.stringify(result2));
-        $('select[data-name=' + r + ']').siblings().last().after("<div>" + (team[_team] || $('select[data-name=' + r + '] option:selected').text()) + "</div>");
+        $('select[data-name=' + r + ']').siblings().last().after("<div class='team-award'>" + (team[_team] || $('select[data-name=' + r + '] option:selected').text()) + "</div>");
         genOption();
       }
     }
@@ -107,7 +107,25 @@
 
 {% block css %}
 <style>
-    
+    .team-award{
+        display: inline-block;
+        width: auto;
+        margin: 8px 5px 8px 0;
+        padding: 5px 10px;
+        border: 1px solid gray;
+        border-radius: 3px;
+    }
+    tr td:nth-child(2){
+        text-align: left;
+        padding-left: 100px;
+    }
+    tr th:nth-child(2){
+        text-align: left;
+        padding-left: 100px;
+    }
+    tr th:nth-child(1){
+        width: 30%;
+    }
 </style>
 {% include 'parts/input_style.html' %}
 {% include 'parts/table_style.html' %}

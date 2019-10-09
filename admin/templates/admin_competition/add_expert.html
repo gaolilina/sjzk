@@ -66,6 +66,7 @@
             success: function (res) {
                 showAlert('设定成功');
                 $('#button'+expertId).prop('disabled', true);
+                $('#button'+expertId).html('已设定');
             }
         });
     }
