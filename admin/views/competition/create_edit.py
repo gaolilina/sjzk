@@ -7,15 +7,15 @@ from django.template import loader, Context
 from django.views.generic import View
 
 from admin.models import AdminUser, CompetitionOwner
-from admin.utils.decorators import require_role, fetch_record
+from admin.utils.decorators import require_role
 from main.models import Competition, CompetitionStage
 from util.decorator.auth import admin_auth
-from util.decorator.param import old_validate_args
+from util.decorator.param import old_validate_args, fetch_object
+from util.decorator.permission import admin_permission
 
 
 class AdminCompetitionAdd(View):
     @admin_auth
-    @require_role('xyz')
     def get(self, request):
         template = loader.get_template("admin_competition/add.html")
         context = Context({
@@ -73,25 +73,21 @@ class AdminCompetitionAdd(View):
 
 
 class AdminCompetitionEdit(View):
-    @fetch_record(Competition.enabled, 'model', 'id')
     @admin_auth
     @require_role('xyz')
-    def get(self, request, model):
-        # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-        #    return HttpResponseForbidden()
-
+    @fetch_object(Competition.enabled, 'competition')
+    def get(self, request, competition):
         template = loader.get_template("admin_competition/edit.html")
-        owner = CompetitionOwner.objects.filter(competition=model).all()
+        owner = CompetitionOwner.objects.filter(competition=competition).all()
         context = Context({
-            'model': model,
+            'model': competition,
             'user': request.user,
-            'stages': CompetitionStage.objects.filter(competition=model),
+            'stages': CompetitionStage.objects.filter(competition=competition),
             'owners': AdminUser.objects.filter(role__contains='a').all(),
             'ownerid': owner[0].user.id if len(owner) > 0 else -1,
         })
         return HttpResponse(template.render(context))
 
-    @fetch_record(Competition.enabled, 'model', 'id')
     @admin_auth
     @require_role('xyz')
     @old_validate_args({
@@ -113,38 +109,25 @@ class AdminCompetitionEdit(View):
         'stages': forms.CharField(required=False),
         'owner': forms.IntegerField(required=False),
     })
-    def post(self, request, **kwargs):
-        user = request.user
-        model = kwargs["model"]
-        dateformat = "%Y-%m-%d"
-
-        if 'stages' in kwargs and kwargs['stages'] != "":
-            stages = json.loads(kwargs['stages'])
-            for st in stages:
-                if datetime.strptime(st['time_started'], dateformat) < kwargs['time_started'] or datetime.strptime(
-                        st['time_ended'], dateformat) > kwargs['time_ended']:
-                    return HttpResponseForbidden('时间输入有误')
-
-        # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
-        #    return HttpResponseForbidden()
+    @fetch_object(Competition.enabled, 'competition')
+    def post(self, request, competition, stages=None, **kwargs):
 
         for k in kwargs:
             if k == 'owner':
-                CompetitionOwner.objects.filter(competition=model).update(
+                CompetitionOwner.objects.filter(competition=competition).update(
                     user=AdminUser.objects.filter(pk=kwargs['owner']).get())
-            elif k != "stages":
-                setattr(model, k, kwargs[k])
-        model.save()
+            else:
+                setattr(competition, k, kwargs[k])
+        competition.save()
 
-        if 'stages' in kwargs and kwargs['stages'] != "":
-            CompetitionStage.objects.filter(competition=model).delete()
-
-            stages = json.loads(kwargs['stages'])
+        if stages:
+            CompetitionStage.objects.filter(competition=competition).delete()
+            stages = json.loads(stages)
             for st in stages:
-                model.stages.create(status=int(st['status']), time_started=st['time_started'],
-                                    time_ended=st['time_ended'])
+                competition.stages.create(status=int(st['status']), time_started=st['time_started'],
+                                          time_ended=st['time_ended'])
 
         template = loader.get_template("admin_competition/edit.html")
-        context = Context({'model': model, 'msg': '保存成功', 'user': request.user,
-                           'stages': CompetitionStage.objects.filter(competition=model)})
+        context = Context({'model': competition, 'msg': '保存成功', 'user': request.user,
+                           'stages': CompetitionStage.objects.filter(competition=competition)})
         return HttpResponse(template.render(context))

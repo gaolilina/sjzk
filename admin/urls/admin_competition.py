@@ -13,7 +13,7 @@ urls = [
     url(r'^view/(?P<id>\w+)$', AdminCompetitionView.as_view(), name='view'),
     # 创建和编辑
     url(r'^add$', AdminCompetitionAdd.as_view(), name='add'),
-    url(r'^edit/(?P<id>\w+)$', AdminCompetitionEdit.as_view(), name='edit'),
+    url(r'^edit/(?P<competition_id>\w+)$', AdminCompetitionEdit.as_view(), name='edit'),
     # 导出 excel
     url(r'^view/(?P<id>\w+)/excel.csv$', AdminCompetitionExcelView.as_view(), name='excel'),
     # 竞赛专家
