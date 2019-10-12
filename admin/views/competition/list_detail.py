@@ -8,11 +8,12 @@ from admin.utils.decorators import require_role, fetch_record, admin_log
 from main.models import Competition, CompetitionStage
 from util.decorator.auth import admin_auth
 from util.decorator.param import old_validate_args
+from util.decorator.permission import admin_permission
 
 
 class AdminCompetitionList(View):
     @admin_auth
-    @require_role('axyz')
+    @admin_permission('competition_list')
     def get(self, request):
         try:
             filter_param = {}  # TODO: same with activity
@@ -28,9 +29,9 @@ class AdminCompetitionList(View):
 
 
 class AdminCompetitionView(View):
-    @fetch_record(Competition.enabled, 'model', 'id')
     @admin_auth
-    @require_role('axyz')
+    @admin_permission('competition_detail')
+    @fetch_record(Competition.enabled, 'model', 'id')
     def get(self, request, model):
         # if len(CompetitionOwner.objects.filter(competition=model, user=request.user)) == 0:
         #    return HttpResponseForbidden()
@@ -41,6 +42,7 @@ class AdminCompetitionView(View):
         return HttpResponse(template.render(context))
 
 
+## 弃用
 class CompetitionView(View):
     @fetch_record(Competition.objects, 'mod', 'id')
     @admin_auth

@@ -9,6 +9,7 @@ from admin.utils.decorators import fetch_record, require_role
 from main.models import Competition, Team
 from util.decorator.auth import admin_auth
 from util.decorator.param import old_validate_args
+from util.decorator.permission import admin_permission
 
 
 class AdminCompetitionAwardEdit(View):
@@ -23,12 +24,12 @@ class AdminCompetitionAwardEdit(View):
         context = Context({'model': model, 'user': request.user})
         return HttpResponse(template.render(context))
 
-    @fetch_record(Competition.enabled, 'model', 'id')
     @admin_auth
-    @require_role('axyz')
+    @admin_permission('award_team_in_competition')
     @old_validate_args({
         'awards': forms.CharField(),
     })
+    @fetch_record(Competition.enabled, 'model', 'id')
     def post(self, request, model, **kwargs):
         awards = json.loads(kwargs['awards'])
         for a in awards:

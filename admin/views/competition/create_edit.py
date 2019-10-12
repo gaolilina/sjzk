@@ -25,7 +25,7 @@ class AdminCompetitionAdd(View):
         return HttpResponse(template.render(context))
 
     @admin_auth
-    @require_role('xyz')
+    @admin_permission('create_competition')
     @old_validate_args({
         'name': forms.CharField(max_length=50),
         'tags': forms.CharField(max_length=50),
@@ -89,7 +89,7 @@ class AdminCompetitionEdit(View):
         return HttpResponse(template.render(context))
 
     @admin_auth
-    @require_role('xyz')
+    @admin_permission('modify_competition')
     @old_validate_args({
         'name': forms.CharField(max_length=50, required=False),
         'tags': forms.CharField(max_length=50, required=False),

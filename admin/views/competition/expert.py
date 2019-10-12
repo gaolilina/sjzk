@@ -7,6 +7,7 @@ from main.models import Competition, User, CompetitionTeamParticipator, Competit
 from util.base.view import BaseView
 from util.decorator.auth import admin_auth, cms_auth
 from util.decorator.param import fetch_object, validate_args
+from util.decorator.permission import admin_permission, cms_permission
 
 
 class CompetitionAddExpert(View):
@@ -27,6 +28,7 @@ class CompetitionAddExpert(View):
 class CompetitionExpertList(BaseView):
 
     @cms_auth
+    @cms_permission('get_competition_expert_list')
     @fetch_object(Competition.enabled, 'competition')
     def get(self, request, competition):
         c = competition.experts.all().count()
@@ -62,6 +64,7 @@ class CompetitionExpertList(BaseView):
         return self.success({'count': c, 'list': l})
 
     @cms_auth
+    @cms_permission('add_competition_expert')
     @validate_args({
         'expert_id': forms.IntegerField(),
         'competition_id': forms.IntegerField(),
@@ -88,6 +91,7 @@ class TeamExpert(BaseView):
         return HttpResponse(template.render(context))
 
     @cms_auth
+    @cms_permission('assign_expert_for_team_in_competition')
     @validate_args({
         'expert_id': forms.IntegerField(),
         'team_id': forms.IntegerField(),
