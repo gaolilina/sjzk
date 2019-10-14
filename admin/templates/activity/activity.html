@@ -78,6 +78,9 @@
             <input name="stages" type="hidden" value="" required/>
             <input name="status" type="hidden" value="{{ model.status }}" required/>
             <select id="status" required>
+                {% if model.status == -1 %}
+                    <option value="{{ model.status }}" selected="selected">未开始</option>
+                {% endif %}
                 {% for stage in stages %}
                     <option value="{{ stage.status }}"{% if stage.status == model.status %}
                             selected="selected"{% endif %}>
@@ -86,6 +89,9 @@
                         {% if stage.status == 2 %}结束{% endif %}
                     </option>
                 {% endfor %}
+                {% if model.status == 3 %}
+                    <option value="{{ model.status }}" selected="selected">进行中</option>
+                {% endif %}
             </select>
             {% if model.state == 0 %}
                 <input id="add_stage" type="button" value="新增" style="margin-top: 0px;"/>
