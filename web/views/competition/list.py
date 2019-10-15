@@ -13,7 +13,7 @@ class MyJoinedCompetition(BaseView):
 
     @client_auth
     @validate_args({
-        'offset': forms.IntegerField(required=False, min_value=0),
+        'page': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'history': forms.BooleanField(required=False),
     })
