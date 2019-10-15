@@ -43,15 +43,15 @@
         <td>{{ model.time_ended }}</td>
     </tr>
     <tr>
-        <td>人数上限：</td>
-        <td>{{ model.allow_team }}</td>
-    
         <td>省：</td>
         <td>{{ model.province }}</td>
-    </tr>
-    <tr>
+
         <td>市：</td>
         <td>{{ model.city }}</td>
+    </tr>
+    <tr>
+        <td>人数上限：</td>
+        <td>{{ model.allow_team }}</td>
     
         <td>机构：</td>
         <td>{{ model.unit }}</td>
@@ -104,7 +104,7 @@
     {% endfor %}
     <tr>
         <td>设定评委：</td>
-        <td><a href="/admin/admin_competition/{{ model.id }}/experts/">设定评委</a></td>
+        <td><a href="/admin/admin_competition/{{ model.id }}/addexperts/">设定评委</a></td>
         <td>获奖名单：</td>
         <td><a href="{% url 'admin:admin_competition:award' model.id %}">设置</a></td>
     </tr>

@@ -18,6 +18,9 @@
         <th width="150">评委</th>
         <th width="100px">设定评委</th>
     </tr>
+    {% if teams.count == 0 %}
+        <tr><td colspan="3">无记录</td></tr>
+    {% endif %}
     {% for team in teams %}
     <tr>
         <td>{{ team.team.name }}</td>
