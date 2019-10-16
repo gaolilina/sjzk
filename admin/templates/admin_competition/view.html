@@ -75,7 +75,7 @@
             {% if model.status == 5 %}中间赛{% endif %}
             {% if model.status == 6 %}复赛{% endif %}
             {% if model.status == 7 %}决赛{% endif %}
-            {% if model.status == 8 %}结束{% endif %}
+            {% if model.status == 100 %}结束{% endif %}
         </td>
     </tr>
     {% for stage in stages %}
@@ -91,11 +91,11 @@
                 {% elif stage.status == 5 %}中间赛
                 {% elif stage.status == 6 %}复赛
                 {% elif stage.status == 7 %}决赛
-                {% elif stage.status == 8 %}结束
+                {% elif stage.status == 100 %}结束
                 {% endif %}<br/>
                 开始时间：{{ stage.time_started }}<br/>
                 结束时间：{{ stage.time_ended }}<br/>
-                {% if model.status > 1 and model.status < 8 and model.status == stage.status %}
+                {% if model.status > 1 and model.status < 100 and model.status == stage.status %}
                 <a href="/admin/admin_competition/{{ model.id }}/expert/team/">分配评委</a><br/>
                 <a href="/admin/admin_competition/{{ model.id }}/final/">晋级</a>
                 {% endif %}
