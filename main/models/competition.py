@@ -120,7 +120,7 @@ class CompetitionTeamParticipator(models.Model):
     competition = models.ForeignKey('Competition', models.CASCADE, 'team_participators')
     team = models.ForeignKey('Team', models.CASCADE, 'competitions')
     rater = models.ForeignKey('User', related_name='rated_team_participators', null=True)
-    score = models.IntegerField(default=-1)
+    score = models.IntegerField(default=0)
     # 表示是否终止，报名阶段均是未通过
     final = models.BooleanField(default=True)
 
