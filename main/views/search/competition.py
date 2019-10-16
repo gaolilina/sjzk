@@ -6,7 +6,7 @@ from django import forms
 from django.http import JsonResponse
 from django.views.generic.base import View
 
-from main.models import Competition
+from main.models import Competition, CompetitionStage
 from util.decorator.param import validate_args
 
 
@@ -52,12 +52,11 @@ class SearchCompetition(View):
                 province:
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        condition = {
-            'status__in': [6] if history else [0, 1, 2, 3, 4, 5],
-        }
+        condition = {}
         # 一般情况只显示未结束的活动
         if not history:
             condition['time_ended__gt'] = datetime.datetime.now()
+            condition['status__lt'] = CompetitionStage.STAGE_END
         if province is not None:
             condition['province'] = province
         if field is not None:

@@ -22,7 +22,6 @@ class Competition(models.Model):
     """竞赛基本信息"""
 
     name = models.CharField(max_length=50, null=True)
-    # 竞赛当前阶段0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
     status = models.IntegerField(default=0, db_index=True)
     content = models.CharField(max_length=1000, null=True)
     deadline = models.DateTimeField(db_index=True, null=True)
@@ -62,8 +61,17 @@ class Competition(models.Model):
 class CompetitionStage(models.Model):
     """竞赛阶段"""
 
+    # 宣传
+    STAGE_PROPAGANDA = 0
+    # 报名
+    STAGE_APPLY = 1
+    # 结束
+    STAGE_END = 100
+
+    # 不是比赛中的阶段
+    STAGES_ERROR = [STAGE_END, STAGE_APPLY, STAGE_PROPAGANDA]
+
     competition = models.ForeignKey('Competition', models.CASCADE, 'stages')
-    # 0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
     status = models.IntegerField(default=0, db_index=True)
     time_started = models.DateTimeField(db_index=True)
     time_ended = models.DateTimeField(db_index=True)
@@ -76,9 +84,7 @@ class CompetitionStage(models.Model):
 class CompetitionNotification(models.Model):
     """竞赛通知"""
 
-    competition = models.ForeignKey(
-        'Competition', models.CASCADE, 'notifications')
-    # 0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
+    competition = models.ForeignKey('Competition', models.CASCADE, 'notifications')
     status = models.IntegerField(default=0, db_index=True)
     notification = models.CharField(max_length=1000)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
@@ -92,7 +98,6 @@ class CompetitionFile(models.Model):
 
     competition = models.ForeignKey('Competition', models.CASCADE, 'team_files')
     team = models.ForeignKey('Team', models.CASCADE, 'competition_files')
-    # 0:前期宣传, 1:报名, 2:预赛, 3:周赛, 4:月赛, 5:中间赛, 6:结束
     status = models.IntegerField(default=0, db_index=True)
     file = models.CharField(max_length=100, default='')
     time_created = models.DateTimeField(default=timezone.now, db_index=True)

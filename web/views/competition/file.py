@@ -1,6 +1,6 @@
 from django import forms
 
-from main.models import Competition, Team, CompetitionTeamParticipator, CompetitionFile
+from main.models import Competition, Team, CompetitionTeamParticipator, CompetitionFile, CompetitionStage
 from main.utils import save_uploaded_file
 from util.base.view import BaseView
 from util.constant.param import CONSTANT_DEFAULT_LIMIT
@@ -46,7 +46,7 @@ class TeamFile(BaseView):
     @fetch_object(Competition.enabled, 'competition')
     @fetch_object(Team.enabled, 'team')
     def post(self, request, competition, team, file, type, **kwargs):
-        if competition.status in [0, 1, 6]:
+        if competition.status in CompetitionStage.STAGES_ERROR:
             return self.fail(4, '当前阶段不能上传文件')
         if request.user != team.owner:
             return self.fail(1, '队长操作')

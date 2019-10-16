@@ -1,8 +1,9 @@
 import datetime
 
 from django import forms
+from django.db.models import Count
 
-from main.models import CompetitionTeamParticipator
+from main.models import CompetitionTeamParticipator, CompetitionStage
 from util.base.view import BaseView
 from util.constant.param import CONSTANT_DEFAULT_LIMIT
 from util.decorator.auth import client_auth
@@ -28,13 +29,13 @@ class MyJoinedCompetition(BaseView):
         # true
         if not history:
             condition['competition__time_ended__gt'] = datetime.datetime.now()
-            condition['competition__status__in'] = [0, 1, 2, 3, 4, 5]
+            condition['competition__status__lt'] = CompetitionStage.STAGE_END
             # 只展示仍在比赛中的
             condition['final'] = False
 
-        qs = CompetitionTeamParticipator.objects.filter(**condition)
+        qs = handle_competition_queryset(CompetitionTeamParticipator.objects.filter(**condition))
         c = qs.count()
-        l = [competition_to_json(a.competition) for a in qs[page * limit:(page + 1) * limit]]
+        l = [competition_to_json(a) for a in qs[page * limit:(page + 1) * limit]]
         return self.success({'count': c, 'list': l})
 
 
@@ -53,25 +54,36 @@ class MyRatingCompetition(BaseView):
         condition = {
             'rater': request.user,
             'competition__time_ended__gt': datetime.datetime.now(),
-            'competition__status__in': [0, 1, 2, 3, 4, 5],
+            'competition__status__lt': CompetitionStage.STAGE_END,
             'final': False,
         }
-        qs = CompetitionTeamParticipator.objects.filter(**condition)
+        qs = handle_competition_queryset(CompetitionTeamParticipator.objects.filter(**condition))
         c = qs.count()
-        l = [competition_to_json(a.competition) for a in qs[page * limit:(page + 1) * limit]]
+        l = [competition_to_json(a) for a in qs[page * limit:(page + 1) * limit]]
         return self.success({'count': c, 'list': l})
+
+
+def handle_competition_queryset(qs):
+    return qs.values(
+        'competition_id',
+        'competition__name',
+        'competition__time_started',
+        'competition__time_ended',
+        'competition__time_created',
+        'competition__status',
+        'competition__field',
+        'competition__province',
+    ).annotate(Count('competition_id'))
 
 
 def competition_to_json(competition):
     return {
-        'id': competition.id,
-        'name': competition.name,
-        'liker_count': competition.likers.count(),
-        'time_started': competition.time_started,
-        'time_ended': competition.time_ended,
-        'team_participator_count': competition.team_participators.count(),
-        'time_created': competition.time_created,
-        'status': competition.status,
-        'field': competition.field,
-        'province': competition.province,
+        'id': competition['competition_id'],
+        'name': competition['competition__name'],
+        'time_started': competition['competition__time_started'],
+        'time_ended': competition['competition__time_ended'],
+        'time_created': competition['competition__time_created'],
+        'status': competition['competition__status'],
+        'field': competition['competition__field'],
+        'province': competition['competition__province'],
     }
