@@ -81,18 +81,13 @@ class UserParticipatorList(View):
         c = activity.user_participators.count()
         if activity.allow_user != 0 and c >= activity.allow_user:
             abort(403, '参与者已满')
-        if activity.province and activity.province != request.user.province:
-            abort(403, '地区不符')
-        if activity.province and activity.city != request.user.city:
-            abort(403, '地区不符')
-        if activity.unit and activity.unit != request.user.unit1:
-            abort(403, '学校不符')
         if activity.user_type != 0:
             if activity.user_type == 1 and request.user.role != "学生":
                 abort(403, '用户角色不符')
             elif activity.user_type == 2 and request.user.role != "教师":
                 abort(403, '用户角色不符')
-            elif activity.user_type == 3 and request.user.role != "在职":
+            elif activity.user_type == 3 and request.user.role == "":
+                # 在职人员，要求有角色要求
                 abort(403, '用户角色不符')
 
         if not activity.user_participators.filter(user=request.user).exists():
