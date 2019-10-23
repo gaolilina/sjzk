@@ -122,7 +122,7 @@ class CompetitionTeamParticipator(models.Model):
     rater = models.ForeignKey('User', related_name='rated_team_participators', null=True)
     score = models.IntegerField(default=0)
     # 表示是否终止，报名阶段均是未通过
-    final = models.BooleanField(default=True)
+    final = models.BooleanField(default=False)
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
