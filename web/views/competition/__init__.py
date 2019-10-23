@@ -11,6 +11,8 @@ def handle_competition_queryset(qs):
         'competition__status',
         'competition__field',
         'competition__province',
+        'team_id',
+        'team__name',
     ).annotate(Count('competition_id'))
 
 
@@ -24,4 +26,6 @@ def competition_to_json(competition):
         'status': competition['competition__status'],
         'field': competition['competition__field'],
         'province': competition['competition__province'],
+        'team_id': competition['team_id'],
+        'team_name': competition['team__name'],
     }

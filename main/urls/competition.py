@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from main.views.competition.award import CompetitionAwardList
+from main.views.competition.participate import TeamParticipatorList
 from main.views.search.competition import SearchCompetition
 from ..views.competition import *
 from ..views.common import CompetitionComment, CompetitionFollowerList
