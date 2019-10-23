@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic.base import View
 
-from main.models import Team
+from main.models import Team, TeamTag
 from main.models.action import TeamAction
 from main.utils import action
 from main.utils.decorators import fetch_user_by_token
@@ -25,7 +25,7 @@ class SearchTeam(View):
         'province': forms.CharField(required=False, max_length=20),
         'field': forms.CharField(required=False, max_length=20),
     })
-    def get(self, request, offset=0, limit=10, order=1, province=None, field=None, **kwargs):
+    def get(self, request, offset=0, limit=10, order=1, province=None, field=None,tag=None, **kwargs):
         """搜索团队
         :param offset: 偏移量
         :param limit: 数量上限
@@ -60,8 +60,8 @@ class SearchTeam(View):
             condition['field1'] = field
         if 'name' in kwargs:
             condition['name__icontains'] = kwargs['name']
-        if 'tag' in kwargs:
-            condition['tags__name__icontains'] = kwargs['tag']
+        if tag:
+            condition['id__in'] = set([t['entity'] for t in TeamTag.objects.filter(name__icontains=tag).values('entity')])
         teams = Team.enabled.filter(**condition) if condition is not None else Team.enabled.all()
 
         c = teams.count()

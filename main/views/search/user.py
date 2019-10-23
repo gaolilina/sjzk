@@ -1,10 +1,11 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 from django import forms
+from django.db.models import Count
 from django.http import JsonResponse
 from django.views.generic.base import View
 
-from main.models import User
+from main.models import User, UserTag
 from util.decorator.param import validate_args
 
 
@@ -56,7 +57,7 @@ class SearchUser(View):
         if name is not None:
             condition['name__icontains'] = name
         if tag is not None:
-            condition['tags__name__icontains'] = tag
+            condition['id__in'] = set([t['entity'] for t in UserTag.objects.filter(name__icontains=tag).values('entity')])
         condition_expert = {
             'is_role_verified': 2,
             'role': '专家'
