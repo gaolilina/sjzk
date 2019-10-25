@@ -1,8 +1,11 @@
 from django import forms
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.generic import View
 
-from main.models import Activity
+from main.models import Activity, ActivityComment, ActivityStage as ActivityStageModel
+from main.models.activity.people import ActivitySign, ActivityUserParticipator, ActivityLiker, ActivityFollower, \
+    ActivityFavorer
+from main.utils import abort
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object, validate_args
 
@@ -62,6 +65,21 @@ class Detail(View):
                 'time_ended': p.time_ended,
             } for p in activity.stages.all()]
         })
+
+    @app_auth
+    @fetch_object(Activity.enabled, 'activity')
+    def delete(self, request, activity, **kwargs):
+        if activity.owner_user != request.user:
+            abort(400, '活动创建者才能删除活动')
+        ActivitySign.objects.filter(activity=activity).delete()
+        ActivityUserParticipator.objects.filter(activity=activity).delete()
+        ActivityLiker.objects.filter(liked=activity).delete()
+        ActivityFollower.objects.filter(followed=activity).delete()
+        ActivityFavorer.objects.filter(favored=activity).delete()
+        ActivityComment.objects.filter(entity=activity).delete()
+        ActivityStageModel.objects.filter(activity=activity).delete()
+        activity.delete()
+        return HttpResponse()
 
 
 class ActivityStage(View):
