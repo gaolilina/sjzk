@@ -119,8 +119,6 @@ class ActivityModify(BaseView):
     @fetch_object(Activity.objects, 'activity')
     @activity_owner()
     def post(self, request, activity, stages=None, **kwargs):
-        if activity.state != Activity.STATE_NO:
-            return self.fail(4, '只有审核未通过的活动才能修改')
         # 活动时间的检查
         time_start = kwargs.get('time_started') or activity.time_started
         time_end = kwargs.get('time_ended') or activity.time_ended
@@ -137,7 +135,6 @@ class ActivityModify(BaseView):
 
         for k in kwargs:
             setattr(activity, k, kwargs[k])
-        activity.state = Activity.STATE_CHECKING
         activity.save()
 
         if stages:

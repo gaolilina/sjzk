@@ -78,7 +78,7 @@ class Activity(models.Model):
             return ActivityStage.STAGE_END
         # 未开始
         if time_now < self.time_started:
-            return ActivityStage.STATE_NO_STARTED
+            return ActivityStage.STAGE_NO_STARTED
         stages = self.stages.all()
         stage_apply = None
         stage_pro = None
@@ -105,7 +105,7 @@ class ActivityStage(models.Model):
 
     # 活动阶段
     # 未开始
-    STATE_NO_STARTED = -1
+    STAGE_NO_STARTED = -1
     # 宣传
     STAGE_PROPAGANDA = 0
     # 报名
