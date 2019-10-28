@@ -5,7 +5,6 @@ from django.utils import timezone
 
 from .abort import abort
 from .http import identity_verify, picture_verify, eid_verify
-from util.message import send_message
 from .system import get_score_stage
 
 __all__ = ['abort', 'identity_verify', 'picture_verify',
@@ -36,13 +35,12 @@ def save_uploaded_image(image, is_private=False):
 
 
 def save_uploaded_file(file, object_id, status, other_id):
-    dirname = "uploaded/competition/" + str(object_id) + "/" + str(status)\
-              + "/" + str(other_id)
+    dirname = "uploaded/competition/" + str(object_id) + "/" + str(status) + "/" + str(other_id)
     os.makedirs(dirname, exist_ok=True)
 
     filename = dirname + "/" + file.name
     try:
-        destination = open(filename, 'wb+')
+        destination = open(filename.encode('unicode_escape'), 'wb+')
         for chunk in file.chunks():
             destination.write(chunk)
         destination.close()
