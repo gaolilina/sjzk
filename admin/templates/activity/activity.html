@@ -232,7 +232,7 @@ function form_check() {
             return false;
         }
         if (new Date($(elem).find('input:nth(1)').val()) > new Date($(elem).find('input:nth(2)').val())) {
-            showAlert('时间设置有误');
+            showAlert('时间设置有误：开始时间必须小于结束时间');
             isSubmit = false;
             return false;
         }
