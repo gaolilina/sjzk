@@ -55,6 +55,11 @@ class MyRatingCompetition(BaseView):
             'final': False,
         }
         qs = handle_competition_queryset(CompetitionTeamParticipator.objects.filter(**condition))
-        c = qs.count()
+        count = qs.count()
         l = [competition_to_json(a) for a in qs[page * limit:(page + 1) * limit]]
-        return self.success({'count': c, 'list': l})
+        for c in l:
+            competition = Competition.objects.get(id=c['id'])
+            stage = CompetitionStage.objects.filter(competition=competition, status=competition.status).first()
+            c['stage_start'] = stage.time_started
+            c['stage_end'] = stage.time_ended
+        return self.success({'count': count, 'list': l})
