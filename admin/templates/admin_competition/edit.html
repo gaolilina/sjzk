@@ -36,7 +36,7 @@
         <td>人数上限：</td>
         <td><input name="allow_team" type="number" value="{{ model.allow_team }}" required/> (0为不限)</td>
 
-        <td>机构：</td>
+        <td>举办机构：</td>
         <td><input name="unit" type="text" value="{{ model.unit }}" required/></td>
     </tr>
     <tr>
@@ -141,9 +141,16 @@ function form_check(){
             return false;
         }
         if(new Date($(elem).find('input:nth-of-type(2)').val()) > new Date($(elem).find('input:nth(3)').val())){
-            showAlert('时间设置有误');
+            showAlert('时间设置有误：开始时间必须小于结束时间');
             isSubmit = false;
             return false;
+        }
+        if($(elem).find('select:nth-of-type(1)').val()==100){
+            if(new Date($('input[name=time_ended]').val()) != new Date($(elem).find('input:nth(3)').val())){
+                showAlert('时间设置有误：结束时间必须相同');
+                isSubmit = false;
+                return false;
+            }
         }
     });
     if(isSubmit) return true;

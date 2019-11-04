@@ -40,15 +40,15 @@
         <td>人数上限：</td>
         <td><input name="allow_team" type="number" value="0" required/> (0为不限)</td>
 
-        <td>机构：</td>
+        <td>举办机构：</td>
         <td><input name="unit" type="text" value="" required/></td>
     </tr>
     <tr>
         <td>团队最少人数：</td>
-        <td><input name="min_member" type="text" value="1" required/></td>
+        <td><input name="min_member" type="number" value="1" required/></td>
     
         <td>团队最多人数：</td>
-        <td><input name="max_member" type="text" value="1" required/></td>
+        <td><input name="max_member" type="number" value="1" required/></td>
     </tr>
     <tr>
         <td>参与者类型：</td>
@@ -110,9 +110,16 @@ function form_check(){
             return false;
         }
         if(new Date($(elem).find('input:nth-of-type(2)').val()) > new Date($(elem).find('input:nth(3)').val())){
-            showAlert('时间设置有误');
+            showAlert('时间设置有误：开始时间必须小于结束时间');
             isSubmit = false;
             return false;
+        }
+        if($(elem).find('select:nth-of-type(1)').val()==100){
+            if(new Date($('input[name=time_ended]').val()) != new Date($(elem).find('input:nth(3)').val())){
+                showAlert('时间设置有误：结束时间必须相同');
+                isSubmit = false;
+                return false;
+            }
         }
     });
     if(isSubmit) return true;
