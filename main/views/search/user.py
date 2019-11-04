@@ -6,12 +6,15 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 from main.models import User, UserTag
+from recommend import user_sim
+from util.decorator.auth import app_auth
 from util.decorator.param import validate_args
 
 
 class SearchUser(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -87,4 +90,5 @@ class SearchUser(View):
               'username': u.username,
               'phone': u.phone_number,
               } for u in users]
+        l = user_sim.sort(l, request.user)
         return JsonResponse({'count': c, 'list': l})

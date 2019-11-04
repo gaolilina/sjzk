@@ -13,6 +13,11 @@ tencentyun = "*"
 qcloud-image = "*"
 mysqlclient = "*"
 pillow = "*"
+numpy = "*"
+scipy = "*"
+joblib = "*"
+pandas = "*"
+sklearn = "*"
 
 [requires]
 python_version = "3.7"
