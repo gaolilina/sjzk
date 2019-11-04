@@ -110,7 +110,7 @@ def sort(users, current):
     global result_user_sim
     if result_user_sim is None or current is None or len(users) < 2:
         return users
-    users.sort(key=lambda u: sort_single(u['id'], current.id))
+    users.sort(key=lambda u: sort_single(u['id'], current.id), reverse=True)
     return users
 
 
