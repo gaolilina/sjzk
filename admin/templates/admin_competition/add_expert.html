@@ -4,13 +4,14 @@
 <h3 style="text-align: center;margin-top: 30px">
     设定评委
 </h3>
-<table style="margin:50px auto;width:500px;">
+<form role="form" action="" method="get" style="margin-left:50px;width:1000px;">
+    <span>姓名：</span><input type="text" name="name" value="{{name}}" />
+    <input type="submit" class="mr-5" value="搜索" style="margin-top:0px;" />
+</form>
+<table style="margin:50px auto;margin-top:10px;width:1000px;">
     <tr>
         <th width="200px">评委姓名</th>
         <th width="100px">设定评委</th>
-        <!-- <th width="50px">下载</th> -->
-        <!-- <th width="150px">评分</th>
-        <th width="100px">提交评分</th> -->
     </tr>
     {% for e in all_experts %}
     <tr>
