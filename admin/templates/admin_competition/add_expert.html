@@ -4,26 +4,27 @@
 <h3 style="text-align: center;margin-top: 30px">
     设定评委
 </h3>
-<form role="form" action="" method="get" style="margin-left:50px;width:1000px;">
-    <span>姓名：</span><input type="text" name="name" value="{{name}}" />
-    <input type="submit" class="mr-5" value="搜索" style="margin-top:0px;" />
+<form role="form" action="javascript:void(0);" method="get" style="margin-left:50px;width:1000px;">
+    <span>姓名：</span><input type="text" id="name" name="name" value="{{name}}" />
+    <input type="button" class="btn4 mr-5" value="搜索" style="margin-top:0px;" onclick="showTeam();" />
 </form>
-<table style="margin:50px auto;margin-top:10px;width:1000px;">
-    <tr>
+<table style="margin:50px auto; margin-top:10px; width:1000px;">
+    <thead><tr>
         <th width="200px">评委姓名</th>
         <th width="100px">设定评委</th>
-    </tr>
-    {% for e in all_experts %}
-    <tr>
-        <td>{{ e.name }}</td>
-        {% if e in experts %}
-            <td><button class="btn btn4" disabled>已设定</button></td>
-        {% else %}
-            <td><button class="btn btn4" id="button{{ e.id }}" onclick="setExpert({{ e.id }})">设定评委</button></td>
-        {% endif %}
-        
-    </tr>
-    {% endfor %}
+    </tr></thead>
+    <tbody>
+        {% for e in all_experts %}
+        <tr>
+            <td>{{ e.name }}</td>
+            {% if e in experts %}
+                <td><button class="btn btn4" disabled>已设定</button></td>
+            {% else %}
+                <td><button class="btn btn4" id="button{{ e.id }}" onclick="setExpert({{ e.id }})">设定评委</button></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endblock %} 
 {% block topbar %}
@@ -46,6 +47,11 @@
 
     table td {
         border: 1px solid #999;
+        padding: 0;
+    }
+    button.btn.btn4{
+        margin-top: 5px;
+        margin-bottom: 5px;
     }
 </style>
 {% endblock %} 
@@ -53,6 +59,24 @@
 <script src="http://static.chuangyh.com/js/lib.js"></script>
 <script>
     competitionId = location.pathname.split('/')[3];
+    function showTeam(){
+        var name = $('#name').val();
+        var inner = '{% for e in all_experts %}\
+        <tr>\
+            <td>{{ e.name }}</td>\
+            {% if e in experts %}\
+                <td><button class="btn btn4" disabled>已设定</button></td>\
+            {% else %}\
+                <td><button class="btn btn4" id="button{{ e.id }}" onclick="setExpert({{ e.id }})">设定评委</button></td>\
+            {% endif %}\
+        </tr>\
+        {% endfor %}';
+        $('tbody').html(inner);
+        $('tbody tr').each(function(index, elem){
+            var ename = $(elem).find('td:nth(0)').text();
+            if(ename.indexOf(name)==-1) $(elem).remove();
+        });
+    }
     function setExpert(expertId) {
         // 为竞赛设定评委
         $.ajax({
