@@ -27,8 +27,13 @@ class LotteryJoinedUserList(BaseView):
 
 class MyVictoryList(BaseView):
     @client_auth
-    def get(self, request, **kwargs):
+    @validate_args({
+        'lottery': forms.IntegerField(required=False),
+    })
+    def get(self, request, lottery=None, **kwargs):
         qs = LotteryParticipant.objects.filter(user=request.user, is_victory=True)
+        if lottery:
+            qs = qs.filter(lottery=lottery)
         return self.success({
             'list': [{
                 'id': v.id,
