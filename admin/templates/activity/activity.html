@@ -86,9 +86,12 @@
                             selected="selected"{% endif %}>
                         {% if stage.status == 0 %}前期宣传{% endif %}
                         {% if stage.status == 1 %}报名{% endif %}
-                        {% if stage.status == 2 %}结束{% endif %}
+                        {% if stage.status == 4 %}举办期间{% endif %}
                     </option>
                 {% endfor %}
+                {% if model.status == 2 %}
+                    <option value="{{ model.status }}" selected="selected">结束</option>
+                {% endif %}
                 {% if model.status == 3 %}
                     <option value="{{ model.status }}" selected="selected">进行中</option>
                 {% endif %}
@@ -109,7 +112,8 @@
                 类　　型：<select onchange="javascript:stage_gen()" class="select_stages">
                 <option value="0"{% if stage.status == 0 %} selected="selected"{% endif %}>前期宣传</option>
                 <option value="1"{% if stage.status == 1 %} selected="selected"{% endif %}>报名</option>
-                <option value="2"{% if stage.status == 2 %} selected="selected"{% endif %}>结束</option>
+                <!--option value="2"{% if stage.status == 2 %} selected="selected"{% endif %}>结束</option-->
+                <option value="4"{% if stage.status == 4 %} selected="selected"{% endif %}>举办期间</option>
             </select><br/>
                 开始时间：<input type="text" data-field="date" onchange="javascript:stage_gen()" value="{{ stage.time_started }}"/><br/>
                 结束时间：<input type="text" data-field="date" onchange="javascript:stage_gen()" value="{{ stage.time_ended }}"/>

@@ -145,15 +145,6 @@ function form_check(){
             isSubmit = false;
             return false;
         }
-        if($(elem).find('select:nth-of-type(1)').val()==100){
-            var d1 = new Date($('input[name=time_ended]').val());
-            var d2 = new Date($(elem).find('input:nth-of-type(3)').val());
-            if(d1.getFullYear()+d1.getMonth()+d1.getDate() != d2.getFullYear()+d2.getMonth()+d2.getDate()){
-                showAlert('时间设置有误：结束时间必须相同');
-                isSubmit = false;
-                return false;
-            }
-        }
     });
     if(isSubmit) return true;
     else return false;
