@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django import forms
 
@@ -31,7 +32,9 @@ class AdminActivityAdd(BaseView):
     })
     def post(self, request, stages, **kwargs):
         # 活动时间的检查
-        if kwargs['time_ended'] <= kwargs['time_started']:
+        time_start = kwargs['time_started']
+        time_end = kwargs['time_ended']
+        if time_end <= time_start:
             return self.fail(1, '开始时间要早于结束时间')
         # 活动类型检查
         if kwargs['type'] not in Activity.TYPES:
@@ -40,6 +43,10 @@ class AdminActivityAdd(BaseView):
         stages = json.loads(stages)
         if type(stages) is not list or len(stages) <= 0:
             return self.fail(3, '活动阶段不能为空')
+        for stage in stages:
+            code, desc = check_stage(stage, time_start, time_start)
+            if code > 0:
+                return self.fail(code, desc)
 
         user = request.user
         activity = Activity(owner_user=user)
@@ -123,7 +130,7 @@ class ActivityModify(BaseView):
         time_start = kwargs.get('time_started') or activity.time_started
         time_end = kwargs.get('time_ended') or activity.time_ended
         if time_end <= time_start:
-            return self.fail(5, '开始时间要早于结束时间')
+            return self.fail(1, '开始时间要早于结束时间')
         # 活动类型检查
         if 'type' in kwargs and kwargs['type'] not in Activity.TYPES:
             return self.fail(2, '{} 活动类型不存在'.format(kwargs['type']))
@@ -132,6 +139,10 @@ class ActivityModify(BaseView):
             stages = json.loads(stages)
             if type(stages) is not list or len(stages) <= 0:
                 return self.fail(3, '活动阶段不能为空')
+            for stage in stages:
+                code, desc = check_stage(stage, time_start, time_start)
+                if code > 0:
+                    return self.fail(code, desc)
 
         for k in kwargs:
             setattr(activity, k, kwargs[k])
@@ -143,3 +154,33 @@ class ActivityModify(BaseView):
                 activity.stages.create(status=int(st['status']), time_started=st['time_started'],
                                        time_ended=st['time_ended'])
         return self.success()
+
+
+def check_stage(stage, activity_start, activity_end):
+    # 状态标识
+    status = stage['status']
+    if status not in ActivityStage.ALL_STAGES:
+        return 4, '不存在 {} 这种活动阶段'.format(status)
+    # 开始时间
+    stage_start = stage['time_started']
+    try:
+        if len(stage_start) > 10:
+            stage_start = datetime.strptime(stage_start, '%Y-%m-%d %H:%M:%S')
+        else:
+            stage_start = datetime.strptime(stage_start, '%Y-%m-%d')
+    except ValueError:
+        return 5, '{} 阶段的开始时间格式错误'.format(status)
+    if stage_start < activity_start:
+        return 6, '{} 阶段的开始时间早于活动开始时间'.format(status)
+    # 结束时间
+    stage_end = stage['time_ended']
+    try:
+        if len(stage_end) > 10:
+            stage_end = datetime.strptime(stage_end, '%Y-%m-%d %H:%M:%S')
+        else:
+            stage_end = datetime.strptime(stage_end, '%Y-%m-%d')
+    except ValueError:
+        return 7, '{} 阶段的结束时间格式错误'.format(status)
+    if stage_end > activity_end:
+        return 8, '{} 阶段的结束时间早于活动开始时间'.format(status)
+    return 0, ''

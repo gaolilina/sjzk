@@ -79,20 +79,10 @@ class Activity(models.Model):
         # 未开始
         if time_now < self.time_started:
             return ActivityStage.STAGE_NO_STARTED
-        stages = self.stages.all()
-        stage_apply = None
-        stage_pro = None
-        for s in stages:
-            if s.status == ActivityStage.STAGE_APPLY:
-                stage_apply = s
-            elif s.status == ActivityStage.STAGE_PROPAGANDA:
-                stage_pro = s
-        # 报名
-        if stage_apply is not None and self.is_in_stage(stage_apply, time_now):
-            return ActivityStage.STAGE_APPLY
-        # 宣传
-        if stage_pro is not None and self.is_in_stage(stage_pro, time_now):
-            return ActivityStage.STAGE_PROPAGANDA
+        stages = self.stages.all().order_by('-time_ended')
+        for stage in stages:
+            if self.is_in_stage(stage, time_now):
+                return stage.status
         # 进行中，不知道哪个阶段
         return ActivityStage.STATE_RUNNING
 
@@ -110,10 +100,14 @@ class ActivityStage(models.Model):
     STAGE_PROPAGANDA = 0
     # 报名
     STAGE_APPLY = 1
-    # 结束
+    # 结束，弃用
     STAGE_END = 2
     # 进行中
     STATE_RUNNING = 3
+    # 举办期间
+    STATE_IMPORTANT = 4
+
+    ALL_STAGES = [STAGE_PROPAGANDA, STAGE_APPLY, STATE_IMPORTANT]
 
     activity = models.ForeignKey('Activity', models.CASCADE, 'stages')
     status = models.IntegerField(default=0, db_index=True)

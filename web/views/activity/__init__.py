@@ -13,7 +13,7 @@ def activity_owner(activity_key='activity'):
         def decorator(self, request, *args, **kwargs):
             if request.user != kwargs[activity_key].owner_user:
                 return JsonResponse({
-                    'code': 1,
+                    'code': 100,
                     'msg': '您不是活动的创办者',
                 })
 
