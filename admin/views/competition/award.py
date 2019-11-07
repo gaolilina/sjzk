@@ -6,7 +6,7 @@ from django.template import loader, Context
 from django.views.generic import View
 
 from admin.utils.decorators import fetch_record, require_role
-from main.models import Competition, Team
+from main.models import Competition, Team, CompetitionStage
 from util.decorator.auth import admin_auth
 from util.decorator.param import old_validate_args
 from util.decorator.permission import admin_permission
@@ -35,7 +35,7 @@ class AdminCompetitionAwardEdit(View):
         for a in awards:
             for id in awards[a]:
                 model.awards.create(award=a, team=Team.objects.filter(id=int(id))[0])
-
+        Competition.enabled.filter(id=model.id).update(status=CompetitionStage.STAGE_END)
         template = loader.get_template("admin_competition/award.html")
-        context = Context({'model': model, 'msg': '保存成功', 'user': request.user})
+        context = Context({'model': model, 'msg': '保存成功，竞赛已自动设为结束状态', 'user': request.user})
         return HttpResponse(template.render(context))
