@@ -15,11 +15,11 @@ class AchievementDoWhoView(View):
     @app_auth
     @fetch_object(Achievement.objects, 'achievement')
     def post(self, request, achievement, who):
-        achievement[who].add(request.user)
+        getattr(achievement, who).add(request.user)
         return JsonResponse({})
 
     @app_auth
     @fetch_object(Achievement.objects, 'achievement')
     def delete(self, request, achievement, who):
-        achievement[who].remove(request.user)
+        getattr(achievement, who).remove(request.user)
         return JsonResponse({})
