@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from main.views.me.experience import ExperienceList
+from main.views.experience import ExperienceList
 
 urlpatterns = [
     # 经历

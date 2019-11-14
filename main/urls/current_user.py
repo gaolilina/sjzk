@@ -11,7 +11,7 @@ from main.views.friend.request import FriendRequestList, FriendRequestAction
 from main.views.lab import LabActionCommentList, FollowedLabActionList, FollowedLabList, FollowedLab, LikedLab, \
     LikedLabAction, RelatedLabList, OwnedLabList
 from main.views.like.user import UserLikerList
-from main.views.me.experience import ExperienceList
+from main.views.experience import ExperienceList
 from main.views.me.info import Username, Password, Icon, Getui, Profile
 from main.views.me.score import UserScoreRecord
 from main.views.me.visit import UserVisitorList

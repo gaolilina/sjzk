@@ -1,5 +1,6 @@
 from django.conf.urls import url
 
+from main.views.experience import Experience, ExperienceList
 from main.views.friend import FriendCheck, MyFriendList
 from main.views.friend.request import FriendRequestList
 from main.views.action import ScreenUserActionList

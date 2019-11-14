@@ -174,6 +174,7 @@ class UserExperience(models.Model):
     time_in = models.DateField(default=None, null=True)
     time_out = models.DateField(default=None, null=True)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
+    likers = models.ManyToManyField('User', related_name='+')
 
     class Meta:
         db_table = 'user_experience'

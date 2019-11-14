@@ -7,7 +7,7 @@ from main.views.like.comment import ILikeTeamComment, ILikeUserComment, ILikeAct
 from main.views.like.competition import LikedCompetition
 from main.views.like.tag import LikedUserTag, LikedTeamTag
 from main.views.like.team import LikedTeam
-from main.views.like.user import LikedUser
+from main.views.like.user import LikedUser, ILikeUserExperience
 
 urlpatterns = [
     # 我点赞用户
@@ -40,4 +40,6 @@ urlpatterns = [
     url(r'^comment_user_action/(?P<comment_id>.+?)/$', ILikeUserActionComment.as_view()),
     # 我点赞团队评论
     url(r'^comment_team_action/(?P<comment_id>.+?)/$', ILikeTeamActionComment.as_view()),
+    # 我点赞用户经历
+    url(r'^experience/(?P<experience_id>.+?)/$', ILikeUserExperience.as_view()),
 ]

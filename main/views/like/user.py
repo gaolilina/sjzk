@@ -1,6 +1,6 @@
-from main.models import User
+from main.models import User, UserExperience
 from main.utils import get_score_stage
-from main.views.like import ILikeSomething, SomethingLikers, Liker
+from main.views.like import ILikeSomething, SomethingLikers, Liker, ILikeSomethingSimple
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object
 
@@ -45,3 +45,13 @@ class UserLiker(Liker):
     def get(self, request, other_user, user=None):
         user = user or request.user
         return super(UserLiker, self).get(request, user, other_user)
+
+
+class ILikeUserExperience(ILikeSomethingSimple):
+    @fetch_object(UserExperience.objects, 'experience')
+    def post(self, request, experience):
+        return super().post(request, experience)
+
+    @fetch_object(UserExperience.objects, 'experience')
+    def delete(self, request, experience):
+        return super().delete(request, experience)
