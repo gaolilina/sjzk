@@ -108,6 +108,7 @@ class ActivityStage(models.Model):
     STATE_IMPORTANT = 4
 
     ALL_STAGES = [STAGE_PROPAGANDA, STAGE_APPLY, STATE_IMPORTANT]
+    ALL_STAGES_STR = ['宣传', '报名', '结束', '进行中', '举办期间', '未开始']
 
     activity = models.ForeignKey('Activity', models.CASCADE, 'stages')
     status = models.IntegerField(default=0, db_index=True)

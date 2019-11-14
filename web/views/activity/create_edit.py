@@ -44,7 +44,7 @@ class AdminActivityAdd(BaseView):
         if type(stages) is not list or len(stages) <= 0:
             return self.fail(3, '活动阶段不能为空')
         for stage in stages:
-            code, desc = check_stage(stage, time_start, time_start)
+            code, desc = check_stage(stage, time_start, time_end)
             if code > 0:
                 return self.fail(code, desc)
 
@@ -140,7 +140,7 @@ class ActivityModify(BaseView):
             if type(stages) is not list or len(stages) <= 0:
                 return self.fail(3, '活动阶段不能为空')
             for stage in stages:
-                code, desc = check_stage(stage, time_start, time_start)
+                code, desc = check_stage(stage, time_start, time_end)
                 if code > 0:
                     return self.fail(code, desc)
 
@@ -164,23 +164,29 @@ def check_stage(stage, activity_start, activity_end):
     # 开始时间
     stage_start = stage['time_started']
     try:
-        if len(stage_start) > 10:
-            stage_start = datetime.strptime(stage_start, '%Y-%m-%d %H:%M:%S')
-        else:
-            stage_start = datetime.strptime(stage_start, '%Y-%m-%d')
+        stage_start = format_time(stage_start)
     except ValueError:
-        return 5, '{} 阶段的开始时间格式错误'.format(status)
-    if stage_start < activity_start:
-        return 6, '{} 阶段的开始时间早于活动开始时间'.format(status)
+        return 5, '{}阶段的开始时间格式错误'.format(ActivityStage.ALL_STAGES_STR[status])
+    if not (activity_start <= stage_start <= activity_end):
+        return 6, '{}阶段的开始时间应在活动开始时间和结束时间之间'.format(ActivityStage.ALL_STAGES_STR[status])
     # 结束时间
     stage_end = stage['time_ended']
     try:
-        if len(stage_end) > 10:
-            stage_end = datetime.strptime(stage_end, '%Y-%m-%d %H:%M:%S')
-        else:
-            stage_end = datetime.strptime(stage_end, '%Y-%m-%d')
+        stage_end = format_time(stage_end)
     except ValueError:
-        return 7, '{} 阶段的结束时间格式错误'.format(status)
-    if stage_end > activity_end:
-        return 8, '{} 阶段的结束时间早于活动开始时间'.format(status)
+        return 7, '{}阶段的结束时间格式错误'.format(ActivityStage.ALL_STAGES_STR[status])
+    if not (activity_start <= stage_end <= activity_end):
+        return 8, '{}阶段的结束时间应在活动开始时间和结束时间之间'.format(ActivityStage.ALL_STAGES_STR[status])
+    # 开始和结束时间对比
+    if stage_end < stage_start:
+        return 9, '{}阶段的结束时间应晚于开始时间'.format(ActivityStage.ALL_STAGES_STR[status])
     return 0, ''
+
+
+def format_time(time_str):
+    if len(time_str) > 16:
+        return datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+    elif len(time_str) > 10:
+        return datetime.strptime(time_str, '%Y-%m-%d %H:%M')
+    else:
+        return datetime.strptime(time_str, '%Y-%m-%d')
