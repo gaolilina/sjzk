@@ -185,13 +185,16 @@ class CommentList(View):
         """
         qs = entity.comments
         c = qs.count()
-        l = [{'id': r.id,
-              'author_id': r.author.id,
-              'author_name': r.author.name,
-              'icon_url': r.author.icon,
-              'content': r.content,
-              'time_created': r.time_created
-              } for r in qs.all()[offset:offset + limit]]
+        l = [{
+            'id': r.id,
+            'author_id': r.author.id,
+            'author_name': r.author.name,
+            'icon_url': r.author.icon,
+            'content': r.content,
+            'time_created': r.time_created,
+            'count_liker': r.likers.count(),
+            'is_like': r.likers.filter(id=request.user.id).exists(),
+        } for r in qs.all()[offset:offset + limit]]
         return JsonResponse({'count': c, 'list': l})
 
     @validate_args({'content': forms.CharField(max_length=100)})
@@ -469,5 +472,3 @@ class LabVisitorList(VisitorList):
 
 
 # noinspection PyMethodOverriding
-
-

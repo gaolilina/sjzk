@@ -11,6 +11,7 @@ class Comment(models.Model):
     author = models.ForeignKey('User', models.CASCADE, '+')
     content = models.CharField(max_length=100)
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
+    likers = models.ManyToManyField('User', related_name='+')
 
     class Meta:
         abstract = True

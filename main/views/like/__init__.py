@@ -9,8 +9,24 @@ from util.decorator.auth import app_auth
 from util.decorator.param import validate_args
 
 
-class ILikeSomething(View):
+class ILikeSomethingSimple(View):
     """与当前用户点赞行为相关的View"""
+
+    @app_auth
+    def post(self, request, entity):
+        """对某个对象点赞"""
+        entity.likers.add(request.user)
+        abort(200)
+
+    @app_auth
+    def delete(self, request, entity):
+        """对某个对象取消点赞"""
+        entity.likers.remove(request.user)
+        abort(200)
+
+
+class ILikeSomething(View):
+    """与当前用户点赞行为相关的View，后面逐渐使用上面那个"""
 
     @app_auth
     def get(self, request, entity):
