@@ -3,7 +3,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
-from main.models import action, TeamInvitation
+from main.models import TeamInvitation
 from main.utils import abort, get_score_stage
 from main.utils.decorators import require_verification_token
 from util.decorator.auth import app_auth
@@ -45,8 +45,8 @@ class InvitationList(View):
 
 class Invitation(View):
 
-    @fetch_object(TeamInvitation.objects, 'invitation')
     @require_verification_token
+    @fetch_object(TeamInvitation.objects, 'invitation')
     def post(self, request, invitation):
         """同意团队的加入邀请并成为团队成员（需收到过加入团队邀请）"""
 
@@ -61,8 +61,6 @@ class Invitation(View):
         # 在事务中建立关系，并删除对应的加团队邀请
         with transaction.atomic():
             invitation.team.members.create(user=request.user)
-            # 发布用户加入团队动态
-            action.join_team(request.user, invitation.team)
             invitation.delete()
             request.user.score += get_score_stage(1)
             request.user.score_records.create(

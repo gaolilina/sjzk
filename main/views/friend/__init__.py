@@ -65,11 +65,10 @@ class FriendAction(FriendCheck):
         if not request.user.friends.filter(other_user=other_user).exists():
             abort(404, '好友不存在')
 
-        from ..models import UserFriend
-        UserFriend.objects.filter(user=request.user, other_user=other_user) \
-            .delete()
-        UserFriend.objects.filter(user=other_user, other_user=request.user) \
-            .delete()
+        from main.models import UserFriend
+        UserFriend.objects.filter(user=request.user, other_user=other_user).delete()
+        UserFriend.objects.filter(user=other_user, other_user=request.user).delete()
+
         # 积分相关
         request.user.score -= get_score_stage(1)
         request.user.score_records.create(
