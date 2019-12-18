@@ -187,6 +187,8 @@ class Profile(BaseView):
              'expect_role': user.expect_role,
              'follow_field': user.follow_field,
              'follow_skill': user.follow_skill,
+             'goodat': user.goodat,
+             'follow': user.follow,
              'unit1': user.unit1,
              'unit2': user.unit2,
              'profession': user.profession,
@@ -216,6 +218,8 @@ class Profile(BaseView):
         'unit1': forms.CharField(required=False, max_length=20),
         'unit2': forms.CharField(required=False, max_length=20),
         'profession': forms.CharField(required=False, max_length=20),
+        'goodat': forms.CharField(required=False, max_length=256),
+        'follow': forms.CharField(required=False, max_length=256),
     })
     def post(self, request, **kwargs):
         """修改用户资料
@@ -266,7 +270,7 @@ class Profile(BaseView):
         normal_keys = ('description', 'qq', 'wechat', 'email', 'gender',
                        'birthday', 'province', 'city', 'county', 'adept_field',
                        'adept_skill', 'expect_role', 'follow_field',
-                       'follow_skill')
+                       'follow_skill', 'goodat', 'follow')
         for k in normal_keys:
             if k in kwargs:
                 setattr(user, k, kwargs[k])

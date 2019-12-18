@@ -120,7 +120,7 @@ class PublishUserAchievement(View):
         # 检查上传图片数量
         max_pic = system_param.pic_max + 1
         if 'image' + str(max_pic) in request.FILES:
-            abort(403, '最多上传' + str(max_pic) + '张图片')
+            abort(403, '最多上传' + str(system_param.pic_max) + '张图片')
         pics = [
             request.FILES.get('image' + str(i)) if 'image' + str(i) in request.FILES else None
                 for i in range(1, max_pic)]

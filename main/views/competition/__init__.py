@@ -343,6 +343,8 @@ class CompetitionExpertList(View):
               'expect_role': user.expect_role,
               'follow_field': user.follow_field,
               'follow_skill': user.follow_skill,
+              'follow': user.follow,
+              'goodat': user.goodat,
               'unit1': user.unit1,
               'unit2': user.unit2,
               'profession': user.profession,

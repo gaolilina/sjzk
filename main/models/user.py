@@ -44,6 +44,11 @@ class User(models.Model):
     follow_field = models.CharField(default='', max_length=256)
     follow_skill = models.CharField(default='', max_length=256)
 
+    # 擅长
+    goodat = models.CharField(max_length=256, default='')
+    # 关注
+    follow = models.CharField(max_length=256, default='')
+
     # 是否通过实名验证,0:未提交, 1:待审核, 2:身份证审核通过, 3:审核未通过,请重新提交,
     # 4:Eid审核通过
     is_verified = models.IntegerField(default=0, db_index=True)
