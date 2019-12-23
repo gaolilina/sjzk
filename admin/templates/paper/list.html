@@ -34,11 +34,11 @@
                 {% endif %}
             </td>
             <td>
-                {% if item.enable %} 启用 {% else %} 未启用 {% endif %}
+                {% if item.enable == 'True' %} 启用 {% else %} 未启用 {% endif %}
             </td>
             <td><a href="{% url 'admin:paper:detail' item.id %}">查看</a>
             <a onclick="verify_choose({{item.id}},'{{item.enable}}')">
-            {% if item.enable %} 停用 {% else %} 启用 {% endif %}</a>
+            {% if item.enable == 'True' %} 停用 {% else %} 启用 {% endif %}</a>
             <a onclick="show_statistics({{item.id}},'{{item.name}}','{{item.desc}}')">统计</a></td>
             <!--<a id="del">删除</a></td>-->
         </tr>
