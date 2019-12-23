@@ -9,7 +9,7 @@ from django.template import loader, Context
 from django.views.generic.base import View
 
 from admin.utils.decorators import require_role
-from util.decorator.auth import admin_auth
+from util.decorator.auth import admin_auth, cms_auth
 from main.utils import abort
 from util.decorator.param import fetch_object, validate_args, old_validate_args
 from modellib.models.paper.paper import Paper
@@ -142,7 +142,7 @@ class PaperDetail(View):
 
 class PaperSwitch(View):
 
-    @admin_auth
+    @cms_auth
     @require_role('xyz')
     @validate_args({
         'paper_id': forms.IntegerField(min_value=0),
