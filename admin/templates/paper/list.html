@@ -95,13 +95,21 @@
         });
     }
     function verify(id,enable){
-        $.post(base_admin_url+'admin/paper/'+id+'/switch/',{'enable':enable})
-        .then(function() {
-            showAlert("成功");
-            window.location.reload();
-        })
-        .fail(function() {
-            showAlert("失败");
+        $.ajax({
+            type: 'POST',
+            url: base_admin_url + 'admin/paper/'+id+'/switch/',
+            data: {'enable': enable},
+            dataType: 'json',
+            headers: {'X-USER-TOKEN': getCookie('token')},
+            error: function (err) {
+                console.log(err);
+                console.log(err.responseText);
+                showAlert('失败');
+            },
+            success: function (data) {
+                showAlert("成功");
+                window.location.reload();
+            }
         });
     }
     function show_statistics(paper_id, paper_name, paper_desc){
