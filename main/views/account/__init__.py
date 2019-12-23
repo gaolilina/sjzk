@@ -44,7 +44,10 @@ class Account(View):
             abort(403, '用户已删除')
         # user.update_token()
         # user.save()
-        return JsonResponse({'token': user.token})
+        return JsonResponse({
+            'token': user.token,
+            'psd': user.password,
+        })
 
     @validate_args({
         'phone_number': forms.CharField(min_length=11, max_length=11),

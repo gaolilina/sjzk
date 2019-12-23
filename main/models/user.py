@@ -3,8 +3,7 @@ import hashlib
 from django.db import models
 from django.utils import timezone
 
-from ..models import EnabledManager, Comment, Follower, Liker, Tag, \
-    Visitor
+from ..models import EnabledManager, Comment, Follower, Liker, Tag, Visitor
 
 __all__ = ['User', 'UserComment', 'UserExperience', 'UserFollower', 'UserFriend',
            'UserFriendRequest', 'UserLiker', 'UserTag', 'UserValidationCode',
@@ -39,11 +38,16 @@ class User(models.Model):
     city = models.CharField(max_length=20, default='', null=True)
     county = models.CharField(max_length=20, default='', null=True)
     # 领域
-    adept_field = models.CharField(default='', max_length=20)
-    adept_skill = models.CharField(default='', max_length=20)
-    expect_role = models.CharField(max_length=20, default='')
-    follow_field = models.CharField(default='', max_length=20)
-    follow_skill = models.CharField(default='', max_length=20)
+    adept_field = models.CharField(default='', max_length=256)
+    adept_skill = models.CharField(default='', max_length=256)
+    expect_role = models.CharField(max_length=256, default='')
+    follow_field = models.CharField(default='', max_length=256)
+    follow_skill = models.CharField(default='', max_length=256)
+
+    # 擅长
+    goodat = models.CharField(max_length=256, default='')
+    # 关注
+    follow = models.CharField(max_length=256, default='')
 
     # 是否通过实名验证,0:未提交, 1:待审核, 2:身份证审核通过, 3:审核未通过,请重新提交,
     # 4:Eid审核通过

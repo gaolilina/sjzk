@@ -3,7 +3,7 @@ from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.generic import View
 
-from im.huanxin import update_nickname
+from im.huanxin import update_nickname, update_password
 from main.models import User
 from main.utils import abort, save_uploaded_image, get_score_stage
 from main.utils.dfa import check_bad_words
@@ -59,11 +59,15 @@ class Password(View):
         :param new_password: 新密码（6-20位）
 
         """
-        if request.user.check_password(old_password):
-            request.user.set_password(new_password)
-            request.user.save()
-            abort(200)
-        abort(403, '旧密码错误')
+        user = request.user
+        if not user.check_password(old_password):
+            abort(403, '旧密码错误')
+        user.set_password(new_password)
+        result = update_password(user.phone_number, user.password)
+        if result == 404:
+            abort(404, 'user not found')
+        user.save()
+        abort(200)
 
 
 class Icon(Icon_):
@@ -183,6 +187,8 @@ class Profile(BaseView):
              'expect_role': user.expect_role,
              'follow_field': user.follow_field,
              'follow_skill': user.follow_skill,
+             'goodat': user.goodat,
+             'follow': user.follow,
              'unit1': user.unit1,
              'unit2': user.unit2,
              'profession': user.profession,
@@ -212,6 +218,8 @@ class Profile(BaseView):
         'unit1': forms.CharField(required=False, max_length=20),
         'unit2': forms.CharField(required=False, max_length=20),
         'profession': forms.CharField(required=False, max_length=20),
+        'goodat': forms.CharField(required=False, max_length=256),
+        'follow': forms.CharField(required=False, max_length=256),
     })
     def post(self, request, **kwargs):
         """修改用户资料
@@ -262,7 +270,7 @@ class Profile(BaseView):
         normal_keys = ('description', 'qq', 'wechat', 'email', 'gender',
                        'birthday', 'province', 'city', 'county', 'adept_field',
                        'adept_skill', 'expect_role', 'follow_field',
-                       'follow_skill')
+                       'follow_skill', 'goodat', 'follow')
         for k in normal_keys:
             if k in kwargs:
                 setattr(user, k, kwargs[k])

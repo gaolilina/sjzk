@@ -23,6 +23,7 @@ urls = [
     url(r'^icon/$', Icon.as_view()),
     url(r'^profile/$', Profile.as_view()),
     url(r'^getui/$', Getui.as_view()),
+    url(r'^password/$', Password.as_view()),
     # 访客
     url(r'^visitors/$', UserVisitorList.as_view()),
     # 对我点赞的用户
@@ -71,5 +72,4 @@ urls = [
     url(r'^experiences/fieldwork/$', ExperienceList.as_view(), kwargs={'type': 'fieldwork'}),
     # 基本信息
     url(r'^username/$', Username.as_view()),
-    url(r'^password/$', Password.as_view()),
 ]
