@@ -1,12 +1,15 @@
 from django import forms
 
 from admin.models import AdminUser
+from modellib.models.ip_limit import IPLimit
 from util.base.view import BaseView
 from util.decorator.param import validate_args
+from util.decorator.spider import ip_limit
 
 
 class LoginByUsername(BaseView):
 
+    @ip_limit(IPLimit.TYPE_CMS)
     @validate_args({
         'username': forms.CharField(max_length=20, required=False),
         'password': forms.CharField(min_length=6, max_length=32, strip=False),
