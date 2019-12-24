@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 
 from django.http import JsonResponse
@@ -23,26 +23,26 @@ def ip_limit(type):
                 return error(data.code)
 
             now = datetime.now()
-            duration = data.last_time - now
+            duration = now - data.last_time
 
             config = ServerConfig.objects.first()
             update_data = {
                 'last_time': now,
             }
             # 超速
-            if duration < config.ip_limit_time:
+            if duration < timedelta(milliseconds=config.ip_limit_time):
                 count = data.illegal_count + 1
                 # 达到阈值,禁止访问
                 if count >= config.ip_limit_count:
                     code = generate_code()
-                    IPLimit.objects.filter(id=data.id).update(last_time=now, is_lock=True, code=code)
+                    IPLimit.objects.filter(id=data.id).update(is_lock=True, code=code)
                     return error(code)
                 # 未达到阈值
                 update_data['illegal_count'] = count
                 if count == 1:
                     update_data['first_time'] = now
             # 未超速时，需清除部分数据
-            elif data.first_time is not None and (now - data.first_time) > config.ip_limit_time * config.ip_limit_count:
+            elif data.first_time is not None and (now - data.first_time) > timedelta(seconds=config.ip_limit_time_max):
                 update_data['first_time'] = None
                 update_data['illegal_count'] = 0
             # 更新数据
