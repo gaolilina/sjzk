@@ -53,6 +53,7 @@ class FriendRequestList(View):
     # post_dict = {'description': forms.CharField(required=False, max_length=100)}
     @require_verification_token
     @validate_args({
+        'user_id': forms.IntegerField(),
         'description': forms.CharField(required=False, max_length=100)
     })
     @fetch_object(User.enabled, 'user')

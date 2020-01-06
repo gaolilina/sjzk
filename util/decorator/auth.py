@@ -17,6 +17,8 @@ def cms_auth(function):
 
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
+        if getattr(request, 'user', None) is not None:
+            return function(self, request, *args, **kwargs)
         token = request.META.get('HTTP_X_USER_TOKEN')
         if not token or AdminUser.objects.filter(token=token).count() <= 0:
             return JsonResponse({
@@ -40,6 +42,8 @@ def admin_auth(function):
 
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
+        if getattr(request, 'user', None) is not None:
+            return function(self, request, *args, **kwargs)
         token = request.COOKIES.get('token')
         if not token or AdminUser.objects.filter(token=token).count() <= 0:
             return HttpResponseRedirect(reverse("admin:login"))
@@ -60,6 +64,8 @@ def app_auth(function):
 
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
+        if getattr(request, 'user', None) is not None:
+            return function(self, request, *args, **kwargs)
         token = request.META.get('HTTP_X_USER_TOKEN')
         if not token:
             abort(401, '缺少参数token')
@@ -84,6 +90,8 @@ def client_auth(function):
 
     @wraps(function)
     def decorator(self, request, *args, **kwargs):
+        if getattr(request, 'user', None) is not None:
+            return function(self, request, *args, **kwargs)
         token = request.META.get('HTTP_X_USER_TOKEN')
         if not token or User.objects.filter(token=token).count() <= 0:
             return JsonResponse({
