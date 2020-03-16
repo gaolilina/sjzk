@@ -5,8 +5,8 @@ from django.db.models import Count
 from django.http import JsonResponse
 from django.views.generic.base import View
 
-from main.models import User, UserTag
 from recommend import user_sim
+from main.models import User, UserTag, UserLiker
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args
 
@@ -89,6 +89,7 @@ class SearchUser(View):
               'role': u.role,
               'username': u.username,
               'phone': u.phone_number,
+              'is_like': UserLiker.objects.filter(liked_id=u.id, liker_id=request.user.id).exists(),  # 是否点
               } for u in users]
         l = user_sim.sort(l, request.user)
         return JsonResponse({'count': c, 'list': l})

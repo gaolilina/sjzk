@@ -224,8 +224,8 @@ class UserFriendRequest(models.Model):
 class UserLiker(Liker):
     """用户点赞记录"""
 
-    liked = models.ForeignKey('User', models.CASCADE, 'likers')
-    liker = models.ForeignKey('User', models.CASCADE, 'liked_users')
+    liked = models.ForeignKey('User', models.CASCADE, 'likers') # 被点赞的人
+    liker = models.ForeignKey('User', models.CASCADE, 'liked_users') # 点赞者
 
     class Meta:
         db_table = 'user_liker'
