@@ -94,7 +94,12 @@ class Detail(View):
                 'name': ex.name,
                 'username': ex.username,
                 'id': ex.id
-            } for ex in competition.experts.all()]
+            } for ex in competition.experts.all()],
+            'stages': [{
+                'status': p.status,
+                'time_started': p.time_started,
+                'time_ended': p.time_ended,
+            } for p in competition.stages.all()],
         })
 
 

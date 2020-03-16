@@ -154,10 +154,12 @@ class Profile(BaseView):
         arr1 = []
         arr2 = []
         arr3 = []
+        arr4 = []
         for t in user.tags.all():
             arr1.append(t.id)
             arr2.append(t.name)
             arr3.append(t.likers.count())
+            arr4.append(user in t.likers.all())
         r = {'id': user.id,
              'time_created': user.time_created,
              'name': user.name,
@@ -173,6 +175,7 @@ class Profile(BaseView):
              'county': user.county,
              'tag_ids': arr1,
              'tag_likers': arr3,
+             'tag_islike': arr4,
              'tags': arr2,
              'follower_count': user.followers.count(),
              'followed_count': user.followed_users.count() + user.followed_teams.count(),
