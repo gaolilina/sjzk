@@ -11,6 +11,7 @@ class UserNeed(models.Model):
     # 点赞
     likers = models.ManyToManyField('main.User', related_name='likeUserNeeds')
     time_created = models.DateTimeField(auto_now_add=True, null=True, default=None)
+    activity = models.ForeignKey('main.Activity', null=True, default=None)
 
     class Meta:
         db_table = 'need_user'
