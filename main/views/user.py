@@ -83,7 +83,7 @@ class Profile(View):
             arr1.append(t.id)
             arr2.append(t.name)
             arr3.append(t.likers.count())
-            arr4.append(user in t.likers.all())
+            arr4.append(t.likers.filter(liker_id=request.user.id).exists())
         r = {'id': user.id,
              'time_created': user.time_created,
              'name': user.name,
