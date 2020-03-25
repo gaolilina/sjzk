@@ -1,5 +1,5 @@
 from django.conf.urls import url
-
+from cms.views.comboBox.comboBox import comboBox
 from cms.views.word.field import FieldList, FieldEnable
 from cms.views.word.skill import SkillList, SkillEnable
 
@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^field/(?P<field_id>\d+)/enable/$', FieldEnable.as_view()),
     url(r'^skill/$', SkillList.as_view()),
     url(r'^skill/(?P<skill_id>\d+)/enable/$', SkillEnable.as_view()),
+    url(r'^(?P<key>\S+)/$', comboBox.as_view()),
 ]
