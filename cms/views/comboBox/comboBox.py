@@ -15,14 +15,11 @@ class comboBox(BaseView):
     @validate_args({
         'key': forms.CharField(max_length=254),
     })
-
-    def get(self, request, key, **kwargs):                #根据键值获取选项
-        combo = ComboBox.objects.filter(key = key)
-        if combo:
-            dict = getDetail(combo[0].id, False)
+    def get(self, request, key, **kwargs):  # 根据键值获取选项
+        combo = ComboBox.objects.filter(key=key)
+        if combo.exists():
+            dict = getDetail(combo.first().id, False)
         else:
             return self.fail(code=1, msg='key值不存在')
-        return self.success({
-            'result' : dict
-        })
+        return self.success(dict)
 
