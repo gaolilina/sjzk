@@ -16,10 +16,10 @@ class NeedSearch(View):
         'province': forms.CharField(required=False, max_length=100),
         'field': forms.CharField(required=False, max_length=100),
         'team_id': forms.IntegerField(required=False, min_value=0),
-        'name': forms.CharField(required=False, max_length=20),
+        'title': forms.CharField(required=False, max_length=20),
     })
     @fetch_object(Team.objects, 'team', force=False)
-    def get(self, request, name=None, team=None, type=None, status=None, province=None, field=None, offset=0, limit=10, **kwargs):
+    def get(self, request, title=None, team=None, type=None, status=None, province=None, field=None, offset=0, limit=10, **kwargs):
         """
         获取发布中的需求列表
 
@@ -42,8 +42,8 @@ class NeedSearch(View):
                 time_created: 发布时间
         """
         qs = TeamNeed.objects
-        if name is not None:
-            qs = qs.filter(title=name)
+        if title is not None:
+            qs = qs.filter(title__contains=title)
         if team is not None:
             qs = qs.filter(team=team)
         if type is not None:
