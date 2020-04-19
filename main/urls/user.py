@@ -11,6 +11,8 @@ from main.views.comment.user import UserCommentList, UserComment
 from main.views.follow.user import UserFollowerList
 from main.views.like.user import UserLikerList, UserLiker
 from main.views.me.visit import UserVisitorList
+from main.views.needMatch.userNeed import UserNeedList, DeleteMyUserNeed, getUserNeedMatching, getUserNeedMatchingInFriend
+from main.views.needMatch.needFollower import FollowedNeed, FollowedNeedList
 from main.views.search import SearchUser
 from main.views.search.action import SearchUserAction, SearchTeamAction, SearchLabAction
 from ..views.user import *
@@ -68,4 +70,21 @@ urls = [
     url(r'^(?P<user_id>[0-9]+)/visitors/$', UserVisitorList.as_view()),
     # 推荐
     url(r'^recommend/', UserRecommend.as_view()),
+
+
+    # 需求
+    url(r'^need/', UserNeedList.as_view()),
+    url(r'^(?P<activity_id>[0-9]+)/activity/need/', UserNeedList.as_view()),
+    url(r'^(?P<competition_id>[0-9]+)/competition/need/', UserNeedList.as_view()),
+    url(r'^(?P<need_id>[0-9]+)/need/deleted/', DeleteMyUserNeed.as_view()),
+
+    url(r'^(?P<need_id>[0-9]+)/follow/need/', FollowedNeed.as_view()),
+    url(r'^follow/need/list/', FollowedNeedList.as_view()),
+    url(r'^(?P<activity_id>[0-9]+)/activity/follow/need/list/', FollowedNeedList.as_view()),
+    url(r'^(?P<competition_id>[0-9]+)/competition/follow/need/list/', FollowedNeedList.as_view()),
+
+    url(r'^match/need/list/', getUserNeedMatchingInFriend.as_view()),
+    url(r'^(?P<activity_id>[0-9]+)/activity/match/need/list/', getUserNeedMatching.as_view()),
+    url(r'^(?P<competition_id>[0-9]+)/competition/match/need/list/', getUserNeedMatching.as_view()),
+
 ]

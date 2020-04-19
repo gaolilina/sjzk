@@ -19,8 +19,9 @@ class SearchUserAchievement(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'description': forms.CharField(max_length=256, required=False),
     })
-    def get(self, request, offset=0, limit=10, order=1):
+    def get(self, request, description='', offset=0, limit=10, order=1):
         """获取所有用户发布的成果
 
         :param offset: 偏移量
@@ -40,8 +41,10 @@ class SearchUserAchievement(View):
                 time_created: 发布时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        c = Achievement.objects.count()
-        achievements = Achievement.objects.filter(team=None).order_by(k)[i:j]
+
+        achievements = Achievement.objects.filter(team=None, description__icontains=description).order_by(k)
+        c = achievements.count()
+        achievements = achievements[i:j]
         l = [{'id': a.id,
               'user_id': a.user.id,
               'user_name': a.user.unit1 if a.user.is_role_verified else a.user.name,
@@ -65,8 +68,9 @@ class SearchTeamAchievement(View):
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
         'order': forms.IntegerField(required=False, min_value=0, max_value=3),
+        'description': forms.CharField(max_length=256, required=False),
     })
-    def get(self, request, offset=0, limit=10, order=1):
+    def get(self, request, description='', offset=0, limit=10, order=1):
         """获取所有团队发布的成果
 
         :param offset: 偏移量
@@ -86,9 +90,11 @@ class SearchTeamAchievement(View):
                 time_created: 发布时间
         """
         i, j, k = offset, offset + limit, self.ORDERS[order]
-        c = Achievement.objects.count()
+
         # 团队成果，要 team 非空
-        achievements = Achievement.objects.filter(team__isnull=False).order_by(k)[i:j]
+        achievements = Achievement.objects.filter(team__isnull=False, description__icontains=description).order_by(k)
+        c = achievements.count()
+        achievements = achievements[i:j]
         l = [{'id': a.id,
               'team_id': a.team.id,
               'team_name': a.team.name,
