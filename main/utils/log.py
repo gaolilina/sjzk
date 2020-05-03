@@ -18,6 +18,10 @@ def app_log(event_name=None):
             log.url = request.path_info
             log.user = user
             log.event = event_name
+            log.ip = request.META['HTTP_X_REAL_IP']
+            log.mac = request.META['HTTP_X_MAC']
+            log.location = request.META['HTTP_X_LOCATION']
+            log.manufacturers = request.META['HTTP_X_MANUFACTURERS']
             log.save()
 
             # 记录积分
