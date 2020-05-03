@@ -25,6 +25,7 @@ class PublishTeamAchievement(View):
     })
     def get(self, request, team, offset=0, limit=10, order=1):
         """获取某团队发布的成果
+        TODO 使用 SearchTeamAchievement
 
         :param offset: 偏移量
         :param limit: 数量上限

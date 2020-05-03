@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from main.views.account.auth import IdentityVerificationView
 from main.views.account.phone import BindPhoneNumber
-from main.views.achievement import AchievementList
+from main.views.achievement.publish import PublishUserAchievement
 from main.views.activity.user_activity import MyJoinedActivityList
 from main.views.competition import CompetitionList
 from main.views.follow.user import UserFollowerList
@@ -44,7 +44,7 @@ urls = [
     url(r'^activity/$', MyJoinedActivityList.as_view()),
     # 竞赛
     url(r'^competition/$', CompetitionList.as_view()),
-    url(r'^achievements/$', AchievementList.as_view()),
+    url(r'^achievements/$', PublishUserAchievement.as_view()),
 
     #####################################弃用
     # 实名认证
