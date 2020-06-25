@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from main.views.achievement.action import AchievementDoWhoView
+from main.views.achievement.action import AchievementDoWhoView, AchievementDetail
 from main.views.achievement.publish import PublishTeamAchievement, PublishUserAchievement
 from main.views.search.achievement import SearchTeamAchievement
 from ..views.achievement import *
@@ -11,7 +11,7 @@ urls = [
     # 需求
     url(r'^(?P<achievement_id>[0-9]+)/require/$', AchievementDoWhoView.as_view(), name='require', kwargs={'who': 'requirers'}),
     # 单挑成果
-    url(r'^(?P<achievement_id>[0-9]+)/$', AllUserAchievementView.as_view(), name='achievement'),
+    url(r'^(?P<achievement_id>[0-9]+)/$', AchievementDetail.as_view(), name='achievement'),
     # 发布个人成果
     url(r'^$', PublishUserAchievement.as_view(), name='all_achievements'),
     # 发布成团队果
@@ -23,6 +23,6 @@ urls = [
     #============================================ 弃用
     # 所有团队成果
     url(r'^team/$', SearchTeamAchievement.as_view(), name='all_achievements'),
-    url(r'^(?P<achievement_id>[0-9]+)/team/$', AllTeamAchievementView.as_view(), name='achievement'),
+    url(r'^(?P<achievement_id>[0-9]+)/team/$', AchievementDetail.as_view(), name='achievement'),
 
 ]
