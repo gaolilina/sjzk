@@ -2,12 +2,15 @@ from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views.generic import View
+from django.utils import timezone
 
 from main.models import Competition, Team, CompetitionFile as File, CompetitionTeamParticipator, User
 from main.utils import abort, save_uploaded_file
 from main.utils.decorators import *
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
+
+import datetime
 
 __all__ = ['Detail', 'CompetitionStageList', 'CompetitionFile', 'CompetitionFileScore',
            'CompetitionFileList', 'Screen',
@@ -68,6 +71,16 @@ class Detail(View):
             user_type: 参与人员身份
             time_created: 创建时间
         """
+
+        for p in competition.stages.all():
+            time_started = p.time_started
+            time_ended = p.time_ended
+            curTime = datetime.datetime.now()
+            if curTime <= time_ended and curTime >= time_started:
+                if competition.status != p.status:
+                    competition.status = p.status
+                    Competition.objects.filter(id = competition.id).update(status = p.status)
+                break
 
         owner = competition.owner.first()
         return JsonResponse({

@@ -6,16 +6,18 @@ from django.http import JsonResponse
 from django.views.generic.base import View
 
 from main.models import Team, TeamTag
-from main.models.action import TeamAction
-from main.utils import action
+from main.models.team import TeamLiker
+
 from main.utils.decorators import fetch_user_by_token
 from util.decorator.param import validate_args
+from util.decorator.auth import app_auth
 from main.utils.recommender import calculate_ranking_score
 
 
 class SearchTeam(View):
     ORDERS = ('time_created', '-time_created', 'name', '-name')
 
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -51,6 +53,7 @@ class SearchTeam(View):
                 tags: 标签，格式：['tag1', 'tag2', ...]
                 time_created: 注册时间
         """
+        uid = request.user.id
         i, j = offset, offset + limit
         # 按团队名称段检索
         condition = {}
@@ -86,5 +89,7 @@ class SearchTeam(View):
               'member_count': t.members.count(),
               'fields': [t.field1, t.field2],
               'tags': [tag.name for tag in t.tags.all()],
-              'time_created': t.time_created} for t in teams]
+              'time_created': t.time_created,
+              'is_like': TeamLiker.objects.filter(liked_id=t.id, liker_id=request.user.id).exists(),  # 是否点
+            } for t in teams],
         return JsonResponse({'count': c, 'list': l})
