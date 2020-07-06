@@ -71,16 +71,22 @@ class Detail(View):
             user_type: 参与人员身份
             time_created: 创建时间
         """
-
         for p in competition.stages.all():
             time_started = p.time_started
             time_ended = p.time_ended
             curTime = datetime.datetime.now()
+            if curTime < time_started:
+                competition.status = 0
+                break
             if curTime <= time_ended and curTime >= time_started:
                 if competition.status != p.status:
                     competition.status = p.status
-                    Competition.objects.filter(id = competition.id).update(status = p.status)
                 break
+            if curTime >= time_ended:
+                competition.status = 100
+
+        Competition.objects.filter(id=competition.id).update(status=p.status)
+
 
         owner = competition.owner.first()
         return JsonResponse({
