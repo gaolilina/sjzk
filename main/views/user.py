@@ -432,6 +432,7 @@ class CompetitionList(View):
         c = ctp.count()
         l = [{'id': a.competition.id,
               'name': a.competition.name,
+              'team_name': a.team.name,
               'liker_count': a.competition.likers.count(),
               'status': a.competition.status,
               'time_started': a.competition.time_started,
@@ -503,7 +504,7 @@ class CompetitionJoinedList(View):
         'competition_id': forms.IntegerField(),
     })
     def post(self, request, user, competition_id):
-        ctp = Compentition.objects.filter(pk=competition_id).get()
+        ctp = Competition.objects.filter(pk=competition_id).get()
         ctp.experts.add(user)
         abort(200)
 
