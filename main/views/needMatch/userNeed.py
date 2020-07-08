@@ -92,7 +92,7 @@ class getUserNeedMatching(BaseView):
             if count != 0:
                 list.append({"nums":count, "need":need_to_json(need)})
 
-        return JsonResponse({'count': len(list), 'list': list})
+        return JsonResponse({'code':0, 'count': len(list), 'list': list})
 
 
 
@@ -127,7 +127,7 @@ class getUserNeedMatchingInFriend(BaseView):
                 if count != 0:
                     list.append({"nums": count, "need": need_to_json(need)})
 
-        return JsonResponse({'count': len(list), 'list': list})
+        return JsonResponse({'code':0, 'count': len(list), 'list': list})
 
 
 
