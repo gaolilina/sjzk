@@ -106,7 +106,7 @@ class FollowedNeedList(View):
 
             list.append({"nums": count, "need": need_to_json(need)})
 
-        return JsonResponse({'code':0, 'count': len(list), 'list': list})
+        return JsonResponse({'count': len(list), 'list': list})
 
 
 def need_to_json(need):
