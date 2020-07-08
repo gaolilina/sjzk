@@ -92,7 +92,7 @@ class FollowedNeedList(View):
         tags = []
         if goodat:
             tags = [tag.split("-")[-1] for tag in goodat.split("；")]
-        print(tags)
+
         list = []
         for need in qs:  # 需求
             if need.competition != None or need.activity != None:  # 团队或活动需求跳过
@@ -101,7 +101,6 @@ class FollowedNeedList(View):
             fields = field.split(";")
             count = 0
             for field in fields:
-                print(field)
                 if field in tags:
                     count += 1
 
