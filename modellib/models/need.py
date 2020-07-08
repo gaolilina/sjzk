@@ -10,6 +10,10 @@ class UserNeed(models.Model):
     field = models.CharField(default='', max_length=256)
     # 点赞
     likers = models.ManyToManyField('main.User', related_name='likeUserNeeds')
+
+    content = models.CharField(default='', max_length=256)
+    city = models.CharField(default='', max_length=20)
+
     time_created = models.DateTimeField(auto_now_add=True, null=True, default=None)
     activity = models.ForeignKey('main.Activity', null=True, default=None)
     competition = models.ForeignKey('main.Competition', null=True, default=None)

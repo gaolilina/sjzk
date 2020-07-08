@@ -87,11 +87,36 @@ class FollowedNeedList(View):
                 list.append(follow.followed)
                 c += 1
         qs = list[offset:offset + limit]
-        l = [{'id': a.id,
-              'user_id': a.user_id,
-              'desc': a.desc,
-              'liker_count': a.user.likers.count(),
-              'field': a.field,
 
-            } for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        goodat = request.user.goodat
+        tags = []
+        if goodat:
+            tags = [tag.split("-")[-1] for tag in goodat.split("；")]
+        print(tags)
+        list = []
+        for need in qs:  # 需求
+            if need.competition != None or need.activity != None:  # 团队或活动需求跳过
+                continue
+            field = need.field.replace("；", ";", 10)
+            fields = field.split(";")
+            count = 0
+            for field in fields:
+                print(field)
+                if field in tags:
+                    count += 1
+
+            list.append({"nums": count, "need": need_to_json(need)})
+
+        return JsonResponse({'count': len(list), 'list': list})
+
+
+def need_to_json(need):
+    return {
+        'id': need.id,
+        'user_id': need.user_id,
+        'desc': need.desc,
+        'content': need.content,
+        'city': need.city,
+        'count_likers': need.likers.all().count(),
+        'tags': need.field,
+    }

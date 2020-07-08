@@ -29,14 +29,16 @@ class UserNeedList(BaseView):
     @validate_args({
         'tags': forms.CharField(max_length=250),
         'desc': forms.CharField(max_length=250),
+        'content': forms.CharField(max_length=250),
+        'city': forms.CharField(max_length=20),
         'activity_id': forms.IntegerField(required=False),
         'competition_id': forms.IntegerField(required=False),
     })
     @fetch_object(Activity.objects, 'activity', force=False)
     @fetch_object(Competition.objects, 'competition', force=False)
-    def post(self, request, tags, desc, activity=None, competition=None, **kwargs):
+    def post(self, request, tags, desc, content, city, activity=None, competition=None, **kwargs):
         """提交用户需求"""
-        UserNeed.objects.create(field=tags, desc=desc, user=request.user, activity=activity, competition=competition)
+        UserNeed.objects.create(field=tags, desc=desc, content=content, city=city, user=request.user, activity=activity, competition=competition)
         return self.success()
 
 
@@ -80,7 +82,8 @@ class getUserNeedMatching(BaseView):
 
         qs = UserNeed.objects.filter(competition=competition, activity=activity)
         for need in qs:
-            fields = need.field.split("；")
+            field = need.field.replace("；", ";", 10)
+            fields = field.split(";")
             count = 0
             for field in fields:
                 if field in tags:
@@ -114,7 +117,8 @@ class getUserNeedMatchingInFriend(BaseView):
             for need in item:                  #需求
                 if need.competition != None or need.activity!=None:      #团队或活动需求跳过
                     continue
-                fields = need.field.split("；")
+                field = need.field.replace("；", ";", 10)
+                fields = field.split(";")
                 count = 0
                 for field in fields:
                     if field in tags:
@@ -132,6 +136,8 @@ def need_to_json(need):
         'id': need.id,
         'user_id': need.user_id,
         'desc': need.desc,
+        'content': need.content,
+        'city': need.city,
         'count_likers': need.likers.all().count(),
         'tags': need.field,
     }
