@@ -22,8 +22,10 @@ class UserNeedList(BaseView):
     def get(self, request, activity=None, competition=None, **kwargs):
         """获取用户当前发布需求"""
         qs = UserNeed.objects.filter(user=request.user, activity=activity, competition=competition)
-
-        return self.success_list(request, qs, need_to_json)
+        list = []
+        for need in qs:
+           list.append(need_to_json(need))
+        return JsonResponse({'count': len(list), 'list': list})
 
     @client_auth
     @validate_args({
@@ -92,7 +94,7 @@ class getUserNeedMatching(BaseView):
             if count != 0:
                 list.append({"nums":count, "need":need_to_json(need)})
 
-        return JsonResponse({'code':0, 'count': len(list), 'list': list})
+        return JsonResponse({'count': len(list), 'list': list})
 
 
 
@@ -127,7 +129,7 @@ class getUserNeedMatchingInFriend(BaseView):
                 if count != 0:
                     list.append({"nums": count, "need": need_to_json(need)})
 
-        return JsonResponse({'code':0, 'count': len(list), 'list': list})
+        return JsonResponse({'count': len(list), 'list': list})
 
 
 
