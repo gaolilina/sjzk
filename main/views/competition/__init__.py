@@ -85,7 +85,7 @@ class Detail(View):
             if curTime >= time_ended:
                 competition.status = 100
 
-        Competition.objects.filter(id=competition.id).update(status=p.status)
+            Competition.objects.filter(id=competition.id).update(status=competition.status)
 
 
         owner = competition.owner.first()
