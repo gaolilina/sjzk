@@ -48,7 +48,7 @@ class AdminCompetitionAdd(View):
     def post(self, request, **kwargs):
         user = request.user
         competition = Competition()
-        dateformat = "%Y-%m-%d %H:%i"
+        dateformat = "%Y-%m-%d %H:%M"
 
         if 'stages' in kwargs and kwargs['stages'] != "":
             stages = json.loads(kwargs['stages'])
