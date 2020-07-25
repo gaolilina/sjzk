@@ -262,7 +262,7 @@ class Profile(BaseView):
             if check_bad_words(name):
                 abort(403, '昵称含非法词汇')
             # 首次修改昵称增加积分
-            if (user.name == "创易汇用户 #" + str(user.id)) and \
+            if (user.name == "网络用户 #" + str(user.id)) and \
                     (user.name != name):
                 user.score += get_score_stage(3)
                 user.score_records.create(

@@ -27,6 +27,7 @@ urls = [
     url(r'^search/team_action/$', SearchTeamAction.as_view()),
     url(r'^search/lab_action/$', SearchLabAction.as_view()),
     url(r'^screen/$', Screen.as_view()),
+
     url(r'^screen/user_action/$', ScreenUserActionList.as_view()),
     url(r'^screen/team_action/$', ScreenTeamActionList.as_view()),
     url(r'^screen/lab_action/$', ScreenLabActionList.as_view()),
@@ -87,4 +88,6 @@ urls = [
     url(r'^(?P<activity_id>[0-9]+)/activity/match/need/list/', getUserNeedMatching.as_view()),
     url(r'^(?P<competition_id>[0-9]+)/competition/match/need/list/', getUserNeedMatching.as_view()),
 
+
+    url(r'^username/$', UserName.as_view()),
 ]
