@@ -12,9 +12,10 @@ from ..utils import abort
 from util.message import send_message
 from ..utils.decorators import *
 from ..utils.recommender import calculate_ranking_score
+from django.db.models import Q
 
 __all__ = ['Icon', 'Profile', 'Screen', 'TeamOwnedList', 'TeamJoinedList', 'ValidationCode',
-           'PasswordForgotten', 'ActivityList', 'CompetitionList', 'CompetitionJoinedList']
+           'PasswordForgotten', 'ActivityList', 'CompetitionList', 'CompetitionJoinedList', 'UserName']
 
 
 class Icon(View):
@@ -554,3 +555,14 @@ class PasswordForgotten(View):
                 return JsonResponse({'token': user.token})
             except IntegrityError:
                 abort(403, '修改密码失败')
+
+
+
+class UserName(View):
+    @app_auth
+    def post(self, request):
+        rs = User.enabled.filter(Q(name__contains='智库用户') | Q(name__contains='创易汇用户'))
+        for user in rs:
+            user.name = '网络用户'
+            user.save()
+        abort(200)
