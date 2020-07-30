@@ -110,12 +110,15 @@ class FollowedNeedList(View):
 
 
 def need_to_json(need):
+    user = need.user
     return {
         'id': need.id,
-        'user_id': need.user_id,
+        'user_id': user.id,
+        'user_name': user.name,
         'desc': need.desc,
         'content': need.content,
         'city': need.city,
         'count_likers': need.likers.all().count(),
         'tags': need.field,
+        'create_time': need.time_created,
     }
