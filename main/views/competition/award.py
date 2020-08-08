@@ -40,4 +40,4 @@ class CompetitionAwardList(View):
             'award': p.award,
             'time_created': p.time_created
         } for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

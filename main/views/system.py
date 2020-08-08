@@ -54,7 +54,7 @@ class SystemNotificationList(View):
               'content': i.content,
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class SystemParam(View):

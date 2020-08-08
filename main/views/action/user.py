@@ -67,7 +67,7 @@ class FollowedUserActionList(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class UserActionList(ActionList):

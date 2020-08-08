@@ -83,4 +83,4 @@ class NeedSearch(View):
             need_dic['field'] = n.field
             need_dic['province'] = n.province
             l.append(need_dic)
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

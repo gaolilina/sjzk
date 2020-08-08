@@ -47,7 +47,7 @@ class PublishTeamAchievement(View):
               'description': a.description,
               'picture': a.picture,
               'time_created': a.time_created} for a in achievements]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @require_verification_token
     @fetch_object(Team.enabled, 'team')
@@ -64,7 +64,7 @@ class PublishTeamAchievement(View):
             abort(403, '只有队长可以操作')
 
         if check_bad_words(description):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         achievement_num = team.achievements.count()
         if achievement_num == 0:
@@ -91,7 +91,7 @@ class PublishTeamAchievement(View):
         team.score_records.create(
             score=get_score_stage(1), type="活跃度", description="发布一个团队成果")
         team.save()
-        return JsonResponse({'achievement_id': achievement.id})
+        return JsonResponse({'achievement_id': achievement.id, 'code': 0})
 
 
 class PublishUserAchievement(View):
@@ -120,7 +120,7 @@ class PublishUserAchievement(View):
               'description': a.description,
               'picture': a.picture,
               'time_created': a.time_created} for a in achievements]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
     @require_role_token
@@ -135,7 +135,7 @@ class PublishUserAchievement(View):
         """
         # 检查非法词汇
         if check_bad_words(description):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
         system_param = request.param
         # 检查发布的时间间隔
         last_time = datetime.datetime.now() + datetime.timedelta(minutes=system_param.publish_min_minute)
@@ -157,7 +157,7 @@ class PublishUserAchievement(View):
                 filenames.append(save_uploaded_image(p))
             achievement.picture = str(filenames)
         else:
-            abort(400, '图片上传失败')
+            abort(500, '图片上传失败')
         achievement.save()
 
-        return JsonResponse({'achievement_id': achievement.id})
+        return JsonResponse({'achievement_id': achievement.id, 'code': 0})

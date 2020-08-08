@@ -82,7 +82,7 @@ class List(View):
               'fields': [t.field1, t.field2],
               'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in labs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @require_verification_token
     @validate_args({
@@ -118,7 +118,7 @@ class List(View):
             abort(403, '实验室名已被注册')
         # 昵称非法词验证
         if check_bad_words(name):
-            abort(403, '实验室名含非法词汇')
+            abort(400, '实验室名含非法词汇')
 
         lab = Lab(owner=request.user, name=name)
         lab.save()
@@ -145,7 +145,7 @@ class List(View):
         request.user.score_records.create(
             score=get_score_stage(2), type="能力", description="成功创建一个实验室")
         request.user.save()
-        return JsonResponse({'lab_id': lab.id})
+        return JsonResponse({'lab_id': lab.id, 'code': 0})
 
 
 class Screen(View):
@@ -242,7 +242,7 @@ class Screen(View):
               'fields': [t.field1, t.field2],
               'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in labs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class Profile(View):
@@ -367,10 +367,10 @@ class Profile(View):
                     abort(403, '实验室名已被注册')
                 # 昵称非法词验证
                 if check_bad_words(name):
-                    abort(403, '实验室名含非法词汇')
+                    abort(400, '实验室名含非法词汇')
             if k == "description":
                 if check_bad_words(kwargs['description']):
-                    abort(403, '含有非法词汇')
+                    abort(400, '含有非法词汇')
             setattr(lab, k, kwargs[k])
 
         if fields:
@@ -419,8 +419,8 @@ class Icon(View):
         if filename:
             lab.icon = filename
             lab.save()
-            return JsonResponse({'icon_url': lab.icon})
-        abort(400, '头像保存失败')
+            return JsonResponse({'icon_url': lab.icon, 'code': 0})
+        abort(500, '头像保存失败')
 
 
 # noinspection PyUnusedLocal
@@ -466,7 +466,7 @@ class MemberList(View):
               'icon_url': r.user.icon,
               'name': r.user.name,
               'time_created': r.time_created} for r in rs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 # noinspection PyUnusedLocal
@@ -557,7 +557,7 @@ class MemberRequestList(View):
                   'icon_url': r.user.icon,
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Lab.enabled, 'lab')
     @require_verification_token
@@ -685,7 +685,7 @@ class AllAchievementList(View):
               'time_created': a.time_created,
               'yes_count': a.likers.count(),
               'is_yes': request.user in a.likers.all()} for a in achievements]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 # noinspection PyUnusedLocal
@@ -737,7 +737,7 @@ class AchievementList(View):
               'time_created': a.time_created,
               'yes_count': a.likers.count(),
               'is_yes': request.user in a.likers.all()} for a in achievements]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Lab.enabled, 'lab')
     @require_verification_token
@@ -754,7 +754,7 @@ class AchievementList(View):
             abort(403, '只有负责人可以操作')
 
         if check_bad_words(description):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         achievement_num = lab.achievements.count()
         if achievement_num == 0:
@@ -770,7 +770,7 @@ class AchievementList(View):
             if filename:
                 achievement.picture = filename
         else:
-            abort(400, '图片上传失败')
+            abort(500, '图片上传失败')
         achievement.save()
 
         request.user.score += get_score_stage(1)
@@ -781,7 +781,7 @@ class AchievementList(View):
         lab.score_records.create(
             score=get_score_stage(1), type="活跃度", description="发布一个实验室成果")
         lab.save()
-        return JsonResponse({'achievement_id': achievement.id})
+        return JsonResponse({'achievement_id': achievement.id, 'code': 0})
 
 
 # noinspection PyUnusedLocal
@@ -847,7 +847,7 @@ class AllNeedList(View):
             need_dic['members'] = members
             need_dic['time_created'] = n.time_created
             l.append(need_dic)
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class NeedList(View):
@@ -910,7 +910,7 @@ class NeedList(View):
             need_dic['number'] = n.number
             need_dic['time_created'] = n.time_created
             l.append(need_dic)
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     # noinspection PyShadowingBuiltins
     @fetch_object(Lab.enabled, 'lab')
@@ -998,7 +998,7 @@ class NeedList(View):
     })
     def create_member_need(self, request, lab, **kwargs):
         if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["description"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         lab_needs = LabNeed.objects.filter(lab=lab, type=0)
         if lab_needs.count() == 0:
@@ -1051,7 +1051,7 @@ class NeedList(View):
     })
     def create_outsource_need(self, request, lab, **kwargs):
         if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["description"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         lab_needs = LabNeed.objects.filter(lab=lab, type=1)
         if lab_needs.count() == 0:
@@ -1097,7 +1097,7 @@ class NeedList(View):
     })
     def create_undertake_need(self, request, lab, **kwargs):
         if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["description"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         lab_needs = LabNeed.objects.filter(lab=lab, type=2)
         if lab_needs.count() == 0:
@@ -1335,7 +1335,7 @@ class NeedSearch(View):
             need_dic['members'] = members
             need_dic['time_created'] = n.time_created
             l.append(need_dic)
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class NeedScreen(View):
@@ -1441,7 +1441,7 @@ class NeedScreen(View):
             need_dic['members'] = members
             need_dic['time_created'] = n.time_created
             l.append(need_dic)
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class NeedUserList(View):
@@ -1504,7 +1504,7 @@ class NeedUserList(View):
         else:
             c = 0
             l = []
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class NeedLabList(View):
@@ -1567,7 +1567,7 @@ class NeedLabList(View):
         else:
             c = 0
             l = []
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class MemberNeedRequestList(View):
@@ -1603,8 +1603,8 @@ class MemberNeedRequestList(View):
                   'icon_url': r.sender.icon,
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有负责人可以操作')
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
+        abort(403, '只有负责人可以操作')
 
     @fetch_object(LabNeed.objects, 'need')
     @require_verification_token
@@ -1721,8 +1721,8 @@ class NeedRequestList(View):
                   'name': r.sender.name,
                   'icon_url': r.sender.icon,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有负责人可以操作')
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
+        abort(403, '只有负责人可以操作')
 
     @fetch_object(LabNeed.objects, 'need')
     @fetch_object(Lab.enabled, 'lab')
@@ -1732,13 +1732,13 @@ class NeedRequestList(View):
 
         """
         if need.cooperation_requests.filter(sender=lab).exists():
-            abort(404, '合作申请已经发送过')
+            abort(403, '合作申请已经发送过')
         if need.cooperation_invitations.filter(invitee=lab).exists():
-            abort(404, '合作申请已经发送过')
+            abort(403, '合作申请已经发送过')
         if request.user == lab.owner:
             need.cooperation_requests.create(sender=lab)
             abort(200)
-        abort(404, '只有负责人能操作')
+        abort(403, '只有负责人能操作')
 
 
 class NeedRequest(View):
@@ -1774,8 +1774,8 @@ class NeedRequest(View):
                   'title': r.need.title,
                   'icon_url': r.need.lab.icon,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有负责人能操作')
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
+        abort(403, '只有负责人能操作')
 
     @fetch_object(LabNeed.objects, 'need')
     @fetch_object(Lab.enabled, 'lab')
@@ -1812,7 +1812,7 @@ class NeedRequest(View):
                 request.user.save()
                 lab.save()
             abort(200)
-        abort(404, '对方未发送过申请合作')
+        abort(403, '对方未发送过申请合作')
 
     @fetch_object(LabNeed.objects, 'need')
     @fetch_object(Lab.enabled, 'lab')
@@ -1860,8 +1860,8 @@ class NeedInvitationList(View):
                   'name': r.invitee.name,
                   'icon_url': r.invitee.icon,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有负责人可以操作')
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
+        abort(403, '只有负责人可以操作')
 
     @fetch_object(LabNeed.objects, 'need')
     @fetch_object(Lab.enabled, 'lab')
@@ -1871,13 +1871,13 @@ class NeedInvitationList(View):
 
         """
         if need.cooperation_invitations.filter(invitee=lab).exists():
-            abort(404, '已经发送过合作申请')
+            abort(403, '已经发送过合作申请')
         if need.cooperation_requests.filter(sender=lab).exists():
-            abort(404, '对方已经发送过合作申请')
+            abort(403, '对方已经发送过合作申请')
         if request.user == lab.owner:
             need.cooperation_invitations.create(invitee=lab)
             abort(200)
-        abort(404, '只有负责人可以操作')
+        abort(403, '只有负责人可以操作')
 
 
 class NeedInvitation(View):
@@ -1913,8 +1913,8 @@ class NeedInvitation(View):
                   'name': r.inviter.name,
                   'icon_url': r.invitee.icon,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有负责人可以操作')
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
+        abort(403, '只有负责人可以操作')
 
     @fetch_object(LabNeed.objects, 'need')
     @fetch_object(Lab.enabled, 'lab')
@@ -1923,7 +1923,7 @@ class NeedInvitation(View):
         """同意邀请并将加入他人的实验室（对方需发送过合作邀请）"""
 
         if request.user != need.lab.owner:
-            abort(404, '只有负责人可以操作')
+            abort(403, '只有负责人可以操作')
 
         if need.cooperation_invitations.filter(invitee=lab).exists():
             # 在事务中建立关系，并删除对应的邀请合作
@@ -2013,7 +2013,7 @@ class InternalTaskList(View):
               'executor_name': t.executor.name,
               'icon_url': t.executor.icon,
               'time_created': t.time_created} for t in tasks]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Lab.enabled, 'lab')
     @require_verification_token
@@ -2043,7 +2043,7 @@ class InternalTaskList(View):
             abort(401, '执行者不存在')
 
         if not lab.members.filter(user=executor).exists():
-            abort(404, '执行者非实验室成员')
+            abort(403, '执行者非实验室成员')
         t = lab.internal_tasks.create(status=0, executor=executor,
                                       deadline=kwargs['deadline'])
         for k in kwargs:
@@ -2107,7 +2107,7 @@ class InternalTasks(View):
               'status': t.status,
               'title': t.title,
               'time_created': t.time_created} for t in tasks]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(InternalTask.objects, 'task')
     @require_verification_token
@@ -2312,7 +2312,7 @@ class ExternalTaskList(View):
                   'executor_name': t.executor.name,
                   'icon_url': t.executor.icon,
                   'time_created': t.time_created} for t in tasks]
-            return JsonResponse({'count': c, 'list': l})
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
         else:
             qs = lab.undertake_external_tasks
             if sign is not None:
@@ -2330,7 +2330,7 @@ class ExternalTaskList(View):
                   'lab_name': t.lab.name,
                   'icon_url': t.lab.icon,
                   'time_created': t.time_created} for t in tasks]
-            return JsonResponse({'count': c, 'list': l})
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Lab.enabled, 'lab')
     @require_verification_token
@@ -2362,7 +2362,7 @@ class ExternalTaskList(View):
             abort(403, '执行者不存在')
 
         if not lab.members.filter(user=executor.owner).exists():
-            abort(404, '执行者非实验室成员')
+            abort(403, '执行者非实验室成员')
         t = lab.outsource_external_tasks.create(
             status=0, executor=executor, deadline=kwargs['deadline'])
         for k in kwargs:
@@ -2399,7 +2399,7 @@ class ExternalTasks(View):
 
         """
         if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["content"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
         if request.user != task.lab.owner:
             abort(403, '只有负责人可以操作')
         if task.status != 1:
@@ -2573,7 +2573,7 @@ class CompetitionList(View):
               'lab_participator_count':
                   a.competition.lab_participators.count(),
               'time_created': a.competition.time_created} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
         '''
         pass
 
@@ -2609,7 +2609,7 @@ class LabScoreRecord(View):
               'score': s.score,
               'type': s.type,
               'time_created': s.time_created} for s in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class LabAwardList(View):
@@ -2641,7 +2641,7 @@ class LabAwardList(View):
               'competition_name': p.competition.name,
               'award': p.award,
               'time_started': p.time_started} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class LabActionCommentList(CommentList):
@@ -2761,7 +2761,7 @@ class ScreenLabActionList(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class FollowedLabActionList(View):
@@ -2816,7 +2816,7 @@ class FollowedLabActionList(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class FollowedLabList(View):
@@ -2839,7 +2839,7 @@ class FollowedLabList(View):
               'name': r.followed.name,
               'icon_url': r.followed.icon,
               'time_created': r.time_created} for r in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class FollowedLab(View):
@@ -2995,7 +2995,7 @@ class RelatedLabList(View):
               'fields': [t.lab.field1, t.lab.field2],
               'tags': [tag.name for tag in t.lab.tags.all()],
               'time_created': t.lab.time_created} for t in labs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class OwnedLabList(View):
@@ -3045,4 +3045,4 @@ class OwnedLabList(View):
               'fields': [t.field1, t.field2],
               'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in labs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

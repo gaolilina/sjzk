@@ -76,4 +76,4 @@ class SearchLab(View):
               'fields': [t.field1, t.field2],
               'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in labs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

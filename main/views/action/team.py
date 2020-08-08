@@ -61,7 +61,7 @@ class FollowedTeamActionList(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class ScreenTeamActionList(View):
@@ -155,4 +155,4 @@ class ScreenTeamActionList(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

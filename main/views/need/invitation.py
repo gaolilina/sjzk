@@ -42,7 +42,7 @@ class NeedInvitationList(View):
                   'icon_url': r.invitee.icon,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有队长可以操作')
+        abort(403, '只有队长可以操作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -52,13 +52,13 @@ class NeedInvitationList(View):
 
         """
         if need.cooperation_invitations.filter(invitee=team).exists():
-            abort(404, '已经发送过合作申请')
+            abort(403, '已经发送过合作申请')
         if need.cooperation_requests.filter(sender=team).exists():
-            abort(404, '对方已经发送过合作申请')
+            abort(403, '对方已经发送过合作申请')
         if request.user == team.owner:
             need.cooperation_invitations.create(invitee=team)
             abort(200)
-        abort(404, '只有队长可以操作')
+        abort(403, '只有队长可以操作')
 
 
 class TeamInvitationList(View):
@@ -95,7 +95,7 @@ class TeamInvitationList(View):
                   'icon_url': r.invitee.icon,
                   'time_created': r.time_created} for r in qs]
             return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有队长可以操作')
+        abort(403, '只有队长可以操作')
 
 
 class NeedInvitation(View):
@@ -107,7 +107,7 @@ class NeedInvitation(View):
         """同意邀请并将加入他人的团队（对方需发送过合作邀请）"""
 
         if request.user != need.team.owner:
-            abort(404, '只有队长可以操作')
+            abort(403, '只有队长可以操作')
 
         if need.cooperation_invitations.filter(invitee=team).exists():
             # 在事务中建立关系，并删除对应的邀请合作
@@ -134,7 +134,7 @@ class NeedInvitation(View):
                 request.user.save()
                 team.save()
             abort(200)
-        abort(404, '邀请合作不存在')
+        abort(403, '邀请合作不存在')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -147,6 +147,6 @@ class NeedInvitation(View):
 
         qs = need.cooperation_invitations.filter(invitee=team)
         if not qs.exists():
-            abort(404, '合作邀请不存在')
+            abort(403, '合作邀请不存在')
         qs.delete()
         abort(200)

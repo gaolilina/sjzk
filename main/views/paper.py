@@ -20,5 +20,6 @@ class PaperList(View):
                 'id': p.id,
                 'name': p.name,
                 'url': appconfig.paper_url
-            } for p in papers]
+            } for p in papers],
+            'code': 0
         })

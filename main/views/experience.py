@@ -24,7 +24,7 @@ class Experience(View):
         """修改用户的某条经历"""
 
         if check_bad_words(kwargs["description"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
         if exp.user != request.user:
             abort(403, '只能修改自己的经历')
         for k in kwargs:
@@ -74,7 +74,7 @@ class ExperienceList(View):
             'count_liker': e.likers.count(),
             'is_like': e.likers.filter(id=request.user.id).exists(),
         } for e in user.experiences.filter(type=type)]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @app_auth
     @validate_args({
@@ -89,7 +89,7 @@ class ExperienceList(View):
         """增加一条经历"""
 
         if check_bad_words(kwargs['description']):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
         request.user.experiences.create(
             type=type, description=kwargs['description'], unit=kwargs['unit'],
             profession=kwargs['profession'], degree=kwargs['degree'],

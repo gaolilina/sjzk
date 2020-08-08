@@ -57,7 +57,7 @@ class SearchUserAchievement(View):
               'require_count': a.requirers.count(),
               'is_require': request.user in a.requirers.all(),
               } for a in achievements]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class SearchTeamAchievement(View):
@@ -106,4 +106,4 @@ class SearchTeamAchievement(View):
               'require_count': a.requirers.count(),
               'is_require': request.user in a.requirers.all(),
               'time_created': a.time_created} for a in achievements]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

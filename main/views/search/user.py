@@ -92,4 +92,4 @@ class SearchUser(View):
               'is_like': UserLiker.objects.filter(liked_id=u.id, liker_id=request.user.id).exists(),  # 是否点
               } for u in users]
         l = user_sim.sort(l, request.user)
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

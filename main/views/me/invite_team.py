@@ -40,7 +40,7 @@ class InvitationList(View):
               'icon_url': r.team.icon,
               'description': r.description,
               'time_created': r.time_created} for r in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class Invitation(View):

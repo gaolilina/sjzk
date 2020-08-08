@@ -62,7 +62,7 @@ class BoardList(View):
               'icon_url': b.owner.icon,
               'is_system_board': b.is_system_board,
               'time_created': b.time_created} for b in boards]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @require_verification_token
     @validate_args({
@@ -84,12 +84,12 @@ class BoardList(View):
             abort(403, '板块已存在')
         
         if check_bad_words(name) or check_bad_words(description):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         b = request.user.forum_boards.create(name=name, description=description)
         # 发动态
         action.send_forum(request.user, b)
-        return JsonResponse({'board_id': b.id})
+        return JsonResponse({'board_id': b.id, 'code': 0})
 
 
 class Board(View):
@@ -137,7 +137,7 @@ class PostList(View):
               'author_name': p.author.name,
               'icon_url': p.author.icon,
               'time_created': p.time_created} for p in posts]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @require_verification_token
     @fetch_object(ForumBoard.enabled, 'board')
@@ -149,10 +149,10 @@ class PostList(View):
         """发主题帖"""
         
         if check_bad_words(title) or check_bad_words(content):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         p = board.posts.create(author=request.user, title=title, content=content)
-        return JsonResponse({'post_id': p.id})
+        return JsonResponse({'post_id': p.id, 'code': 0})
 
 
 class Post(View):
@@ -190,7 +190,7 @@ class Post(View):
               'author_name': p.author.name,
               'icon_url': p.author.icon,
               'time_created': p.time_created} for p in posts]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @require_verification_token
     @fetch_object(ForumPost.objects, 'post')
@@ -202,11 +202,11 @@ class Post(View):
         """回主题帖"""
 
         if check_bad_words(title) or check_bad_words(content):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         p = post.posts.create(main_post=post, board=post.board,
                               author=request.user, title=title, content=content)
-        return JsonResponse({'post_id': p.id})
+        return JsonResponse({'post_id': p.id, 'code': 0})
 
     @require_verification_token
     @fetch_object(ForumPost.objects, 'post')
@@ -257,7 +257,7 @@ class SearchBoard(View):
               'icon_url': b.owner.icon,
               'is_system_board': b.is_system_board,
               'time_created': b.time_created} for b in boards]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class SearchPost(View):
@@ -298,4 +298,4 @@ class SearchPost(View):
               'author_name': p.author.name,
               'icon_url': p.author.icon,
               'time_created': p.time_created} for p in posts]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

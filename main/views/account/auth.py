@@ -23,12 +23,12 @@ class IdentityVerificationView(Profile_):
         """
 
         if not request.user.id_card:
-            abort(403, '请先上传身份证照片')
+            abort(400, '请先上传身份证照片')
         id_keys = ('real_name', 'id_number')
         # 调用第三方接口验证身份证的正确性
         res = identity_verify(kwargs['id_number'], kwargs['real_name'])
         if res != 1:
-            abort(404, '身份证号和姓名不匹配')
+            abort(401, '身份证号和姓名不匹配')
 
         # 用户未提交实名信息或者等待重新审核
         if request.user.is_verified in [0, 3]:
@@ -119,7 +119,7 @@ class OtherIdentityVerificationView(Profile_):
         """
         checkIdVerified(request.user)
         if not request.user.other_card:
-            abort(403, '请先上传照片')
+            abort(400, '请先上传照片')
 
         role_keys = ('role', 'unit1')
 
@@ -168,7 +168,7 @@ class IDCardView(View):
             request.user.id_card = filename
             request.user.save()
             abort(200)
-        abort(400, '图片保存失败')
+        abort(500, '图片保存失败')
 
 
 class OtherCardView(View):
@@ -202,9 +202,10 @@ class OtherCardView(View):
             request.user.other_card = filename
             request.user.save()
             abort(200)
-        abort(400, '图片保存失败')
+        abort(500, '图片保存失败')
 
 
 def checkIdVerified(user):
     if user.is_verified in [0, 3]:
         abort(403, '请先进行实名认证')
+

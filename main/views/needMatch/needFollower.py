@@ -21,7 +21,7 @@ class FollowedNeed(View):
         if request.user.followed_need.filter(
                 followed=need).exists():
             abort(200)
-        abort(404, '未关注该活动')
+        abort(403, '未关注该活动')
 
     @fetch_object(UserNeed.objects, 'need')
     @app_auth
@@ -106,7 +106,7 @@ class FollowedNeedList(View):
 
             list.append({"nums": count, "need": need_to_json(need)})
 
-        return JsonResponse({'count': len(list), 'list': list})
+        return JsonResponse({'count': len(list), 'list': list, 'code': 0})
 
 
 def need_to_json(need):

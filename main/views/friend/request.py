@@ -48,7 +48,7 @@ class FriendRequestList(View):
               'icon_url': r.other_user.icon,
               'description': r.description,
               'time_created': r.time_created} for r in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     # post_dict = {'description': forms.CharField(required=False, max_length=100)}
     @require_verification_token

@@ -37,4 +37,4 @@ class UserScoreRecord(View):
               'score': s.score,
               'type': s.type,
               'time_created': s.time_created} for s in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

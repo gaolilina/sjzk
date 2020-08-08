@@ -23,14 +23,15 @@ class BindPhoneNumber(View):
         :return 200
         """
 
+
         if not UserValidationCode.verify(phone_number, validation_code):
             abort(400, '验证码与手机不匹配')
 
         if not request.user.check_password(password):
-            abort(401, '密码错误')
+            abort(403, '密码错误')
 
         if User.enabled.filter(phone_number=phone_number).count() > 0:
-            abort(404, '手机号已存在')
+            abort(403, '手机号已存在')
 
         request.user.phone_number = phone_number
         request.user.save()

@@ -33,7 +33,7 @@ class TeamParticipatorList(View):
               'score': p.score,
               'participator_id': p.id,
               'final': p.final} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @require_verification_token
     @validate_args({

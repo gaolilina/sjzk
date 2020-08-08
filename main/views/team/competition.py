@@ -28,7 +28,7 @@ class CompetitionList(View):
               'team_participator_count':
                   a.competition.team_participators.count(),
               'time_created': a.competition.time_created} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class TeamAwardList(View):
@@ -60,4 +60,4 @@ class TeamAwardList(View):
               'competition_name': p.competition.name,
               'award': p.award,
               'time_started': p.time_started} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

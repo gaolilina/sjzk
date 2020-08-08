@@ -33,7 +33,7 @@ class UserList(View):
               'time_created': a.time_created,
               'deadline': a.deadline,
               'is_closed': a.is_closed} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @app_auth
     @validate_args({
@@ -50,7 +50,7 @@ class UserList(View):
                 is_closed=(True if is_closed == 1 else False),
                 owner=user
             )
-            return JsonResponse({'id': v.id})
+            return JsonResponse({'id': v.id, 'code': 0})
         abort(200)
 
 class UserDetail(View):
@@ -62,7 +62,7 @@ class UserDetail(View):
         l = [{'id': p.id,
               'content': p.content,
               'chooser': p.advocators.count()} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(UserVote.objects, 'vote')
     @app_auth
@@ -96,7 +96,7 @@ class UserOption(View):
               'user': p.user.id,
               'user_name': p.user.name,
               'time_created': p.time_created} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
     
     @fetch_object(UserVoteOption.objects, 'option')
     @app_auth
@@ -136,7 +136,7 @@ class LabList(View):
               'time_created': a.time_created,
               'deadline': a.deadline,
               'is_closed': a.is_closed} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Lab.enabled, 'lab')
     @app_auth
@@ -153,7 +153,7 @@ class LabList(View):
                 is_closed=(True if is_closed == 1 else False),
                 owner=lab
             )
-            return JsonResponse({'id': v.id})
+            return JsonResponse({'id': v.id, 'code': 0})
         abort(200)
 
 class LabDetail(View):
@@ -165,7 +165,7 @@ class LabDetail(View):
         l = [{'id': p.id,
               'content': p.content,
               'chooser': p.advocators.count()} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(LabVote.objects, 'vote')
     @app_auth
@@ -199,7 +199,7 @@ class LabOption(View):
               'user': p.user.id,
               'user_name': p.user.name,
               'time_created': p.time_created} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
     
     @fetch_object(LabVoteOption.objects, 'option')
     @app_auth

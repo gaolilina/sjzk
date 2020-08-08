@@ -69,7 +69,7 @@ class List(View):
               'user_participator_count': a.user_participators.count(),
               'time_created': a.time_created,
               'province': a.province} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class Detail(View):
@@ -147,7 +147,7 @@ class TopicStage(View):
               'time_started': p.time_started,
               'time_ended': p.time_ended,
               'time_created': p.time_created} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class UserParticipatorList(View):
@@ -178,7 +178,7 @@ class UserParticipatorList(View):
         l = [{'id': p.user.id,
               'name': p.user.name,
               'icon_url': p.user.icon} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Topic.enabled, 'topic')
     @require_verification_token
@@ -259,7 +259,7 @@ class Search(View):
               'time_created': a.time_created,
               'status': a.status,
               'province': a.province} for a in qs.order_by(k)[i:j]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class Screen(View):
@@ -367,4 +367,4 @@ class Screen(View):
               'time_created': a.time_created,
               'province': a.province,
               'status': a.status} for a in qs.order_by(k)[i:j]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

@@ -135,10 +135,10 @@ class Profile(View):
                     abort(403, '团队名已被注册')
                 # 昵称非法词验证
                 if check_bad_words(name):
-                    abort(403, '团队名含非法词汇')
+                    abort(400, '团队名含非法词汇')
             if k == "description":
                 if check_bad_words(kwargs['description']):
-                    abort(403, '含有非法词汇')
+                    abort(400, '含有非法词汇')
             setattr(team, k, kwargs[k])
 
         if fields:
@@ -187,7 +187,7 @@ class Icon(View):
             team.icon = filename
             team.save()
             return JsonResponse({'icon_url': team.icon})
-        abort(400, '头像保存失败')
+        abort(500, '头像保存失败')
 
 
 class TeamScoreRecord(View):
@@ -221,4 +221,4 @@ class TeamScoreRecord(View):
               'score': s.score,
               'type': s.type,
               'time_created': s.time_created} for s in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
