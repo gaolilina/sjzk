@@ -44,8 +44,8 @@ class MemberNeedRequestList(View):
                   'icon_url': r.sender.icon,
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有队长可以操作')
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
+        abort(403, '只有队长可以操作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @require_verification_token
@@ -125,7 +125,7 @@ class MemberNeedRequest(View):
 
         qs = need.member_requests.filter(sender=user)
         if not qs.exists():
-            abort(404, '申请不存在')
+            abort(403, '申请不存在')
         qs.delete()
         abort(200)
 
@@ -190,4 +190,4 @@ class NeedUserList(View):
         else:
             c = 0
             l = []
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

@@ -77,4 +77,4 @@ class SearchCompetition(View):
               'status': a.status,
               'field': a.field,
               'province': a.province} for a in qs.order_by(k)[i:j]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

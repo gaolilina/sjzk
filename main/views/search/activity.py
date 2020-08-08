@@ -79,4 +79,4 @@ class SearchActivity(View):
               'status': a.get_current_state(),
               'field': a.field,
               'province': a.province} for a in qs.order_by(k)[i:j]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

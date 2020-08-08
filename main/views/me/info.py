@@ -89,7 +89,7 @@ class Icon(Icon_):
             request.user.icon = filename
             request.user.save()
             return JsonResponse({'icon_url': request.user.icon})
-        abort(400, '头像保存失败')
+        abort(500, '头像保存失败')
 
 
 class Getui(View):

@@ -25,7 +25,7 @@ class UserNeedList(BaseView):
         list = []
         for need in qs:
            list.append(need_to_json(need))
-        return JsonResponse({'count': len(list), 'list': list})
+        return JsonResponse({'count': len(list), 'list': list, 'code': 0})
 
     @client_auth
     @validate_args({
@@ -94,7 +94,7 @@ class getUserNeedMatching(BaseView):
             if count != 0:
                 list.append({"nums":count, "need":need_to_json(need)})
 
-        return JsonResponse({'count': len(list), 'list': list})
+        return JsonResponse({'count': len(list), 'list': list, 'code': 0})
 
 
 
@@ -129,7 +129,7 @@ class getUserNeedMatchingInFriend(BaseView):
                 if count != 0:
                     list.append({"nums": count, "need": need_to_json(need)})
 
-        return JsonResponse({'count': len(list), 'list': list})
+        return JsonResponse({'count': len(list), 'list': list, 'code': 0})
 
 
 

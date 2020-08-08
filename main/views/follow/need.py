@@ -69,7 +69,7 @@ class FollowedTeamNeedList(View):
             need_dic['members'] = members
             need_dic['time_created'] = n.time_created
             l.append(need_dic)
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class FollowedTeamNeed(View):
@@ -80,7 +80,7 @@ class FollowedTeamNeed(View):
 
         if request.user.followed_needs.filter(followed=need).exists():
             abort(200)
-        abort(404, '未关注该需求')
+        abort(403, '未关注该需求')
 
     @fetch_object(TeamNeed.objects, 'need')
     @app_auth

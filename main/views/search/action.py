@@ -83,7 +83,7 @@ class SearchUserAction(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class SearchTeamAction(View):
@@ -145,7 +145,7 @@ class SearchTeamAction(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class SearchLabAction(View):
@@ -209,4 +209,4 @@ class SearchLabAction(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

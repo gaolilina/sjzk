@@ -71,7 +71,7 @@ class NeedTeamList(View):
         else:
             c = 0
             l = []
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class NeedRequestList(View):
@@ -106,8 +106,8 @@ class NeedRequestList(View):
                   'name': r.sender.name,
                   'icon_url': r.sender.icon,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有队长可以操作')
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
+        abort(403, '只有队长可以操作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -123,7 +123,7 @@ class NeedRequestList(View):
         if request.user == team.owner:
             need.cooperation_requests.create(sender=team)
             abort(200)
-        abort(404, '只有队长能操作')
+        abort(403, '只有队长能操作')
 
 
 class NeedRequest(View):
@@ -135,7 +135,7 @@ class NeedRequest(View):
         """同意加入申请并将创始人加入自己团队（对方需发送过合作申请）"""
 
         if request.user != need.team.owner:
-            abort(404, '只有队长能操作')
+            abort(403, '只有队长能操作')
 
         if need.cooperation_requests.filter(sender=team).exists():
             # 在事务中建立关系，并删除对应的申请合作
@@ -163,7 +163,7 @@ class NeedRequest(View):
                 request.user.save()
                 team.save()
             abort(200)
-        abort(404, '对方未发送过申请合作')
+        abort(403, '对方未发送过申请合作')
 
     @fetch_object(TeamNeed.objects, 'need')
     @fetch_object(Team.enabled, 'team')
@@ -176,7 +176,7 @@ class NeedRequest(View):
 
         qs = need.cooperation_requests.filter(sender=team)
         if not qs.exists():
-            abort(404, '合作申请不存在')
+            abort(403, '合作申请不存在')
         qs.delete()
         abort(200)
 
@@ -214,5 +214,5 @@ class TeamApplyNeedList(View):
                   'title': r.need.title,
                   'icon_url': r.need.team.icon,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
-        abort(404, '只有队长能操作')
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
+        abort(403, '只有队长能操作')

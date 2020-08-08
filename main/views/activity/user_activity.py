@@ -67,7 +67,7 @@ class MyCreatedActivityList(View):
         qs = Activity.objects.filter(**filter_param).order_by(self.ORDERS[order])
         c = qs.count()
         l = [activity_to_json(a) for a in qs[offset: offset + limit]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 def activity_to_json(activity):

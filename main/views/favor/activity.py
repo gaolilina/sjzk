@@ -53,7 +53,7 @@ class FavoredActivityList(View):
               'user_participator_count': a.favored.user_participators.count(),
               'time_created': a.favored.time_created,
               'province': a.favored.province} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class FavoredActivity(IFavorSomething):

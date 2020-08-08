@@ -45,7 +45,7 @@ class FollowedTeamList(View):
               'name': r.followed.name,
               'icon_url': r.followed.icon,
               'time_created': r.time_created} for r in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class FollowedTeam(View):
@@ -56,7 +56,7 @@ class FollowedTeam(View):
 
         if request.user.followed_teams.filter(followed=team).exists():
             abort(200)
-        abort(404, '未关注该团队')
+        abort(403, '未关注该团队')
 
     @app_auth
     @fetch_object(Team.enabled, 'team')

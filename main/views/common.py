@@ -94,7 +94,7 @@ class ActionList(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class SystemActionsList(View):
@@ -147,7 +147,7 @@ class SystemActionsList(View):
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
               } for i in records]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 # noinspection PyMethodOverriding
@@ -195,14 +195,14 @@ class CommentList(View):
             'count_liker': r.likers.count(),
             'is_like': r.likers.filter(id=request.user.id).exists(),
         } for r in qs.all()[offset:offset + limit]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @validate_args({'content': forms.CharField(max_length=100)})
     def post(self, request, obj, content):
         """评论某个对象"""
 
         if check_bad_words(content):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
         obj.comments.create(author=request.user, content=content)
         request.user.score += 10
         request.user.save()
@@ -236,7 +236,7 @@ class LabCommentList(CommentList):
 
     @fetch_object(Lab.enabled, 'lab')
     @require_verification_token
-    def post(self, request, team):
+    def post(self, request, lab):
         """当前用户对团队进行评论"""
 
         return super().post(request, lab)
@@ -351,7 +351,7 @@ class Follower(View):
 
         if entity.followers.filter(follower=other_user).exists():
             abort(200)
-        abort(404, '对方不是你的粉丝')
+        abort(403, '对方不是你的粉丝')
 
 
 # noinspection PyMethodOverriding
@@ -446,7 +446,7 @@ class VisitorList(View):
               'name': i.visitor.name,
               'icon_url': i.visitor.icon,
               'update_time': i.time_updated} for i in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 # noinspection PyMethodOverriding

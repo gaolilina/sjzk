@@ -84,7 +84,7 @@ class CreateNeed(View):
         elif type == 2:
             self.create_undertake_need(request, team)
         else:
-            abort(500)
+            abort(500,'需求类型错误')
 
     @validate_args({
         'deadline': forms.DateField(),
@@ -107,7 +107,7 @@ class CreateNeed(View):
     })
     def create_member_need(self, request, team, **kwargs):
         if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["description"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         team_needs = TeamNeed.objects.filter(team=team, type=0)
         if team_needs.count() == 0:
@@ -160,7 +160,7 @@ class CreateNeed(View):
     })
     def create_outsource_need(self, request, team, **kwargs):
         if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["description"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         team_needs = TeamNeed.objects.filter(team=team, type=1)
         if team_needs.count() == 0:
@@ -206,7 +206,7 @@ class CreateNeed(View):
     })
     def create_undertake_need(self, request, team, **kwargs):
         if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["description"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
 
         team_needs = TeamNeed.objects.filter(team=team, type=2)
         if team_needs.count() == 0:

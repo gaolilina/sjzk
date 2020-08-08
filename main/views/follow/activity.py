@@ -97,4 +97,4 @@ class FollowedActivityList(View):
               'deadline': a.deadline,
               'user_participator_count': a.user_participators.count(),
               'time_created': a.time_created} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

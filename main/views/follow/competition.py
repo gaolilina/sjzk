@@ -54,7 +54,7 @@ class FollowedCompetitionList(View):
               'deadline': a.deadline,
               'team_participator_count': a.team_participators.count(),
               'time_created': a.time_created} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class FollowedCompetition(View):
@@ -66,7 +66,7 @@ class FollowedCompetition(View):
         if request.user.followed_competitions.filter(
                 followed=competition).exists():
             abort(200)
-        abort(404, '未关注该竞赛')
+        abort(403, '未关注该竞赛')
 
     @fetch_object(Competition.enabled, 'competition')
     @app_auth

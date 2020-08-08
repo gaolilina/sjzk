@@ -58,7 +58,7 @@ class InternalTaskList(View):
               'executor_name': t.executor.name,
               'icon_url': t.executor.icon,
               'time_created': t.time_created} for t in tasks]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Team.enabled, 'team')
     @require_verification_token
@@ -77,7 +77,7 @@ class InternalTaskList(View):
         :param；deadline: 截止时间
         """
         if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["content"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
         if request.user != team.owner:
             abort(403, '只有队长可以操作')
         executor_id = kwargs.pop('executor_id')
@@ -88,7 +88,7 @@ class InternalTaskList(View):
             abort(401, '执行者不存在')
 
         if not team.members.filter(user=executor).exists():
-            abort(404, '执行者非团队成员')
+            abort(403, '执行者非团队成员')
         t = team.internal_tasks.create(status=0, executor=executor,
                                        deadline=kwargs['deadline'])
         for k in kwargs:
@@ -152,7 +152,7 @@ class MyInnerTasks(View):
               'status': t.status,
               'title': t.title,
               'time_created': t.time_created} for t in tasks]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class InternalTasks(View):
@@ -173,11 +173,11 @@ class InternalTasks(View):
 
         """
         if check_bad_words(kwargs["title"]) or check_bad_words(kwargs["content"]):
-            abort(403, '含有非法词汇')
+            abort(400, '含有非法词汇')
         if request.user != task.team.owner:
             abort(403, '不能给自己发送任务')
         if task.status != 1:
-            abort(404, '任务状态错误')
+            abort(403, '任务状态错误')
 
         for k in kwargs:
             setattr(task, k, kwargs[k])
@@ -245,7 +245,7 @@ class TeamInternalTask(View):
 
         # 任务已经终止，不允许操作
         if task.status == 7:
-            abort(404, '任务已结束')
+            abort(403, '任务已结束')
 
         if status is None:
             if request.user != task.team.owner or task.status != 3:
@@ -293,7 +293,7 @@ class TeamInternalTask(View):
             if request.user != task.team.owner or task.status != 1:
                 abort(403, '非法操作')
         else:
-            abort(403, '状态参数错误')
+            abort(400, '状态参数错误')
 
         task.status = status
         task.save()

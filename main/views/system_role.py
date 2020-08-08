@@ -13,5 +13,6 @@ class RoleList(View):
     def get(self, request, **kwargs):
         roles = Role.objects.filter(name__isnull=False)
         return JsonResponse({
-            'roles': [r.name for r in roles]
+            'roles': [r.name for r in roles],
+            'code': 0
         })

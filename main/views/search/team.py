@@ -92,4 +92,4 @@ class SearchTeam(View):
               'time_created': t.time_created,
               'is_like': TeamLiker.objects.filter(liked_id=t.id, liker_id=request.user.id).exists(),  # 是否点
             } for t in teams]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

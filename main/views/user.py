@@ -233,7 +233,7 @@ class Screen(View):
               'is_verified': u.is_verified,
               'is_role_verified': u.is_role_verified,
               'time_created': u.time_created} for u in users]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class TeamOwnedList(View):
@@ -284,7 +284,7 @@ class TeamOwnedList(View):
               'fields': [t.field1, t.field2],
               'tags': [tag.name for tag in t.tags.all()],
               'time_created': t.time_created} for t in teams]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class TeamJoinedList(View):
@@ -335,7 +335,7 @@ class TeamJoinedList(View):
               'fields': [t.team.field1, t.team.field2],
               'tags': [tag.name for tag in t.team.tags.all()],
               'time_created': t.team.time_created} for t in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class ActivityList(View):
@@ -386,7 +386,7 @@ class ActivityList(View):
               'deadline': a.activity.deadline,
               'user_participator_count': a.activity.user_participators.count(),
               'time_created': a.activity.time_created} for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class CompetitionList(View):
@@ -442,7 +442,7 @@ class CompetitionList(View):
                   a.competition.team_participators.count(),
               'time_created': a.competition.time_created
               } for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class CompetitionJoinedList(View):
@@ -496,7 +496,7 @@ class CompetitionJoinedList(View):
                   a.team_participators.count(),
               'time_created': a.time_created
               } for a in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(User.enabled, 'user')
     @app_auth
@@ -553,4 +553,4 @@ class PasswordForgotten(View):
                 user.save()
                 return JsonResponse({'token': user.token})
             except IntegrityError:
-                abort(403, '修改密码失败')
+                abort(500, '修改密码失败')

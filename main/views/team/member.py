@@ -55,7 +55,7 @@ class MemberList(View):
               'icon_url': r.user.icon,
               'name': r.user.name,
               'time_created': r.time_created} for r in rs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class Member(View):
@@ -67,7 +67,7 @@ class Member(View):
 
         if team.members.filter(user=user).exists():
             abort(200)
-        abort(404, '非团队成员')
+        abort(403, '非团队成员')
 
     @fetch_object(Team.enabled, 'team')
     @fetch_object(User.enabled, 'user')
@@ -145,7 +145,7 @@ class MemberRequestList(View):
                   'icon_url': r.user.icon,
                   'description': r.description,
                   'time_created': r.time_created} for r in qs]
-            return JsonResponse({'count': c, 'list': l})
+            return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Team.enabled, 'team')
     @require_verification_token

@@ -55,7 +55,7 @@ class FollowedUserList(View):
               'name': r.followed.name,
               'icon_url': r.followed.icon,
               'time_created': r.time_created} for r in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class FollowedUser(View):
@@ -66,7 +66,7 @@ class FollowedUser(View):
 
         if request.user.followed_users.filter(followed=user).exists():
             abort(200)
-        abort(404, '未关注该用户')
+        abort(403, '未关注该用户')
 
     @app_auth
     @fetch_object(User.enabled, 'user')

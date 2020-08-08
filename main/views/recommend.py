@@ -74,7 +74,7 @@ class UserRecommend(View):
               'visitor_count': u.visitor_count,
               'tags': u.tags.values_list('name', flat=True),
               'time_created': u.time_created} for u in users[i:j]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class TeamRecommend(View):
@@ -136,7 +136,7 @@ class TeamRecommend(View):
               'fields': [t.field1, t.field2],
               'tags': t.tags.values_list('name', flat=True),
               'time_created': t.time_created} for t in teams[i:j]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class OutsourceNeedTeamRecommend(View):
@@ -213,7 +213,7 @@ class OutsourceNeedTeamRecommend(View):
               'fields': [t.field1, t.field2],
               'tags': t.tags.values_list('name', flat=True),
               'time_created': t.time_created} for t in teams[i:j]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
 class UndertakeNeedTeamRecommend(View):
@@ -290,4 +290,4 @@ class UndertakeNeedTeamRecommend(View):
               'fields': [t.field1, t.field2],
               'tags': t.tags.values_list('name', flat=True),
               'time_created': t.time_created} for t in teams[i:j]]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})

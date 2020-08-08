@@ -29,7 +29,7 @@ class ActivitySignList(View):
               'name': p.user.name,
               'icon_url': p.user.icon,
               'time': p.time_created} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Activity.enabled, 'activity')
     @require_verification_token
@@ -69,7 +69,7 @@ class UserParticipatorList(View):
         l = [{'id': p.user.id,
               'name': p.user.name,
               'icon_url': p.user.icon} for p in qs]
-        return JsonResponse({'count': c, 'list': l})
+        return JsonResponse({'count': c, 'list': l, 'code': 0})
 
     @fetch_object(Activity.enabled, 'activity')
     @require_verification_token
