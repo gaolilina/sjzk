@@ -117,6 +117,13 @@ class PublishUserAchievement(View):
         c = request.user.achievements.count()
         achievements = request.user.achievements.order_by(k)[i:j]
         l = [{'id': a.id,
+              'user_id': request.user.id,
+              'user_name': request.user.name,
+              'require_count': a.requirers.count(),
+              'is_require': request.user in a.requirers.all(),
+              'yes_count': a.likers.count(),
+              'is_yes': request.user in a.likers.all(),
+              'icon_url': request.user.icon,
               'description': a.description,
               'picture': a.picture,
               'time_created': a.time_created} for a in achievements]
