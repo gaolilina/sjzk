@@ -52,7 +52,7 @@ class TeamParticipatorList(View):
             abort(403, '参赛者已满')
         if team.owner != request.user:
             abort(403, '只有队长才能报名')
-        if CompetitionTeamParticipator.objects.filter(team__owner=request.user, final=True).exists():
+        if CompetitionTeamParticipator.objects.filter(team__owner=request.user, final=False).exists():
             abort(403, '队长只能带领一支队伍参赛')
         for m in team.members.all():
             if m.user.is_verified not in [2, 4]:
