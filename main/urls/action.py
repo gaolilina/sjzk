@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from main.views.action.user import FollowedUserActionList, UserActionList, FriendActionList
-from main.views.search.action import SearchUserAction, SearchTeamAction
+from main.views.search.action import SearchUserAction, SearchTeamAction, SearchOwnTeamAction
 from main.views.action.team import FollowedTeamActionList
 
 urlpatterns = [
@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^owned_actions/$', UserActionList.as_view()),
     url(r'^followed_user/actions/$', FollowedUserActionList.as_view()),
     url(r'^friend/actions/$', FriendActionList.as_view()),
+    url(r'^own_team/actions/$', SearchOwnTeamAction.as_view()),
     url(r'^followed_team/actions/$', FollowedTeamActionList.as_view()),
 ]
