@@ -99,7 +99,7 @@ class PublishUserAchievement(View):
 
     @require_role_token
     def get(self, request, offset=0, limit=10, order=1):
-        """获取某用户发布的成果
+        """获取当前用户发布的成果
                 :param offset: 偏移量
                 :param limit: 数量上限
                 :param order: 排序方式
