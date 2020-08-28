@@ -71,6 +71,12 @@ class Profile(View):
         """
         user = user
 
+        #判断是否为好友关系
+        isFriend = False
+        for friend in user.friends.all():
+            if friend.other_user == request.user:
+                isFriend = True
+
         # 更新访客记录
         # if user != request.user:
         #     UserVisitor.objects.update_or_create(visited=user, visitor=request.user)
@@ -87,7 +93,7 @@ class Profile(View):
             arr4.append(t.likers.filter(liker_id=request.user.id).exists())
         r = {'id': user.id,
              'time_created': user.time_created,
-             'name': user.name,
+             'name': user.real_name if isFriend and user.real_name != '' else user.name,
              'real_name': user.real_name,
              'phone': user.phone_number,
              'icon_url': user.icon,
