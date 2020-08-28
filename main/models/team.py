@@ -40,6 +40,8 @@ class Team(models.Model):
 
     time_created = models.DateTimeField(default=timezone.now, db_index=True)
 
+    group_id = models.CharField(default='', max_length=20)
+
     objects = models.Manager()
     enabled = EnabledManager()
 

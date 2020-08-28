@@ -113,7 +113,7 @@ class FriendActionList(View):
         records = (i for i in r[offset:offset + limit])
         l = [{'id': i.entity.id,
               'action_id': i.id,
-              'name': i.entity.name,
+              'name': i.entity.real_name if i.entity.real_name != '' else i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
               'object_type': i.object_type,

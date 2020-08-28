@@ -12,6 +12,7 @@ from util.decorator.auth import app_auth
 
 
 class SearchUserAction(View):
+    @app_auth
     @validate_args({
         'offset': forms.IntegerField(required=False, min_value=0),
         'limit': forms.IntegerField(required=False, min_value=0),
@@ -47,6 +48,10 @@ class SearchUserAction(View):
                 comment_count: 评论数
                 time_created: 创建时间
         """
+        #获取当前用户好友id.
+        userIds = []
+        for item in request.user.friends.all():
+            userIds.append(item.other_user.id)
 
         # 获取主语是用户的动态
         obj = UserAction.objects.all()
@@ -70,7 +75,7 @@ class SearchUserAction(View):
         records = (i for i in obj.all()[offset:offset + limit])
         l = [{'id': i.entity.id,
               'action_id': i.id,
-              'name': i.entity.name,
+              'name': i.entity.real_name if i.entity.id in userIds and i.entity.real_name != '' else i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
               'object_type': i.object_type,
