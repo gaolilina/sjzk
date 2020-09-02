@@ -51,7 +51,7 @@ class SearchUserAction(View):
         #获取当前用户好友id.
         userIds = []
         for item in request.user.friends.all():
-            userIds.append(item.other_user.id)
+            userIds.append(str(item.other_user.id))
 
         # 获取主语是用户的动态
         obj = UserAction.objects.all()
@@ -75,7 +75,7 @@ class SearchUserAction(View):
         records = (i for i in obj.all()[offset:offset + limit])
         l = [{'id': i.entity.id,
               'action_id': i.id,
-              'name': i.entity.real_name if i.entity.id in userIds and i.entity.real_name != '' else i.entity.name,
+              'name': i.entity.real_name if str(i.entity.id) in userIds and i.entity.real_name != '' else i.entity.name,
               'icon': i.entity.icon,
               'action': i.action,
               'object_type': i.object_type,
