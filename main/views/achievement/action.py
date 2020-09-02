@@ -33,7 +33,7 @@ class AchievementDetail(View):
         # 获取当前用户好友id.
         userIds = []
         for item in request.user.friends.all():
-            userIds.append(item.other_user.id)
+            userIds.append(str(item.other_user.id))
         result = {
             'achievement_id': achievement.id,
             'desc': achievement.description,
@@ -46,7 +46,7 @@ class AchievementDetail(View):
         if achievement.team == None:
             result['user_id'] = achievement.user.id
             result['user_name'] = achievement.user.unit1 if achievement.user.is_role_verified else achievement.user.name
-            result['real_name'] = achievement.user.real_name if achievement.user.id in userIds else ''
+            result['real_name'] = achievement.user.real_name if str(achievement.user.id) in userIds else ''
             result['icon_url'] = achievement.user.icon
         else:
             result['team_id'] = achievement.team.id

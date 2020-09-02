@@ -45,7 +45,7 @@ class SearchAllUserAchievement(View):
         # 获取当前用户好友id.
         userIds = []
         for item in request.user.friends.all():
-            userIds.append(item.other_user.id)
+            userIds.append(str(item.other_user.id))
         i, j, k = offset, offset + limit, self.ORDERS[order]
 
         achievements = Achievement.objects.filter(team=None, description__icontains=description).order_by(k)
@@ -54,7 +54,7 @@ class SearchAllUserAchievement(View):
         l = [{'id': a.id,
               'user_id': a.user.id,
               'user_name': a.user.unit1 if a.user.is_role_verified else a.user.name,
-              'real_name': a.user.real_name if a.user.id in userIds else '',
+              'real_name': a.user.real_name if str(a.user.id) in userIds else '',
               'icon_url': a.user.icon,
               'description': a.description,
               'picture': a.picture,
@@ -137,14 +137,14 @@ class SearchUserAchievement(View):
         # 获取当前用户好友id.
         userIds = []
         for item in request.user.friends.all():
-            userIds.append(item.other_user.id)
+            userIds.append(str(item.other_user.id))
 
         achievements = user.achievements.all()
         c = achievements.count()
         l = [{'id': a.id,
               'user_id': a.user.id,
               'user_name': a.user.unit1 if a.user.is_role_verified else a.user.name,
-              'real_name': a.user.real_name if a.user.id in userIds else '',
+              'real_name': a.user.real_name if str(a.user.id) in userIds else '',
               'icon_url': a.user.icon,
               'description': a.description,
               'picture': a.picture,
