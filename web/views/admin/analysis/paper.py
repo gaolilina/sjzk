@@ -8,9 +8,10 @@ from django.views.generic.base import View
 
 from modellib.models.paper import Paper
 from util.decorator.param import fetch_object, validate_args
+from util.base.view import BaseView
 
 
-class PaperAnalysis(View):
+class PaperAnalysis(BaseView):
     KEY_ANALYSIS = 'analysis'
 
     @validate_args({
@@ -35,7 +36,7 @@ class PaperAnalysis(View):
             answers = paper.answers.filter(**condititon)
             for a in answers:
                 self.__analysis_an_answer(questions, json.loads(a.content))
-        return JsonResponse({
+        return self.success({
             'sum': count_answer,
             'result': questions,
         })

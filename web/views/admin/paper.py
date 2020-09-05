@@ -13,18 +13,18 @@ from util.decorator.auth import admin_auth, cms_auth
 from main.utils import abort
 from util.decorator.param import fetch_object, validate_args, old_validate_args
 from modellib.models.paper.paper import Paper
+from util.base.view import BaseView
 
 
-class PaperAdd(View):
+class PaperAdd(BaseView):
 
     @admin_auth
     @require_role('xyz')
     def get(self, request):
-        template = loader.get_template("paper/add.html")
         context = Context({
             'user': request.user,
         })
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @admin_auth
     @require_role('xyz')
@@ -49,11 +49,10 @@ class PaperAdd(View):
         context = Context({
             'user': request.user,
         })
-        template = loader.get_template("paper/list.html")
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class PaperList(View):
+class PaperList(BaseView):
 
     @admin_auth
     @require_role('xyz')
@@ -77,15 +76,14 @@ class PaperList(View):
             papers = Paper.objects.filter(**params)
         else:
             papers = Paper.objects.all()
-        template = loader.get_template("paper/list.html")
         context = Context({
             'user': request.user,
             'list': papers
         })
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class PaperDetail(View):
+class PaperDetail(BaseView):
 
     @admin_auth
     @require_role('xyz')
@@ -94,13 +92,12 @@ class PaperDetail(View):
     })
     @fetch_object(Paper.objects, 'paper')
     def get(self, request, paper, **kwargs):
-        template = loader.get_template("paper/edit.html")
         paper.questions = json.loads(paper.questions)
         context = Context({
             'user': request.user,
             'model': paper
         })
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @admin_auth
     @require_role('xyz')
@@ -131,16 +128,15 @@ class PaperDetail(View):
                 return HttpResponseBadRequest()
         if has_update:
             paper.save()
-        template = loader.get_template("paper/edit.html")
         paper.questions = json.loads(paper.questions)
         context = Context({
             'user': request.user,
             'model': paper
         })
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class PaperSwitch(View):
+class PaperSwitch(BaseView):
 
     @cms_auth
     @require_role('xyz')
@@ -152,4 +148,4 @@ class PaperSwitch(View):
     def post(self, request, paper, enable):
         if paper.enable != enable:
             Paper.objects.filter(id=paper.id).update(enable=enable)
-        return JsonResponse({})
+        return self.success()
