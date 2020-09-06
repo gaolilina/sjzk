@@ -53,8 +53,9 @@ class PublishTeamAchievement(View):
     @fetch_object(Team.enabled, 'team')
     @validate_args({
         'description': forms.CharField(min_length=1, max_length=100),
+        'name': forms.CharField(min_length=1, max_length=40),
     })
-    def post(self, request, team, description):
+    def post(self, request, team, name, description):
         """发布成果
 
         :param description: 成果描述
@@ -73,7 +74,7 @@ class PublishTeamAchievement(View):
                 score=get_score_stage(2), type="初始数据",
                 description="首次发布团队成果")
 
-        achievement = Achievement(team=team, description=description, user=request.user)
+        achievement = Achievement(team=team, name=name, description=description, user=request.user)
         picture = request.FILES.get('image')
         if picture:
             filename = save_uploaded_image(picture)
@@ -117,6 +118,7 @@ class PublishUserAchievement(View):
         c = request.user.achievements.count()
         achievements = request.user.achievements.order_by(k)[i:j]
         l = [{'id': a.id,
+              'name': a.name,
               'user_id': request.user.id,
               'user_name': request.user.name,
               'require_count': a.requirers.count(),
@@ -133,8 +135,9 @@ class PublishUserAchievement(View):
     @require_role_token
     @validate_args({
         'description': forms.CharField(min_length=1, max_length=100),
+        'name': forms.CharField(min_length=1, max_length=40),
     })
-    def post(self, request, description):
+    def post(self, request, name, description):
         """发布成果
 
         :param description: 成果描述
@@ -155,7 +158,7 @@ class PublishUserAchievement(View):
         pics = [
             request.FILES.get('image' + str(i)) if 'image' + str(i) in request.FILES else None
                 for i in range(1, max_pic)]
-        achievement = Achievement(user=request.user, description=description)
+        achievement = Achievement(user=request.user, description=description, name=name)
         if len(pics) != 0:
             filenames = []
             for p in pics:
