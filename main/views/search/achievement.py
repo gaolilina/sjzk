@@ -52,6 +52,7 @@ class SearchAllUserAchievement(View):
         c = achievements.count()
         achievements = achievements[i:j]
         l = [{'id': a.id,
+              'name': a.name,
               'user_id': a.user.id,
               'user_name': a.user.unit1 if a.user.is_role_verified else a.user.name,
               'real_name': a.user.real_name if str(a.user.id) in userIds else '',
@@ -103,6 +104,7 @@ class SearchAllTeamAchievement(View):
         c = achievements.count()
         achievements = achievements[i:j]
         l = [{'id': a.id,
+              'name': a.name,
               'team_id': a.team.id,
               'team_name': a.team.name,
               'icon_url': a.team.icon,
@@ -142,6 +144,7 @@ class SearchUserAchievement(View):
         achievements = user.achievements.all()
         c = achievements.count()
         l = [{'id': a.id,
+              'name': a.name,
               'user_id': a.user.id,
               'user_name': a.user.unit1 if a.user.is_role_verified else a.user.name,
               'real_name': a.user.real_name if str(a.user.id) in userIds else '',
@@ -177,6 +180,7 @@ class SearchTeamAchievement(View):
         achievements = team.achievements.all()
         c = achievements.count()
         l = [{'id': a.id,
+              'name': a.name,
               'team_id': a.team.id,
               'team_name': a.team.name,
               'icon_url': a.team.icon,

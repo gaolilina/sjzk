@@ -36,6 +36,7 @@ class AchievementDetail(View):
             userIds.append(str(item.other_user.id))
         result = {
             'achievement_id': achievement.id,
+            'name': achievement.name,
             'desc': achievement.description,
             'pics': achievement.picture,
             'yes_count': achievement.likers.count(),  # 点赞数
