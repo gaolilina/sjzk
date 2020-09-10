@@ -50,8 +50,15 @@ class SearchUserAction(View):
         """
         #获取当前用户好友id.
         userIds = []
+        likedIds = []
+        favoredIds = []
         for item in request.user.friends.all():
             userIds.append(str(item.other_user.id))
+        for item in request.user.liked_user_actions.all():
+            likedIds.append(str(item.liked.id))
+        for item in request.user.favored_user_actions.all():
+            favoredIds.append(str(item.favored.id))
+
 
         # 获取主语是用户的动态
         obj = UserAction.objects.all()
@@ -88,6 +95,8 @@ class SearchUserAction(View):
               'liker_count': i.likers.count(),
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
+              'is_like': True if str(i.id) in likedIds else False,
+              'is_favored':True if str(i.id) in favoredIds else False,
               } for i in records]
         return JsonResponse({'count': c, 'list': l, 'code': 0})
 
@@ -136,6 +145,15 @@ class SearchTeamAction(View):
         # 获取主语是团队的动态
         c = qs.count()
         records = (i for i in qs[offset:offset + limit])
+
+
+        likedIds = []
+        favoredIds = []
+        for item in request.user.liked_team_actions.all():
+            likedIds.append(str(item.liked.id))
+        for item in request.user.favored_team_actions.all():
+            favoredIds.append(str(item.favored.id))
+
         l = [{'id': i.entity.id,
               'action_id': i.id,
               'name': i.entity.name,
@@ -151,6 +169,8 @@ class SearchTeamAction(View):
               'liker_count': i.likers.count(),
               'comment_count': i.comments.count(),
               'time_created': i.time_created,
+              'is_like': True if str(i.id) in likedIds else False,
+              'is_favored': True if str(i.id) in favoredIds else False,
               } for i in records]
         return JsonResponse({'count': c, 'list': l, 'code': 0})
 
