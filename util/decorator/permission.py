@@ -1,3 +1,6 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from functools import wraps
 
 from django.core.urlresolvers import reverse
