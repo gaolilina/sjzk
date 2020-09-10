@@ -74,8 +74,14 @@ class SearchUser(View):
             qs = User.enabled.filter(**condition).exclude(**condition_expert)
         c = qs.count()
         users = qs.order_by(self.ORDERS[order])[offset:offset + limit]
+
+        # 获取当前用户好友id.
+        userIds = []
+        for item in request.user.friends.all():
+            userIds.append(str(item.other_user.id))
+
         l = [{'id': u.id,
-              'name': u.name,
+              'name': u.real_name if str(u.id) in userIds and u.real_name != '' else u.name,
               'gender': u.gender,
               'liker_count': u.likers.count(),
               'follower_count': u.followers.count(),
