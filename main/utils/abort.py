@@ -44,7 +44,7 @@ def set_code(code):
     elif code == 403:
         return error.NO_PERMISSION
     elif code == 404:
-        return error.NOT_FOUND
+        return error.NOT_FOUNT
     elif code == 500:
         return error.SERVER_ERRO
     else:
