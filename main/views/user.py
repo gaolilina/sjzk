@@ -69,7 +69,6 @@ class Profile(View):
             profession: 专业
             score: 积分
         """
-        user = user
 
         #判断是否为好友关系
         isFriend = False
@@ -126,7 +125,10 @@ class Profile(View):
              'unit1': user.unit1,
              'unit2': user.unit2,
              'profession': user.profession,
-             'score': user.score}
+             'score': user.score,
+             'is_like': True if user.likers.filter(liker=request.user).exists() else False,
+             'user_tag_like': generate_user_tag(user.tags.all(), request.user),
+        }
         return JsonResponse(r)
 
 
@@ -572,3 +574,15 @@ class UserName(View):
             user.name = '网络用户'
             user.save()
         abort(200)
+
+
+def generate_user_tag(user_tags, user):
+    res = []
+    for tag in user_tags:
+        res.append({
+                'id': tag.id,
+                'name': tag.name,
+                'is_like':True if tag.likers.filter(liker=user).exists() else False
+            }
+        )
+    return res

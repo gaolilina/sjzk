@@ -54,6 +54,7 @@ class SearchUserAction(View):
         favoredIds = []
         for item in request.user.friends.all():
             userIds.append(str(item.other_user.id))
+        userIds.append(request.user.id)
         for item in request.user.liked_user_actions.all():
             likedIds.append(str(item.liked.id))
         for item in request.user.favored_user_actions.all():
