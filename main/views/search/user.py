@@ -79,7 +79,7 @@ class SearchUser(View):
         userIds = []
         for item in request.user.friends.all():
             userIds.append(str(item.other_user.id))
-        userIds.append(request.user.id)
+        userIds.append(str(request.user.id))
 
         l = [{'id': u.id,
               'name': u.real_name if str(u.id) in userIds and u.real_name != '' else u.name,

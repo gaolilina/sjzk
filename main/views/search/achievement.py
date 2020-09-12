@@ -46,7 +46,7 @@ class SearchAllUserAchievement(View):
         userIds = []
         for item in request.user.friends.all():
             userIds.append(str(item.other_user.id))
-        userIds.append(request.user.id)
+        userIds.append(str(request.user.id))
         i, j, k = offset, offset + limit, self.ORDERS[order]
 
         achievements = Achievement.objects.filter(team=None, description__icontains=description).order_by(k)
@@ -140,7 +140,7 @@ class SearchUserAchievement(View):
         userIds = []
         for item in request.user.friends.all():
             userIds.append(str(item.other_user.id))
-        userIds.append(request.user.id)
+        userIds.append(str(request.user.id))
 
         achievements = user.achievements.all()
         c = achievements.count()
