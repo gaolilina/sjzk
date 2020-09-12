@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.models import TeamInvitation
-from main.utils import abort, get_score_stage
+from main.utils import abort, get_score_stage, action
 from main.utils.decorators import require_verification_token
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
@@ -70,6 +70,7 @@ class Invitation(View):
             invitation.team.score_records.create(
                 score=get_score_stage(1), type="能力",
                 description="成功招募队员")
+            action.join_team(request.user, invitation.team)
             request.user.save()
             invitation.team.save()
         abort(200)

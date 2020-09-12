@@ -34,6 +34,7 @@ class AchievementDetail(View):
         userIds = []
         for item in request.user.friends.all():
             userIds.append(str(item.other_user.id))
+        userIds.append(request.user.id)
         result = {
             'achievement_id': achievement.id,
             'name': achievement.name,
