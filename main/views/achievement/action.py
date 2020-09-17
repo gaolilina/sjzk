@@ -39,6 +39,7 @@ class AchievementDetail(View):
             'achievement_id': achievement.id,
             'name': achievement.name,
             'desc': achievement.description,
+            'tags': achievement.tags,
             'pics': achievement.picture,
             'yes_count': achievement.likers.count(),  # 点赞数
             'is_yes': request.user in achievement.likers.all(),  # 是否点赞

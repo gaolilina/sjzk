@@ -20,6 +20,9 @@ class Achievement(models.Model):
     requirers = models.ManyToManyField('User', related_name='requireAchievements')
     likers = models.ManyToManyField('User', related_name='likeAchievements')
 
+    # 标签
+    tags = models.CharField(max_length=256, default='')
+
     class Meta:
         db_table = 'achievement'
         ordering = ['-time_created']
