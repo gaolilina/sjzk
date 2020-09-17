@@ -46,6 +46,7 @@ class PublishTeamAchievement(View):
         l = [{'id': a.id,
               'description': a.description,
               'picture': a.picture,
+              'tags': a.tags,
               'time_created': a.time_created} for a in achievements]
         return JsonResponse({'count': c, 'list': l, 'code': 0})
 
@@ -54,8 +55,9 @@ class PublishTeamAchievement(View):
     @validate_args({
         'description': forms.CharField(min_length=1, max_length=100),
         'name': forms.CharField(min_length=1, max_length=40),
+        'tags': forms.CharField(max_length=256, required=False),
     })
-    def post(self, request, team, name, description):
+    def post(self, request, team, name, description, tags):
         """发布成果
 
         :param description: 成果描述
@@ -74,7 +76,7 @@ class PublishTeamAchievement(View):
                 score=get_score_stage(2), type="初始数据",
                 description="首次发布团队成果")
 
-        achievement = Achievement(team=team, name=name, description=description, user=request.user)
+        achievement = Achievement(team=team, name=name, description=description, user=request.user, tags=tags)
         picture = request.FILES.get('image')
         if picture:
             filename = save_uploaded_image(picture)
@@ -128,7 +130,8 @@ class PublishUserAchievement(View):
               'icon_url': request.user.icon,
               'description': a.description,
               'picture': a.picture,
-              'time_created': a.time_created} for a in achievements]
+              'time_created': a.time_created,
+              'tags': a.tags} for a in achievements]
         return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
@@ -136,8 +139,9 @@ class PublishUserAchievement(View):
     @validate_args({
         'description': forms.CharField(min_length=1, max_length=100),
         'name': forms.CharField(min_length=1, max_length=40),
+        'tags': forms.CharField(max_length=256, required=False)
     })
-    def post(self, request, name, description):
+    def post(self, request, name, description, tags):
         """发布成果
 
         :param description: 成果描述
@@ -158,7 +162,7 @@ class PublishUserAchievement(View):
         pics = [
             request.FILES.get('image' + str(i)) if 'image' + str(i) in request.FILES else None
                 for i in range(1, max_pic)]
-        achievement = Achievement(user=request.user, description=description, name=name)
+        achievement = Achievement(user=request.user, description=description, name=name, tags=tags)
         if len(pics) != 0:
             filenames = []
             for p in pics:

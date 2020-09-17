@@ -92,8 +92,8 @@ class Profile(View):
             arr4.append(t.likers.filter(liker_id=request.user.id).exists())
         r = {'id': user.id,
              'time_created': user.time_created,
-             'name': user.real_name if (isFriend or user.id == request.user.id) and user.real_name != '' else user.name,
-             'real_name': user.real_name,
+             'name': user.name,
+             'real_name': user.real_name if (isFriend or user.id == request.user.id) and user.real_name != '' else user.name,
              'phone': user.phone_number,
              'icon_url': user.icon,
              'description': user.description,
