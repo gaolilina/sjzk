@@ -9,6 +9,7 @@ from django.views.generic.base import View
 from main.models import Achievement
 from main.models import Team
 from main.models import User
+from main.utils import deal_tags
 from util.decorator.auth import app_auth
 from util.decorator.param import validate_args, fetch_object
 
@@ -58,7 +59,7 @@ class SearchAllUserAchievement(View):
               'user_name': a.user.real_name if str(a.user.id) in userIds and a.user.real_name != '' else a.user.name,
               'icon_url': a.user.icon,
               'description': a.description,
-              'tags': a.tags,
+              'tags': deal_tags(a.tags),
               'picture': a.picture,
               'time_created': a.time_created,
               'yes_count': a.likers.count(),
@@ -110,7 +111,7 @@ class SearchAllTeamAchievement(View):
               'team_name': a.team.name,
               'icon_url': a.team.icon,
               'description': a.description,
-              'tags': a.tags,
+              'tags': deal_tags(a.tags),
               'picture': a.picture,
               'yes_count': a.likers.count(),
               'is_yes': request.user in a.likers.all(),
@@ -152,7 +153,7 @@ class SearchUserAchievement(View):
               'user_name': a.user.real_name if str(a.user.id) in userIds and a.user.real_name != '' else a.user.name,
               'icon_url': a.user.icon,
               'description': a.description,
-              'tags': a.tags,
+              'tags': deal_tags(a.tags),
               'picture': a.picture,
               'time_created': a.time_created,
               'yes_count': a.likers.count(),
@@ -188,7 +189,7 @@ class SearchTeamAchievement(View):
               'team_name': a.team.name,
               'icon_url': a.team.icon,
               'description': a.description,
-              'tags': a.tags,
+              'tags': deal_tags(a.tags),
               'picture': a.picture,
               'yes_count': a.likers.count(),
               'is_yes': request.user in a.likers.all(),

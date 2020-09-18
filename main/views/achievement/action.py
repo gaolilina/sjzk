@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.models import Achievement
-from main.utils import abort
+from main.utils import abort, deal_tags
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object
 
@@ -39,7 +39,7 @@ class AchievementDetail(View):
             'achievement_id': achievement.id,
             'name': achievement.name,
             'desc': achievement.description,
-            'tags': achievement.tags,
+            'tags': deal_tags(achievement.tags),
             'pics': achievement.picture,
             'yes_count': achievement.likers.count(),  # 点赞数
             'is_yes': request.user in achievement.likers.all(),  # 是否点赞
