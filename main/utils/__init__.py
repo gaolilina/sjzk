@@ -48,3 +48,17 @@ def save_uploaded_file(file, object_id, status, other_id):
         return None
     else:
         return filename
+
+
+def deal_tags(tags):
+    res = []
+    tags = tags.replace(',', '，')
+    tagList = tags.split('，')
+    for tag in tagList:
+        if tag == '':
+            continue
+        list = tag.split('-')
+        if len(list) != 0:
+            res.append(list[-1])
+
+    return res

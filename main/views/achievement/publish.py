@@ -5,10 +5,9 @@ from django.http import JsonResponse
 from django.views.generic import View
 
 from main.models import Team, Achievement
-from main.utils import abort, get_score_stage, save_uploaded_image
+from main.utils import abort, get_score_stage, save_uploaded_image, deal_tags
 from main.utils.decorators import require_verification_token, require_role_token
 from main.utils.dfa import check_bad_words
-from main.views.search.achievement import SearchUserAchievement
 from util.decorator.auth import app_auth
 from util.decorator.param import fetch_object, validate_args
 
@@ -46,7 +45,7 @@ class PublishTeamAchievement(View):
         l = [{'id': a.id,
               'description': a.description,
               'picture': a.picture,
-              'tags': a.tags,
+              'tags': deal_tags(a.tags),
               'time_created': a.time_created} for a in achievements]
         return JsonResponse({'count': c, 'list': l, 'code': 0})
 
@@ -131,7 +130,7 @@ class PublishUserAchievement(View):
               'description': a.description,
               'picture': a.picture,
               'time_created': a.time_created,
-              'tags': a.tags} for a in achievements]
+              'tags': deal_tags(a.tags)} for a in achievements]
         return JsonResponse({'count': c, 'list': l, 'code': 0})
 
 
