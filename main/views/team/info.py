@@ -52,6 +52,7 @@ class Profile(View):
 
         r = dict()
         r['id'] = team.id
+        r['group_id'] = team.group_id
         r['name'] = team.name
         r['icon_url'] = team.icon
         r['owner_id'] = team.owner.id
