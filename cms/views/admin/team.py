@@ -12,16 +12,16 @@ from main.models.task import ExternalTask, InternalTask
 from main.models.team import *
 from util.decorator.auth import admin_auth
 from util.decorator.param import old_validate_args
+from util.base.view import BaseView
 
 
-class ExternalTaskView(View):
+class ExternalTaskView(BaseView):
     @fetch_record(ExternalTask.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/external_task.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(ExternalTask.objects, 'mod', 'id')
     @admin_auth
@@ -41,12 +41,11 @@ class ExternalTaskView(View):
 
         admin_log("external_task", mod.id, 1, request.user)
 
-        template = loader.get_template("team/external_task.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class ExternalTaskList(View):
+class ExternalTaskList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -55,16 +54,13 @@ class ExternalTaskList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = ExternalTask.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/external_task_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:external_task', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if ExternalTask == Team:
                 redir = 'admin:team:team'
             else:
@@ -79,21 +75,18 @@ class ExternalTaskList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'external_task', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'external_task', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class InternalTaskView(View):
+class InternalTaskView(BaseView):
     @fetch_record(InternalTask.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/internal_task.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(InternalTask.objects, 'mod', 'id')
     @admin_auth
@@ -111,12 +104,11 @@ class InternalTaskView(View):
 
         admin_log("internal_task", mod.id, 1, request.user)
 
-        template = loader.get_template("team/internal_task.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class InternalTaskList(View):
+class InternalTaskList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -125,16 +117,13 @@ class InternalTaskList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = InternalTask.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/internal_task_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:internal_task', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if InternalTask == Team:
                 redir = 'admin:team:team'
             else:
@@ -149,21 +138,18 @@ class InternalTaskList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'internal_task', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'internal_task', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamView(View):
+class TeamView(BaseView):
     @fetch_record(Team.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(Team.objects, 'mod', 'id')
     @admin_auth
@@ -190,12 +176,11 @@ class TeamView(View):
 
         admin_log("team", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamList(View):
+class TeamList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -204,16 +189,13 @@ class TeamList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = Team.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if Team == Team:
                 redir = 'admin:team:team'
             else:
@@ -228,21 +210,18 @@ class TeamList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamAchievementView(View):
+class TeamAchievementView(BaseView):
     @fetch_record(Achievement.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_achievement.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(Achievement.objects, 'mod', 'id')
     @admin_auth
@@ -259,12 +238,11 @@ class TeamAchievementView(View):
 
         admin_log("team_achievement", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_achievement.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamAchievementList(View):
+class TeamAchievementList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -273,17 +251,14 @@ class TeamAchievementList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = Achievement.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_achievement_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:team:team_achievement', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if Achievement == Team:
                 redir = 'admin:team:team'
             else:
@@ -298,21 +273,18 @@ class TeamAchievementList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_achievement', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_achievement', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamActionView(View):
+class TeamActionView(BaseView):
     @admin_auth
     @require_role('yz')
     @fetch_record(TeamAction.objects, 'mod', 'id')
     def get(self, request, mod):
-        template = loader.get_template("team/team_action.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @admin_auth
     @require_role('yz')
@@ -330,12 +302,11 @@ class TeamActionView(View):
 
         admin_log("team_action", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_action.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamActionList(View):
+class TeamActionList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -344,16 +315,13 @@ class TeamActionList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamAction.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_action_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_action', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamAction == Team:
                 redir = 'admin:team:team'
             else:
@@ -368,21 +336,18 @@ class TeamActionList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_action', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_action', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamActionCommentView(View):
+class TeamActionCommentView(BaseView):
     @admin_auth
     @require_role('yz')
     @fetch_record(TeamActionComment.objects, 'mod', 'id')
     def get(self, request, mod):
-        template = loader.get_template("team/team_action_comment.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @admin_auth
     @require_role('yz')
@@ -397,12 +362,11 @@ class TeamActionCommentView(View):
 
         admin_log("team_action_comment", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_action_comment.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamActionCommentList(View):
+class TeamActionCommentList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -411,17 +375,14 @@ class TeamActionCommentList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamActionComment.objects.filter(entity_id=kwargs["id"])
-            template = loader.get_template("team/team_action_comment_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:team:team_action_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamActionComment == Team:
                 redir = 'admin:team:team'
             else:
@@ -436,21 +397,18 @@ class TeamActionCommentList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_action_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_action_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
+    
 
-
-class TeamActionLikerView(View):
+class TeamActionLikerView(BaseView):
     @admin_auth
     @require_role('yz')
     @fetch_record(TeamActionLiker.objects, 'mod', 'id')
     def get(self, request, mod):
-        template = loader.get_template("team/team_action_liker.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @admin_auth
     @require_role('yz')
@@ -465,12 +423,11 @@ class TeamActionLikerView(View):
 
         admin_log("team_action_liker", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_action_liker.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamActionLikerList(View):
+class TeamActionLikerList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -479,17 +436,14 @@ class TeamActionLikerList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamActionLiker.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_action_liker_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:team:team_action_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamActionLiker == Team:
                 redir = 'admin:team:team'
             else:
@@ -504,21 +458,18 @@ class TeamActionLikerList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_action_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_action_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamCommentView(View):
+class TeamCommentView(BaseView):
     @fetch_record(TeamComment.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_comment.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamComment.objects, 'mod', 'id')
     @admin_auth
@@ -533,12 +484,11 @@ class TeamCommentView(View):
 
         admin_log("team_comment", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_comment.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamCommentList(View):
+class TeamCommentList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -547,16 +497,13 @@ class TeamCommentList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamComment.objects.filter(entity_id=kwargs["id"])
-            template = loader.get_template("team/team_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamComment == Team:
                 redir = 'admin:team:team'
             else:
@@ -571,21 +518,18 @@ class TeamCommentList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
+            return self.success(data=context)
+        
 
-
-class TeamFeatureView(View):
+class TeamFeatureView(BaseView):
     @fetch_record(TeamFeature.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_feature.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamFeature.objects, 'mod', 'id')
     @admin_auth
@@ -600,12 +544,11 @@ class TeamFeatureView(View):
 
         admin_log("team_feature", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_feature.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamFeatureList(View):
+class TeamFeatureList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -614,16 +557,13 @@ class TeamFeatureList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamFeature.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_feature_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_feature', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamFeature == Team:
                 redir = 'admin:team:team'
             else:
@@ -638,21 +578,18 @@ class TeamFeatureList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_feature', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_feature', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamFollowerView(View):
+class TeamFollowerView(BaseView):
     @fetch_record(TeamFollower.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_follower.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamFollower.objects, 'mod', 'id')
     @admin_auth
@@ -667,12 +604,11 @@ class TeamFollowerView(View):
 
         admin_log("team_follower", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_follower.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamFollowerList(View):
+class TeamFollowerList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -681,16 +617,13 @@ class TeamFollowerList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamFollower.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_follower_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_follower', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamFollower == Team:
                 redir = 'admin:team:team'
             else:
@@ -705,21 +638,18 @@ class TeamFollowerList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_follower', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_follower', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamInvitationView(View):
+class TeamInvitationView(BaseView):
     @fetch_record(TeamInvitation.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_invitation.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamInvitation.objects, 'mod', 'id')
     @admin_auth
@@ -734,12 +664,11 @@ class TeamInvitationView(View):
 
         admin_log("team_invitation", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_invitation.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamInvitationList(View):
+class TeamInvitationList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -748,16 +677,13 @@ class TeamInvitationList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamInvitation.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_invitation_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_invitation', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamInvitation == Team:
                 redir = 'admin:team:team'
             else:
@@ -772,21 +698,18 @@ class TeamInvitationList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_invitation', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_invitation', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamLikerView(View):
+class TeamLikerView(BaseView):
     @fetch_record(TeamLiker.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_liker.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamLiker.objects, 'mod', 'id')
     @admin_auth
@@ -801,12 +724,11 @@ class TeamLikerView(View):
 
         admin_log("team_liker", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_liker.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamLikerList(View):
+class TeamLikerList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -815,16 +737,13 @@ class TeamLikerList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamLiker.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_liker_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamLiker == Team:
                 redir = 'admin:team:team'
             else:
@@ -839,21 +758,18 @@ class TeamLikerList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamMemberView(View):
+class TeamMemberView(BaseView):
     @fetch_record(TeamMember.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_member.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamMember.objects, 'mod', 'id')
     @admin_auth
@@ -868,12 +784,11 @@ class TeamMemberView(View):
 
         admin_log("team_member", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_member.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamMemberList(View):
+class TeamMemberList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -882,16 +797,13 @@ class TeamMemberList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamMember.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_member_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_member', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamMember == Team:
                 redir = 'admin:team:team'
             else:
@@ -906,21 +818,18 @@ class TeamMemberList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_member', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_member', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamMemberRequestView(View):
+class TeamMemberRequestView(BaseView):
     @fetch_record(TeamMemberRequest.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_member_request.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamMemberRequest.objects, 'mod', 'id')
     @admin_auth
@@ -935,12 +844,11 @@ class TeamMemberRequestView(View):
 
         admin_log("team_member_request", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_member_request.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamMemberRequestList(View):
+class TeamMemberRequestList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -949,17 +857,14 @@ class TeamMemberRequestList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamMemberRequest.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_member_request_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:team:team_member_request', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamMemberRequest == Team:
                 redir = 'admin:team:team'
             else:
@@ -974,21 +879,18 @@ class TeamMemberRequestList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_member_request', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_member_request', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamNeedView(View):
+class TeamNeedView(BaseView):
     @fetch_record(TeamNeed.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_need.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamNeed.objects, 'mod', 'id')
     @admin_auth
@@ -1015,12 +917,11 @@ class TeamNeedView(View):
 
         admin_log("team_need", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_need.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamNeedList(View):
+class TeamNeedList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -1029,16 +930,13 @@ class TeamNeedList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamNeed.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_need_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_need', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamNeed == Team:
                 redir = 'admin:team:team'
             else:
@@ -1053,21 +951,18 @@ class TeamNeedList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_need', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_need', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamScoreView(View):
+class TeamScoreView(BaseView):
     @fetch_record(TeamScore.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_score_record.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamScore.objects, 'mod', 'id')
     @admin_auth
@@ -1083,12 +978,11 @@ class TeamScoreView(View):
 
         admin_log("team_score_record", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_score_record.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamScoreList(View):
+class TeamScoreList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -1097,17 +991,14 @@ class TeamScoreList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamScore.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_score_record_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:team:team_score_record', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamScore == Team:
                 redir = 'admin:team:team'
             else:
@@ -1122,21 +1013,18 @@ class TeamScoreList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_score_record', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_score_record', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamTagView(View):
+class TeamTagView(BaseView):
     @fetch_record(TeamTag.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_tag.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamTag.objects, 'mod', 'id')
     @admin_auth
@@ -1151,12 +1039,11 @@ class TeamTagView(View):
 
         admin_log("team_tag", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_tag.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamTagList(View):
+class TeamTagList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -1165,16 +1052,13 @@ class TeamTagList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamTag.objects.filter(entity_id=kwargs["id"])
-            template = loader.get_template("team/team_tag_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_tag', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamTag == Team:
                 redir = 'admin:team:team'
             else:
@@ -1189,21 +1073,18 @@ class TeamTagList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_tag', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_tag', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamVisitorView(View):
+class TeamVisitorView(BaseView):
     @fetch_record(TeamVisitor.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("team/team_visitor.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(TeamVisitor.objects, 'mod', 'id')
     @admin_auth
@@ -1218,12 +1099,11 @@ class TeamVisitorView(View):
 
         admin_log("team_visitor", mod.id, 1, request.user)
 
-        template = loader.get_template("team/team_visitor.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class TeamVisitorList(View):
+class TeamVisitorList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -1232,16 +1112,13 @@ class TeamVisitorList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = TeamVisitor.objects.filter(team_id=kwargs["id"])
-            template = loader.get_template("team/team_visitor_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:team:team_visitor', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             province = request.GET.get("province")
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("team/index.html")
             if TeamVisitor == Team:
                 redir = 'admin:team:team'
             else:
@@ -1256,8 +1133,6 @@ class TeamVisitorList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'team_visitor', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("team/index.html")
             context = Context({'rb': 'team_visitor', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)

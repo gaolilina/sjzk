@@ -9,9 +9,10 @@ from admin.models.security_log import SecurityLog
 from admin.utils.decorators import require_role
 from util.decorator.param import old_validate_args
 from util.decorator.auth import admin_auth
+from util.base.view import BaseView
 
 
-class SecurityLogList(View):
+class SecurityLogList(BaseView):
 
     @admin_auth
     @require_role('xyz')
@@ -28,8 +29,7 @@ class SecurityLogList(View):
         for p in params_list:
             if p in kwargs and kwargs.get(p) is not None and len(kwargs.get(p)) > 0:
                 params[p] = kwargs.get(p)
-        template = loader.get_template("net_police/net_log.html")
         context = Context({
             'user': request.user,
             'list': SecurityLog.objects.filter(**params) if len(params) != 0 else SecurityLog.objects.all()})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)

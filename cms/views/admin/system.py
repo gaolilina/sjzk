@@ -7,15 +7,15 @@ from admin.utils.decorators import *
 from main.models import System as SystemModel, SystemNotification
 from util.decorator.param import validate_args
 from util.decorator.auth import admin_auth
+from util.base.view import BaseView
 
 
-class Setting(View):
+class Setting(BaseView):
     @admin_auth
     @require_role('yz')
     def get(self, request):
-        template = loader.get_template("system.html")
         context = Context({'m': SystemModel.objects.get(id=1), 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @admin_auth
     @require_role('yz')
@@ -33,18 +33,16 @@ class Setting(View):
         for k in kwargs:
             setattr(model, k.upper(), kwargs[k])
         model.save()
-        template = loader.get_template("system.html")
         context = Context({'m': model, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class Notification(View):
+class Notification(BaseView):
     @admin_auth
     @require_role('yz')
     def get(self, request):
-        template = loader.get_template("notification.html")
         context = Context({'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @admin_auth
     @require_role('yz')
@@ -55,6 +53,5 @@ class Notification(View):
         n = SystemNotification(content=content)
         n.save()
 
-        template = loader.get_template("notification.html")
         context = Context({'msg': '发送成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)

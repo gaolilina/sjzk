@@ -10,16 +10,16 @@ from main.models.user import *
 from util.decorator.auth import admin_auth
 from util.decorator.param import old_validate_args
 from util.decorator.permission import admin_permission
+from util.base.view import BaseView
 
 
-class UserView(View):
+class UserView(BaseView):
     @admin_auth
     @admin_permission('userInfo')
     @fetch_record(User.objects, 'mod', 'id')
     def get(self, request, mod):
-        template = loader.get_template("user/user.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(User.objects, 'mod', 'id')
     @admin_auth
@@ -59,12 +59,11 @@ class UserView(View):
 
         admin_log("user", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserList(View):
+class UserList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -73,9 +72,7 @@ class UserList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = User.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -85,7 +82,6 @@ class UserList(View):
             county = request.GET.get("county")
             is_verified = request.GET.get("is_verified")
 
-            template = loader.get_template("user/index.html")
             if User == User:
                 redir = 'admin:user:user'
             else:
@@ -106,21 +102,18 @@ class UserList(View):
                     city__contains=city,
                     county__contains=county,
                     is_verified=is_verified), 'redir': redir, 'rb': 'user', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserActionView(View):
+class UserActionView(BaseView):
     @admin_auth
     @require_role('yz')
     @fetch_record(UserAction.objects, 'mod', 'id')
     def get(self, request, mod):
-        template = loader.get_template("user/user_action.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserAction.objects, 'mod', 'id')
     @admin_auth
@@ -138,12 +131,11 @@ class UserActionView(View):
 
         admin_log("user_action", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_action.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserActionList(View):
+class UserActionList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -152,9 +144,7 @@ class UserActionList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserAction.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_action_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_action', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -163,7 +153,6 @@ class UserActionList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserAction == User:
                 redir = 'admin:user:user'
             else:
@@ -182,21 +171,18 @@ class UserActionList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_action', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_action', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserActionCommentView(View):
+class UserActionCommentView(BaseView):
     @fetch_record(UserActionComment.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_action_comment.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserActionComment.objects, 'mod', 'id')
     @admin_auth
@@ -211,12 +197,11 @@ class UserActionCommentView(View):
 
         admin_log("user_action_comment", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_action_comment.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserActionCommentList(View):
+class UserActionCommentList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -225,10 +210,8 @@ class UserActionCommentList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserActionComment.objects.filter(entity_id=kwargs["id"])
-            template = loader.get_template("user/user_action_comment_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:user:user_action_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -237,7 +220,6 @@ class UserActionCommentList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserActionComment == User:
                 redir = 'admin:user:user'
             else:
@@ -256,21 +238,18 @@ class UserActionCommentList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_action_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_action_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserActionLikerView(View):
+class UserActionLikerView(BaseView):
     @fetch_record(UserActionLiker.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_action_liker.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserActionLiker.objects, 'mod', 'id')
     @admin_auth
@@ -285,12 +264,11 @@ class UserActionLikerView(View):
 
         admin_log("user_action_liker", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_action_liker.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserActionLikerList(View):
+class UserActionLikerList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -299,10 +277,8 @@ class UserActionLikerList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserActionLiker.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_action_liker_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:user:user_action_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -311,7 +287,6 @@ class UserActionLikerList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserActionLiker == User:
                 redir = 'admin:user:user'
             else:
@@ -330,21 +305,18 @@ class UserActionLikerList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_action_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_action_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserBehaviorView(View):
+class UserBehaviorView(BaseView):
     @fetch_record(UserBehavior.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_behavior.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserBehavior.objects, 'mod', 'id')
     @admin_auth
@@ -360,12 +332,11 @@ class UserBehaviorView(View):
 
         admin_log("user_behavior", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_behavior.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserBehaviorList(View):
+class UserBehaviorList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -374,9 +345,7 @@ class UserBehaviorList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserBehavior.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_behavior_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_behavior', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -385,7 +354,6 @@ class UserBehaviorList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserBehavior == User:
                 redir = 'admin:user:user'
             else:
@@ -404,21 +372,18 @@ class UserBehaviorList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_behavior', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_behavior', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserCommentView(View):
+class UserCommentView(BaseView):
     @fetch_record(UserComment.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_comment.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserComment.objects, 'mod', 'id')
     @admin_auth
@@ -433,12 +398,11 @@ class UserCommentView(View):
 
         admin_log("user_comment", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_comment.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserCommentList(View):
+class UserCommentList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -447,9 +411,7 @@ class UserCommentList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserComment.objects.filter(entity_id=kwargs["id"])
-            template = loader.get_template("user/user_comment_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -458,7 +420,6 @@ class UserCommentList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserComment == User:
                 redir = 'admin:user:user'
             else:
@@ -477,21 +438,18 @@ class UserCommentList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_comment', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserExperienceView(View):
+class UserExperienceView(BaseView):
     @fetch_record(UserExperience.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_experience.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserExperience.objects, 'mod', 'id')
     @admin_auth
@@ -510,12 +468,11 @@ class UserExperienceView(View):
 
         admin_log("user_experience", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_experience.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserExperienceList(View):
+class UserExperienceList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -524,9 +481,7 @@ class UserExperienceList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserExperience.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_experience_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_experience', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -535,7 +490,6 @@ class UserExperienceList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserExperience == User:
                 redir = 'admin:user:user'
             else:
@@ -554,21 +508,18 @@ class UserExperienceList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_experience', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_experience', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFeatureView(View):
+class UserFeatureView(BaseView):
     @fetch_record(UserFeature.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_feature.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserFeature.objects, 'mod', 'id')
     @admin_auth
@@ -583,12 +534,11 @@ class UserFeatureView(View):
 
         admin_log("user_feature", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_feature.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFeatureList(View):
+class UserFeatureList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -597,9 +547,7 @@ class UserFeatureList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserFeature.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_feature_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_feature', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -608,7 +556,6 @@ class UserFeatureList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserFeature == User:
                 redir = 'admin:user:user'
             else:
@@ -627,21 +574,18 @@ class UserFeatureList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_feature', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_feature', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFeedbackView(View):
+class UserFeedbackView(BaseView):
     @fetch_record(UserFeedback.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_feedback.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserFeedback.objects, 'mod', 'id')
     @admin_auth
@@ -656,12 +600,11 @@ class UserFeedbackView(View):
 
         admin_log("user_feedback", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_feedback.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFeedbackList(View):
+class UserFeedbackList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -670,9 +613,7 @@ class UserFeedbackList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserFeedback.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_feedback_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_feedback', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -681,7 +622,6 @@ class UserFeedbackList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserFeedback == User:
                 redir = 'admin:user:user'
             else:
@@ -700,21 +640,18 @@ class UserFeedbackList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_feedback', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_feedback', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFollowerView(View):
+class UserFollowerView(BaseView):
     @fetch_record(UserFollower.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_follower.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserFollower.objects, 'mod', 'id')
     @admin_auth
@@ -729,12 +666,11 @@ class UserFollowerView(View):
 
         admin_log("user_follower", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_follower.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFollowerList(View):
+class UserFollowerList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -743,9 +679,7 @@ class UserFollowerList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserFollower.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_follower_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_follower', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -754,7 +688,6 @@ class UserFollowerList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserFollower == User:
                 redir = 'admin:user:user'
             else:
@@ -773,21 +706,18 @@ class UserFollowerList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_follower', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_follower', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFriendView(View):
+class UserFriendView(BaseView):
     @fetch_record(UserFriend.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_friend.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserFriend.objects, 'mod', 'id')
     @admin_auth
@@ -802,12 +732,11 @@ class UserFriendView(View):
 
         admin_log("user_friend", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_friend.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFriendList(View):
+class UserFriendList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -816,9 +745,7 @@ class UserFriendList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserFriend.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_friend_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_friend', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -827,7 +754,6 @@ class UserFriendList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserFriend == User:
                 redir = 'admin:user:user'
             else:
@@ -846,21 +772,18 @@ class UserFriendList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_friend', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_friend', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFriendRequestView(View):
+class UserFriendRequestView(BaseView):
     @fetch_record(UserFriendRequest.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_friend_request.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserFriendRequest.objects, 'mod', 'id')
     @admin_auth
@@ -875,12 +798,11 @@ class UserFriendRequestView(View):
 
         admin_log("user_friend_request", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_friend_request.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserFriendRequestList(View):
+class UserFriendRequestList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -889,10 +811,8 @@ class UserFriendRequestList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserFriendRequest.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_friend_request_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:user:user_friend_request', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -901,7 +821,6 @@ class UserFriendRequestList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserFriendRequest == User:
                 redir = 'admin:user:user'
             else:
@@ -920,21 +839,18 @@ class UserFriendRequestList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_friend_request', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_friend_request', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserLikerView(View):
+class UserLikerView(BaseView):
     @fetch_record(UserLiker.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_liker.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserLiker.objects, 'mod', 'id')
     @admin_auth
@@ -949,12 +865,11 @@ class UserLikerView(View):
 
         admin_log("user_liker", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_liker.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserLikerList(View):
+class UserLikerList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -963,9 +878,7 @@ class UserLikerList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserLiker.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_liker_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -974,7 +887,6 @@ class UserLikerList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserLiker == User:
                 redir = 'admin:user:user'
             else:
@@ -993,21 +905,18 @@ class UserLikerList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_liker', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserScoreView(View):
+class UserScoreView(BaseView):
     @fetch_record(UserScore.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_score_record.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserScore.objects, 'mod', 'id')
     @admin_auth
@@ -1023,12 +932,11 @@ class UserScoreView(View):
 
         admin_log("user_score_record", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_score_record.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserScoreList(View):
+class UserScoreList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -1037,10 +945,8 @@ class UserScoreList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserScore.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_score_record_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:user:user_score_record', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -1049,7 +955,6 @@ class UserScoreList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserScore == User:
                 redir = 'admin:user:user'
             else:
@@ -1068,21 +973,18 @@ class UserScoreList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_score_record', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_score_record', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserTagView(View):
+class UserTagView(BaseView):
     @fetch_record(UserTag.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_tag.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserTag.objects, 'mod', 'id')
     @admin_auth
@@ -1097,12 +999,11 @@ class UserTagView(View):
 
         admin_log("user_tag", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_tag.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserTagList(View):
+class UserTagList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -1111,9 +1012,7 @@ class UserTagList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserTag.objects.filter(entity_id=kwargs["id"])
-            template = loader.get_template("user/user_tag_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_tag', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -1122,7 +1021,6 @@ class UserTagList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserTag == User:
                 redir = 'admin:user:user'
             else:
@@ -1141,21 +1039,18 @@ class UserTagList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_tag', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_tag', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserValidationCodeView(View):
+class UserValidationCodeView(BaseView):
     @fetch_record(UserValidationCode.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_validation_code.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserValidationCode.objects, 'mod', 'id')
     @admin_auth
@@ -1171,12 +1066,11 @@ class UserValidationCodeView(View):
 
         admin_log("user_validation_code", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_validation_code.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserValidationCodeList(View):
+class UserValidationCodeList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -1185,10 +1079,8 @@ class UserValidationCodeList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserValidationCode.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_validation_code_list.html")
             context = Context(
                 {'page': page, 'list': list, 'redir': 'admin:user:user_validation_code', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -1197,7 +1089,6 @@ class UserValidationCodeList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserValidationCode == User:
                 redir = 'admin:user:user'
             else:
@@ -1216,21 +1107,18 @@ class UserValidationCodeList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_validation_code', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_validation_code', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserVisitorView(View):
+class UserVisitorView(BaseView):
     @fetch_record(UserVisitor.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
     def get(self, request, mod):
-        template = loader.get_template("user/user_visitor.html")
         context = Context({'mod': mod, 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
     @fetch_record(UserVisitor.objects, 'mod', 'id')
     @admin_auth
@@ -1245,12 +1133,11 @@ class UserVisitorView(View):
 
         admin_log("user_visitor", mod.id, 1, request.user)
 
-        template = loader.get_template("user/user_visitor.html")
         context = Context({'mod': mod, 'msg': '保存成功', 'user': request.user})
-        return HttpResponse(template.render(context))
+        return self.success(data=context)
 
 
-class UserVisitorList(View):
+class UserVisitorList(BaseView):
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -1259,9 +1146,7 @@ class UserVisitorList(View):
     def get(self, request, page=0, **kwargs):
         if kwargs["id"] is not None:
             list = UserVisitor.objects.filter(user_id=kwargs["id"])
-            template = loader.get_template("user/user_visitor_list.html")
             context = Context({'page': page, 'list': list, 'redir': 'admin:user:user_visitor', 'user': request.user})
-            return HttpResponse(template.render(context))
         elif request.GET.get("name") is not None:
             name = request.GET.get("name")
             phone = request.GET.get("phone")
@@ -1270,7 +1155,6 @@ class UserVisitorList(View):
             city = request.GET.get("city")
             county = request.GET.get("county")
 
-            template = loader.get_template("user/index.html")
             if UserVisitor == User:
                 redir = 'admin:user:user'
             else:
@@ -1289,8 +1173,6 @@ class UserVisitorList(View):
                     province__contains=province,
                     city__contains=city,
                     county__contains=county), 'redir': redir, 'rb': 'user_visitor', 'user': request.user})
-            return HttpResponse(template.render(context))
         else:
-            template = loader.get_template("user/index.html")
             context = Context({'rb': 'user_visitor', 'user': request.user})
-            return HttpResponse(template.render(context))
+        return self.success(data=context)
