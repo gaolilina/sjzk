@@ -23,6 +23,7 @@ class ExternalTaskView(BaseView):
         context = Context({'mod': mod, 'user': request.user})
         return self.success(data=context)
 
+    # 团队需求扩展
     @fetch_record(ExternalTask.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
@@ -88,6 +89,7 @@ class InternalTaskView(BaseView):
         context = Context({'mod': mod, 'user': request.user})
         return self.success(data=context)
 
+    # 新增内部需求
     @fetch_record(InternalTask.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
@@ -223,6 +225,7 @@ class TeamAchievementView(BaseView):
         context = Context({'mod': mod, 'user': request.user})
         return self.success(data=context)
 
+    # 团队成就增/改
     @fetch_record(Achievement.objects, 'mod', 'id')
     @admin_auth
     @require_role('yz')
@@ -286,6 +289,7 @@ class TeamActionView(BaseView):
         context = Context({'mod': mod, 'user': request.user})
         return self.success(data=context)
 
+    # 动态增/改
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -349,6 +353,7 @@ class TeamActionCommentView(BaseView):
         context = Context({'mod': mod, 'user': request.user})
         return self.success(data=context)
 
+    # 评论增/改
     @admin_auth
     @require_role('yz')
     @old_validate_args({
@@ -410,6 +415,7 @@ class TeamActionLikerView(BaseView):
         context = Context({'mod': mod, 'user': request.user})
         return self.success(data=context)
 
+    # 动态点赞
     @admin_auth
     @require_role('yz')
     @old_validate_args({
