@@ -73,7 +73,8 @@ class LotteryMusicList(BaseView):
         path = "/srv/SJZK_Web_Frontend/lottery_music"
         files = []
         for _, _, files in os.walk(path):
-            files.append(prefix + str(files))
+            for file in files:
+                files.append(prefix + str(file))
 
         return self.success({
             'list': files,
