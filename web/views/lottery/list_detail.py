@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 from django import forms
+import os
 
 from modellib.models.lottery import Lottery
 from util.base.view import BaseView
@@ -63,6 +64,21 @@ class LotteryInfo(BaseView):
         if len(update_param) > 0:
             Lottery.objects.filter(id=lottery.id).update(**update_param)
         return self.success()
+
+
+class LotteryMusicList(BaseView):
+    @client_auth
+    def get(self, request):
+        prefix = "http://pre.web.chuangyh.com/lottery_music/"
+        path = "/srv/SJZK_Web_Frontend/lottery_music"
+        files = []
+        for _, _, files in os.walk(path):
+            files.append(prefix + str(files))
+
+        return self.success({
+            'list': files,
+            'count': len(files),
+        })
 
 
 def lottery_to_json(lottery):

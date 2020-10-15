@@ -4,7 +4,7 @@ from django.conf.urls import url
 
 from web.views.lottery.action import JoinLottery, LotteryAction
 from web.views.lottery.award import ReceiveAward, UserReceiveAward
-from web.views.lottery.list_detail import LotteryListAndCreate, LotteryInfo
+from web.views.lottery.list_detail import LotteryListAndCreate, LotteryInfo, LotteryMusicList
 from web.views.lottery.user import LotteryJoinedUserList, MyVictoryList
 
 urlpatterns = [
@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^$', LotteryListAndCreate.as_view()),
     # 抽奖信息
     url(r'^(?P<lottery_id>\d+)/$', LotteryInfo.as_view()),
+    # 抽奖信息
+    url(r'music/list/$', LotteryMusicList.as_view()),
     # 签到
     url(r'^(?P<lottery_id>\d+)/join/$', JoinLottery.as_view()),
     # 抽奖和获取获奖名单
