@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-from django import forms
 import os
+from django import forms
 
 from modellib.models.lottery import Lottery
 from util.base.view import BaseView
@@ -72,9 +72,8 @@ class LotteryMusicList(BaseView):
         prefix = "http://pre.web.chuangyh.com/lottery_music/"
         path = "/srv/SJZK_Web_Frontend/lottery_music"
         files = []
-        for _, _, files in os.walk(path):
-            for file in files:
-                files.append(prefix + str(file))
+        for filename in os.listdir(path):
+            files.append(prefix + str(filename))
 
         return self.success({
             'list': files,
