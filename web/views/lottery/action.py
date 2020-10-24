@@ -19,15 +19,29 @@ class JoinLottery(BaseView):
     def post(self, request, lottery, **kwargs):
         if lottery.finished:
             return self.fail(1, '已结束')
-        # 已签到，无需再次签到
+
         user = request.user
-        if not LotteryParticipant.objects.filter(user=user, lottery=lottery).exists():
-            LotteryParticipant.objects.create(user=user, lottery=lottery)
+        LotteryParticipant.objects.create(user=user, lottery=lottery, lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count)
         return self.success({
             'name': user.name,
             'id': user.id,
             'icon': user.icon,
         })
+
+
+class LotteryUpdateAction(BaseView):
+
+    @client_auth
+    @validate_args({
+        'is_new_round': forms.BooleanField(required=False),
+    })
+    @fetch_object(Lottery.objects, 'lottery')
+    def post(self, request, lottery, is_new_round, **kwargs):
+
+        if is_new_round == True:
+            count = lottery.lottery_count
+            lottery.lottery_count = count + 1
+            lottery.save()
 
 
 class LotteryAction(BaseView):
@@ -55,18 +69,39 @@ class LotteryAction(BaseView):
         'lottery_id': forms.IntegerField(),
         'count': forms.IntegerField(max_value=100),
         'info': forms.CharField(max_length=100),
+        'is_new_round': forms.BooleanField(required=False),
+        'filter_same_user': forms.BooleanField(required=False),
     })
     @fetch_object(Lottery.objects, 'lottery')
-    def post(self, request, lottery, count, info, **kwargs):
+    def post(self, request, lottery, count, info, is_new_round=False, filter_same_user=True, **kwargs):
         if lottery.finished:
             return self.fail(2, '抽奖已结束')
         if lottery.user != request.user:
             return self.fail(3, '无权操作')
-        qs = lottery.users.filter(is_victory=False)
-        all_count = qs.count()
+
+        if is_new_round==True:
+            lottery.lottery_round_count = 1
+        else:
+            lottery.lottery_round_count = lottery.lottery_round_count+1
+
+        user_list = []
+        qs = lottery.users.all()
+        if filter_same_user == True:
+            v_qs = qs.filter(lottery_round=lottery.lottery_round, is_victory=True)
+            victory_user_list = [v.user for v in v_qs]
+            qs = qs.filter(lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count)
+            for item in qs:
+                if item.user not in victory_user_list:
+                    user_list.append(item)
+
+        else:
+            qs = qs.filter(lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count)
+            user_list = [v for v in qs]
+
+        all_count = len(user_list)
         if count > all_count:
             return self.fail(1, '中奖数量大于参与人数')
-        victories = self.__generate_lottery(qs, count)
+        victories = self.__generate_lottery(user_list, count)
         for v in victories:
             LotteryParticipant.objects.filter(id=v.id).update(is_victory=True, info=info)
         # 返回中奖的用户列表

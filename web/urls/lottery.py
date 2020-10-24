@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url
 
-from web.views.lottery.action import JoinLottery, LotteryAction
+from web.views.lottery.action import JoinLottery, LotteryAction, LotteryUpdateAction
 from web.views.lottery.award import ReceiveAward, UserReceiveAward
 from web.views.lottery.list_detail import LotteryListAndCreate, LotteryInfo, LotteryMusicList
 from web.views.lottery.user import LotteryJoinedUserList, MyVictoryList
@@ -26,4 +26,6 @@ urlpatterns = [
     url(r'award/(?P<award_id>\d+)/receive/$', ReceiveAward.as_view()),
     # 我的中奖信息
     url(r'^my/victory/$', MyVictoryList.as_view()),
+    # 更新中奖轮次
+    url(r'^update/victory/round$', LotteryUpdateAction.as_view()),
 ]
