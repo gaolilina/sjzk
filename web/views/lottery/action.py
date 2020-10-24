@@ -32,17 +32,12 @@ class JoinLottery(BaseView):
 class LotteryUpdateAction(BaseView):
 
     @client_auth
-    @validate_args({
-        'is_new_round': forms.BooleanField(required=False),
-    })
     @fetch_object(Lottery.objects, 'lottery')
-    def post(self, request, lottery, is_new_round, **kwargs):
-
-        if is_new_round == True:
-            count = lottery.lottery_count
-            lottery.lottery_count = count + 1
-            lottery.save()
-
+    def post(self, request, lottery, **kwargs):
+        count = lottery.lottery_count
+        lottery.lottery_count = count + 1
+        lottery.save()
+        return self.success()
 
 class LotteryAction(BaseView):
 

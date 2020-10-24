@@ -27,5 +27,5 @@ urlpatterns = [
     # 我的中奖信息
     url(r'^my/victory/$', MyVictoryList.as_view()),
     # 更新中奖轮次
-    url(r'^update/victory/round$', LotteryUpdateAction.as_view()),
+    url(r'^(?P<lottery_id>\d+)/update/round/$', LotteryUpdateAction.as_view()),
 ]

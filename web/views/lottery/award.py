@@ -17,6 +17,8 @@ class ReceiveAward(BaseView):
         if award.lottery.user != request.user:
             return self.fail(1, '无权操作')
         LotteryParticipant.objects.filter(id=award.id).update(is_handled=True)
+        if not LotteryParticipant.objects.filter(lottery=award.lottery, is_handled=False).exists():
+            return self.fail(10, "奖品全部领取完成")
         return self.success()
 
 
@@ -32,4 +34,6 @@ class UserReceiveAward(BaseView):
         if not qs.exists():
             return self.fail(1, '无中奖信息')
         LotteryParticipant.objects.filter(id=qs.first().id).update(is_handled=True)
+        if not LotteryParticipant.objects.filter(lottery=lottery, is_handled=False).exists():
+            return self.fail(10, "奖品全部领取完成")
         return self.success()
