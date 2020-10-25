@@ -15,7 +15,7 @@ class LotteryJoinedUserList(BaseView):
     })
     @fetch_object(Lottery.objects, 'lottery')
     def get(self, request, lottery, **kwargs):
-        qs = lottery.users.filter(is_victory=False)
+        qs = lottery.users.filter(is_victory=False, lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count)
         return self.success({
             'list': [{
                 'name': u.user.name,
