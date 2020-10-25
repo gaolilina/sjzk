@@ -21,7 +21,8 @@ class JoinLottery(BaseView):
             return self.fail(1, '已结束')
 
         user = request.user
-        LotteryParticipant.objects.create(user=user, lottery=lottery, lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count)
+        if not LotteryParticipant.objects.filter(user=user, lottery=lottery, lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count).exists():
+            LotteryParticipant.objects.create(user=user, lottery=lottery, lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count)
         return self.success({
             'name': user.name,
             'id': user.id,
