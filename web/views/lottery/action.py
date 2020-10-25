@@ -36,6 +36,7 @@ class LotteryUpdateAction(BaseView):
     def post(self, request, lottery, **kwargs):
         count = lottery.lottery_round
         lottery.lottery_round = count + 1
+        lottery.lottery_round_count = 1
         lottery.save()
         return self.success()
 
@@ -74,11 +75,8 @@ class LotteryAction(BaseView):
         if lottery.user != request.user:
             return self.fail(3, '无权操作')
 
-        if is_new_round==True:
-            lottery.lottery_round_count = 1
-        else:
-            lottery.lottery_round_count = lottery.lottery_round_count+1
-            lottery.save()
+        lottery.lottery_round_count = lottery.lottery_round_count+1
+        lottery.save()
 
         user_list = []
         qs = lottery.users.all()
