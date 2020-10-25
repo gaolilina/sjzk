@@ -28,7 +28,7 @@ class LotteryParticipant(models.Model):
     # 关联的抽奖
     lottery = models.ForeignKey('Lottery', related_name='users')
     # 抽奖轮次
-    lottery_round = models.IntegerField(default=1)
+    lottery_round = models.IntegerField(default=0)
     # 抽奖每轮次数
     lottery_round_count = models.IntegerField(default=1)
     # 是否中奖
