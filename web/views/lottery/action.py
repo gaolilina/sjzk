@@ -75,9 +75,6 @@ class LotteryAction(BaseView):
         if lottery.user != request.user:
             return self.fail(3, '无权操作')
 
-        lottery.lottery_round_count = lottery.lottery_round_count+1
-        lottery.save()
-
         user_list = []
         qs = lottery.users.all()
         if filter_same_user == True:
@@ -91,6 +88,9 @@ class LotteryAction(BaseView):
         else:
             qs = qs.filter(lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count)
             user_list = [v for v in qs]
+
+        lottery.lottery_round_count = lottery.lottery_round_count + 1
+        lottery.save()
 
         all_count = len(user_list)
         if count > all_count:
