@@ -78,6 +78,7 @@ class LotteryAction(BaseView):
             lottery.lottery_round_count = 1
         else:
             lottery.lottery_round_count = lottery.lottery_round_count+1
+            lottery.save()
 
         user_list = []
         qs = lottery.users.all()
