@@ -31,11 +31,10 @@ class JoinLottery(BaseView):
 
 class LotteryUpdateAction(BaseView):
 
-    @client_auth
     @fetch_object(Lottery.objects, 'lottery')
     def post(self, request, lottery, **kwargs):
-        count = lottery.lottery_count
-        lottery.lottery_count = count + 1
+        count = lottery.lottery_round
+        lottery.lottery_round = count + 1
         lottery.save()
         return self.success()
 
