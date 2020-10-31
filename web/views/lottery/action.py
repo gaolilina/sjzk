@@ -89,15 +89,20 @@ class LotteryAction(BaseView):
             qs = qs.filter(lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count)
             user_list = [v for v in qs]
 
-        lottery.lottery_round_count = lottery.lottery_round_count + 1
-        lottery.save()
-
         all_count = len(user_list)
         if count > all_count:
             return self.fail(1, '中奖数量大于参与人数')
         victories = self.__generate_lottery(user_list, count)
         for v in victories:
             LotteryParticipant.objects.filter(id=v.id).update(is_victory=True, info=info)
+
+        qs = lottery.users.filter(lottery_round=lottery.lottery_round, lottery_round_count=lottery.lottery_round_count, is_victory=False)
+        for item in qs:
+            item.lottery_round_count = item.lottery_round_count + 1
+            item.save()
+
+        lottery.lottery_round_count = lottery.lottery_round_count + 1
+        lottery.save()
         # 返回中奖的用户列表
         return self.success({
             'list': [{
