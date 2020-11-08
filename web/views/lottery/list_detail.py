@@ -80,6 +80,40 @@ class LotteryMusicList(BaseView):
             'count': len(files),
         })
 
+class LotteryDetailInfo(BaseView):
+    @client_auth
+    @validate_args({
+        'lottery_id': forms.IntegerField(),
+    })
+    @fetch_object(Lottery.objects, 'lottery')
+    def get(self, request, lottery, **kwargs):
+        res = {
+            'id': lottery.id,
+            'name': lottery.name,
+            'finished': lottery.finished,
+            'count_participant': lottery.users.all().count(),
+        }
+        infos = {}
+        items = lottery.users.all()
+        print(items.count())
+        for item in items:
+            round = item.lottery_round
+            if infos.get(str(round), '') == '':
+                infos[str(round)] = [{'name': item.info, 'count':1}]
+            else:
+                info = infos.get(str(round), '')
+                flag = False
+                for list in info:
+                    if list.get('name', '') == item.info:
+                        list['count'] = list.get('count', 1) + 1
+                        flag = True
+                        break
+                if flag == False:
+                    info.append({'name': item.info, 'count':1})
+
+        res["infos"] = infos
+        return self.success(res)
+
 
 def lottery_to_json(lottery):
     return {
